@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>NVIDIA InfiniBand智算中心组网创新与Quantum-X800高性能交换解决方案</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, rgba(175, 233, 207, 0.8) 0%, rgba(145, 210, 185, 0.8) 100%);
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+        }
+
+        .cover-container {
+            width: 90%;
+            height: 85%;
+            overflow: hidden;
+            position: relative;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 87, 65, 0.25);
+        }
+
+        /* Main background with light gradient */
+        .background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #f5f5f5 0%, #ffffff 100%);
+            z-index: 1;
+        }
+
+        /* Side color strip */
+        .side-strip {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 15%;
+            height: 100%;
+            background: linear-gradient(to bottom, #009B77 0%, #005741 100%);
+            z-index: 2;
+        }
+
+        /* Subtle pattern overlay */
+        .pattern-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.05;
+            z-index: 3;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23009B77' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        /* Content area */
+        .content-area {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding-left: 18%; /* Offset from the side strip */
+        }
+
+        /* Logo area */
+        .logo-area {
+            padding: 40px 0 0 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-text {
+            color: #005741;
+            font-size: 2em;
+            font-weight: 700;
+        }
+
+        .divider {
+            width: 2px;
+            height: 30px;
+            background-color: #009B77;
+            margin: 0 12px;
+        }
+
+        .product-name {
+            color: #009B77;
+            font-size: 1.8em;
+            font-weight: 500;
+        }
+
+        /* Main content section */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            max-width: 90%;
+        }
+
+        /* Title with modern design */
+        .title-block {
+            margin-bottom: 40px;
+        }
+
+        .pre-title {
+            color: #009B77;
+            font-size: 1.5em;
+            font-weight: 600;
+            margin: 0 0 10px 0;
+            letter-spacing: 1px;
+        }
+
+        .main-title {
+            color: #333;
+            font-size: 3.5em;
+            font-weight: 700;
+            line-height: 1.2;
+            margin: 0;
+            position: relative;
+        }
+
+        .title-underline {
+            display: inline-block;
+            width: 160px;
+            height: 8px;
+            background: linear-gradient(to right, #009B77, transparent);
+            margin-top: 15px;
+            border-radius: 4px;
+        }
+
+        /* Featured box for subtitle */
+        .featured-box {
+            background: #f0f0f0;
+            border-left: 8px solid #009B77;
+            padding: 30px;
+            margin-top: 30px;
+            max-width: 80%;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .featured-text {
+            color: #333;
+            font-size: 1.7em;
+            font-weight: 600;
+            line-height: 1.4;
+            margin: 0;
+            position: relative;
+            z-index: 2;
+        }
+
+        .featured-icon {
+            position: absolute;
+            bottom: -30px;
+            right: -20px;
+            opacity: 0.1;
+            z-index: 1;
+        }
+
+        /* Footer */
+        .footer {
+            padding: 20px 50px 30px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .presenter-info {
+            color: #333;
+            font-size: 1.1em;
+        }
+
+        .presenter-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .presenter-title {
+            font-style: italic;
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        .company-info {
+            text-align: right;
+            font-style: italic;
+            color: #333;
+            opacity: 0.7;
+        }
+
+        /* Decorative floating elements */
+        .float-element {
+            position: absolute;
+            z-index: 4;
+            border-radius: 4px;
+        }
+
+        .elem-1 {
+            width: 40px;
+            height: 40px;
+            background: rgba(0, 155, 119, 0.15);
+            top: 20%;
+            right: 15%;
+            transform: rotate(15deg);
+        }
+
+        .elem-2 {
+            width: 80px;
+            height: 80px;
+            background: rgba(0, 155, 119, 0.1);
+            top: 35%;
+            right: 30%;
+            transform: rotate(30deg);
+        }
+
+        .elem-3 {
+            width: 30px;
+            height: 110px;
+            background: rgba(0, 155, 119, 0.15);
+            top: 60%;
+            right: 25%;
+            transform: rotate(-15deg);
+        }
+
+        .elem-4 {
+            width: 60px;
+            height: 60px;
+            background: rgba(0, 155, 119, 0.1);
+            top: 70%;
+            right: 10%;
+            transform: rotate(45deg);
+        }
+
+        /* Abstract network visualization */
+        .network-visual {
+            position: absolute;
+            top: 50%;
+            right: 10%;
+            transform: translateY(-50%);
+            width: 300px;
+            height: 300px;
+            z-index: 5;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInRight {
+            from { opacity: 0; transform: translateX(30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0); }
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        .fade-in-right {
+            animation: fadeInRight 0.8s ease-out forwards;
+        }
+
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .rotating {
+            animation: rotate 20s linear infinite;
+        }
+
+        .delay-1 {
+            animation-delay: 0.3s;
+        }
+
+        .delay-2 {
+            animation-delay: 0.6s;
+        }
+
+        .delay-3 {
+            animation-delay: 0.9s;
+        }
+    </style>
+</head>
+<body>
+    <div class="cover-container">
+        <!-- Background elements -->
+        <div class="background"></div>
+        <div class="side-strip"></div>
+        <div class="pattern-overlay"></div>
+        
+        <!-- Decorative floating elements -->
+        <div class="float-element elem-1"></div>
+        <div class="float-element elem-2"></div>
+        <div class="float-element elem-3"></div>
+        <div class="float-element elem-4"></div>
+        
+        <!-- Content area -->
+        <div class="content-area">
+            <!-- Logo -->
+            <div class="logo-area fade-in">
+                <div class="logo-text">NVIDIA</div>
+                <div class="divider"></div>
+                <div class="product-name">InfiniBand</div>
+            </div>
+            
+            <!-- Main content -->
+            <div class="main-content">
+                <!-- Title section -->
+                <div class="title-block fade-in delay-1">
+                    <div class="pre-title">下一代技术</div>
+                    <h1 class="main-title">智算中心<br>高性能网络革新</h1>
+                    <div class="title-underline"></div>
+                </div>
+                
+                <!-- Featured subtitle in box -->
+                <div class="featured-box fade-in delay-2">
+                    <p class="featured-text">NVIDIA InfiniBand智算中心组网创新与<br>Quantum-X800高性能交换解决方案</p>
+                    <div class="featured-icon">
+                        <svg width="200" height="200" viewBox="0 0 200 200">
+                            <path d="M100,20 L180,100 L100,180 L20,100 Z" fill="#009B77"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Abstract network visualization -->
+            <div class="network-visual fade-in-right delay-2 floating">
+                <svg width="100%" height="100%" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Subtle grid background -->
+                    <pattern id="smallGrid" width="10" height="10" patternUnits="userSpaceOnUse">
+                        <path d="M 10 0 L 0 0 0 10" fill="none" stroke="#009B77" stroke-width="0.5" opacity="0.1"/>
+                    </pattern>
+                    <rect width="300" height="300" fill="url(#smallGrid)" opacity="0.15"/>
+                    
+                    <!-- Main network visualization -->
+                    <g class="rotating" transform="translate(150,150)">
+                        <!-- Inner hexagon -->
+                        <polygon points="0,-50 43.3,-25 43.3,25 0,50 -43.3,25 -43.3,-25" 
+                                fill="#f0f0f0" stroke="#009B77" stroke-width="2"/>
+                        
+                        <!-- "800G" text -->
+                        <text x="0" y="8" font-size="18" font-weight="bold" text-anchor="middle" fill="#009B77">800G</text>
+                        
+                        <!-- Outer connecting lines -->
+                        <g stroke="#009B77" stroke-width="1.5" stroke-dasharray="4,2">
+                            <!-- Top -->
+                            <line x1="0" y1="-50" x2="0" y2="-90"/>
+                            <circle cx="0" cy="-90" r="8" fill="#f0f0f0" stroke="#009B77" stroke-width="1.5"/>
+                            
+                            <!-- Top right -->
+                            <line x1="43.3" y1="-25" x2="78" y2="-45"/>
+                            <circle cx="78" cy="-45" r="8" fill="#f0f0f0" stroke="#009B77" stroke-width="1.5"/>
+                            
+                            <!-- Bottom right -->
+                            <line x1="43.3" y1="25" x2="78" y2="45"/>
+                            <circle cx="78" cy="45" r="8" fill="#f0f0f0" stroke="#009B77" stroke-width="1.5"/>
+                            
+                            <!-- Bottom -->
+                            <line x1="0" y1="50" x2="0" y2="90"/>
+                            <circle cx="0" cy="90" r="8" fill="#f0f0f0" stroke="#009B77" stroke-width="1.5"/>
+                            
+                            <!-- Bottom left -->
+                            <line x1="-43.3" y1="25" x2="-78" y2="45"/>
+                            <circle cx="-78" cy="45" r="8" fill="#f0f0f0" stroke="#009B77" stroke-width="1.5"/>
+                            
+                            <!-- Top left -->
+                            <line x1="-43.3" y1="-25" x2="-78" y2="-45"/>
+                            <circle cx="-78" cy="-45" r="8" fill="#f0f0f0" stroke="#009B77" stroke-width="1.5"/>
+                        </g>
+                        
+                        <!-- Outer ring -->
+                        <circle cx="0" cy="0" r="110" fill="none" stroke="#009B77" stroke-width="1" opacity="0.5"/>
+                    </g>
+                    
+                    <!-- Non-rotating outer elements -->
+                    <g>
+                        <text x="150" y="30" text-anchor="middle" font-size="12" fill="#005741" font-weight="bold">XDR TECHNOLOGY</text>
+                        
+                        <!-- Data transfer indicators -->
+                        <circle cx="150" cy="60" r="2" fill="#009B77">
+                            <animate attributeName="cy" values="60;150;60" dur="3s" repeatCount="indefinite"/>
+                            <animate attributeName="opacity" values="1;0.3;1" dur="3s" repeatCount="indefinite"/>
+                        </circle>
+                        
+                        <circle cx="200" cy="200" r="2" fill="#009B77">
+                            <animate attributeName="cx" values="200;150;200" dur="4s" repeatCount="indefinite"/>
+                            <animate attributeName="opacity" values="1;0.3;1" dur="4s" repeatCount="indefinite"/>
+                        </circle>
+                        
+                        <circle cx="100" cy="200" r="2" fill="#009B77">
+                            <animate attributeName="cx" values="100;150;100" dur="3.5s" repeatCount="indefinite"/>
+                            <animate attributeName="opacity" values="1;0.3;1" dur="3.5s" repeatCount="indefinite"/>
+                        </circle>
+                    </g>
+                </svg>
+            </div>
+            
+            <!-- Footer -->
+            <div class="footer fade-in delay-3">
+                <div class="presenter-info">
+                    <div class="presenter-name">[讲师姓名]</div>
+                    <div class="presenter-title">NVIDIA 网络解决方案架构师</div>
+                </div>
+                <div class="company-info">
+                    2024 NVIDIA Corporation
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

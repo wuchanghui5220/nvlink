@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Small-Scale InfiniBand Network Topology Visualizer</title>
+<style>
+  :root {
+    --primary-color: #4a90e2;
+    --secondary-color: #2c3e50;
+    --background-color: #f0f4f8;
+    --card-background: #ffffff;
+    --text-color: #333333;
+  }
+  body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 20px;
+    background-color: var(--background-color);
+    color: var(--text-color);
+  }
+  .container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .left-panel, .right-panel {
+    width: 100%;
+  }
+  .input-group {
+    margin-bottom: 15px;
+  }
+  .input-row {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .input-col {
+    width: 100%;
+  }
+  label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 0.9em;
+  }
+  input, select, textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1em;
+  }
+  button {
+    background-color: #3498db;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+    font-size: 1em;
+  }
+  button:hover {
+    background-color: #2980b9;
+  }
+  #results {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 4px;
+    font-size: 0.9em;
+  }
+  #diagram {
+    margin-top: 20px;
+    width: 100%;
+    overflow-x: auto;
+  }
+  svg {
+    width: 100%;
+    height: auto;
+    min-width: 300px;
+  }
+  .diagram-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  @media (min-width: 768px) {
+    .container {
+      flex-direction: row;
+    }
+    .left-panel, .right-panel {
+      width: 48%;
+    }
+    .input-row {
+      flex-direction: row;
+    }
+    .input-col {
+      width: 48%;
+    }
+  }
+</style>
+</head>
+<body>
+  <h1>Small-Scale InfiniBand Network Topology Visualizer</h1>
+  
+  <div class="container">
+    <div class="left-panel">
+      <h2>Results</h2>
+      <div id="results">
+        <!-- Results will be populated here -->
+      </div>
+    </div>
+    
+    <div class="right-panel">
+      <h2>Configuration</h2>
+      <div class="input-row">
+        <div class="input-col">
+          <label for="numServers">Number of Servers:</label>
+          <select id="numServers">
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4" selected>4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+            <option value="11">11</option>
+            <option value="12">12</option>
+            <option value="13">13</option>
+            <option value="14">14</option>
+            <option value="15">15</option>
+            <option value="16">16</option>
+          </select>
+        </div>
+        <div class="input-col">
+          <label for="numNetworkCardsPerServer">Network Cards per Server:</label>
+          <select id="numNetworkCardsPerServer">
+            <option value="2">2</option>
+            <option value="4" selected>4</option>
+            <option value="8">8</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="input-row">
+        <div class="input-col">
+          <label for="numSwitches">Number of Switches:</label>
+          <select id="numSwitches">
+            <option value="1" selected>1</option>
+            <option value="2">2</option>
+          </select>
+        </div>
+        <div class="input-col" id="interSwitchLinksContainer">
+          <label for="interSwitchLinks">Inter-Switch Links:</label>
+          <select id="interSwitchLinks" disabled>
+            <option value="2">2</option>
+            <option value="4">4</option>
+            <option value="8" selected>8</option>
+            <option value="16">16</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="input-row">
+        <div class="input-col">
+          <label for="switchServerDistance">Switch-Server Distance (px):</label>
+          <input type="number" id="switchServerDistance" min="100" max="500" value="150">
+        </div>
+        <div class="input-col">
+          <label for="diagramHeight">Diagram Height (px):</label>
+          <input type="number" id="diagramHeight" min="400" max="1200" value="600">
+        </div>
+      </div>
+      
+      <div class="input-row">
+        <div class="input-col">
+          <label for="serverSpacing">Server Spacing (px):</label>
+          <input type="number" id="serverSpacing" min="50" max="200" value="120">
+        </div>
+        <div class="input-col">
+          <label for="switchSpacing">Switch Spacing (px):</label>
+          <input type="number" id="switchSpacing" min="100" max="600" value="300">
+        </div>
+      </div>
+      
+      <button onclick="calculateAndDraw()">Calculate and Generate Diagram</button>
+    </div>
+  </div>
+  
+  <div class="diagram-container">
+    <div id="diagram"></div>
+  </div>
+
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="./small-scale-script.js"></script>
+</body>
+</html>

@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NVIDIA NPN SP技术大比武 - 推荐存储系统架构</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f0f0f0;
+      font-family: 'Noto Sans SC', sans-serif;
+      overflow: hidden;
+    }
+
+    .slide-container {
+      width: 100vw;
+      height: 56.25vw; /* 16:9 aspect ratio */
+      max-height: 100vh;
+      max-width: 177.78vh; /* 16:9 aspect ratio (reversed) */
+      position: relative;
+      background: #111827;
+      color: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    /* 背景图形元素 */
+    .bg-grid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image:
+        linear-gradient(rgba(24, 92, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(24, 92, 255, 0.05) 1px, transparent 1px);
+      background-size: 20px 20px;
+      z-index: 0;
+    }
+
+    .bg-gradient {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 120% 45%, rgba(76, 29, 149, 0.7) 0%, rgba(17, 24, 39, 0) 50%);
+      z-index: 1;
+    }
+
+    .bg-circle1 {
+      position: absolute;
+      top: -15%;
+      right: -15%;
+      width: 40%;
+      height: 40%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #76b900 0%, #1a4163 100%);
+      filter: blur(80px);
+      opacity: 0.6;
+      z-index: 2;
+    }
+
+    .bg-circle2 {
+      position: absolute;
+      bottom: -10%;
+      left: -10%;
+      width: 30%;
+      height: 30%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0099da 0%, #1e40af 100%);
+      filter: blur(60px);
+      opacity: 0.5;
+      z-index: 2;
+    }
+
+    /* 主要内容 */
+    .content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    .header {
+      padding: 2% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .nvidia-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-box {
+      width: 8%;
+      min-width: 100px;
+      height: 36px;
+      background: #76b900;
+      border-radius: 4px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 700;
+      font-size: clamp(16px, 2vw, 22px);
+      transform: skew(-10deg);
+    }
+
+    .partner-text {
+      font-size: clamp(12px, 1.5vw, 16px);
+      font-weight: 500;
+      opacity: 0.9;
+    }
+
+    .slide-title {
+      font-size: clamp(16px, 1.8vw, 20px);
+      font-weight: 600;
+      padding: 0.5% 4%;
+      background: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(5px);
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 1.5% 4%;
+      overflow: hidden;
+    }
+
+    .section-title {
+      font-size: clamp(22px, 2.8vw, 28px);
+      font-weight: 700;
+      margin-bottom: 15px;
+      color: #76b900;
+      text-align: center;
+    }
+
+    .storage-intro {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      padding: 10px 15px;
+      margin-bottom: 15px;
+      font-size: 13px;
+      line-height: 1.5;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .storage-solutions {
+      display: flex;
+      gap: 20px;
+      flex: 1;
+    }
+
+    .solution-card {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 15px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .solution-header {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .solution-badge {
+      background: #76b900;
+      color: white;
+      padding: 4px 8px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .secondary-badge {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .solution-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .ddn-title {
+      color: #76b900;
+    }
+
+    .netapp-title {
+      color: #0099da;
+    }
+
+    .solution-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      overflow-y: auto;
+    }
+
+    .solution-content::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .solution-content::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 2px;
+    }
+
+    .solution-content::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 2px;
+    }
+
+    .solution-section {
+      margin-bottom: 2px;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 5px;
+    }
+
+    .section-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .model-icon {
+      background: linear-gradient(135deg, #76b900 0%, #3e703e 100%);
+    }
+
+    .netapp-model-icon {
+      background: linear-gradient(135deg, #0099da 0%, #0369a1 100%);
+    }
+
+    .config-icon {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    }
+
+    .connection-icon {
+      background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+    }
+
+    .advantage-icon {
+      background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+    }
+
+    .scenario-icon {
+      background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
+    }
+
+    .section-icon svg {
+      width: 14px;
+      height: 14px;
+      fill: white;
+    }
+
+    .section-title-small {
+      font-size: 15px;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .model-title {
+      color: #76b900;
+    }
+
+    .netapp-model-title {
+      color: #0099da;
+    }
+
+    .config-title {
+      color: #f59e0b;
+    }
+
+    .connection-title {
+      color: #8b5cf6;
+    }
+
+    .advantage-title {
+      color: #ef4444;
+    }
+
+    .scenario-title {
+      color: #ec4899;
+    }
+
+    .section-details {
+      padding-left: 32px;
+      font-size: 13px;
+      line-height: 1.4;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .section-details p {
+      margin: 0 0 5px 0;
+    }
+
+    .section-details ul {
+      margin: 5px 0;
+      padding-left: 0;
+      list-style-type: none;
+    }
+
+    .section-details li {
+      position: relative;
+      padding-left: 12px;
+      margin-bottom: 5px;
+    }
+
+    .section-details li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 7px;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+    }
+
+    .model-details li::before {
+      background: #76b900;
+    }
+
+    .netapp-model-details li::before {
+      background: #0099da;
+    }
+
+    .config-details li::before {
+      background: #f59e0b;
+    }
+
+    .connection-details li::before {
+      background: #8b5cf6;
+    }
+
+    .advantage-details li::before {
+      background: #ef4444;
+    }
+
+    .scenario-details li::before {
+      background: #ec4899;
+    }
+
+    .highlight {
+      font-weight: 600;
+    }
+
+    .model-highlight {
+      color: #76b900;
+    }
+
+    .netapp-model-highlight {
+      color: #0099da;
+    }
+
+    .config-highlight {
+      color: #f59e0b;
+    }
+
+    .connection-highlight {
+      color: #8b5cf6;
+    }
+
+    .advantage-highlight {
+      color: #ef4444;
+    }
+
+    .scenario-highlight {
+      color: #ec4899;
+    }
+
+    .footer {
+      padding: 1.2% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .page-number {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .company-name {
+      font-weight: 500;
+    }
+
+    .rotating-lines {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 50%;
+      height: 50%;
+      z-index: 5;
+      opacity: 0.15;
+      animation: rotate 60s linear infinite;
+    }
+
+    @keyframes rotate {
+      from {
+        transform: translate(-50%, -50%) rotate(0deg);
+      }
+      to {
+        transform: translate(-50%, -50%) rotate(360deg);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <!-- 背景元素 -->
+    <div class="bg-grid"></div>
+    <div class="bg-gradient"></div>
+    <div class="bg-circle1"></div>
+    <div class="bg-circle2"></div>
+
+    <!-- 旋转线框背景 -->
+    <svg class="rotating-lines" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+      <path d="M250,10 L490,250 L250,490 L10,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,50 L450,250 L250,450 L50,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,90 L410,250 L250,410 L90,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,130 L370,250 L250,370 L130,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,170 L330,250 L250,330 L170,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,210 L290,250 L250,290 L210,250 Z" fill="none" stroke="white" stroke-width="1" />
+    </svg>
+
+    <!-- 主要内容 -->
+    <div class="content">
+      <div class="header">
+        <div class="nvidia-logo">
+          <div class="logo-box">NVIDIA</div>
+          <div class="partner-text">Networking NPN Elite Partner</div>
+        </div>
+        <div class="slide-title">3. 客户需求方案汇报 - 题目A：存储系统选型</div>
+      </div>
+
+      <div class="main-content">
+        <div class="section-title">推荐存储系统架构</div>
+        
+        <div class="storage-intro">
+          基于NVIDIA DGX SuperPOD参考架构和LLM训练特点，推荐使用NVIDIA认证的存储解决方案，如DDN A³I、NetApp ONTAP AI、Pure Storage FlashBlade或VAST Data。这些解决方案针对DGX H200和LLM训练进行了优化，支持GPUDirect Storage和InfiniBand网络。
+        </div>
+        
+        <div class="storage-solutions">
+          <!-- DDN A³I 解决方案 -->
+          <div class="solution-card">
+            <div class="solution-header">
+              <div class="solution-badge">首选方案</div>
+              <h3 class="solution-title ddn-title">DDN A³I 解决方案</h3>
+            </div>
+            
+            <div class="solution-content">
+              <div class="solution-section">
+                <div class="section-header">
+                  <div class="section-icon model-icon">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14h3v-3h-3v3zm0-5h3v-3h-3v3zm0-5h3V4h-3v3zM9 7h3V4H9v3zM9 12h3V9H9v3zm0 5h3v-3H9v3zM4 7h3V4H4v3zm0 5h3V9H4v3zm0 5h3v-3H4v3z"/>
+                    </svg>
+                  </div>
+                  <h4 class="section-title-small model-title">推荐型号</h4>
+                </div>
+                <div class="section-details model-details">
+                  <p>DDN AI400X2存储设备，专为DGX SuperPOD和LLM训练优化</p>
+                </div>
+              </div>
+              
+              <div class="solution-section">
+                <div class="section-header">
+                  <div class="section-icon config-icon">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+                    </svg>
+                  </div>
+                  <h4 class="section-title-small config-title">配置建议</h4>
+                </div>
+                <div class="section-details config-details">
+                  <ul>
+                    <li>部署<span class="highlight config-highlight">32台AI400X2</span>存储设备</li>
+                    <li>单节点：<span class="highlight config-highlight">40 GB/s</span>，集群总带宽：<span class="highlight config-highlight">10 TB/s</span></li>
+                    <li>总容量：<span class="highlight config-highlight">5-10 PB</span>（NVMe/QLC SSD）</li>
+                  </ul>
+                </div>
+              </div>
+              
+              <div class="solution-section">
+                <div class="section-header">
+                  <div class="section-icon connection-icon">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M4 11h4a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1zm0-7h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zm12 7h4a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1zm0-7h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zM8 13v-2h8v2H8z"/>
+                    </svg>
+                  </div>
+                  <h4 class="section-title-small connection-title">连接方式</h4>
+                </div>
+                <div class="section-details connection-details">
+                  <ul>
+                    <li>每台DGX H200配备<span class="highlight connection-highlight">2个NDR 400Gb/s</span> IB链路</li>
+                    <li>每台AI400X2通过<span class="highlight connection-highlight">8个NDR 400Gb/s</span>链路连接</li>
+                  </ul>
+                </div>
+              </div>
+              
+              <div class="solution-section">
+                <div class="section-header">
+                  <div class="section-icon advantage-icon">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/>
+                    </svg>
+                  </div>
+                  <h4 class="section-title-small advantage-title">优势</h4>
+                </div>
+                <div class="section-details advantage-details">
+                  <ul>
+                    <li><span class="highlight advantage-highlight">GPUDirect Storage</span>，延迟低至微秒级</li>
+                    <li><span class="highlight advantage-highlight">DDN Insight</span>提供实时I/O监控和瓶颈分析</li>
+                    <li><span class="highlight advantage-highlight">Hot Nodes</span>功能，利用DGX H200的NVMe SSD作为本地缓存</li>
+                    <li><span class="highlight advantage-highlight">NUMA-aware</span>优化，匹配H200内存架构</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- NetApp ONTAP AI 解决方案 -->
+          <div class="solution-card">
+            <div class="solution-header">
+              <div class="solution-badge secondary-badge">备选方案</div>
+              <h3 class="solution-title netapp-title">NetApp ONTAP AI</h3>
+            </div>
+            
+            <div class="solution-content">
+              <div class="solution-section">
+                <div class="section-header">
+                  <div class="section-icon netapp-model-icon">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14h3v-3h-3v3zm0-5h3v-3h-3v3zm0-5h3V4h-3v3zM9 7h3V4H9v3zM9 12h3V9H9v3zm0 5h3v-3H9v3zM4 7h3V4H4v3zm0 5h3V9H4v3zm0 5h3v-3H4v3z"/>
+                    </svg>
+                  </div>
+                  <h4 class="section-title-small netapp-model-title">推荐型号</h4>
+                </div>
+                <div class="section-details netapp-model-details">
+                  <p>NetApp AFF A900或FAS9500（全闪存配置）</p>
+                </div>
+              </div>
+              
+              <div class="solution-section">
+                <div class="section-header">
+                  <div class="section-icon config-icon">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+                    </svg>
+                  </div>
+                  <h4 class="section-title-small config-title">配置建议</h4>
+                </div>
+                <div class="section-details config-details">
+                  <ul>
+                    <li>部署<span class="highlight config-highlight">12-16台AFF A900</span>，配备NVMe SSD</li>
+                    <li>单节点：<span class="highlight config-highlight">50 GB/s</span>，总带宽：<span class="highlight config-highlight">15-18 TB/s</span></li>
+                    <li>总容量：<span class="highlight config-highlight">5-8 PB</span></li>
+                  </ul>
+                </div>
+              </div>
+              
+              <div class="solution-section">
+                <div class="section-header">
+                  <div class="section-icon connection-icon">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M4 11h4a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1zm0-7h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zm12 7h4a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1zm0-7h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zM8 13v-2h8v2H8z"/>
+                    </svg>
+                  </div>
+                  <h4 class="section-title-small connection-title">连接方式</h4>
+                </div>
+                <div class="section-details connection-details">
+                  <ul>
+                    <li>通过<span class="highlight connection-highlight">NDR 400Gb/s InfiniBand</span>或400Gb/s以太网</li>
+                    <li>支持<span class="highlight connection-highlight">GPUDirect RDMA</span>技术</li>
+                  </ul>
+                </div>
+              </div>
+              
+              <div class="solution-section">
+                <div class="section-header">
+                  <div class="section-icon advantage-icon">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z"/>
+                    </svg>
+                  </div>
+                  <h4 class="section-title-small advantage-title">优势</h4>
+                </div>
+                <div class="section-details advantage-details">
+                  <ul>
+                    <li><span class="highlight advantage-highlight">FlexCache技术</span>加速频繁访问的数据集</li>
+                    <li><span class="highlight advantage-highlight">ONTAP数据管理</span>支持跨节点数据同步与恢复</li>
+                    <li>与<span class="highlight advantage-highlight">NVIDIA Base Command</span>集成</li>
+                  </ul>
+                </div>
+              </div>
+              
+              <div class="solution-section">
+                <div class="section-header">
+                  <div class="section-icon scenario-icon">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                    </svg>
+                  </div>
+                  <h4 class="section-title-small scenario-title">适用场景</h4>
+                </div>
+                <div class="section-details scenario-details">
+                  <p>适合<span class="highlight scenario-highlight">企业级数据管理</span>和<span class="highlight scenario-highlight">长期归档</span>场景</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="company-name">北京正阳恒卓科技有限公司</div>
+        <div class="page-number">22</div>
+      </div>
+    </div>
+  </div>
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+        <a href="index3.8.1.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+        <a href="index3.8.3.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>NVIDIA InfiniBand智算中心组网创新与Quantum-X800高性能交换解决方案</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, rgba(175, 233, 207, 0.8) 0%, rgba(145, 210, 185, 0.8) 100%);
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+        }
+
+        .cover-container {
+            width: 90%;
+            height: 85%;
+            overflow: hidden;
+            position: relative;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 87, 65, 0.25);
+        }
+
+        /* Main background with dark gradient */
+        .background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a2a32 0%, #0d1b21 100%);
+            z-index: 1;
+        }
+
+        /* Glowing circuit patterns */
+        .circuit-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.2;
+            z-index: 2;
+        }
+
+        /* Green accent shape */
+        .accent-shape {
+            position: absolute;
+            bottom: -180px;
+            right: -180px;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #009B77 0%, #00d4a3 100%);
+            opacity: 0.85;
+            z-index: 3;
+        }
+
+        /* Content area */
+        .content-area {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header logo area */
+        .header {
+            padding: 40px 0 0 60px;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-text {
+            color: white;
+            font-size: 2.4em;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .divider {
+            width: 2px;
+            height: 40px;
+            background-color: #009B77;
+            margin: 0 15px;
+        }
+
+        .product-name {
+            color: #009B77;
+            font-size: 2em;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        /* Main title section */
+        .title-section {
+            flex: 1;
+            padding: 50px 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .main-title {
+            color: white;
+            font-size: 4em;
+            font-weight: 700;
+            line-height: 1.2;
+            margin: 0;
+            max-width: 70%;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Highlight section for subtitle */
+        .highlight-section {
+            margin-top: 40px;
+            position: relative;
+            z-index: 5;
+        }
+
+        .highlight-box {
+            position: relative;
+            overflow: hidden;
+            padding: 30px 40px;
+            background: rgba(0, 155, 119, 0.95);
+            max-width: 80%;
+            border-radius: 0 100px 100px 0;
+            box-shadow: 0 10px 30px rgba(0, 155, 119, 0.4);
+        }
+
+        .highlight-text {
+            color: white;
+            font-size: 1.8em;
+            font-weight: 600;
+            line-height: 1.4;
+            margin: 0;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Animated light effect */
+        .light-effect {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 150%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transform: skewX(-25deg);
+            animation: lightMove 5s infinite;
+        }
+
+        @keyframes lightMove {
+            0% {
+                left: -150%;
+            }
+            100% {
+                left: 150%;
+            }
+        }
+
+        /* Footer section */
+        .footer {
+            padding: 20px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            position: relative;
+            z-index: 5;
+        }
+
+        .presenter-info {
+            font-size: 1.1em;
+        }
+
+        .presenter-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .presenter-title {
+            font-style: italic;
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .company-info {
+            text-align: right;
+            font-style: italic;
+            margin-right: 20px;
+        }
+
+        /* 3D tech visualization */
+        .tech-visual {
+            position: absolute;
+            top: 50%;
+            right: 80px;
+            transform: translateY(-50%);
+            width: 350px;
+            height: 350px;
+            z-index: 4;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInRight {
+            from { opacity: 0; transform: translateX(30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes fadeInLeft {
+            from { opacity: 0; transform: translateX(-30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes rotateSlow {
+            from { transform: translateY(-50%) rotate(0deg); }
+            to { transform: translateY(-50%) rotate(360deg); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        .fade-in-right {
+            animation: fadeInRight 0.8s ease-out forwards;
+        }
+
+        .fade-in-left {
+            animation: fadeInLeft 0.8s ease-out forwards;
+        }
+
+        .pulse {
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        .rotate-slow {
+            animation: rotateSlow 20s linear infinite;
+        }
+
+        .delay-1 {
+            animation-delay: 0.3s;
+        }
+
+        .delay-2 {
+            animation-delay: 0.6s;
+        }
+
+        .delay-3 {
+            animation-delay: 0.9s;
+        }
+
+        /* Glowing dots */
+        .glow-dots {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 3;
+        }
+    </style>
+</head>
+<body>
+    <div class="cover-container">
+        <!-- Background and effects -->
+        <div class="background"></div>
+        
+        <!-- Circuit pattern background -->
+        <div class="circuit-pattern">
+            <svg width="100%" height="100%" viewBox="0 0 1000 800" preserveAspectRatio="xMidYMid slice">
+                <defs>
+                    <pattern id="smallGrid" width="30" height="30" patternUnits="userSpaceOnUse">
+                        <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#009B77" stroke-width="0.5"/>
+                    </pattern>
+                    <pattern id="grid" width="150" height="150" patternUnits="userSpaceOnUse">
+                        <rect width="150" height="150" fill="url(#smallGrid)"/>
+                        <path d="M 150 0 L 0 0 0 150" fill="none" stroke="#009B77" stroke-width="1"/>
+                    </pattern>
+                </defs>
+                
+                <rect width="100%" height="100%" fill="url(#grid)" />
+                
+                <!-- Circuit traces -->
+                <g stroke="#009B77" stroke-width="1.5" fill="none">
+                    <path d="M100,200 C250,150 300,350 450,300 S700,200 850,250" />
+                    <path d="M50,400 C200,350 250,500 400,450 S600,400 750,450" />
+                    <path d="M150,600 C300,550 350,650 500,600 S750,550 900,600" />
+                    <path d="M200,100 C200,250 350,300 350,450 S500,550 500,700" />
+                    <path d="M400,50 C400,200 550,250 550,400 S700,450 700,600" />
+                    <path d="M600,100 C600,200 750,250 750,400 S900,500 900,650" />
+                    
+                    <!-- Connection points -->
+                    <circle cx="100" cy="200" r="4" fill="#009B77" />
+                    <circle cx="450" cy="300" r="4" fill="#009B77" />
+                    <circle cx="850" cy="250" r="4" fill="#009B77" />
+                    <circle cx="50" cy="400" r="4" fill="#009B77" />
+                    <circle cx="400" cy="450" r="4" fill="#009B77" />
+                    <circle cx="750" cy="450" r="4" fill="#009B77" />
+                    <circle cx="150" cy="600" r="4" fill="#009B77" />
+                    <circle cx="500" cy="600" r="4" fill="#009B77" />
+                    <circle cx="900" cy="600" r="4" fill="#009B77" />
+                    <circle cx="200" cy="100" r="4" fill="#009B77" />
+                    <circle cx="350" cy="450" r="4" fill="#009B77" />
+                    <circle cx="500" cy="700" r="4" fill="#009B77" />
+                    <circle cx="400" cy="50" r="4" fill="#009B77" />
+                    <circle cx="550" cy="400" r="4" fill="#009B77" />
+                    <circle cx="700" cy="600" r="4" fill="#009B77" />
+                    <circle cx="600" cy="100" r="4" fill="#009B77" />
+                    <circle cx="750" cy="400" r="4" fill="#009B77" />
+                    <circle cx="900" cy="650" r="4" fill="#009B77" />
+                </g>
+            </svg>
+        </div>
+        
+        <!-- Moving dots -->
+        <div class="glow-dots">
+            <svg width="100%" height="100%" viewBox="0 0 1000 800" preserveAspectRatio="xMidYMid slice">
+                <circle cx="450" cy="300" r="3" fill="#009B77">
+                    <animate attributeName="opacity" values="1;0.3;1" dur="3s" repeatCount="indefinite"/>
+                </circle>
+                <circle cx="400" cy="450" r="3" fill="#009B77">
+                    <animate attributeName="opacity" values="0.3;1;0.3" dur="4s" repeatCount="indefinite"/>
+                </circle>
+                <circle cx="500" cy="600" r="3" fill="#009B77">
+                    <animate attributeName="opacity" values="0.7;0.2;0.7" dur="5s" repeatCount="indefinite"/>
+                </circle>
+                <circle cx="700" cy="600" r="3" fill="#009B77">
+                    <animate attributeName="opacity" values="0.5;1;0.5" dur="3.5s" repeatCount="indefinite"/>
+                </circle>
+                <circle cx="750" cy="400" r="3" fill="#009B77">
+                    <animate attributeName="opacity" values="1;0.4;1" dur="4.5s" repeatCount="indefinite"/>
+                </circle>
+            </svg>
+        </div>
+        
+        <!-- Green accent shape -->
+        <div class="accent-shape"></div>
+        
+        <!-- Main content -->
+        <div class="content-area">
+            <!-- Header with logo -->
+            <div class="header fade-in">
+                <div class="logo-text">NVIDIA</div>
+                <div class="divider"></div>
+                <div class="product-name">InfiniBand</div>
+            </div>
+            
+            <!-- Main title section -->
+            <div class="title-section">
+                <h1 class="main-title fade-in delay-1">智算中心<br>高性能网络革新</h1>
+                
+                <!-- Highlighted subtitle section -->
+                <div class="highlight-section fade-in delay-2">
+                    <div class="highlight-box">
+                        <div class="light-effect"></div>
+                        <p class="highlight-text">NVIDIA InfiniBand智算中心组网创新与<br>Quantum-X800高性能交换解决方案</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tech visualization -->
+            <div class="tech-visual rotate-slow fade-in-right delay-2">
+                <svg width="100%" height="100%" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Outer rings -->
+                    <g>
+                        <circle cx="200" cy="200" r="180" fill="none" stroke="#009B77" stroke-width="1" opacity="0.4" />
+                        <circle cx="200" cy="200" r="160" fill="none" stroke="#009B77" stroke-width="1" opacity="0.6" />
+                        <circle cx="200" cy="200" r="140" fill="none" stroke="#009B77" stroke-width="1" opacity="0.8" />
+                    </g>
+                    
+                    <!-- Connection spokes -->
+                    <g stroke="#009B77" stroke-width="1.5">
+                        <line x1="200" y1="60" x2="200" y2="140" opacity="0.7" />
+                        <line x1="60" y1="200" x2="140" y2="200" opacity="0.7" />
+                        <line x1="340" y1="200" x2="260" y2="200" opacity="0.7" />
+                        <line x1="200" y1="340" x2="200" y2="260" opacity="0.7" />
+                        
+                        <line x1="113" y1="113" x2="165" y2="165" opacity="0.7" transform="rotate(0 200 200)" />
+                        <line x1="113" y1="287" x2="165" y2="235" opacity="0.7" transform="rotate(0 200 200)" />
+                        <line x1="287" y1="113" x2="235" y2="165" opacity="0.7" transform="rotate(0 200 200)" />
+                        <line x1="287" y1="287" x2="235" y2="235" opacity="0.7" transform="rotate(0 200 200)" />
+                    </g>
+                    
+                    <!-- Center element -->
+                    <g class="pulse">
+                        <circle cx="200" cy="200" r="80" fill="url(#glowGradient)" />
+                        <circle cx="200" cy="200" r="60" fill="rgba(0, 155, 119, 0.7)" stroke="white" stroke-width="2" />
+                        
+                        <!-- XDR and 800G text -->
+                        <text x="200" y="190" text-anchor="middle" font-size="24" fill="white" font-weight="bold">XDR</text>
+                        <text x="200" y="220" text-anchor="middle" font-size="30" fill="white" font-weight="bold">800G</text>
+                    </g>
+                    
+                    <!-- Glowing gradient -->
+                    <defs>
+                        <radialGradient id="glowGradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+                            <stop offset="0%" stop-color="#00ffcc" stop-opacity="0.7" />
+                            <stop offset="100%" stop-color="#009B77" stop-opacity="0.1" />
+                        </radialGradient>
+                    </defs>
+                    
+                    <!-- Animated orbit elements -->
+                    <g>
+                        <circle cx="200" cy="80" r="8" fill="#009B77">
+                            <animateTransform attributeName="transform" type="rotate" from="0 200 200" to="360 200 200" dur="10s" repeatCount="indefinite" />
+                        </circle>
+                        
+                        <circle cx="320" cy="200" r="8" fill="#009B77">
+                            <animateTransform attributeName="transform" type="rotate" from="0 200 200" to="360 200 200" dur="15s" repeatCount="indefinite" />
+                        </circle>
+                        
+                        <circle cx="200" cy="320" r="8" fill="#009B77">
+                            <animateTransform attributeName="transform" type="rotate" from="0 200 200" to="360 200 200" dur="20s" repeatCount="indefinite" />
+                        </circle>
+                        
+                        <circle cx="80" cy="200" r="8" fill="#009B77">
+                            <animateTransform attributeName="transform" type="rotate" from="0 200 200" to="360 200 200" dur="12s" repeatCount="indefinite" />
+                        </circle>
+                        
+                        <!-- Diagonal orbits -->
+                        <circle cx="270" cy="130" r="6" fill="#009B77">
+                            <animateTransform attributeName="transform" type="rotate" from="0 200 200" to="360 200 200" dur="18s" repeatCount="indefinite" />
+                        </circle>
+                        
+                        <circle cx="130" cy="270" r="6" fill="#009B77">
+                            <animateTransform attributeName="transform" type="rotate" from="0 200 200" to="360 200 200" dur="16s" repeatCount="indefinite" />
+                        </circle>
+                        
+                        <circle cx="270" cy="270" r="6" fill="#009B77">
+                            <animateTransform attributeName="transform" type="rotate" from="0 200 200" to="360 200 200" dur="14s" repeatCount="indefinite" />
+                        </circle>
+                        
+                        <circle cx="130" cy="130" r="6" fill="#009B77">
+                            <animateTransform attributeName="transform" type="rotate" from="0 200 200" to="360 200 200" dur="22s" repeatCount="indefinite" />
+                        </circle>
+                    </g>
+                    
+                    <!-- Ripple effect -->
+                    <circle cx="200" cy="200" r="30" fill="none" stroke="#00ffcc" stroke-width="2" opacity="0">
+                        <animate attributeName="r" values="30;180" dur="3s" repeatCount="indefinite" />
+                        <animate attributeName="opacity" values="0.8;0" dur="3s" repeatCount="indefinite" />
+                    </circle>
+                </svg>
+            </div>
+            
+            <!-- Footer -->
+            <div class="footer fade-in delay-3">
+                <div class="presenter-info">
+                    <div class="presenter-name">吴昌辉</div>
+                    <div class="presenter-title">NVIDIA NPN Partner 网络解决方案架构师</div>
+                </div>
+                <div class="company-info">
+                    2025 Zhengyang Technology
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

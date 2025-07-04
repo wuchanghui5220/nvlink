@@ -1,0 +1,1244 @@
+Distributed EVPN Symmetric Routing
+This environment demonstrates a best-practice configuration for deploying distributed inter-VLAN routing using EVPN symmetric model. In this demo, we use the NVUE Object Model and NVUE CLI to set the VXLAN Active-Active Mode configuration to present EVPN fabric with MLAG L2 redundancy on the ToR switches.
+
+When using the symmetric model, each VTEP bridges and routes the traffic (ingress and egress). The layer 2 traffic is being bridged (VLAN-L2VNI) on the leaf ingress host port, then routed to special transit VNI which is used for all routed VXLAN traffic, called the L3VNI. All VXLAN traffic must be routed onto this L3VNI, tunneled across the layer 3 infrastructure, and routed off the L3VNI to the appropriate VLAN at the destination VTEP and ultimately bridged to the destination host.
+
+In this model, the leaf switches only need to host the VLANs (mapped to VNIs) located on its rack and the L3VNI and its associated VLAN. This is because the ingress leaf switch doesn’t need to know the destination VNI.
+
+Multitenancy requires one L3VNI per VRF, and all switches participating in that VRF must be configured with the same L3VNI. The egress leaf uses the L3VNI to identify the VRF in which to route the packet.
+
+Check out Cumulus Linux documentation for more information and examples.
+
+Check out this blog to deeper understand the EVPN traffic flows in a virtualized environment.
+
+Features and Services
+This demo includes the following features and services:
+
+MLAG L2 server redundancy
+SVI gateway and VRR for L3 server redundancy
+BGP underlay fabric using BGP unnumbered interfaces
+Graceful-Restart
+BFD
+Management, default and custom VRFs for mgmt., underlay and overlay traffic
+VXLAN overlay encapsulation data plane
+EVPN overlay control plane
+Distributed inter-subnet routing using EVPN Symmetric control plane
+SNMP
+NTP service
+DNS service
+Syslog service
+Demo Topology Information
+Devices
+The topology consist of 10 switches running Cumulus Linux 5.13.0, 8 Ubuntu servers and 2 firewalls (Ubuntu).
+
+Leaf	Border	Spine	Server	Firewall
+leaf01	border01	spine01	server01	fw1
+leaf02	border02	spine02	server02	fw2
+leaf02		spine03	server03	
+leaf04		spine04	server04	
+server05	
+server06	
+server07	
+server08	
+Note: border01 and border02 have no downlinks configuration. They are preconfigured only with VXLAN L2/L3 VNIs, BPG IPv4 and EVPN AF on the uplinks configuration to connect the rest of the topology. server07, server08, fw1, and fw2 are connected to the border leaves and have no configuration either. They exist in the topology for your convenience if you want to try other technologies and configurations related to this EVPN environment. E.g. Prefix-based Routing (EVPN Type-5), custom fw apps to route between VRFs, services running on the servers, etc.
+
+IPAM
+Hosts
+Hostname	Interface	VRF	VLAN	IP Address
+server01	eth0	mgmt.		192.168.200.10/24
+uplink	RED	10	10.1.10.101/24
+server02	eth0	mgmt.		192.168.200.11/24
+uplink	RED	20	10.1.20.102/24
+server03	eth0	mgmt.		192.168.200.12/24
+uplink	BLUE	30	10.1.30.103/24
+server04	eth0	mgmt.		192.168.200.13/24
+uplink	RED	10	10.1.10.104/24
+server05	eth0	mgmt.		192.168.200.14/24
+uplink	RED	20	10.1.20.105/24
+server06	eth0	mgmt.		192.168.200.15/24
+uplink	BLUE	30	10.1.30.106/24
+server07	eth0	mgmt.		192.168.200.18/24
+server08	eth0	mgmt.		192.168.200.19/24
+fw1	eth0	mgmt.		192.168.200.20/24
+fw2	eth0	mgmt.		192.168.200.21/24
+Switches
+Hostname	Interface	VRF	VLAN	IP Address
+leaf01	eth0	mgmt.		192.168.200.6/24
+bond1	RED	10	
+bond2	RED	20	
+bond3	BLUE	30	
+vlan10	RED	10	10.1.10.2/24
+vlan10-v0	RED	10	10.1.10.1/24
+vlan20	RED	20	10.1.20.2/24
+vlan20-v0	RED	20	10.1.20.1/24
+vlan30	BLUE	30	10.1.30.2/24
+vlan30-v0	BLUE	30	10.1.30.1/24
+lo	default		10.10.10.1/32
+vxlan-anycast			10.0.1.12/32
+leaf02	eth0	mgmt.		192.168.200.7/24
+bond1	RED	10	
+bond2	RED	20	
+bond3	BLUE	30	
+vlan10	RED	10	10.1.10.3/24
+vlan10-v0	RED	10	10.1.10.1/24
+vlan20	RED	20	10.1.20.3/24
+vlan20-v0	RED	20	10.1.20.1/24
+vlan30	BLUE	30	10.1.30.3/24
+vlan30-v0	BLUE	30	10.1.30.1/24
+lo	default		10.10.10.2/32
+vxlan-anycast			10.0.1.12/32
+leaf03	eth0	mgmt.		192.168.200.8/24
+bond1	RED	10	
+bond2	RED	20	
+bond3	BLUE	30	
+vlan10	RED	10	10.1.10.4/24
+vlan10-v0	RED	10	10.1.10.1/24
+vlan20	RED	20	10.1.20.4/24
+vlan20-v0	RED	20	10.1.20.1/24
+vlan30	BLUE	30	10.1.30.4/24
+vlan30-v0	BLUE	30	10.1.30.1/24
+lo	default		10.10.10.3/32
+vxlan-anycast			10.0.1.34/32
+leaf04	eth0	mgmt.		192.168.200.9/24
+bond1	RED	10	
+bond2	RED	20	
+bond3	BLUE	30	
+vlan10	RED	10	10.1.10.5/24
+vlan10-v0	RED	10	10.1.10.1/24
+vlan20	RED	20	10.1.20.5/24
+vlan20-v0	RED	20	10.1.20.1/24
+vlan30	BLUE	30	10.1.30.5/24
+vlan30-v0	BLUE	30	10.1.30.1/24
+lo	default		10.10.10.4/32
+vxlan-anycast			10.0.1.34/32
+border01	eth0	mgmt.		192.168.200.16/24
+lo	default		10.10.10.63/32
+vxlan-anycast			10.0.1.255/32
+border02	eth0	mgmt.		192.168.200.17/24
+lo	default		10.10.10.64/32
+vxlan-anycast			10.0.1.255/32
+spine01	eth0	mgmt.		192.168.200.2/24
+lo	default		10.10.10.101/32
+spine02	eth0	mgmt.		192.168.200.3/24
+lo	default		10.10.10.102/32
+spine03	eth0	mgmt.		192.168.200.4/24
+lo	default		10.10.10.103/32
+spine04	eth0	mgmt.		192.168.200.5/24
+lo	default		10.10.10.104/32
+Servers are configured to access VLAN on the leaf switches. They also use a default route for 10.0.0.0/8 via the VRR interfaces - 10.1.<VLAN_ID>.1.
+
+Physical Connectivity
+Hostname	Local Port	Remote Port	Remote Device
+leaf01	swp1	eth1(uplink)	server01
+swp2	eth1(uplink)	server02
+swp3	eth1(uplink)	server03
+swp49	swp49	leaf02
+swp50	swp50	leaf02
+swp51	swp1	spine01
+swp52	swp1	spine02
+swp53	swp1	spine03
+swp54	swp1	spine04
+leaf02	swp1	eth2(uplink)	server01
+swp2	eth2(uplink)	server02
+swp3	eth2(uplink)	server03
+swp49	swp49	leaf01
+swp50	swp50	leaf01
+swp51	swp2	spine01
+swp52	swp2	spine02
+swp53	swp2	spine03
+swp54	swp2	spine04
+leaf03	swp1	eth1(uplink)	server04
+swp2	eth1(uplink)	server05
+swp3	eth1(uplink)	server06
+swp49	swp49	leaf04
+swp50	swp50	leaf04
+swp51	swp3	spine01
+swp52	swp3	spine02
+swp53	swp3	spine03
+swp54	swp3	spine04
+leaf04	swp1	eth2(uplink)	server04
+swp2	eth2(uplink)	server05
+swp3	eth2(uplink)	server06
+swp49	swp49	leaf03
+swp50	swp50	leaf03
+swp51	swp4	spine01
+swp52	swp4	spine02
+swp53	swp4	spine03
+swp54	swp4	spine04
+border01	swp1	eth1	server07
+swp2	eth1	server08
+swp3	eth1	fw1
+swp4	eth1	fw2
+swp49	swp49	border02
+swp50	swp50	border02
+swp51	swp5	spine01
+swp52	swp5	spine02
+swp53	swp5	spine03
+swp54	swp5	spine04
+border02	swp1	eth2	server07
+swp2	eth2	server08
+swp3	eth2	fw1
+swp4	eth2	fw2
+swp49	swp49	border01
+swp50	swp50	border01
+swp51	swp6	spine01
+swp52	swp6	spine02
+swp53	swp6	spine03
+swp54	swp6	spine04
+Demo Environment Access
+All environment devices access are done via the jump server - oob-mgmt-server.
+
+Use the default access credentials to login the oob-mgmt-server:
+
+Username: ubuntu
+Password: nvidia
+Note: Once you first login, you must change the default password.
+
+You can use the web intergrated console or create an SSH service to access the oob-mgmt-server using any SSH client.
+For more information and step-by-step instructions, check out NVIDIA Air Quick Start guide.
+
+Once you login the oob-mgmt-server, you can access any device in the topology using its hostname.
+
+Login to the servers and firewalls using just the hostname - ssh <hostname> (all have the same username - ubuntu, which is identical to the oob-mgmt-server username).
+
+Default server credentials are:
+
+Username: ubuntu
+Password: nvidia
+ubuntu@oob-mgmt-server:~$ ssh server01
+Login to the switches using cumulus username - ssh cumulus@<hostname>. To ease the access, cumulus username was set to passwordless authentication from oob-mgmt-server.
+
+ubuntu@oob-mgmt-server:~$ ssh cumulus@leaf01
+When logging in from other environment devices, use ssh cumulus@<ip-address>.
+
+Default switch credentials are:
+
+Username: cumulus
+Password: Cumu1usLinux!
+Connectivity and Configuration Validation
+Server to Server Connectivity
+As server01, server02, server04, and server05 are in VRF RED and server03, and server06 are in VRF BLUE, they cannot communicate unless some kind of VRF leaking technology used (you can use the fw for that). Thus, servers connectivity works only within the same VRF.
+
+Log into server01:
+
+ubuntu@oob-mgmt-server:~$ ssh server01
+ubuntu@server01's password:
+Welcome to Ubuntu 18.04.6 LTS (GNU/Linux 4.15.0-200-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/advantage
+
+  System information as of Sun Mar 12 12:06:16 UTC 2023
+
+  System load:  0.06              Processes:             97
+  Usage of /:   24.9% of 9.29GB   Users logged in:       0
+  Memory usage: 43%               IP address for eth0:   192.168.200.10
+  Swap usage:   0%                IP address for uplink: 10.1.10.101
+
+ * Strictly confined Kubernetes makes edge and IoT secure. Learn how MicroK8s
+   just raised the bar for easy, resilient and secure K8s cluster deployment.
+
+   https://ubuntu.com/engage/secure-kubernetes-at-the-edge
+
+13 updates can be applied immediately.
+To see these additional updates run: apt list --upgradable
+
+New release '20.04.5 LTS' available.
+Run 'do-release-upgrade' to upgrade to it.
+
+
+*** System restart required ***
+#########################################################
+#      You are successfully logged in to: server01      #
+#########################################################
+Last login: Sun Mar 12 12:05:56 2023 from 192.168.200.1
+ubuntu@server01:~$
+Check server04 reachability to validate L2 intra-VLAN connectivity in VRF RED:
+
+ubuntu@server01:~$ ping 10.1.10.104 -c 3
+PING 10.1.10.104 (10.1.10.104) 56(84) bytes of data.
+64 bytes from 10.1.10.104: icmp_seq=1 ttl=64 time=2.54 ms
+64 bytes from 10.1.10.104: icmp_seq=2 ttl=64 time=1.33 ms
+64 bytes from 10.1.10.104: icmp_seq=3 ttl=64 time=1.59 ms
+
+--- 10.1.10.104 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2003ms
+rtt min/avg/max/mdev = 1.339/1.828/2.546/0.518 ms
+Check server02 and server05 reachability to validate L3 inter-VLAN connectivity in VRF RED:
+
+ubuntu@server01:~$ for srv in {20.102,20.105} ; do ping 10.1.${srv} -c 3; done
+PING 10.1.20.102 (10.1.20.102) 56(84) bytes of data.
+64 bytes from 10.1.20.102: icmp_seq=1 ttl=63 time=1.49 ms
+64 bytes from 10.1.20.102: icmp_seq=2 ttl=63 time=0.703 ms
+64 bytes from 10.1.20.102: icmp_seq=3 ttl=63 time=0.731 ms
+
+--- 10.1.20.102 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2005ms
+rtt min/avg/max/mdev = 0.703/0.975/1.491/0.365 ms
+PING 10.1.20.105 (10.1.20.105) 56(84) bytes of data.
+64 bytes from 10.1.20.105: icmp_seq=1 ttl=62 time=2.41 ms
+64 bytes from 10.1.20.105: icmp_seq=2 ttl=62 time=1.55 ms
+64 bytes from 10.1.20.105: icmp_seq=3 ttl=62 time=1.04 ms
+
+--- 10.1.20.105 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2003ms
+rtt min/avg/max/mdev = 1.047/1.673/2.419/0.568 ms
+Check server03 and server06 reachability to ensure that L3 inter-VLAN connectivity is not allowed between VRFs:
+
+ubuntu@server01:~$ for srv in {30.103,30.106} ; do ping 10.1.${srv} -c 3; done
+PING 10.1.30.103 (10.1.30.103) 56(84) bytes of data.
+From 10.1.10.2 icmp_seq=1 Destination Host Unreachable
+From 10.1.10.2 icmp_seq=2 Destination Host Unreachable
+From 10.1.10.2 icmp_seq=3 Destination Host Unreachable
+
+--- 10.1.30.103 ping statistics ---
+3 packets transmitted, 0 received, +3 errors, 100% packet loss, time 2047ms
+
+PING 10.1.30.106 (10.1.30.106) 56(84) bytes of data.
+From 10.1.10.2 icmp_seq=1 Destination Host Unreachable
+From 10.1.10.2 icmp_seq=2 Destination Host Unreachable
+From 10.1.10.2 icmp_seq=3 Destination Host Unreachable
+
+--- 10.1.30.106 ping statistics ---
+3 packets transmitted, 0 received, 100% packet loss, time 2046ms
+Login to server03 and ping server06 to validate L2 intra-VLAN connectivity in VRF BLUE:
+
+ubuntu@oob-mgmt-server:~$ ssh server03
+ubuntu@server03's password:
+Welcome to Ubuntu 18.04.6 LTS (GNU/Linux 4.15.0-200-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/advantage
+
+  System information as of Sun Mar 12 12:08:18 UTC 2023
+
+  System load:  0.01              Processes:             94
+  Usage of /:   24.9% of 9.29GB   Users logged in:       0
+  Memory usage: 43%               IP address for eth0:   192.168.200.12
+  Swap usage:   0%                IP address for uplink: 10.1.30.103
+
+ * Strictly confined Kubernetes makes edge and IoT secure. Learn how MicroK8s
+   just raised the bar for easy, resilient and secure K8s cluster deployment.
+
+   https://ubuntu.com/engage/secure-kubernetes-at-the-edge
+
+13 updates can be applied immediately.
+To see these additional updates run: apt list --upgradable
+
+New release '20.04.5 LTS' available.
+Run 'do-release-upgrade' to upgrade to it.
+
+
+*** System restart required ***
+#########################################################
+#      You are successfully logged in to: server03      #
+#########################################################
+Last login: Sun Mar 12 12:05:56 2023 from 192.168.200.1
+ubuntu@server03:~$
+ubuntu@server03:~$ ping 10.1.30.106 -c 3
+PING 10.1.30.106 (10.1.30.106) 56(84) bytes of data.
+64 bytes from 10.1.30.106: icmp_seq=1 ttl=64 time=2.32 ms
+64 bytes from 10.1.30.106: icmp_seq=2 ttl=64 time=1.48 ms
+64 bytes from 10.1.30.106: icmp_seq=3 ttl=64 time=1.42 ms
+
+--- 10.1.30.106 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2003ms
+rtt min/avg/max/mdev = 1.429/1.748/2.329/0.413 ms
+Switches Configuration
+Although Cumulus Linux 5.13.0 uses NVUE configuration commands.
+
+In the verification steps below, we use the combination of NVUE, Linux and NCLU commands. We present all outputs on leaf01 as a reference.
+
+Configuration of leaf01:
+
+cumulus@leaf01:mgmt:~$ nv config show
+Configuration backup
+
+You can also check the exact CLI commands set into the system by using the nv config show -o commands command:
+
+cumulus@leaf01:mgmt:~$ nv config show -o commands
+Configuration backup of nv set config
+
+To view the startup-configuration, you can print the startup.yaml file by sudo cat /etc/nvue.d/startup.yaml.
+
+Note: NVUE is a declarative CLI that allows you to handle switch configuration as a regular Git repository. It uses a Git-based configuration engine to enable commit, revert, branch, stash and diff behaviors. Check out the Configuration Management Commands for more information.
+
+Protocols State
+Verify bridge br_default is configured correctly:
+
+cumulus@leaf01:mgmt:~$ nv show bridge domain br_default
+Bridge info:
+    mac-address         : 44:38:39:22:01:0b
+    type                : vlan-aware
+    encap               : 802.1Q
+    ageing              : 1800
+    stp mode            : rstp
+    vlan-vni-offset     : 0
+
+Bridge Vlan Info :
+untagged      tagged
+------------- ---------------------------------------------------
+1             10,20,30
+
+Bridge Port Info:
+Port           State
+-------------- ---------------
+bond1          forwarding
+bond2          forwarding
+bond3          forwarding
+vxlan48        forwarding
+
+cumulus@leaf01:mgmt:~$
+Verify MLAG operational state:
+
+cumulus@leaf01:mgmt:~$ nv show mlag
+                operational                applied
+--------------  -------------------------  -----------------
+enable          on                         on
+debug           off                        off
+init-delay      10                         10
+mac-address     44:38:39:be:ef:aa          44:38:39:BE:EF:AA
+peer-ip         fe80::4ab0:2dff:fe89:f45f  linklocal
+priority        1000                       1000
+[backup]        10.10.10.2                 10.10.10.2
+anycast-ip      10.0.1.12
+backup-active   True
+backup-reason
+local-id        48:b0:2d:ef:30:14
+local-role      primary
+peer-alive      True
+peer-id         48:b0:2d:89:f4:5f
+peer-interface  peerlink.4094
+peer-priority   32768
+peer-role       secondary
+Verify MLAG interfaces state:
+
+cumulus@leaf01:mgmt:~$ nv show interface --view=mlag-cc
+Interface  Parameter         LocalValue              PeerValue               Conflict
+---------  ----------------  ----------------------  ----------------------  --------
+bond1      clag-id           1                       1                       -
+           lacp-partner-mac  48:b0:2d:a7:b5:f3       48:b0:2d:a7:b5:f3       -
+           lacp-actor-mac    44:38:39:be:ef:aa       44:38:39:be:ef:aa       -
+           vlan-id           10                      10                      -
+           native-vlan       10                      10                      -
+           master            br_default              NOT-SYNCED              -
+           mtu               9216                    9216                    -
+           bridge-learning   yes                     yes                     -
+           bpdu-guard        on                      on                      -
+           restricted-role   no                      no                      -
+bond2      clag-id           2                       2                       -
+           lacp-partner-mac  48:b0:2d:3a:53:fe       48:b0:2d:3a:53:fe       -
+           lacp-actor-mac    44:38:39:be:ef:aa       44:38:39:be:ef:aa       -
+           vlan-id           20                      20                      -
+           native-vlan       20                      20                      -
+           master            br_default              NOT-SYNCED              -
+           mtu               9216                    9216                    -
+           bridge-learning   yes                     yes                     -
+           bpdu-guard        on                      on                      -
+           restricted-role   no                      no                      -
+bond3      clag-id           3                       3                       -
+           lacp-partner-mac  48:b0:2d:28:36:6b       48:b0:2d:28:36:6b       -
+           lacp-actor-mac    44:38:39:be:ef:aa       44:38:39:be:ef:aa       -
+           vlan-id           30                      30                      -
+           native-vlan       30                      30                      -
+           master            br_default              NOT-SYNCED              -
+           mtu               9216                    9216                    -
+           bridge-learning   yes                     yes                     -
+           bpdu-guard        on                      on                      -
+           restricted-role   no                      no                      -
+vxlan48    vxlan-intf        vxlan48                 vxlan48                 -
+           vni               10, 20, 30, 4001->4002  10, 20, 30, 4001->4002  -
+           vlan              10, 20, 30, 4006, 4063  10, 20, 30, 4006, 4063  -
+           master            br_default              NOT-SYNCED              -
+           bpdu-guard        on                      on                      -
+           restricted-role   no                      no                      -
+Verify that no configuration conflicts exist between the two MLAG peers:
+
+cumulus@leaf01:mgmt:~$ nv show mlag consistency-checker global
+Parameter               LocalValue                 PeerValue                  Conflict  Summary
+----------------------  -------------------------  -------------------------  --------  -------
+anycast-ip              10.0.1.12                  10.0.1.12                  -
+bridge-priority         32768                      32768                      -
+bridge-stp              on                         on                         -
+bridge-type             vlan-aware                 vlan-aware                 -
+clag-pkg-version        1.6.0-cl5.13.0u15           1.6.0-cl5.13.0u15           -
+clag-protocol-version   1.6.1                      1.6.1                      -
+peer-ip                 fe80::4ab0:2dff:fe89:f45f  fe80::4ab0:2dff:fe89:f45f  -
+peerlink-bridge-member  Yes                        Yes                        -
+peerlink-mtu            9216                       9216                       -
+peerlink-native-vlan    1                          1                          -
+peerlink-vlans          1, 10, 20, 30              1, 10, 20, 30              -
+redirect2-enable        yes                        yes                        -
+system-mac              44:38:39:be:ef:aa          44:38:39:be:ef:aa          -
+cumulus@leaf01:mgmt:~$ nv show interface --view=mlag-cc
+Interface  Parameter         LocalValue              PeerValue               Conflict
+---------  ----------------  ----------------------  ----------------------  --------
+bond1      bridge-learning   yes                     yes                     -
+           clag-id           1                       1                       -
+           lacp-actor-mac    44:38:39:be:ef:aa       44:38:39:be:ef:aa       -
+           lacp-partner-mac  48:b0:2d:34:86:1b       48:b0:2d:34:86:1b       -
+           master            br_default              NOT-SYNCED              -
+           mtu               9216                    9216                    -
+           native-vlan       10                      10                      -
+           vlan-id           10                      10                      -
+bond2      bridge-learning   yes                     yes                     -
+           clag-id           2                       2                       -
+           lacp-actor-mac    44:38:39:be:ef:aa       44:38:39:be:ef:aa       -
+           lacp-partner-mac  48:b0:2d:bc:b5:b1       48:b0:2d:bc:b5:b1       -
+           master            br_default              NOT-SYNCED              -
+           mtu               9216                    9216                    -
+           native-vlan       20                      20                      -
+           vlan-id           20                      20                      -
+bond3      bridge-learning   yes                     yes                     -
+           clag-id           3                       3                       -
+           lacp-actor-mac    44:38:39:be:ef:aa       44:38:39:be:ef:aa       -
+           lacp-partner-mac  48:b0:2d:25:1b:db       48:b0:2d:25:1b:db       -
+           master            br_default              NOT-SYNCED              -
+           mtu               9216                    9216                    -
+           native-vlan       30                      30                      -
+           vlan-id           30                      30                      -
+vxlan48    master            br_default              NOT-SYNCED              -
+           vlan              10, 20, 30, 4024, 4036  10, 20, 30, 4024, 4036  -
+           vni               10, 20, 30, 4001->4002  10, 20, 30, 4001->4002  -
+           vxlan-intf        vxlan48                 vxlan48                 -
+On any MLAG configuration change, Cumulus Linux automatically validates the corresponding parameters on both MLAG peers and takes action based on the type of conflict it sees. For every conflict, the /var/log/clagd.log file records a log message. For more information about MLAG consistency-checker and other MLAG validations, check out the MLAG Troubleshooting section in Cumulus Linux documentation.
+
+Verify NVE interface (VTEP) state and configuration:
+
+cumulus@leaf01:mgmt:~$ nv show nve vxlan
+                          operational  applied
+------------------------  -----------  ----------
+enable                    on           on
+arp-nd-suppress           on           on
+mac-learning              off          off
+mtu                       9216         9216
+port                      4789         4789
+decapsulation
+  dscp
+    action                derive       derive
+encapsulation
+  dscp
+    action                derive       derive
+flooding
+  enable                  on           on
+  [head-end-replication]  evpn         evpn
+mlag
+  shared-address          10.0.1.12    10.0.1.12
+source
+  address                 10.10.10.1   10.10.10.1
+Verify BGP peerings (IPv4 and EVPN AF):
+
+cumulus@leaf01:mgmt:~$ sudo vtysh -c 'show bgp sum'
+
+IPv4 Unicast Summary (VRF default):
+BGP router identifier 10.10.10.1, local AS number 65101 vrf-id 0
+BGP table version 27
+RIB entries 25, using 4800 bytes of memory
+Peers 5, using 99 KiB of memory
+Peer groups 1, using 64 bytes of memory
+
+Neighbor              V         AS   MsgRcvd   MsgSent   TblVer  InQ OutQ  Up/Down State/PfxRcd   PfxSnt Desc
+leaf02(peerlink.4094) 4      65102       388       388        0    0    0 00:11:05           12       13 N/A
+spine01(swp51)        4      65100       471       443        0    0    0 00:07:37            8       13 N/A
+spine02(swp52)        4      65100       398       388        0    0    0 00:11:05            8       13 N/A
+spine03(swp53)        4      65100       460       439        0    0    0 00:07:39            9       13 N/A
+spine04(swp54)        4      65100       426       388        0    0    0 00:11:05            8       13 N/A
+
+Total number of neighbors 5
+
+L2VPN EVPN Summary (VRF default):
+BGP router identifier 10.10.10.1, local AS number 65101 vrf-id 0
+BGP table version 0
+RIB entries 23, using 4416 bytes of memory
+Peers 5, using 99 KiB of memory
+Peer groups 1, using 64 bytes of memory
+
+Neighbor              V         AS   MsgRcvd   MsgSent   TblVer  InQ OutQ  Up/Down State/PfxRcd   PfxSnt Desc
+leaf02(peerlink.4094) 4      65102       388       388        0    0    0 00:11:05           60       87 N/A
+spine01(swp51)        4      65100       471       443        0    0    0 00:07:37           60       87 N/A
+spine02(swp52)        4      65100       398       388        0    0    0 00:11:05           60       87 N/A
+spine03(swp53)        4      65100       460       439        0    0    0 00:07:39           60       87 N/A
+spine04(swp54)        4      65100       426       388        0    0    0 00:11:05           60       87 N/A
+
+Total number of neighbors 5
+cumulus@leaf01:mgmt:~$
+
+cumulus@leaf01:mgmt:~$ nv show vrf default router bgp neighbor
+
+AS - Remote Autonomous System, Afi-Safi - Address family, PfxSent - Transmitted
+prefix counter, PfxRcvd - Recieved prefix counter
+
+Neighbor       AS     State        Uptime    ResetTime  MsgRcvd  MsgSent  Afi-Safi      PfxSent  PfxRcvd
+-------------  -----  -----------  --------  ---------  -------  -------  ------------  -------  -------
+peerlink.4094  65102  established  00:09:26  573000     343      335      ipv4-unicast  13       12
+                                                                          l2vpn-evpn    87       60
+swp51          65100  established  00:09:27  573000     366      338      ipv4-unicast  13       8
+                                                                          l2vpn-evpn    87       60
+swp52          65100  established  00:09:27  573000     366      338      ipv4-unicast  13       8
+                                                                          l2vpn-evpn    87       60
+swp53          65100  established  00:09:27  573000     366      337      ipv4-unicast  13       8
+                                                                          l2vpn-evpn    87       60
+swp54          65100  established  00:09:28  573000     366      338      ipv4-unicast  13       8
+                                                                          l2vpn-evpn    87       60
+Verify EVPN VNI entries (use per VNI command):
+
+cumulus@leaf01:mgmt:~$ nv show evpn vni 10
+                   operational  applied
+-----------------  -----------  -------
+route-advertise
+  default-gateway  off
+  svi-ip           off
+[remote-vtep]      10.0.1.34
+[remote-vtep]      10.10.10.2
+[remote-vtep]      10.10.10.3
+[remote-vtep]      10.10.10.4
+bridge-domain      br_default
+host-count         13
+local-vtep         10.0.1.12
+mac-count          10
+remote-vtep-count  4
+tenant-vrf         RED
+vlan               10
+vxlan-interface    vxlan48
+cumulus@leaf01:mgmt:~$ nv show evpn vni 20
+                   operational  applied
+-----------------  -----------  -------
+route-advertise
+  default-gateway  off
+  svi-ip           off
+[remote-vtep]      10.0.1.34
+[remote-vtep]      10.10.10.2
+[remote-vtep]      10.10.10.3
+[remote-vtep]      10.10.10.4
+bridge-domain      br_default
+host-count         13
+local-vtep         10.0.1.12
+mac-count          10
+remote-vtep-count  4
+tenant-vrf         RED
+vlan               20
+vxlan-interface    vxlan48
+cumulus@leaf01:mgmt:~$ nv show evpn vni 30
+                   operational  applied
+-----------------  -----------  -------
+route-advertise
+  default-gateway  off
+  svi-ip           off
+[remote-vtep]      10.0.1.34
+[remote-vtep]      10.10.10.2
+[remote-vtep]      10.10.10.3
+[remote-vtep]      10.10.10.4
+bridge-domain      br_default
+host-count         13
+local-vtep         10.0.1.12
+mac-count          10
+remote-vtep-count  4
+tenant-vrf         BLUE
+vlan               30
+vxlan-interface    vxlan48
+Or using the NCLU commands:
+
+cumulus@leaf01:mgmt:~$ sudo vtysh -c 'show bgp l2vpn evpn vni'
+Advertise Gateway Macip: Disabled
+Advertise SVI Macip: Enabled
+Advertise All VNI flag: Enabled
+BUM flooding: Head-end replication
+VXLAN flooding: Enabled
+Number of L2 VNIs: 3
+Number of L3 VNIs: 2
+Flags: * - Kernel
+  VNI        Type RD                    Import RT                 Export RT                 MAC-VRF Site-of-Origin    Tenant VRF                          
+* 20         L2   10.10.10.1:4          65101:20                  65101:20                                            RED                                 
+* 30         L2   10.10.10.1:5          65101:30                  65101:30                                            BLUE                                
+* 10         L2   10.10.10.1:6          65101:10                  65101:10                                            RED                                 
+* 4002       L3   10.10.10.1:2          65101:4002                65101:4002                                          BLUE                                
+* 4001       L3   10.10.10.1:3          65101:4001                65101:4001                                          RED             
+cumulus@leaf01:mgmt:~$ nv show evpn vni -o raw
+VNI        Type VxLAN IF              # MACs   # ARPs   # Remote VTEPs  Tenant VRF
+10         L2   vxlan48               12       10       4               RED
+30         L2   vxlan48               12       10       4               BLUE
+20         L2   vxlan48               12       10       4               RED
+4001       L3   vxlan48               3        3        n/a             RED
+4002       L3   vxlan48               3        3        n/a             BLUE
+
+cumulus@leaf01:mgmt:~$ nv show evpn vni
+
+NumMacs - Number of MACs (local and remote) known for this VNI, NumArps - Number
+of ARPs (IPv4 and IPv6, local and remote) known for this VNI
+, NumRemVteps - Number of Remote Vteps
+
+VNI  NumMacs  NumArps  NumRemVteps  TenantVrf
+---  -------  -------  -----------  ---------
+10   10       13       4            RED
+20   10       13       4            RED
+30   10       13       4            BLUE
+Verify MAC entries are being learned on bridge br_default:
+
+cumulus@leaf01:mgmt:~$ nv show bridge domain br_default mac-table
+entry-id  age  bridge-domain  entry-type    interface   last-update  MAC address        remote-dst  src-vni  vlan
+--------  ---  -------------  ------------  ----------  -----------  -----------------  ----------  -------  ----
+1         95   br_default                   bond1       644          4a:b0:2d:34:86:1b                       10
+2         19   br_default                   bond1       653          4a:b0:2d:cb:70:78                       10
+3         2    br_default                   bond1       547          48:b0:2d:34:86:1b                       10
+4         781  br_default     permanent     bond1       781          48:b0:2d:4d:60:9b
+5         482  br_default     extern_learn  vxlan48     482          44:38:39:be:ef:34                       4036
+6         549  br_default     extern_learn  vxlan48     549          44:38:39:be:ef:34                       4024
+7         645  br_default     extern_learn  vxlan48     645          4a:b0:2d:3f:16:ad                       10
+8         645  br_default     extern_learn  vxlan48     645          4a:b0:2d:d4:cd:2a                       20
+9         645  br_default     extern_learn  vxlan48     645          4a:b0:2d:65:46:51                       30
+10        646  br_default     extern_learn  vxlan48     646          4a:b0:2d:4c:ef:64                       20
+11        646  br_default     extern_learn  vxlan48     646          4a:b0:2d:67:9f:71                       30
+12        646  br_default     extern_learn  vxlan48     646          4a:b0:2d:47:10:35                       10
+13        666  br_default     extern_learn  vxlan48     666          48:b0:2d:65:46:51                       30
+14        666  br_default     extern_learn  vxlan48     666          48:b0:2d:d4:cd:2a                       20
+15        666  br_default     extern_learn  vxlan48     666          48:b0:2d:3f:16:ad                       10
+16        767  br_default     extern_learn  vxlan48     767          44:38:39:22:01:0d                       4036
+17        767  br_default     extern_learn  vxlan48     767          44:38:39:22:01:0d                       4024
+18        767  br_default     extern_learn  vxlan48     767          44:38:39:22:01:0e                       10
+19        767  br_default     extern_learn  vxlan48     767          44:38:39:22:01:0e                       4024
+20        767  br_default     extern_learn  vxlan48     767          44:38:39:22:01:0e                       20
+21        767  br_default     extern_learn  vxlan48     767          44:38:39:22:01:0e                       4036
+22        767  br_default     extern_learn  vxlan48     767          44:38:39:22:01:0e                       30
+23        767  br_default     extern_learn  vxlan48     767          44:38:39:22:01:0d                       20
+24        767  br_default     extern_learn  vxlan48     767          44:38:39:22:01:0d                       30
+25        767  br_default     extern_learn  vxlan48     656          44:38:39:22:01:0d                       10
+26        770  br_default     extern_learn  vxlan48     770          44:38:39:22:01:0c                       4036
+27        770  br_default     extern_learn  vxlan48     770          44:38:39:22:01:0c                       4024
+28        781  br_default     permanent     vxlan48     781          d6:fd:07:4a:e1:9a
+29        645                 extern_learn  vxlan48     645          4a:b0:2d:65:46:51  10.0.1.34   30
+30        666                 extern_learn  vxlan48     666          48:b0:2d:65:46:51  10.0.1.34   30
+31        645                 extern_learn  vxlan48     645          4a:b0:2d:3f:16:ad  10.0.1.34   10
+32        666                 extern_learn  vxlan48     666          48:b0:2d:3f:16:ad  10.0.1.34   10
+33        767                 extern_learn  vxlan48     767          44:38:39:22:01:0d  10.0.1.34   30
+34        767                 permanent     vxlan48     231          00:00:00:00:00:00  10.0.1.34   30
+35        646                 extern_learn  vxlan48     646          4a:b0:2d:67:9f:71  10.0.1.34   30
+36        646                 extern_learn  vxlan48     646          4a:b0:2d:4c:ef:64  10.0.1.34   20
+37        767                 extern_learn  vxlan48     767          44:38:39:22:01:0e  10.10.10.4  4001
+38        767                 extern_learn  vxlan48     767          44:38:39:22:01:0d  10.10.10.3  4002
+39        767                 permanent     vxlan48     214          00:00:00:00:00:00  10.0.1.34   20
+40        770                 extern_learn  vxlan48     770          44:38:39:22:01:0c  10.10.10.2  4001
+41        770                 extern_learn  vxlan48     770          44:38:39:22:01:0c  10.10.10.2  4002
+42        767                 extern_learn  vxlan48     767          44:38:39:22:01:0d  10.10.10.3  4001
+43        646                 extern_learn  vxlan48     646          4a:b0:2d:47:10:35  10.0.1.34   10
+44        767                 extern_learn  vxlan48     767          44:38:39:22:01:0e  10.0.1.34   20
+45        767                 extern_learn  vxlan48     767          44:38:39:22:01:0e  10.0.1.34   30
+46        767                 extern_learn  vxlan48     767          44:38:39:22:01:0d  10.0.1.34   20
+47        767                 extern_learn  vxlan48     767          44:38:39:22:01:0e  10.0.1.34   10
+48        482                 extern_learn  vxlan48     482          44:38:39:be:ef:34  10.0.1.34   4002
+49        767                 extern_learn  vxlan48     767          44:38:39:22:01:0e  10.10.10.4  4002
+50        767                 extern_learn  vxlan48     661          44:38:39:22:01:0d  10.0.1.34   10
+51        549                 extern_learn  vxlan48     528          44:38:39:be:ef:34  10.0.1.34   4001
+52        767                 permanent     vxlan48     214          00:00:00:00:00:00  10.0.1.34   10
+53        645                 extern_learn  vxlan48     645          4a:b0:2d:d4:cd:2a  10.0.1.34   20
+54        666                 extern_learn  vxlan48     530          48:b0:2d:d4:cd:2a  10.0.1.34   20
+55        768  br_default     static        peerlink    12           44:38:39:22:01:0c                       20
+56        768  br_default     static        peerlink    2            44:38:39:22:01:0c                       10
+57        768  br_default     static        peerlink    142          44:38:39:22:01:0c                       30
+58        781  br_default     permanent     peerlink    781          48:b0:2d:ef:30:14
+59        95   br_default                   bond2       644          4a:b0:2d:bc:b5:b1                       20
+60        19   br_default                   bond2       653          4a:b0:2d:89:23:13                       20
+61        12   br_default                   bond2       664          48:b0:2d:bc:b5:b1                       20
+62        781  br_default     permanent     bond2       781          48:b0:2d:1e:ff:54
+63        95   br_default                   bond3       644          4a:b0:2d:25:1b:db                       30
+64        19   br_default                   bond3       653          4a:b0:2d:96:f0:41                       30
+65        142  br_default                   bond3       480          48:b0:2d:25:1b:db                       30
+66        781  br_default     permanent     bond3       781          48:b0:2d:2c:c4:0f
+67                            permanent     br_default               00:00:00:00:00:30
+68                            permanent     br_default               44:38:39:be:ef:12
+69                            permanent     br_default               00:00:00:00:00:10
+70                            permanent     br_default               00:00:00:00:00:20
+71        779  br_default     permanent     br_default  779          44:38:39:be:ef:12                       4024
+72        779  br_default     permanent     br_default  779          44:38:39:22:01:0b                       4024
+73        779  br_default     permanent     br_default  779          00:00:00:00:00:20                       20
+74        779  br_default     permanent     br_default  779          44:38:39:22:01:0b                       20
+75        780  br_default     permanent     br_default  780          00:00:00:00:00:10                       10
+76        780  br_default     permanent     br_default  780          44:38:39:22:01:0b                       10
+77        780  br_default     permanent     br_default  780          44:38:39:be:ef:12                       4036
+78        780  br_default     permanent     br_default  780          44:38:39:22:01:0b                       4036
+79        780  br_default     permanent     br_default  780          00:00:00:00:00:30                       30
+80        780  br_default     permanent     br_default  780          44:38:39:22:01:0b                       30
+81        780  br_default     permanent     br_default  780          44:38:39:22:01:0b                       1
+82        780  br_default     permanent     br_default  780          44:38:39:22:01:0b
+Verify neighbor (ARP) entries are being learned on the border leaves:
+
+cumulus@leaf01:mgmt:~$ arp -n
+Address                  HWtype  HWaddress           Flags Mask            Iface
+10.1.30.103              ether   48:b0:2d:25:1b:db   C                     vlan30
+192.168.200.250          ether   44:38:39:33:01:05   C                     eth0
+10.1.20.3                ether   44:38:39:22:01:0c   CM                    vlan20
+10.1.30.3                ether   44:38:39:22:01:0c   CM                    vlan30
+169.254.0.1              ether   48:b0:2d:5e:09:6a   CM                    swp51
+169.254.0.1              ether   48:b0:2d:5c:5e:68   CM                    swp54
+10.1.20.102              ether   48:b0:2d:bc:b5:b1   C                     vlan20
+169.254.0.1              ether   48:b0:2d:89:f4:5f   CM                    peerlink.4094
+10.1.10.101              ether   48:b0:2d:34:86:1b   C                     vlan10-v0
+192.168.200.1            ether   48:b0:2d:9f:64:0f   C                     eth0
+169.254.0.1              ether   48:b0:2d:58:3a:c8   CM                    swp53
+10.1.10.101              ether   48:b0:2d:34:86:1b   C                     vlan10
+10.1.10.3                ether   44:38:39:22:01:0c   CM                    vlan10
+169.254.0.1              ether   48:b0:2d:1d:3a:79   CM                    swp52
+10.1.20.102              ether   48:b0:2d:bc:b5:b1   C                     vlan20-v0
+Verify IPv4 routes are learned over L3VNI for inter-VLAN routed peers on VRFs RED and BLUE:
+
+cumulus@leaf01:mgmt:~$ sudo vtysh -c 'show ip route vrf RED'
+Codes: K - kernel route, C - connected, S - static, R - RIP,
+       O - OSPF, I - IS-IS, B - BGP, E - EIGRP, N - NHRP,
+       T - Table, A - Babel, D - SHARP, F - PBR, f - OpenFabric,
+       Z - FRR,
+       > - selected route, * - FIB route, q - queued, r - rejected, b - backup
+       t - trapped, o - offload failure
+
+VRF RED:
+K>* 0.0.0.0/0 [255/8192] unreachable (ICMP unreachable), 00:17:46
+C   10.1.10.0/24 [0/1024] is directly connected, vlan10-v0, 00:17:33
+C>* 10.1.10.0/24 is directly connected, vlan10, 00:17:33
+B>* 10.1.10.3/32 [20/0] via 10.10.10.2, vlan4063_l3 onlink, weight 1, 00:17:33
+B>* 10.1.10.4/32 [20/0] via 10.10.10.3, vlan4063_l3 onlink, weight 1, 00:14:16
+B>* 10.1.10.5/32 [20/0] via 10.10.10.4, vlan4063_l3 onlink, weight 1, 00:14:16
+C   10.1.20.0/24 [0/1024] is directly connected, vlan20-v0, 00:17:33
+C>* 10.1.20.0/24 is directly connected, vlan20, 00:17:33
+B>* 10.1.20.3/32 [20/0] via 10.10.10.2, vlan4063_l3 onlink, weight 1, 00:17:33
+B>* 10.1.20.4/32 [20/0] via 10.10.10.3, vlan4063_l3 onlink, weight 1, 00:14:16
+B>* 10.1.20.5/32 [20/0] via 10.10.10.4, vlan4063_l3 onlink, weight 1, 00:14:16
+cumulus@leaf01:mgmt:~$
+cumulus@leaf01:mgmt:~$ sudo vtysh -c 'show ip route vrf BLUE'
+Codes: K - kernel route, C - connected, S - static, R - RIP,
+       O - OSPF, I - IS-IS, B - BGP, E - EIGRP, N - NHRP,
+       T - Table, A - Babel, D - SHARP, F - PBR, f - OpenFabric,
+       Z - FRR,
+       > - selected route, * - FIB route, q - queued, r - rejected, b - backup
+       t - trapped, o - offload failure
+
+VRF BLUE:
+K>* 0.0.0.0/0 [255/8192] unreachable (ICMP unreachable), 00:18:13
+C   10.1.30.0/24 [0/1024] is directly connected, vlan30-v0, 00:18:00
+C>* 10.1.30.0/24 is directly connected, vlan30, 00:18:00
+B>* 10.1.30.3/32 [20/0] via 10.10.10.2, vlan4006_l3 onlink, weight 1, 00:18:00
+B>* 10.1.30.4/32 [20/0] via 10.10.10.3, vlan4006_l3 onlink, weight 1, 00:14:43
+B>* 10.1.30.5/32 [20/0] via 10.10.10.4, vlan4006_l3 onlink, weight 1, 00:14:43
+Verify that the MAC address of the remote server is being populated into EVPN (only VNI 10 is shown for reference):
+
+Note: The MAC addresses could be different in your simulation. Choose one of the remote MACs for the EVPN routes in the next command. In our example we used 4a:b0:2d:3f:16:ad.
+
+cumulus@leaf01:mgmt:~$ nv show evpn vni 10 mac
+
+LocMobSeq - local mobility sequence, RemMobSeq - remote mobility sequence,
+RemoteVtep - Remote Vtep address, Esi - Remote Esi
+
+MAC address        Type    State  LocMobSeq  RemMobSeq  Interface  RemoteVtep  Esi
+-----------------  ------  -----  ---------  ---------  ---------  ----------  ---
+4a:b0:2d:3f:16:ad  remote         0          0                     10.0.1.34
+4a:b0:2d:34:86:1b  local          0          0          bond1
+4a:b0:2d:47:10:35  remote         0          0                     10.0.1.34
+4a:b0:2d:cb:70:78  local          0          0          bond1
+44:38:39:22:01:0b  local          0          0          vlan10
+44:38:39:22:01:0c  local          1          0          peerlink
+44:38:39:22:01:0d  remote         0          1                     10.0.1.34
+44:38:39:22:01:0e  remote         0          1                     10.0.1.34
+48:b0:2d:3f:16:ad  remote         1          0                     10.0.1.34
+48:b0:2d:34:86:1b  local          0          0          bond1
+cumulus@leaf01:mgmt:~$ sudo vtysh -c 'show bgp l2vpn evpn route type 2' | grep 4a:b0:2d:3f:16:ad
+*  [2]:[0]:[48]:[4a:b0:2d:3f:16:ad] RD 10.10.10.3:6
+*  [2]:[0]:[48]:[4a:b0:2d:3f:16:ad] RD 10.10.10.3:6
+*  [2]:[0]:[48]:[4a:b0:2d:3f:16:ad] RD 10.10.10.3:6
+*> [2]:[0]:[48]:[4a:b0:2d:3f:16:ad] RD 10.10.10.3:6
+*  [2]:[0]:[48]:[4a:b0:2d:3f:16:ad] RD 10.10.10.3:6
+*  [2]:[0]:[48]:[4a:b0:2d:3f:16:ad] RD 10.10.10.4:6
+*  [2]:[0]:[48]:[4a:b0:2d:3f:16:ad] RD 10.10.10.4:6
+*  [2]:[0]:[48]:[4a:b0:2d:3f:16:ad] RD 10.10.10.4:6
+*> [2]:[0]:[48]:[4a:b0:2d:3f:16:ad] RD 10.10.10.4:6
+*  [2]:[0]:[48]:[4a:b0:2d:3f:16:ad] RD 10.10.10.4:6
+SNMP
+Run snmpget from the oob-mgmt-server for the switch hostname and version MIBs:
+
+ubuntu@oob-mgmt-server:~$ snmpget -v2c -c public 192.168.200.6 iso.3.6.1.2.1.1.5.0
+iso.3.6.1.2.1.1.5.0 = STRING: "leaf01"
+ubuntu@oob-mgmt-server:~$ snmpget -v2c -c public 192.168.200.6 iso.3.6.1.2.1.1.1.0
+iso.3.6.1.2.1.1.1.0 = STRING: "Cumulus-Linux 5.13.0 (Linux Kernel 5.13.079-1+cl5.13.0u25)"
+You can examine all MIBs by running snmpwalk command:
+
+ubuntu@oob-mgmt-server:~$ snmpwalk -v2c -c public 192.168.200.6 | head
+iso.3.6.1.2.1.1.1.0 = STRING: "Cumulus-Linux 5.13.0 (Linux Kernel 5.13.079-1+cl5.13.0u25)"
+iso.3.6.1.2.1.1.2.0 = OID: iso.3.6.1.4.1.40310
+iso.3.6.1.2.1.1.3.0 = Timeticks: (1777064) 4:56:10.64
+iso.3.6.1.2.1.1.4.0 = STRING: "root"
+iso.3.6.1.2.1.1.5.0 = STRING: "leaf01"
+iso.3.6.1.2.1.1.6.0 = STRING: "Unknown"
+iso.3.6.1.2.1.1.7.0 = INTEGER: 72
+iso.3.6.1.2.1.1.8.0 = Timeticks: (2) 0:00:00.02
+iso.3.6.1.2.1.1.9.1.2.1 = OID: iso.3.6.1.6.3.10.3.1.1
+iso.3.6.1.2.1.1.9.1.2.2 = OID: iso.3.6.1.6.3.11.3.1.1
+Check out all Cumulus-supported MIBs.
+
+You can use MIB names instead of OIDs, which greatly improves the readability of the snmpd.conf file. You enable this by installing the snmp-mibs-downloader, which downloads SNMP MIBs to the switch before enabling traps. Check out the MIB to OID Translation tool for more information.
+
+Syslog
+Check that the switches send syslog messages to the syslog server (oob-mgmt-server):
+
+ubuntu@oob-mgmt-server:~$ sudo cat /var/log/syslog | grep 192.168.200.6
+Sep 21 11:03:35 oob-mgmt-server dhcpd[2581]: DHCPOFFER on 192.168.200.6 to 44:38:39:22:01:01 via eth1
+Sep 21 11:03:35 oob-mgmt-server dhcpd[2581]: DHCPREQUEST for 192.168.200.6 (192.168.200.1) from 44:38:39:22:01:01 via eth1
+Sep 21 11:03:35 oob-mgmt-server dhcpd[2581]: DHCPACK on 192.168.200.6 to 44:38:39:22:01:01 via eth1
+...
+Cumulus Linux sends logs through rsyslog, which writes them to files in the local /var/log directory. There are default rules in the /etc/rsyslog.d/ directory such as 10-rules.conf, 20-clagd.conf, 22-linkstate.conf and more. Check out Syslog documentation for more information. For Syslog server configuration, you can check out the RSyslog official documentation.
+
+NetQ
+NetQ allows you to perform monitoring and validation operations on your environment. You can monitor the physical layer, device inventory, underlay and overlay networks, validate services and protocols, and much more.
+
+In addition, you can leverage NetQ to verify network connectivity using the powerful NetQ Trace feature.
+
+Both NetQ CLI and NetQ UI are available in this Air demo environment. So you can access the UI from the Air sidebar or use the NetQ CLI commands directly from the switches/servers.
+
+Below are a few NetQ CLI examples:
+
+Network services and protocols validation (e.g. EVPN, BGP, MLAG, NTP, etc.)
+Network connectivity check using NetQ trace
+Overlay network monitoring
+For more information, features and usage, check out the NetQ CLI Reference.
+
+Protocols and services validations:
+
+Note: Depending on AIR platform usage, in some cases, you will see that NetQ agents are in a "rotten" state or have no information on the outputs below. If so, wait a few minutes to let NetQ get operational and collect all information and try again. Note: Netq commands can be run from the switches (leaf, spine, border) and servers, with the exception of oob-mgmt-server
+
+cumulus@leaf01:mgmt:~$ netq check bgp
+bgp check result summary:
+
+Total nodes         : 10
+Checked nodes       : 10
+Failed nodes        : 0
+Rotten nodes        : 0
+Warning nodes       : 0
+Skipped nodes       : 0
+
+Additional summary:
+Failed Sessions     : 0
+Total Sessions      : 54
+
+
+Session Establishment Test   : passed
+Address Families Test        : passed
+Router ID Test               : passed
+Hold Time Test               : passed
+Keep Alive Interval Test     : passed
+Ipv4 Stale Path Time Test    : passed
+Ipv6 Stale Path Time Test    : passed
+Interface MTU Test           : passed
+cumulus@leaf01:mgmt:~$ netq check mlag
+mlag check result summary:
+
+Total nodes         : 6
+Checked nodes       : 6
+Failed nodes        : 0
+Rotten nodes        : 0
+Warning nodes       : 0
+Skipped nodes       : 0
+
+
+Peering Test             : passed
+Backup IP Test           : passed
+Clag SysMac Test         : passed
+VXLAN Anycast IP Test    : passed
+Bridge Membership Test   : passed
+Spanning Tree Test       : passed
+Dual Home Test           : passed
+Single Home Test         : passed
+Conflicted Bonds Test    : passed
+ProtoDown Bonds Test     : passed
+SVI Test                 : passed
+Check all available NetQ validations using the netq check <tab> command:
+
+cumulus@leaf01:mgmt:~$ netq check 
+    addresses   :  IPv4/v6 addresses
+    agents      :  Netq agent
+    bgp         :  BGP info
+    cl-version  :  Cumulus Linux version
+    clag        :  Cumulus Multi-chassis LAG
+    evpn        :  EVPN
+    interfaces  :  network interface port
+    mlag        :  Multi-chassis LAG (alias of clag)
+    mtu         :  Link MTU
+    ntp         :  NTP
+    ospf        :  OSPF info
+    roce        :  RoCE
+    sensors     :  Temperature/Fan/PSU sensors
+    vlan        :  VLAN
+    vxlan       :  VxLAN
+Network connectivity check (could take a few minutes):
+
+Note: As the current NetQ AIR implementation doesn't support NetQ trace in VRF, we use the default VRF in this trace. In real deployment you can trace in VRF RED (netq trace 10.1.20.105 from 10.1.10.101 vrf RED detail).
+
+cumulus@leaf01:mgmt:~$ netq trace 10.1.20.105 from 10.1.10.101 vrf RED detail
+Number of Paths: 8
+Number of Paths with Errors: 0
+Number of Paths with Warnings: 8
+  Path: 1 Underlay mtu 9216 at leaf02:swp54 not enough encap headroom
+  Path: 2 Underlay mtu 9216 at leaf02:swp53 not enough encap headroom
+  Path: 3 Underlay mtu 9216 at leaf02:swp52 not enough encap headroom
+  Path: 4 Underlay mtu 9216 at leaf02:swp51 not enough encap headroom
+  Path: 5 Underlay mtu 9216 at leaf01:swp54 not enough encap headroom
+  Path: 6 Underlay mtu 9216 at leaf01:swp53 not enough encap headroom
+  Path: 7 Underlay mtu 9216 at leaf01:swp52 not enough encap headroom
+  Path: 8 Underlay mtu 9216 at leaf01:swp51 not enough encap headroom
+Path MTU: 9216
+
+Id  Hop Hostname        InPort          InVlan InTunnel              InRtrIf         InVRF           OutRtrIf        OutVRF          OutTunnel             OutPort         OutVlan
+--- --- --------------- --------------- ------ --------------------- --------------- --------------- --------------- --------------- --------------------- --------------- -------
+1   1   server01                                                                                     uplink          default                               eth2
+    2   leaf02          swp1            10                                                                                           vni: 20               swp54
+    3   spine04         swp2                                         swp2            default         swp3            default                               swp3
+    4   leaf03          swp54                  vni: 20                                                                                                     swp2            20
+    5   server05        uplink
+--- --- --------------- --------------- ------ --------------------- --------------- --------------- --------------- --------------- --------------------- --------------- -------
+2   1   server01                                                                                     uplink          default                               eth2
+    2   leaf02          swp1            10                                                                                           vni: 20               swp53
+    3   spine03         swp2                                         swp2            default         swp3            default                               swp3
+    4   leaf03          swp53                  vni: 20                                                                                                     swp2            20
+    5   server05        uplink
+--- --- --------------- --------------- ------ --------------------- --------------- --------------- --------------- --------------- --------------------- --------------- -------
+3   1   server01                                                                                     uplink          default                               eth2
+    2   leaf02          swp1            10                                                                                           vni: 20               swp52
+    3   spine02         swp2                                         swp2            default         swp3            default                               swp3
+    4   leaf03          swp52                  vni: 20                                                                                                     swp2            20
+    5   server05        uplink
+--- --- --------------- --------------- ------ --------------------- --------------- --------------- --------------- --------------- --------------------- --------------- -------
+4   1   server01                                                                                     uplink          default                               eth2
+    2   leaf02          swp1            10                                                                                           vni: 20               swp51
+    3   spine01         swp2                                         swp2            default         swp3            default                               swp3
+    4   leaf03          swp51                  vni: 20                                                                                                     swp2            20
+    5   server05        uplink
+--- --- --------------- --------------- ------ --------------------- --------------- --------------- --------------- --------------- --------------------- --------------- -------
+5   1   server01                                                                                     uplink          default                               eth1
+    2   leaf01          swp1            10                                                                                           vni: 20               swp54
+    3   spine04         swp1                                         swp1            default         swp3            default                               swp3
+    4   leaf03          swp54                  vni: 20                                                                                                     swp2            20
+    5   server05        uplink
+--- --- --------------- --------------- ------ --------------------- --------------- --------------- --------------- --------------- --------------------- --------------- -------
+6   1   server01                                                                                     uplink          default                               eth1
+    2   leaf01          swp1            10                                                                                           vni: 20               swp53
+    3   spine03         swp1                                         swp1            default         swp3            default                               swp3
+    4   leaf03          swp53                  vni: 20                                                                                                     swp2            20
+    5   server05        uplink
+--- --- --------------- --------------- ------ --------------------- --------------- --------------- --------------- --------------- --------------------- --------------- -------
+7   1   server01                                                                                     uplink          default                               eth1
+    2   leaf01          swp1            10                                                                                           vni: 20               swp52
+    3   spine02         swp1                                         swp1            default         swp3            default                               swp3
+    4   leaf03          swp52                  vni: 20                                                                                                     swp2            20
+    5   server05        uplink
+--- --- --------------- --------------- ------ --------------------- --------------- --------------- --------------- --------------- --------------------- --------------- -------
+8   1   server01                                                                                     uplink          default                               eth1
+    2   leaf01          swp1            10                                                                                           vni: 20               swp51
+    3   spine01         swp1                                         swp1            default         swp3            default                               swp3
+    4   leaf03          swp51                  vni: 20                                                                                                     swp2            20
+    5   server05        uplink
+--- --- --------------- --------------- ------ --------------------- --------------- --------------- --------------- --------------- --------------------- --------------- -------
+Note: The MTU warning Underlay mtu 9216 at leaf02:swp54 not enough encap headroom for all paths is to note that overlay jumbo packets won't pass in the network.
+
+Overlay network monitoring:
+
+cumulus@leaf01:mgmt:~$ netq check vxlan
+vxlan check result summary:
+
+Total nodes         : 6
+Checked nodes       : 6
+Failed nodes        : 0
+Rotten nodes        : 0
+Warning nodes       : 0
+Skipped nodes       : 0
+
+
+Vlan Consistency Test   : passed
+BUM replication Test    : passed
+cumulus@oob-mgmt-server:mgmt:~$ netq show vxlan
+
+Matching vxlan records:
+Hostname          VNI        Protocol     VTEP IP          VLAN   Replication List                    Last Changed
+----------------- ---------- ------------ ---------------- ------ ----------------------------------- -------------------------
+border01          4001       EVPN         10.0.1.255       4024                                       Wed Mar 22 10:03:04 2023
+border01          4002       EVPN         10.0.1.255       4036                                       Wed Mar 22 10:03:04 2023
+border02          4001       EVPN         10.0.1.255       4024                                       Wed Mar 22 10:02:56 2023
+border02          4002       EVPN         10.0.1.255       4036                                       Wed Mar 22 10:02:56 2023
+leaf01            4001       EVPN         10.0.1.12        4024                                       Wed Mar 22 10:03:13 2023
+leaf01            4002       EVPN         10.0.1.12        4036                                       Wed Mar 22 10:03:13 2023
+leaf01            10         EVPN         10.0.1.12        10     10.0.1.34(leaf04, leaf03)           Wed Mar 22 10:03:13 2023
+leaf01            20         EVPN         10.0.1.12        20     10.0.1.34(leaf04, leaf03)           Wed Mar 22 10:03:13 2023
+leaf01            30         EVPN         10.0.1.12        30     10.0.1.34(leaf04, leaf03)           Wed Mar 22 10:03:13 2023
+leaf02            4001       EVPN         10.0.1.12        4024                                       Wed Mar 22 10:02:54 2023
+leaf02            4002       EVPN         10.0.1.12        4036                                       Wed Mar 22 10:02:54 2023
+leaf02            10         EVPN         10.0.1.12        10     10.0.1.34(leaf04, leaf03)           Wed Mar 22 10:02:54 2023
+leaf02            20         EVPN         10.0.1.12        20     10.0.1.34(leaf04, leaf03)           Wed Mar 22 10:02:54 2023
+leaf02            30         EVPN         10.0.1.12        30     10.0.1.34(leaf04, leaf03)           Wed Mar 22 10:02:54 2023
+leaf03            4001       EVPN         10.0.1.34        4024                                       Wed Mar 22 10:03:13 2023
+leaf03            4002       EVPN         10.0.1.34        4036                                       Wed Mar 22 10:03:13 2023
+leaf03            10         EVPN         10.0.1.34        10     10.0.1.12(leaf02, leaf01)           Wed Mar 22 10:03:13 2023
+leaf03            20         EVPN         10.0.1.34        20     10.0.1.12(leaf02, leaf01)           Wed Mar 22 10:03:13 2023
+leaf03            30         EVPN         10.0.1.34        30     10.0.1.12(leaf02, leaf01)           Wed Mar 22 10:03:13 2023
+leaf04            4001       EVPN         10.0.1.34        4024                                       Wed Mar 22 10:03:23 2023
+leaf04            4002       EVPN         10.0.1.34        4036                                       Wed Mar 22 10:03:23 2023
+leaf04            10         EVPN         10.0.1.34        10     10.0.1.12(leaf02, leaf01)           Wed Mar 22 10:03:23 2023
+leaf04            20         EVPN         10.0.1.34        20     10.0.1.12(leaf02, leaf01)           Wed Mar 22 10:03:23 2023
+leaf04            30         EVPN         10.0.1.34        30     10.0.1.12(leaf02, leaf01)           Wed Mar 22 10:03:23 2023
+Automation
+In case you want to make configueration changes or re-apply all/partial original demo configuration without rebuilding the simulation, you can use the nvue.yaml playbook (fully/specific roles) stored on the oob-mgmt-server.
+
+Login to the oob-mgmt-server
+Enter to the Cumulus-Linux-demo folder:
+ubuntu@oob-mgmt-server:~$ cd Cumulus-Linux-demo/
+Make sure you are on the evpn_demo_nvue_5.x branch:
+ubuntu@oob-mgmt-server:~/Cumulus-Linux-demo$ git status | grep evpn_demo_nvue_5.x
+On branch evpn_demo_nvue_5.x
+Your branch is up to date with 'origin/evpn_demo_nvue_5.x'.
+In case you are on another branch, use the git checkout command to move the evpn_demo_nvue_5.x branch
+
+ubuntu@oob-mgmt-server:~/Cumulus-Linux-demo$ git checkout evpn_demo_nvue_5.x
+Verify oob-mgmt-server still can connect to all topology devices using the ansible ping module:
+ubuntu@oob-mgmt-server:~/Cumulus-Linux-demo$ ansible pod1 -i inventories/evpn_symmetric/hosts -m ping
+fw1 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+spine01 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+spine04 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+spine03 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+fw2 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+border01 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+border02 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+spine02 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+leaf04 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+leaf01 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+leaf03 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+leaf02 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+server02 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+server01 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+server03 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+server04 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+server05 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+server06 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+server08 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+server07 | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+Run nvue.yaml ansible playbook to deploy the demo on the fabric:
+ubuntu@oob-mgmt-server:~/Cumulus-Linux-demo$ ansible-playbook playbooks/nvue.yml -i inventories/evpn_symmetric/hosts
+Playbook Structure
+The playbooks have the following important structure:
+
+Variables and inventories are stored in the same directory inventories/
+Backup configurations are stored in the config/ folder of the inventory
+ubuntu@oob-mgmt-server:~/Cumulus-Linux-demo$ cd inventories/evpn_symmetric/config

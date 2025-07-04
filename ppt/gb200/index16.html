@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>NVIDIA Spectrum SN5400 vs SN5600 Comparison</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(220, 240, 230, 0.8);
+            font-family: 'Arial', sans-serif;
+            overflow-x: hidden;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .slide-container {
+            width: 96%;
+            max-width: 1600px;
+            aspect-ratio: 16/9;
+            background: #76a67e;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            padding: 15px 40px;
+            background: #3e703e;
+            color: white;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2.2em;
+            font-weight: 600;
+        }
+
+        h2 {
+            margin: 5px 0 0 0;
+            font-size: 1.3em;
+            font-weight: 400;
+        }
+
+        .content {
+            display: flex;
+            flex: 1;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .panel {
+            flex: 1;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .center-panel {
+            flex: 0.2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 15px 0;
+        }
+
+        .vs-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #3e703e;
+            font-size: 24px;
+            margin: 20px 0;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .product-title {
+            font-size: 1.8em;
+            color: #fff;
+            text-align: center;
+            margin-bottom: 15px;
+            font-weight: 600;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .image-container {
+            background: rgba(210, 225, 210, 0.8);
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 10px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            max-height: 200px;
+        }
+
+        .image-box {
+            text-align: center;
+            background: white;
+            padding: 5px;
+            border-radius: 8px;
+            width: 85%;
+            height: 85%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .image-box img {
+            max-width: 90%;
+            max-height: 90%;
+        }
+
+        .specs-container {
+            background: rgba(210, 225, 210, 0.8);
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 10px;
+            flex: 2;
+            overflow: auto;
+        }
+
+        .specs-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .specs-table tr {
+            border-bottom: 1px solid rgba(60, 120, 60, 0.2);
+        }
+
+        .specs-table td {
+            padding: 6px;
+        }
+
+        .specs-table td:first-child {
+            font-weight: bold;
+            color: #2c5e2e;
+            width: 45%;
+        }
+
+        .highlight {
+            font-weight: bold;
+            color: #3e703e;
+            background-color: rgba(255, 255, 255, 0.5);
+            padding: 2px 5px;
+            border-radius: 4px;
+        }
+
+        .footer {
+            text-align: right;
+            padding: 5px 20px;
+            color: white;
+            font-style: italic;
+            font-size: 0.9em;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+            background: #3e703e;
+        }
+
+        .advantages-container {
+            background: rgba(210, 225, 210, 0.8);
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 0;
+            flex: 1;
+            overflow: auto;
+        }
+
+        .advantage-item {
+            margin: 5px 0;
+            padding: 4px 10px 4px 25px;
+            position: relative;
+        }
+
+        .advantage-item::before {
+            content: "✓";
+            position: absolute;
+            left: 5px;
+            color: #4a854c;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="header">
+            <h1>NVIDIA Spectrum SN5000 Series Comparison</h1>
+            <h2>SN5400 vs SN5600: Power and Performance for Next-Generation Data Centers</h2>
+        </div>
+        <div class="content">
+            <!-- SN5400 Side -->
+            <div class="panel">
+                <div class="product-title">SN5400</div>
+                <div class="image-container">
+                    <div class="image-box">
+                        <img src="https://docscontent.nvidia.com/dims4/default/523f483/2147483647/strip/true/crop/1525x311+0+0/resize/2880x588!/format/webp/quality/90/?url=https%3A%2F%2Fk3-prod-nvidia-docs.s3.us-west-2.amazonaws.com%2Fbrightspot%2Fconfluence%2F00000193-e60b-d1d7-a593-e70bd0600000%2Fimages%2Fdownload%2Fattachments%2F2705811518%2Fimage-2024-2-26_9-17-14-version-1-modificationdate-1711558825237-api-v2.png" alt="NVIDIA SN5400 Switch">
+                    </div>
+                </div>
+                <div class="specs-container">
+                    <table class="specs-table">
+                        <tr>
+                            <td>Port Configuration</td>
+                            <td>64x QSFP-DD 400GbE + 2x SFP28 25GbE</td>
+                        </tr>
+                        <tr>
+                            <td>Maximum Speed</td>
+                            <td>400GbE</td>
+                        </tr>
+                        <tr>
+                            <td>Switching Capacity</td>
+                            <td>25.6Tb/s</td>
+                        </tr>
+                        <tr>
+                            <td>Wire-Speed Switching</td>
+                            <td>33.3Bpps</td>
+                        </tr>
+                        <tr>
+                            <td>Packet Buffer</td>
+                            <td>160MB fully shared</td>
+                        </tr>
+                        <tr>
+                            <td>Power Supplies</td>
+                            <td>2x hot-swappable (1+1 redundant)</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="advantages-container">
+                    <div class="advantage-item"><span class="highlight">Ideal for:</span> 400G data center fabrics</div>
+                    <div class="advantage-item"><span class="highlight">Best fit:</span> Organizations upgrading from 100G to 400G networks</div>
+                    <div class="advantage-item"><span class="highlight">Key advantage:</span> Diverse QSFP-DD connectivity options</div>
+                </div>
+            </div>
+            
+            <!-- Center VS -->
+            <div class="center-panel">
+                <div class="vs-circle">VS</div>
+                <div style="width: 2px; flex: 1; background: rgba(255, 255, 255, 0.5);"></div>
+                <div class="vs-circle">VS</div>
+            </div>
+            
+            <!-- SN5600 Side -->
+            <div class="panel">
+                <div class="product-title">SN5600</div>
+                <div class="image-container">
+                    <div class="image-box">
+                        <img src="https://docscontent.nvidia.com/dims4/default/57a9e5a/2147483647/strip/true/crop/1534x307+0+0/resize/2880x576!/format/webp/quality/90/?url=https%3A%2F%2Fk3-prod-nvidia-docs.s3.us-west-2.amazonaws.com%2Fbrightspot%2Fconfluence%2F00000193-e60b-d1d7-a593-e70bd0600000%2Fimages%2Fdownload%2Fattachments%2F2705811518%2Fimage-2024-2-26_9-17-42-version-1-modificationdate-1711558824630-api-v2.png" alt="NVIDIA SN5600 Switch">
+                    </div>
+                </div>
+                <div class="specs-container">
+                    <table class="specs-table">
+                        <tr>
+                            <td>Port Configuration</td>
+                            <td>64x OSFP 800GbE + 1x SFP28 25GbE</td>
+                        </tr>
+                        <tr>
+                            <td>Maximum Speed</td>
+                            <td>800GbE</td>
+                        </tr>
+                        <tr>
+                            <td>Switching Capacity</td>
+                            <td>51.2Tb/s</td>
+                        </tr>
+                        <tr>
+                            <td>Wire-Speed Switching</td>
+                            <td>33.3Bpps</td>
+                        </tr>
+                        <tr>
+                            <td>Packet Buffer</td>
+                            <td>160MB fully shared</td>
+                        </tr>
+                        <tr>
+                            <td>Power Supplies</td>
+                            <td>2x hot-swappable (1+1 redundant)</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="advantages-container">
+                    <div class="advantage-item"><span class="highlight">Ideal for:</span> 800G data center architectures</div>
+                    <div class="advantage-item"><span class="highlight">Best fit:</span> AI & ML workloads requiring maximum bandwidth</div>
+                    <div class="advantage-item"><span class="highlight">Key advantage:</span> Industry-leading 51.2Tb/s throughput</div>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            Both models feature the NVIDIA Spectrum-4 ASIC, fully shared packet buffers, and predictable performance
+        </div>
+    </div>
+        <!-- 导航按钮 - 独立于主内容区 -->
+    <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+        <a href="index15.html" class="nav-button" style="display: inline-block; width: 40px; height: 40px; line-height: 40px; text-align: center; background-color: #3e703e; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+        <a href="index17.html" class="nav-button" style="display: inline-block; width: 40px; height: 40px; line-height: 40px; text-align: center; background-color: #3e703e; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+    </div>
+</body>
+</html>

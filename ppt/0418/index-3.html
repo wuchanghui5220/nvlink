@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>NVIDIA InfiniBand智算中心组网创新与Quantum-X800高性能交换解决方案</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, rgba(175, 233, 207, 0.8) 0%, rgba(145, 210, 185, 0.8) 100%);
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+        }
+
+        .cover-container {
+            width: 90%;
+            height: 85%;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2);
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            background-color: #000;
+        }
+
+        /* Dark mode cosmic background */
+        .cosmic-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, #0f1924 0%, #000000 100%);
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        /* Stars effect */
+        .stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+        }
+
+        /* Content container */
+        .content-wrapper {
+            position: relative;
+            z-index: 5;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Center area */
+        .center-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 0 60px;
+            position: relative;
+        }
+
+        /* NVIDIA brand bar */
+        .brand-bar {
+            position: absolute;
+            top: 40px;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .brand-container {
+            padding: 10px 25px;
+            background: rgba(0, 155, 119, 0.2);
+            border: 1px solid rgba(0, 155, 119, 0.5);
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .logo-text {
+            color: #76E6BF;
+            font-size: 1.8em;
+            font-weight: 700;
+        }
+
+        .divider {
+            width: 2px;
+            height: 30px;
+            background-color: #76E6BF;
+            margin: 0 15px;
+        }
+
+        .product-name {
+            color: #76E6BF;
+            font-size: 1.6em;
+            font-weight: 400;
+        }
+
+        /* Hero title */
+        .hero-title {
+            font-size: 4em;
+            font-weight: 800;
+            color: #76E6BF;
+            text-align: center;
+            margin: 0 0 30px 0;
+            line-height: 1.2;
+            text-shadow: 0 0 20px rgba(118, 230, 191, 0.5);
+        }
+
+        /* Floating main title with hologram effect */
+        .title-container {
+            position: relative;
+            max-width: 80%;
+            margin: 0 auto;
+        }
+
+        .main-title {
+            padding: 25px 40px;
+            background: rgba(0, 155, 119, 0.15);
+            border: 2px solid rgba(118, 230, 191, 0.3);
+            border-radius: 15px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(118, 230, 191, 0.3);
+            backdrop-filter: blur(5px);
+        }
+
+        .title-text {
+            font-size: 1.8em;
+            font-weight: 600;
+            color: #FFFFFF;
+            line-height: 1.4;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Hologram scan effect */
+        .hologram-scan {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 200%;
+            height: 5px;
+            background: linear-gradient(90deg, 
+                rgba(118, 230, 191, 0) 0%,
+                rgba(118, 230, 191, 0.8) 50%,
+                rgba(118, 230, 191, 0) 100%);
+            box-shadow: 0 0 15px rgba(118, 230, 191, 0.8);
+            animation: scan 4s ease-in-out infinite;
+        }
+
+        @keyframes scan {
+            0% { top: -10px; }
+            50% { top: 100%; }
+            100% { top: -10px; }
+        }
+
+        /* 3D cube animation */
+        .cube-container {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            perspective: 800px;
+            z-index: 3;
+        }
+
+        .cube-left {
+            top: 50%;
+            left: 10%;
+            transform: translateY(-50%);
+        }
+
+        .cube-right {
+            top: 50%;
+            right: 10%;
+            transform: translateY(-50%);
+        }
+
+        .cube {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: cubeSpin 20s infinite linear;
+        }
+
+        .cube-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0.7;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 2em;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(118, 230, 191, 0.5);
+            background-color: rgba(0, 155, 119, 0.1);
+            box-shadow: 0 0 15px rgba(118, 230, 191, 0.2) inset;
+        }
+
+        .front {
+            transform: rotateY(0deg) translateZ(100px);
+        }
+        
+        .back {
+            transform: rotateY(180deg) translateZ(100px);
+        }
+        
+        .right {
+            transform: rotateY(90deg) translateZ(100px);
+        }
+        
+        .left {
+            transform: rotateY(-90deg) translateZ(100px);
+        }
+        
+        .top {
+            transform: rotateX(90deg) translateZ(100px);
+        }
+        
+        .bottom {
+            transform: rotateX(-90deg) translateZ(100px);
+        }
+
+        @keyframes cubeSpin {
+            0% { transform: rotateX(0deg) rotateY(0deg); }
+            100% { transform: rotateX(360deg) rotateY(360deg); }
+        }
+
+        /* Footer */
+        .footer {
+            padding: 20px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.5);
+            position: relative;
+            z-index: 5;
+            border-top: 1px solid rgba(118, 230, 191, 0.3);
+        }
+
+        .presenter-info {
+            color: #76E6BF;
+        }
+
+        .presenter-name {
+            font-weight: 600;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+
+        .presenter-title {
+            font-style: italic;
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
+        .company-info {
+            text-align: right;
+            color: #76E6BF;
+            font-style: italic;
+            opacity: 0.8;
+        }
+
+        /* Floating particles effect */
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 3;
+            overflow: hidden;
+        }
+
+        /* Grid lines */
+        .grid-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 3;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px) translateX(0px); }
+            50% { transform: translateY(-15px) translateX(10px); }
+            100% { transform: translateY(0px) translateX(0px); }
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        .float-element {
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .pulse-glow {
+            animation: pulse 4s infinite;
+        }
+
+        .delay-1 {
+            animation-delay: 0.3s;
+        }
+
+        .delay-2 {
+            animation-delay: 0.6s;
+        }
+
+        .delay-3 {
+            animation-delay: 0.9s;
+        }
+
+        .delay-4 {
+            animation-delay: 1.2s;
+        }
+    </style>
+</head>
+<body>
+    <div class="cover-container">
+        <!-- Cosmic background -->
+        <div class="cosmic-bg"></div>
+        
+        <!-- Stars effect -->
+        <div class="stars">
+            <svg width="100%" height="100%" viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid slice">
+                <!-- Small stars -->
+                <g fill="#FFFFFF">
+                    <circle cx="50" cy="50" r="1" opacity="0.8" class="pulse-glow" />
+                    <circle cx="150" cy="80" r="1.5" opacity="0.7" class="pulse-glow delay-1" />
+                    <circle cx="250" cy="30" r="1" opacity="0.6" class="pulse-glow delay-2" />
+                    <circle cx="350" cy="90" r="1.5" opacity="0.9" class="pulse-glow delay-3" />
+                    <circle cx="450" cy="50" r="1" opacity="0.7" class="pulse-glow delay-4" />
+                    <circle cx="550" cy="100" r="1.5" opacity="0.8" class="pulse-glow" />
+                    <circle cx="650" cy="40" r="1" opacity="0.6" class="pulse-glow delay-1" />
+                    <circle cx="750" cy="70" r="1.5" opacity="0.9" class="pulse-glow delay-2" />
+                    <circle cx="850" cy="30" r="1" opacity="0.7" class="pulse-glow delay-3" />
+                    <circle cx="950" cy="60" r="1.5" opacity="0.8" class="pulse-glow delay-4" />
+                    
+                    <circle cx="100" cy="150" r="1" opacity="0.6" class="pulse-glow" />
+                    <circle cx="200" cy="120" r="1.5" opacity="0.9" class="pulse-glow delay-1" />
+                    <circle cx="300" cy="170" r="1" opacity="0.7" class="pulse-glow delay-2" />
+                    <circle cx="400" cy="130" r="1.5" opacity="0.8" class="pulse-glow delay-3" />
+                    <circle cx="500" cy="160" r="1" opacity="0.6" class="pulse-glow delay-4" />
+                    <circle cx="600" cy="140" r="1.5" opacity="0.9" class="pulse-glow" />
+                    <circle cx="700" cy="180" r="1" opacity="0.7" class="pulse-glow delay-1" />
+                    <circle cx="800" cy="120" r="1.5" opacity="0.8" class="pulse-glow delay-2" />
+                    <circle cx="900" cy="150" r="1" opacity="0.6" class="pulse-glow delay-3" />
+                    
+                    <!-- Repeat pattern for more stars -->
+                    <circle cx="80" cy="250" r="1" opacity="0.9" class="pulse-glow delay-4" />
+                    <circle cx="180" cy="220" r="1.5" opacity="0.7" class="pulse-glow" />
+                    <circle cx="280" cy="270" r="1" opacity="0.8" class="pulse-glow delay-1" />
+                    <circle cx="380" cy="240" r="1.5" opacity="0.6" class="pulse-glow delay-2" />
+                    <circle cx="480" cy="280" r="1" opacity="0.9" class="pulse-glow delay-3" />
+                    <circle cx="580" cy="230" r="1.5" opacity="0.7" class="pulse-glow delay-4" />
+                    <circle cx="680" cy="260" r="1" opacity="0.8" class="pulse-glow" />
+                    <circle cx="780" cy="290" r="1.5" opacity="0.6" class="pulse-glow delay-1" />
+                    <circle cx="880" cy="220" r="1" opacity="0.9" class="pulse-glow delay-2" />
+                    <circle cx="980" cy="270" r="1.5" opacity="0.7" class="pulse-glow delay-3" />
+
+                    <!-- Several larger stars -->
+                    <circle cx="120" cy="350" r="2" opacity="0.9" class="pulse-glow delay-4" />
+                    <circle cx="320" cy="420" r="2.5" opacity="0.8" class="pulse-glow" />
+                    <circle cx="520" cy="380" r="2" opacity="0.9" class="pulse-glow delay-1" />
+                    <circle cx="720" cy="450" r="2.5" opacity="0.8" class="pulse-glow delay-2" />
+                    <circle cx="920" cy="350" r="2" opacity="0.9" class="pulse-glow delay-3" />
+                    
+                    <circle cx="220" cy="530" r="2" opacity="0.8" class="pulse-glow delay-4" />
+                    <circle cx="420" cy="490" r="2.5" opacity="0.9" class="pulse-glow" />
+                    <circle cx="620" cy="540" r="2" opacity="0.8" class="pulse-glow delay-1" />
+                    <circle cx="820" cy="510" r="2.5" opacity="0.9" class="pulse-glow delay-2" />
+                </g>
+            </svg>
+        </div>
+        
+        <!-- Grid lines -->
+        <div class="grid-lines">
+            <svg width="100%" height="100%" viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid slice">
+                <g stroke="#76E6BF" stroke-width="1" opacity="0.15">
+                    <!-- Horizontal lines -->
+                    <line x1="0" y1="50" x2="1000" y2="50" />
+                    <line x1="0" y1="150" x2="1000" y2="150" />
+                    <line x1="0" y1="250" x2="1000" y2="250" />
+                    <line x1="0" y1="350" x2="1000" y2="350" />
+                    <line x1="0" y1="450" x2="1000" y2="450" />
+                    <line x1="0" y1="550" x2="1000" y2="550" />
+                    
+                    <!-- Vertical lines -->
+                    <line x1="100" y1="0" x2="100" y2="600" />
+                    <line x1="200" y1="0" x2="200" y2="600" />
+                    <line x1="300" y1="0" x2="300" y2="600" />
+                    <line x1="400" y1="0" x2="400" y2="600" />
+                    <line x1="500" y1="0" x2="500" y2="600" />
+                    <line x1="600" y1="0" x2="600" y2="600" />
+                    <line x1="700" y1="0" x2="700" y2="600" />
+                    <line x1="800" y1="0" x2="800" y2="600" />
+                    <line x1="900" y1="0" x2="900" y2="600" />
+                </g>
+            </svg>
+        </div>
+        
+        <!-- Floating particles -->
+        <div class="particles">
+            <svg width="100%" height="100%" viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid slice">
+                <g fill="#76E6BF">
+                    <!-- Data particles -->
+                    <circle cx="200" cy="200" r="5" opacity="0.6">
+                        <animate attributeName="cx" values="200;600;200" dur="15s" repeatCount="indefinite" />
+                        <animate attributeName="cy" values="200;400;200" dur="15s" repeatCount="indefinite" />
+                    </circle>
+                    
+                    <circle cx="800" cy="300" r="4" opacity="0.5">
+                        <animate attributeName="cx" values="800;400;800" dur="18s" repeatCount="indefinite" />
+                        <animate attributeName="cy" values="300;200;300" dur="18s" repeatCount="indefinite" />
+                    </circle>
+                    
+                    <circle cx="300" cy="500" r="6" opacity="0.4">
+                        <animate attributeName="cx" values="300;700;300" dur="20s" repeatCount="indefinite" />
+                        <animate attributeName="cy" values="500;300;500" dur="20s" repeatCount="indefinite" />
+                    </circle>
+                    
+                    <circle cx="600" cy="100" r="3" opacity="0.7">
+                        <animate attributeName="cx" values="600;300;600" dur="12s" repeatCount="indefinite" />
+                        <animate attributeName="cy" values="100;350;100" dur="12s" repeatCount="indefinite" />
+                    </circle>
+                </g>
+            </svg>
+        </div>
+
+        <!-- 3D Cubes -->
+        <div class="cube-container cube-left float-element">
+            <div class="cube">
+                <div class="cube-face front">XDR</div>
+                <div class="cube-face back">800G</div>
+                <div class="cube-face right">Q-X</div>
+                <div class="cube-face left">IB</div>
+                <div class="cube-face top">AI</div>
+                <div class="cube-face bottom">HPC</div>
+            </div>
+        </div>
+        
+        <div class="cube-container cube-right float-element delay-2">
+            <div class="cube">
+                <div class="cube-face front">800G</div>
+                <div class="cube-face back">XDR</div>
+                <div class="cube-face right">IB</div>
+                <div class="cube-face left">Q-X</div>
+                <div class="cube-face top">HPC</div>
+                <div class="cube-face bottom">AI</div>
+            </div>
+        </div>
+        
+        <!-- Content structure -->
+        <div class="content-wrapper">
+            <!-- Brand bar -->
+            <div class="brand-bar fade-in">
+                <div class="brand-container">
+                    <div class="logo-text">NVIDIA</div>
+                    <div class="divider"></div>
+                    <div class="product-name">InfiniBand</div>
+                </div>
+            </div>
+            
+            <!-- Center content -->
+            <div class="center-content">
+                <h1 class="hero-title fade-in delay-1">智算中心高性能网络革新</h1>
+                
+                <!-- Main title with hologram effect -->
+                <div class="title-container fade-in delay-2">
+                    <div class="main-title">
+                        <div class="hologram-scan"></div>
+                        <p class="title-text">NVIDIA InfiniBand智算中心组网创新与<br>Quantum-X800高性能交换解决方案</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Footer -->
+            <div class="footer fade-in delay-3">
+                <div class="presenter-info">
+                    <div class="presenter-name">吴昌辉</div>
+                    <div class="presenter-title">NVIDIA NPN partner 网络解决方案架构师</div>
+                </div>
+                <div class="company-info">
+                    2025 Zhengyang Techlonogy
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>NVIDIA InfiniBand智算中心组网创新与Quantum-X800高性能交换解决方案</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, rgba(175, 233, 207, 0.8) 0%, rgba(145, 210, 185, 0.8) 100%);
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+        }
+
+        .cover-container {
+            width: 90%;
+            height: 85%;
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .diagonal-divider {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, transparent 49.5%, rgba(0, 118, 82, 0.85) 50%);
+            z-index: 1;
+        }
+
+        .content-area {
+            flex: 1;
+            position: relative;
+            display: flex;
+            z-index: 2;
+        }
+
+        .left-side {
+            flex: 1;
+            padding: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .right-side {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-end;
+            text-align: right;
+            color: white;
+        }
+
+        .logo-container {
+            position: absolute;
+            top: 40px;
+            left: 60px;
+            display: flex;
+            align-items: center;
+            z-index: 3;
+        }
+
+        .logo-text {
+            color: #005741;
+            font-size: 2.4em;
+            font-weight: 700;
+            margin-right: 15px;
+        }
+
+        .divider {
+            width: 2px;
+            height: 40px;
+            background-color: #005741;
+            margin: 0 15px;
+        }
+
+        .product-name {
+            color: #005741;
+            font-size: 2em;
+            font-weight: 400;
+        }
+
+        .title-block {
+            margin-top: 60px;
+            max-width: 90%;
+        }
+
+        .main-title {
+            color: #005741;
+            font-size: 3.5em;
+            font-weight: 700;
+            margin: 0 0 20px 0;
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            color: #333;
+            font-size: 1.5em;
+            font-weight: 400;
+            line-height: 1.4;
+            margin: 0;
+        }
+
+        .right-title {
+            font-size: 2.2em;
+            font-weight: 600;
+            margin: 0 0 15px 0;
+            line-height: 1.2;
+        }
+
+        .right-subtitle {
+            font-size: 1.3em;
+            font-weight: 400;
+            max-width: 80%;
+            margin-left: auto;
+            line-height: 1.4;
+        }
+
+        .footer {
+            padding: 20px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 3;
+            position: relative;
+        }
+
+        .presenter-info {
+            color: #005741;
+        }
+
+        .presenter-name {
+            font-weight: 600;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+
+        .presenter-title {
+            font-style: italic;
+            font-size: 0.9em;
+        }
+
+        .company-info {
+            text-align: right;
+            color: white;
+            font-style: italic;
+            position: relative;
+            z-index: 3;
+        }
+
+        /* Abstract tech elements */
+        .abstract-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.15;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInRight {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes glowPulse {
+            0% { filter: drop-shadow(0 0 2px rgba(0, 155, 119, 0.3)); }
+            50% { filter: drop-shadow(0 0 8px rgba(0, 155, 119, 0.7)); }
+            100% { filter: drop-shadow(0 0 2px rgba(0, 155, 119, 0.3)); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        .fade-in-right {
+            animation: fadeInRight 0.8s ease-out forwards;
+        }
+
+        .delay-1 {
+            animation-delay: 0.3s;
+        }
+
+        .delay-2 {
+            animation-delay: 0.6s;
+        }
+
+        .glow-effect {
+            animation: glowPulse 3s infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="cover-container">
+        <!-- Diagonal background divider -->
+        <div class="diagonal-divider"></div>
+        
+        <!-- Abstract tech background -->
+        <div class="abstract-bg">
+            <svg width="100%" height="100%" viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid slice">
+                <!-- Grid pattern -->
+                <defs>
+                    <pattern id="smallGrid" width="20" height="20" patternUnits="userSpaceOnUse">
+                        <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#009B77" stroke-width="0.5"/>
+                    </pattern>
+                    <pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse">
+                        <rect width="100" height="100" fill="url(#smallGrid)"/>
+                        <path d="M 100 0 L 0 0 0 100" fill="none" stroke="#009B77" stroke-width="1"/>
+                    </pattern>
+                </defs>
+                
+                <rect width="100%" height="100%" fill="url(#grid)" />
+                
+                <!-- Circuit board traces -->
+                <g stroke="#009B77" stroke-width="2" fill="none">
+                    <path d="M100,100 L300,100 L300,200 L500,200 L500,300 L700,300" />
+                    <path d="M200,50 L200,400 L400,400 L400,200" />
+                    <path d="M600,100 L600,500 L300,500" />
+                    <path d="M700,50 L700,400 L900,400" />
+                    <path d="M800,200 L500,200" />
+                    
+                    <!-- Connection points -->
+                    <circle cx="300" cy="100" r="5" fill="#009B77" />
+                    <circle cx="300" cy="200" r="5" fill="#009B77" />
+                    <circle cx="500" cy="200" r="5" fill="#009B77" />
+                    <circle cx="500" cy="300" r="5" fill="#009B77" />
+                    <circle cx="700" cy="300" r="5" fill="#009B77" />
+                    <circle cx="200" cy="400" r="5" fill="#009B77" />
+                    <circle cx="400" cy="400" r="5" fill="#009B77" />
+                    <circle cx="400" cy="200" r="5" fill="#009B77" />
+                    <circle cx="600" cy="500" r="5" fill="#009B77" />
+                    <circle cx="300" cy="500" r="5" fill="#009B77" />
+                    <circle cx="700" cy="400" r="5" fill="#009B77" />
+                    <circle cx="900" cy="400" r="5" fill="#009B77" />
+                    <circle cx="800" cy="200" r="5" fill="#009B77" />
+                </g>
+            </svg>
+        </div>
+        
+        <!-- Logo -->
+        <div class="logo-container fade-in">
+            <div class="logo-text">NVIDIA</div>
+            <div class="divider"></div>
+            <div class="product-name">InfiniBand</div>
+        </div>
+        
+        <!-- Main content area -->
+        <div class="content-area">
+            <!-- Left side with title -->
+            <div class="left-side">
+                <div class="title-block fade-in">
+                    <h1 class="main-title">智算中心<br>高性能网络革新</h1>
+                    <p class="subtitle fade-in delay-1">InfiniBand智算中心组网创新与<br>Quantum-X800高性能交换解决方案</p>
+                </div>
+            </div>
+            
+            <!-- Right side with abstract tech elements -->
+            <div class="right-side">
+                <div class="glow-effect fade-in-right delay-1">
+                    <svg width="300" height="300" viewBox="0 0 300 300">
+                        <!-- Central icon representing high performance -->
+                        <g transform="translate(150, 150)">
+                            <!-- Concentric circles -->
+                            <circle r="50" fill="none" stroke="white" stroke-width="3" opacity="0.9" />
+                            <circle r="70" fill="none" stroke="white" stroke-width="1" opacity="0.6">
+                                <animate attributeName="r" values="70;75;70" dur="4s" repeatCount="indefinite" />
+                            </circle>
+                            <circle r="90" fill="none" stroke="white" stroke-width="1" opacity="0.3">
+                                <animate attributeName="r" values="90;100;90" dur="6s" repeatCount="indefinite" />
+                            </circle>
+                            
+                            <!-- Dynamic rays -->
+                            <g>
+                                <line x1="0" y1="-50" x2="0" y2="-100" stroke="white" stroke-width="2" opacity="0.8">
+                                    <animate attributeName="y2" values="-100;-120;-100" dur="3s" repeatCount="indefinite" />
+                                </line>
+                                <line x1="35" y1="-35" x2="85" y2="-85" stroke="white" stroke-width="2" opacity="0.8">
+                                    <animate attributeName="x2" values="85;95;85" dur="4s" repeatCount="indefinite" />
+                                    <animate attributeName="y2" values="-85;-95;-85" dur="4s" repeatCount="indefinite" />
+                                </line>
+                                <line x1="50" y1="0" x2="100" y2="0" stroke="white" stroke-width="2" opacity="0.8">
+                                    <animate attributeName="x2" values="100;120;100" dur="5s" repeatCount="indefinite" />
+                                </line>
+                                <line x1="35" y1="35" x2="85" y2="85" stroke="white" stroke-width="2" opacity="0.8">
+                                    <animate attributeName="x2" values="85;95;85" dur="3.5s" repeatCount="indefinite" />
+                                    <animate attributeName="y2" values="85;95;85" dur="3.5s" repeatCount="indefinite" />
+                                </line>
+                                <line x1="0" y1="50" x2="0" y2="100" stroke="white" stroke-width="2" opacity="0.8">
+                                    <animate attributeName="y2" values="100;120;100" dur="4.5s" repeatCount="indefinite" />
+                                </line>
+                                <line x1="-35" y1="35" x2="-85" y2="85" stroke="white" stroke-width="2" opacity="0.8">
+                                    <animate attributeName="x2" values="-85;-95;-85" dur="5s" repeatCount="indefinite" />
+                                    <animate attributeName="y2" values="85;95;85" dur="5s" repeatCount="indefinite" />
+                                </line>
+                                <line x1="-50" y1="0" x2="-100" y2="0" stroke="white" stroke-width="2" opacity="0.8">
+                                    <animate attributeName="x2" values="-100;-120;-100" dur="3s" repeatCount="indefinite" />
+                                </line>
+                                <line x1="-35" y1="-35" x2="-85" y2="-85" stroke="white" stroke-width="2" opacity="0.8">
+                                    <animate attributeName="x2" values="-85;-95;-85" dur="4s" repeatCount="indefinite" />
+                                    <animate attributeName="y2" values="-85;-95;-85" dur="4s" repeatCount="indefinite" />
+                                </line>
+                            </g>
+                            
+                            <!-- Speed indicator -->
+                            <text x="0" y="5" text-anchor="middle" font-size="24" fill="white" font-weight="bold">800G</text>
+                            <text x="0" y="25" text-anchor="middle" font-size="14" fill="white">XDR</text>
+                        </g>
+                    </svg>
+                </div>
+                
+                <h2 class="right-title fade-in-right delay-1">引领AI时代<br>数据中心互联</h2>
+                <p class="right-subtitle fade-in-right delay-2">突破性能极限，实现前所未有的计算能力</p>
+            </div>
+        </div>
+        
+        <!-- Footer with presenter info -->
+        <div class="footer">
+            <div class="presenter-info fade-in delay-2">
+                <div class="presenter-name">[讲师姓名]</div>
+                <div class="presenter-title">NVIDIA 网络解决方案架构师</div>
+            </div>
+            <div class="company-info fade-in delay-2">
+                2024 NVIDIA Corporation
+            </div>
+        </div>
+    </div>
+</body>
+</html>

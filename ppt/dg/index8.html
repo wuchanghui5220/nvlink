@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NVIDIA MMS4A00 1600Gbps光收发器技术介绍</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f0f0f0;
+      font-family: 'Noto Sans SC', sans-serif;
+      overflow: hidden;
+    }
+
+    .slide-container {
+      width: 100vw;
+      height: 56.25vw; /* 16:9 aspect ratio */
+      max-height: 100vh;
+      max-width: 177.78vh; /* 16:9 aspect ratio (reversed) */
+      position: relative;
+      background: #111827;
+      color: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    /* 背景图形元素 */
+    .bg-grid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image:
+        linear-gradient(rgba(24, 92, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(24, 92, 255, 0.05) 1px, transparent 1px);
+      background-size: 20px 20px;
+      z-index: 0;
+    }
+
+    .bg-gradient {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 120% 45%, rgba(76, 29, 149, 0.7) 0%, rgba(17, 24, 39, 0) 50%);
+      z-index: 1;
+    }
+
+    .bg-circle1 {
+      position: absolute;
+      top: -15%;
+      right: -15%;
+      width: 40%;
+      height: 40%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #76b900 0%, #1a4163 100%);
+      filter: blur(80px);
+      opacity: 0.6;
+      z-index: 2;
+    }
+
+    .bg-circle2 {
+      position: absolute;
+      bottom: -10%;
+      left: -10%;
+      width: 30%;
+      height: 30%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0099da 0%, #1e40af 100%);
+      filter: blur(60px);
+      opacity: 0.5;
+      z-index: 2;
+    }
+
+    /* 主要内容 */
+    .content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    .header {
+      padding: 1.8% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .nvidia-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-box {
+      width: 8%;
+      min-width: 100px;
+      height: 36px;
+      background: #76b900;
+      border-radius: 4px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 700;
+      font-size: clamp(16px, 2vw, 22px);
+      transform: skew(-10deg);
+    }
+
+    .partner-text {
+      font-size: clamp(12px, 1.5vw, 16px);
+      font-weight: 500;
+      opacity: 0.9;
+    }
+
+    .slide-title {
+      font-size: clamp(16px, 1.8vw, 20px);
+      font-weight: 600;
+      padding: 0.5% 2%;
+      background: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(5px);
+      border-radius: 20px;
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 1.5% 3%;
+      overflow: hidden;
+    }
+
+    .solution-container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      width: 100%;
+    }
+
+    .solution-title {
+      text-align: center;
+      font-size: clamp(20px, 2.5vw, 28px);
+      font-weight: 700;
+      color: #76b900;
+      margin-bottom: 20px;
+      margin-top: 0;
+      background: linear-gradient(135deg, #76b900 0%, #a5b4fc 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .solution-content {
+      display: flex;
+      gap: 25px;
+      height: 100%;
+    }
+
+    .product-showcase {
+      flex: 2;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .product-visual {
+      flex: 1;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.05);
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .transceiver-diagram {
+      width: 100%;
+      height: 80%;
+      background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
+      border-radius: 8px;
+      position: relative;
+      border: 2px solid #76b900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .transceiver-label {
+      color: #76b900;
+      font-weight: 600;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    .key-features {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .feature-item {
+      background: rgba(0, 0, 0, 0.2);
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      text-align: center;
+      border: 1px solid rgba(118, 185, 0, 0.3);
+    }
+
+    .info-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .info-card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 12px;
+      flex: 1;
+    }
+
+    .info-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: #76b900;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .info-content {
+      font-size: 13px;
+      line-height: 1.5;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .info-list {
+      list-style: none;
+      padding: 0;
+      margin: 8px 0;
+    }
+
+    .info-list li {
+      margin-bottom: 6px;
+      padding-left: 18px;
+      position: relative;
+    }
+
+    .info-list li::before {
+      content: "▸";
+      position: absolute;
+      left: 0;
+      color: #76b900;
+    }
+
+    .specs-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .spec-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 8px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 4px;
+      font-size: 12px;
+    }
+
+    .spec-label {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .spec-value {
+      color: #76b900;
+      font-weight: 600;
+    }
+
+    .footer {
+      padding: 1.5% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .company-name {
+      font-weight: 500;
+    }
+
+    .page-number {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .rotating-lines {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 50%;
+      height: 50%;
+      z-index: 5;
+      opacity: 0.15;
+      animation: rotate 60s linear infinite;
+    }
+
+    @keyframes rotate {
+      from {
+        transform: translate(-50%, -50%) rotate(0deg);
+      }
+      to {
+        transform: translate(-50%, -50%) rotate(360deg);
+      }
+    }
+
+    .tech-badge {
+      display: inline-block;
+      background: linear-gradient(90deg, #76b900 0%, #3e703e 100%);
+      color: white;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 600;
+      margin-right: 8px;
+    }
+
+    .highlight {
+      color: #76b900;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <!-- 背景元素 -->
+    <div class="bg-grid"></div>
+    <div class="bg-gradient"></div>
+    <div class="bg-circle1"></div>
+    <div class="bg-circle2"></div>
+
+    <!-- 旋转线框背景 -->
+    <svg class="rotating-lines" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+      <path d="M250,10 L490,250 L250,490 L10,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,50 L450,250 L250,450 L50,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,90 L410,250 L250,410 L90,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,130 L370,250 L250,370 L130,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,170 L330,250 L250,330 L170,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,210 L290,250 L250,290 L210,250 Z" fill="none" stroke="white" stroke-width="1" />
+    </svg>
+
+    <!-- 主要内容 -->
+    <div class="content">
+      <div class="header">
+        <div class="nvidia-logo">
+          <div class="logo-box">NVIDIA</div>
+          <div class="partner-text">Networking 1600Gbps Transceiver</div>
+        </div>
+        <div class="slide-title">高性能光收发器技术</div>
+      </div>
+
+      <div class="main-content">
+        <div class="solution-container">
+          <h3 class="solution-title">NVIDIA MMS4A00 1600Gbps 2xDR4 双端口光收发器</h3>
+          
+          <div class="solution-content">
+            <div class="product-showcase">
+              <div class="product-visual">
+                <div class="transceiver-diagram">
+                  <img src="XDR800-trans.png" alt="NVIDIA MMS4A00 1600Gbps Transceiver" style="max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 4px;">
+                  <div class="transceiver-label" style="position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.7); padding: 8px; border-radius: 8px;">
+                  </div>
+                </div>
+              </div>
+              
+              <div class="key-features">
+                <div class="feature-item">
+                  <span class="tech-badge">1600G</span>总带宽
+                </div>
+                <div class="feature-item">
+                  <span class="tech-badge">500M</span>传输距离
+                </div>
+                <div class="feature-item">
+                  <span class="tech-badge">PAM4</span>调制技术
+                </div>
+                <div class="feature-item">
+                  <span class="tech-badge">CMIS</span>5.3支持
+                </div>
+              </div>
+            </div>
+
+            <div class="info-section">
+              <!-- 核心规格 -->
+              <div class="info-card">
+                <h4 class="info-title">🔧 核心技术规格</h4>
+                <div class="info-content">
+                  <div class="specs-grid">
+                    <div class="spec-item">
+                      <span class="spec-label">电气配置</span>
+                      <span class="spec-value">8×200G PAM4</span>
+                    </div>
+                    <div class="spec-item">
+                      <span class="spec-label">光学配置</span>
+                      <span class="spec-value">2×DR4 800G</span>
+                    </div>
+                    <div class="spec-item">
+                      <span class="spec-label">波长</span>
+                      <span class="spec-value">1310nm</span>
+                    </div>
+                    <div class="spec-item">
+                      <span class="spec-label">功耗</span>
+                      <span class="spec-value">≤33.5W</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 应用场景 -->
+              <div class="info-card">
+                <h4 class="info-title">🌐 应用场景</h4>
+                <div class="info-content">
+                  <ul class="info-list">
+                    <li>数据中心<span class="highlight">Spine-Leaf</span>互连</li>
+                    <li><span class="highlight">InfiniBand</span> Quantum-X800交换机</li>
+                    <li>高性能计算<span class="highlight">HPC</span>网络</li>
+                    <li>AI训练集群高速互连</li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- 关键特性 -->
+              <div class="info-card">
+                <h4 class="info-title">⭐ 关键特性</h4>
+                <div class="info-content">
+                  <ul class="info-list">
+                    <li><span class="highlight">热插拔</span>设计，支持在线维护</li>
+                    <li><span class="highlight">Class 1</span>激光安全认证</li>
+                    <li>支持<span class="highlight">数字诊断监控</span></li>
+                    <li><span class="highlight">RoHS</span>环保合规</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="company-name">NVIDIA Corporation - Advanced Networking Solutions</div>
+        <div class="page-number">MMS4A00 Technical Overview</div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 导航按钮 -->
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+    <a href="index7.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+    <a href="index9.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+  </div>
+</body>
+</html>

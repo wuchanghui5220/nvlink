@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EVPN Symmetric Routing - 网络架构图</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f0f0f0;
+      font-family: 'Noto Sans SC', sans-serif;
+      overflow: hidden;
+    }
+
+    .slide-container {
+      width: 100vw;
+      height: 56.25vw; /* 16:9 aspect ratio */
+      max-height: 100vh;
+      max-width: 177.78vh; /* 16:9 aspect ratio (reversed) */
+      position: relative;
+      background: #111827;
+      color: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    /* 背景图形元素 */
+    .bg-grid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image:
+        linear-gradient(rgba(24, 92, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(24, 92, 255, 0.05) 1px, transparent 1px);
+      background-size: 20px 20px;
+      z-index: 0;
+    }
+
+    .bg-gradient {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 120% 45%, rgba(76, 29, 149, 0.7) 0%, rgba(17, 24, 39, 0) 50%);
+      z-index: 1;
+    }
+
+    .bg-circle1 {
+      position: absolute;
+      top: -15%;
+      right: -15%;
+      width: 40%;
+      height: 40%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #76b900 0%, #1a4163 100%);
+      filter: blur(80px);
+      opacity: 0.6;
+      z-index: 2;
+    }
+
+    .bg-circle2 {
+      position: absolute;
+      bottom: -10%;
+      left: -10%;
+      width: 30%;
+      height: 30%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0099da 0%, #1e40af 100%);
+      filter: blur(60px);
+      opacity: 0.5;
+      z-index: 2;
+    }
+
+    /* 主要内容 */
+    .content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    .header {
+      padding: 1.8% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .nvidia-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-box {
+      width: 8%;
+      min-width: 100px;
+      height: 36px;
+      background: #76b900;
+      border-radius: 4px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 700;
+      font-size: clamp(16px, 2vw, 22px);
+      transform: skew(-10deg);
+    }
+
+    .partner-text {
+      font-size: clamp(12px, 1.5vw, 16px);
+      font-weight: 500;
+      opacity: 0.9;
+    }
+
+    .slide-title {
+      font-size: clamp(16px, 1.8vw, 20px);
+      font-weight: 600;
+      padding: 0.5% 2%;
+      background: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(5px);
+      border-radius: 20px;
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 1.5% 3%;
+      overflow: hidden;
+    }
+
+    .solution-container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      width: 100%;
+    }
+
+    .solution-title {
+      text-align: center;
+      font-size: clamp(18px, 2.2vw, 24px);
+      font-weight: 600;
+      color: #76b900;
+      margin-bottom: 15px;
+      margin-top: 0;
+    }
+
+    .solution-content {
+      display: flex;
+      gap: 20px;
+      height: 100%;
+    }
+
+    .diagram-container {
+      flex: 3;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.05);
+      padding: 15px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .diagram-container svg {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .info-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .info-card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 10px;
+      flex: 1;
+    }
+
+    .info-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: #76b900;
+    }
+
+    .info-content {
+      font-size: 13px;
+      line-height: 1.5;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .info-list {
+      list-style: none;
+      padding: 0;
+      margin: 8px 0;
+    }
+
+    .info-list li {
+      margin-bottom: 6px;
+      padding-left: 18px;
+      position: relative;
+    }
+
+    .info-list li::before {
+      content: "▸";
+      position: absolute;
+      left: 0;
+      color: #76b900;
+    }
+
+    .vni-box {
+      display: flex;
+      gap: 15px;
+      margin-top: 10px;
+    }
+
+    .vni-item {
+      flex: 1;
+      text-align: center;
+      padding: 8px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 6px;
+    }
+
+    .vni-label {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.6);
+      margin-bottom: 4px;
+    }
+
+    .vni-value {
+      font-size: 16px;
+      font-weight: 600;
+      color: #76b900;
+    }
+
+    .footer {
+      padding: 1.5% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .company-name {
+      font-weight: 500;
+    }
+
+    .page-number {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .rotating-lines {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 50%;
+      height: 50%;
+      z-index: 5;
+      opacity: 0.15;
+      animation: rotate 60s linear infinite;
+    }
+
+    @keyframes rotate {
+      from {
+        transform: translate(-50%, -50%) rotate(0deg);
+      }
+      to {
+        transform: translate(-50%, -50%) rotate(360deg);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <!-- 背景元素 -->
+    <div class="bg-grid"></div>
+    <div class="bg-gradient"></div>
+    <div class="bg-circle1"></div>
+    <div class="bg-circle2"></div>
+
+    <!-- 旋转线框背景 -->
+    <svg class="rotating-lines" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+      <path d="M250,10 L490,250 L250,490 L10,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,50 L450,250 L250,450 L50,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,90 L410,250 L250,410 L90,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,130 L370,250 L250,370 L130,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,170 L330,250 L250,330 L170,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,210 L290,250 L250,290 L210,250 Z" fill="none" stroke="white" stroke-width="1" />
+    </svg>
+
+    <!-- 主要内容 -->
+    <div class="content">
+      <div class="header">
+        <div class="nvidia-logo">
+          <div class="logo-box">NVIDIA</div>
+          <div class="partner-text">Networking NPN Elite Partner</div>
+        </div>
+        <div class="slide-title">网络架构图</div>
+      </div>
+
+      <div class="main-content">
+        <div class="solution-container">
+          <h3 class="solution-title">Cumulus BGP EVPN For VXLAN 架构</h3>
+          
+          <div class="solution-content">
+            <div class="diagram-container">
+              <svg viewBox="0 0 800 450" xmlns="http://www.w3.org/2000/svg">
+                <!-- 互联网 -->
+                <rect x="240" y="20" width="80" height="30" rx="5" fill="#333" stroke="#76b900" stroke-width="1"></rect>
+                <text x="280" y="40" font-size="12" text-anchor="middle" fill="white" font-weight="600">Internet1</text>
+
+                <rect x="480" y="20" width="80" height="30" rx="5" fill="#333" stroke="#76b900" stroke-width="1"></rect>
+                <text x="520" y="40" font-size="12" text-anchor="middle" fill="white" font-weight="600">Internet2</text>
+
+                <!-- 防火墙 -->
+                <rect x="260" y="80" width="50" height="25" rx="3" fill="#333" stroke="#EF4444" stroke-width="1"></rect>
+                <text x="285" y="97" font-size="12" text-anchor="middle" fill="white">fw1</text>
+
+                <rect x="490" y="80" width="50" height="25" rx="3" fill="#333" stroke="#EF4444" stroke-width="1"></rect>
+                <text x="515" y="97" font-size="12" text-anchor="middle" fill="white">fw2</text>
+
+                <!-- Border交换机 -->
+                <rect x="240" y="140" width="80" height="30" rx="5" fill="#333" stroke="#fff" stroke-width="1"></rect>
+                <text x="280" y="160" font-size="12" text-anchor="middle" fill="white" font-weight="600">border01</text>
+
+                <rect x="480" y="140" width="80" height="30" rx="5" fill="#333" stroke="#fff" stroke-width="1"></rect>
+                <text x="520" y="160" font-size="12" text-anchor="middle" fill="white" font-weight="600">border02</text>
+
+                <!-- Spine交换机 -->
+                <rect x="120" y="220" width="80" height="30" rx="5" fill="#333" stroke="#76b900" stroke-width="1"></rect>
+                <text x="160" y="240" font-size="12" text-anchor="middle" fill="white" font-weight="600">spine01</text>
+
+                <rect x="280" y="220" width="80" height="30" rx="5" fill="#333" stroke="#76b900" stroke-width="1"></rect>
+                <text x="320" y="240" font-size="12" text-anchor="middle" fill="white" font-weight="600">spine02</text>
+
+                <rect x="440" y="220" width="80" height="30" rx="5" fill="#333" stroke="#76b900" stroke-width="1"></rect>
+                <text x="480" y="240" font-size="12" text-anchor="middle" fill="white" font-weight="600">spine03</text>
+
+                <rect x="600" y="220" width="80" height="30" rx="5" fill="#333" stroke="#76b900" stroke-width="1"></rect>
+                <text x="640" y="240" font-size="12" text-anchor="middle" fill="white" font-weight="600">spine04</text>
+
+                <!-- Leaf交换机 -->
+                <rect x="120" y="300" width="80" height="30" rx="5" fill="#333" stroke="#fff" stroke-width="1"></rect>
+                <text x="160" y="320" font-size="12" text-anchor="middle" fill="white" font-weight="600">leaf01</text>
+
+                <rect x="280" y="300" width="80" height="30" rx="5" fill="#333" stroke="#fff" stroke-width="1"></rect>
+                <text x="320" y="320" font-size="12" text-anchor="middle" fill="white" font-weight="600">leaf02</text>
+
+                <rect x="440" y="300" width="80" height="30" rx="5" fill="#333" stroke="#fff" stroke-width="1"></rect>
+                <text x="480" y="320" font-size="12" text-anchor="middle" fill="white" font-weight="600">leaf03</text>
+
+                <rect x="600" y="300" width="80" height="30" rx="5" fill="#333" stroke="#fff" stroke-width="1"></rect>
+                <text x="640" y="320" font-size="12" text-anchor="middle" fill="white" font-weight="600">leaf04</text>
+
+                <!-- 服务器 -->
+                <rect x="40" y="380" width="100" height="25" rx="3" fill="#333" stroke="#EF4444" stroke-width="1"></rect>
+                <text x="90" y="397" font-size="11" text-anchor="middle" fill="white">VLAN10-server01</text>
+
+                <rect x="160" y="380" width="100" height="25" rx="3" fill="#333" stroke="#EF4444" stroke-width="1"></rect>
+                <text x="210" y="397" font-size="11" text-anchor="middle" fill="white">VLAN20-server02</text>
+
+                <rect x="280" y="380" width="100" height="25" rx="3" fill="#333" stroke="#0099da" stroke-width="1"></rect>
+                <text x="330" y="397" font-size="11" text-anchor="middle" fill="white">VLAN30-server03</text>
+
+                <rect x="420" y="380" width="100" height="25" rx="3" fill="#333" stroke="#EF4444" stroke-width="1"></rect>
+                <text x="470" y="397" font-size="11" text-anchor="middle" fill="white">VLAN10-server04</text>
+
+                <rect x="540" y="380" width="100" height="25" rx="3" fill="#333" stroke="#EF4444" stroke-width="1"></rect>
+                <text x="590" y="397" font-size="11" text-anchor="middle" fill="white">VLAN20-server05</text>
+
+                <rect x="660" y="380" width="100" height="25" rx="3" fill="#333" stroke="#0099da" stroke-width="1"></rect>
+                <text x="710" y="397" font-size="11" text-anchor="middle" fill="white">VLAN30-server06</text>
+
+                <!-- 连接线 - Internet到FW -->
+                <line x1="280" y1="50" x2="280" y2="80" stroke="#999" stroke-width="1"></line>
+                <line x1="280" y1="50" x2="520" y2="80" stroke="#999" stroke-width="1"></line>
+		<line x1="520" y1="50" x2="280" y2="80" stroke="#999" stroke-width="1"></line>
+
+                <line x1="520" y1="50" x2="520" y2="80" stroke="#999" stroke-width="1"></line><!-- FW到Border -->
+                <line x1="280" y1="105" x2="280" y2="140" stroke="#999" stroke-width="1"></line>
+                <line x1="280" y1="105" x2="520" y2="140" stroke="#999" stroke-width="1"></line>
+                <line x1="520" y1="105" x2="280" y2="140" stroke="#999" stroke-width="1"></line>
+                <line x1="520" y1="105" x2="520" y2="140" stroke="#999" stroke-width="1"></line>
+
+                <!-- Border到Spine -->
+                <line x1="280" y1="170" x2="160" y2="220" stroke="#999" stroke-width="1"></line>
+                <line x1="280" y1="170" x2="320" y2="220" stroke="#999" stroke-width="1"></line>
+                <line x1="280" y1="170" x2="480" y2="220" stroke="#999" stroke-width="1"></line>
+                <line x1="280" y1="170" x2="640" y2="220" stroke="#999" stroke-width="1"></line>
+
+                <line x1="520" y1="170" x2="160" y2="220" stroke="#999" stroke-width="1"></line>
+                <line x1="520" y1="170" x2="320" y2="220" stroke="#999" stroke-width="1"></line>
+                <line x1="520" y1="170" x2="480" y2="220" stroke="#999" stroke-width="1"></line>
+                <line x1="520" y1="170" x2="640" y2="220" stroke="#999" stroke-width="1"></line>
+
+                <!-- Spine到Leaf全互联 -->
+                <!-- Spine01到所有Leaf -->
+                <line x1="160" y1="250" x2="160" y2="300" stroke="#999" stroke-width="1"></line>
+                <line x1="160" y1="250" x2="320" y2="300" stroke="#999" stroke-width="1"></line>
+                <line x1="160" y1="250" x2="480" y2="300" stroke="#999" stroke-width="1"></line>
+                <line x1="160" y1="250" x2="640" y2="300" stroke="#999" stroke-width="1"></line>
+
+                <!-- Spine02到所有Leaf -->
+                <line x1="320" y1="250" x2="160" y2="300" stroke="#999" stroke-width="1"></line>
+                <line x1="320" y1="250" x2="320" y2="300" stroke="#999" stroke-width="1"></line>
+                <line x1="320" y1="250" x2="480" y2="300" stroke="#999" stroke-width="1"></line>
+                <line x1="320" y1="250" x2="640" y2="300" stroke="#999" stroke-width="1"></line>
+
+                <!-- Spine03到所有Leaf -->
+                <line x1="480" y1="250" x2="160" y2="300" stroke="#999" stroke-width="1"></line>
+                <line x1="480" y1="250" x2="320" y2="300" stroke="#999" stroke-width="1"></line>
+                <line x1="480" y1="250" x2="480" y2="300" stroke="#999" stroke-width="1"></line>
+                <line x1="480" y1="250" x2="640" y2="300" stroke="#999" stroke-width="1"></line>
+
+                <!-- Spine04到所有Leaf -->
+                <line x1="640" y1="250" x2="160" y2="300" stroke="#999" stroke-width="1"></line>
+                <line x1="640" y1="250" x2="320" y2="300" stroke="#999" stroke-width="1"></line>
+                <line x1="640" y1="250" x2="480" y2="300" stroke="#999" stroke-width="1"></line>
+                <line x1="640" y1="250" x2="640" y2="300" stroke="#999" stroke-width="1"></line>
+
+                <!-- Leaf到Server -->
+                <line x1="160" y1="330" x2="90" y2="380" stroke="#999" stroke-width="1"></line>
+                <line x1="320" y1="330" x2="90" y2="380" stroke="#999" stroke-width="1"></line>
+		<line x1="160" y1="330" x2="210" y2="380" stroke="#999" stroke-width="1"></line>
+                <line x1="320" y1="330" x2="210" y2="380" stroke="#999" stroke-width="1"></line>
+                <line x1="320" y1="330" x2="330" y2="380" stroke="#999" stroke-width="1"></line>
+                <line x1="160" y1="330" x2="330" y2="380" stroke="#999" stroke-width="1"></line>
+                <line x1="480" y1="330" x2="470" y2="380" stroke="#999" stroke-width="1"></line>
+                <line x1="640" y1="330" x2="470" y2="380" stroke="#999" stroke-width="1"></line>
+		<line x1="480" y1="330" x2="590" y2="380" stroke="#999" stroke-width="1"></line>
+                <line x1="640" y1="330" x2="590" y2="380" stroke="#999" stroke-width="1"></line>
+                <line x1="480" y1="330" x2="710" y2="380" stroke="#999" stroke-width="1"></line>
+
+                <line x1="640" y1="330" x2="710" y2="380" stroke="#999" stroke-width="1"></line><!-- MLAG连接 -->
+                <!-- Border01和Border02之间的MLAG -->
+                <line x1="310" y1="94" x2="490" y2="94" stroke="#ffd43b" stroke-width="2" stroke-dasharray="5,3"></line>
+                <text x="400" y="90" text-anchor="middle" fill="#ffd43b" font-size="10">HA</text>
+		<line x1="320" y1="155" x2="480" y2="155" stroke="#ffd43b" stroke-width="2" stroke-dasharray="5,3"></line>
+
+                <text x="400" y="150" text-anchor="middle" fill="#ffd43b" font-size="10">MLAG</text><!-- Leaf01和Leaf02之间的MLAG -->
+                <line x1="200" y1="315" x2="280" y2="315" stroke="#ffd43b" stroke-width="2" stroke-dasharray="5,3"></line>
+                <text x="240" y="310" text-anchor="middle" fill="#ffd43b" font-size="10">MLAG</text>
+
+                <!-- Leaf03和Leaf04之间的MLAG -->
+                <line x1="520" y1="315" x2="600" y2="315" stroke="#ffd43b" stroke-width="2" stroke-dasharray="5,3"></line>
+                <text x="560" y="310" text-anchor="middle" fill="#ffd43b" font-size="10">MLAG</text>
+
+                <!-- VXLAN隧道表示 -->
+                
+                <text x="400" y="295" text-anchor="middle" fill="white" font-size="12" font-weight="600">VXLAN Overlay Network</text>
+
+                <!-- VRF标注 -->
+                <text x="90" y="420" font-size="10" text-anchor="middle" fill="#EF4444">VRF RED</text>
+                <text x="210" y="420" font-size="10" text-anchor="middle" fill="#EF4444">VRF RED</text>
+                <text x="330" y="420" font-size="10" text-anchor="middle" fill="#0099da">VRF BLUE</text>
+                <text x="470" y="420" font-size="10" text-anchor="middle" fill="#EF4444">VRF RED</text>
+                <text x="590" y="420" font-size="10" text-anchor="middle" fill="#EF4444">VRF RED</text>
+                <text x="710" y="420" font-size="10" text-anchor="middle" fill="#0099da">VRF BLUE</text>
+              </svg>
+
+            </div>
+
+            <div class="info-section">
+              <!-- 架构特点 -->
+              <div class="info-card">
+                <h4 class="info-title">架构特点</h4>
+                <div class="info-content">
+                  <ul class="info-list">
+                    <li>Spine-Leaf CLOS架构</li>
+                    <li>Border负责南北向流量</li>
+                    <li>Leaf提供服务器接入</li>
+                    <li>BGP EVPN，VXLAN Overlay网络</li>
+                    <li>支持多租户隔离</li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- VNI分配 -->
+              <div class="info-card">
+                <h4 class="info-title">VNI分配方案</h4>
+                <div class="info-content">
+                  <div class="vni-box">
+                    <div class="vni-item">
+                      <div class="vni-label">L2 VNI</div>
+                      <div class="vni-value">10,20,30</div>
+                    </div>
+                    <div class="vni-item">
+                      <div class="vni-label">L3 VNI</div>
+                      <div class="vni-value">4001,4002</div>
+                    </div>
+                  </div>
+                  <p style="margin-top: 10px; font-size: 11px; text-align: center; color: rgba(255,255,255,0.6);">
+                    VRF RED: 4001 | VRF BLUE: 4002
+                  </p>
+                </div>
+              </div>
+
+              <!-- IP规划 -->
+              <div class="info-card">
+                <h4 class="info-title">IP地址规划</h4>
+                <div class="info-content">
+                  <ul class="info-list">
+                    <li>Loopback: 10.10.10.0/32</li>
+                    <li>Server: 10.1.x.0/24</li>
+                    <li>Anycast GW MAC</li>
+                    <li>eBGP AS: 65100-65199</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="company-name">北京正阳恒卓科技有限公司</div>
+        <div class="page-number">3</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

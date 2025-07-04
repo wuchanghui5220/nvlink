@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NVIDIA NPN SP技术大比武 - DDN存储解决方案</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f0f0f0;
+      font-family: 'Noto Sans SC', sans-serif;
+      overflow: hidden;
+    }
+
+    .slide-container {
+      width: 100vw;
+      height: 56.25vw; /* 16:9 aspect ratio */
+      max-height: 100vh;
+      max-width: 177.78vh; /* 16:9 aspect ratio (reversed) */
+      position: relative;
+      background: #111827;
+      color: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    /* 背景图形元素 */
+    .bg-grid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image:
+        linear-gradient(rgba(24, 92, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(24, 92, 255, 0.05) 1px, transparent 1px);
+      background-size: 20px 20px;
+      z-index: 0;
+    }
+
+    .bg-gradient {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 120% 45%, rgba(76, 29, 149, 0.7) 0%, rgba(17, 24, 39, 0) 50%);
+      z-index: 1;
+    }
+
+    .bg-circle1 {
+      position: absolute;
+      top: -15%;
+      right: -15%;
+      width: 40%;
+      height: 40%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #76b900 0%, #1a4163 100%);
+      filter: blur(80px);
+      opacity: 0.6;
+      z-index: 2;
+    }
+
+    .bg-circle2 {
+      position: absolute;
+      bottom: -10%;
+      left: -10%;
+      width: 30%;
+      height: 30%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0099da 0%, #1e40af 100%);
+      filter: blur(60px);
+      opacity: 0.5;
+      z-index: 2;
+    }
+
+    /* 主要内容 */
+    .content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    .header {
+      padding: 1.5% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .nvidia-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-box {
+      width: 80px;
+      height: 28px;
+      background: #76b900;
+      border-radius: 4px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 700;
+      font-size: 16px;
+      transform: skew(-10deg);
+    }
+
+    .partner-text {
+      font-size: 14px;
+      font-weight: 500;
+      opacity: 0.9;
+    }
+
+    .slide-title {
+      font-size: 18px;
+      font-weight: 600;
+      padding: 0.5% 2%;
+      background: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(5px);
+      border-radius: 4px;
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 1.5% 4%;
+      overflow: hidden;
+    }
+
+    .two-columns {
+      display: flex;
+      gap: 20px;
+      height: 100%;
+    }
+
+    .column {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 18px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .card-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .overview-icon {
+      background: linear-gradient(135deg, #76b900 0%, #3e703e 100%);
+      box-shadow: 0 5px 15px rgba(118, 185, 0, 0.3);
+    }
+
+    .requirements-icon {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      box-shadow: 0 5px 15px rgba(245, 158, 11, 0.3);
+    }
+
+    .solution-icon {
+      background: linear-gradient(135deg, #0099da 0%, #1e40af 100%);
+      box-shadow: 0 5px 15px rgba(0, 153, 218, 0.3);
+    }
+
+    .config-icon {
+      background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+      box-shadow: 0 5px 15px rgba(139, 92, 246, 0.3);
+    }
+
+    .card-icon svg {
+      width: 24px;
+      height: 24px;
+      fill: white;
+    }
+
+    .card-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .overview-title {
+      color: #76b900;
+    }
+
+    .requirements-title {
+      color: #f59e0b;
+    }
+
+    .solution-title {
+      color: #0099da;
+    }
+
+    .config-title {
+      color: #8b5cf6;
+    }
+
+    .card-content {
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .card-content::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .card-content::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 2px;
+    }
+
+    .card-content::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 2px;
+    }
+
+    .feature-item {
+      position: relative;
+      margin-bottom: 15px;
+      padding-left: 30px;
+    }
+
+    .feature-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .item-icon {
+      position: absolute;
+      left: 0;
+      top: 2px;
+      width: 22px;
+      height: 22px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .item-icon svg {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
+    }
+
+    .compute-icon {
+      color: #76b900;
+    }
+
+    .performance-icon {
+      color: #ef4444;
+    }
+
+    .storage-icon {
+      color: #0099da;
+    }
+
+    .data-icon {
+      color: #8b5cf6;
+    }
+
+    .item-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .compute-title {
+      color: #76b900;
+    }
+
+    .performance-title {
+      color: #ef4444;
+    }
+
+    .storage-title {
+      color: #0099da;
+    }
+
+    .data-title {
+      color: #8b5cf6;
+    }
+
+    .item-details {
+      line-height: 1.5;
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 14px;
+    }
+
+    .item-details ul {
+      margin: 5px 0 0 0;
+      padding-left: 0;
+      list-style-type: none;
+    }
+
+    .item-details li {
+      position: relative;
+      padding-left: 16px;
+      margin-bottom: 5px;
+    }
+
+    .item-details li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 8px;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+    }
+
+    .compute-details li::before {
+      background: #76b900;
+    }
+
+    .performance-details li::before {
+      background: #ef4444;
+    }
+
+    .storage-details li::before {
+      background: #0099da;
+    }
+
+    .data-details li::before {
+      background: #8b5cf6;
+    }
+
+    .highlight {
+      font-weight: 600;
+    }
+
+    .compute-highlight {
+      color: #76b900;
+    }
+
+    .performance-highlight {
+      color: #ef4444;
+    }
+
+    .storage-highlight {
+      color: #0099da;
+    }
+
+    .data-highlight {
+      color: #8b5cf6;
+    }
+
+    .stats-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .stat-item {
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 10px 15px;
+      flex-grow: 1;
+      min-width: 100px;
+    }
+
+    .stat-value {
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .compute-stat .stat-value {
+      color: #76b900;
+    }
+
+    .performance-stat .stat-value {
+      color: #ef4444;
+    }
+
+    .storage-stat .stat-value {
+      color: #0099da;
+    }
+
+    .data-stat .stat-value {
+      color: #8b5cf6;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .footer {
+      padding: 1.5% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .page-number {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .company-name {
+      font-weight: 500;
+    }
+
+    .badges {
+      display: flex;
+      gap: 15px;
+    }
+
+    .badge {
+      padding: 6px 14px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .badge-ai {
+      background: linear-gradient(90deg, #0099da 0%, #1e40af 100%);
+      box-shadow: 0 0 15px rgba(0, 153, 218, 0.4);
+    }
+
+    .badge-storage {
+      background: linear-gradient(90deg, #ff9900 0%, #c25e00 100%);
+      box-shadow: 0 0 15px rgba(255, 153, 0, 0.4);
+    }
+
+    .rotating-lines {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 50%;
+      height: 50%;
+      z-index: 5;
+      opacity: 0.15;
+      animation: rotate 60s linear infinite;
+    }
+
+    @keyframes rotate {
+      from {
+        transform: translate(-50%, -50%) rotate(0deg);
+      }
+      to {
+        transform: translate(-50%, -50%) rotate(360deg);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <!-- 背景元素 -->
+    <div class="bg-grid"></div>
+    <div class="bg-gradient"></div>
+    <div class="bg-circle1"></div>
+    <div class="bg-circle2"></div>
+
+    <!-- 旋转线框背景 -->
+    <svg class="rotating-lines" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+      <path d="M250,10 L490,250 L250,490 L10,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,50 L450,250 L250,450 L50,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,90 L410,250 L250,410 L90,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,130 L370,250 L250,370 L130,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,170 L330,250 L250,330 L170,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,210 L290,250 L250,290 L210,250 Z" fill="none" stroke="white" stroke-width="1" />
+    </svg>
+
+    <!-- 主要内容 -->
+    <div class="content">
+      <div class="header">
+        <div class="nvidia-logo">
+          <div class="logo-box">NVIDIA</div>
+	  <div class="partner-text">Networking NPN Elite Partner</div>
+        </div>
+        <div class="slide-title">3. 客户需求方案汇报 - 题目A：DDN 存储解决方案</div>
+      </div>
+
+      <div class="main-content">
+        <div class="two-columns">
+          <div class="column">
+            <div class="card">
+              <div class="card-header">
+                <div class="card-icon overview-icon">
+                  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
+                  </svg>
+                </div>
+                <h2 class="card-title overview-title">1. 集群概况</h2>
+              </div>
+              
+              <div class="card-content">
+                <div class="feature-item">
+                  <div class="item-icon compute-icon">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M15 9H9v6h6V9zm-2 4h-2v-2h2v2zm8-2V9h-2V7c0-1.1-.9-2-2-2h-2V3h-2v2h-2V3H9v2H7c-1.1 0-2 .9-2 2v2H3v2h2v2H3v2h2v2c0 1.1.9 2 2 2h2v2h2v-2h2v2h2v-2h2c1.1 0 2-.9 2-2v-2h2v-2h-2v-2h2zm-4 6H7V7h10v10z"/>
+                    </svg>
+                  </div>
+                  <div class="item-title compute-title">计算资源</div>
+                  <div class="item-details compute-details">
+                    <ul>
+                      <li><span class="highlight compute-highlight">320 台</span> NVIDIA DGX H100 系统</li>
+                      <li>HGX H100 8-GPU 平台架构</li>
+                      <li>共计 <span class="highlight compute-highlight">2560 个</span> GPU</li>
+                    </ul>
+                  </div>
+                </div>
+                
+                <div class="stats-container">
+                  <div class="stat-item compute-stat">
+                    <div class="stat-value">320</div>
+                    <div class="stat-label">DGX H100 系统</div>
+                  </div>
+                  <div class="stat-item compute-stat">
+                    <div class="stat-value">2560</div>
+                    <div class="stat-label">GPU 总数</div>
+                  </div>
+                  <div class="stat-item compute-stat">
+                    <div class="stat-value">2.56</div>
+                    <div class="stat-label">EF/s 计算性能</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card" style="margin-top: 15px;">
+              <div class="card-header">
+                <div class="card-icon requirements-icon">
+                  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M3 17v2h6v-2H3zM3 5v2h10V5H3zm10 16v-2h8v-2h-8v-2h-2v6h2zM7 9v2H3v2h4v2h2V9H7zm14 4v-2H11v2h10zm-6-4h2V7h4V5h-4V3h-2v6z"/>
+                  </svg>
+                </div>
+                <h2 class="card-title requirements-title">2. 存储需求</h2>
+              </div>
+              
+              <div class="card-content">
+                <div class="feature-item">
+                  <div class="item-icon performance-icon">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM7 10h2v7H7zm4-3h2v10h-2zm4 6h2v4h-2z"/>
+                    </svg>
+                  </div>
+                  <div class="item-title performance-title">性能目标（"Best"等级）</div>
+                  <div class="item-details performance-details">
+                    <ul>
+                      <li>读取吞吐量：<span class="highlight performance-highlight">2.56 TB/s</span> (1 GB/s per GPU)</li>
+                      <li>写入吞吐量：<span class="highlight performance-highlight">1.28 TB/s</span> (0.5 GB/s per GPU)</li>
+                      <li>满足 AI/DL 工作负载（LLM 训练、检查点操作等）的高吞吐量、低延迟、高并发需求</li>
+                    </ul>
+                  </div>
+                </div>
+                
+                <div class="stats-container">
+                  <div class="stat-item performance-stat">
+                    <div class="stat-value">2.56</div>
+                    <div class="stat-label">TB/s 读取</div>
+                  </div>
+                  <div class="stat-item performance-stat">
+                    <div class="stat-value">1.28</div>
+                    <div class="stat-label">TB/s 写入</div>
+                  </div>
+                  <div class="stat-item performance-stat">
+                    <div class="stat-value">1GB/s</div>
+                    <div class="stat-label">每GPU读取</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="column">
+            <div class="card">
+              <div class="card-header">
+                <div class="card-icon solution-icon">
+                  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M14.12 10.47L12 12.59l-2.13-2.12-1.41 1.41L10.59 14l-2.12 2.12 1.41 1.41L12 15.41l2.12 2.12 1.41-1.41L13.41 14l2.12-2.12zM15.5 4l-1-1h-5l-1 1H5v2h14V4zM6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM8 9h8v10H8V9z"/>
+                  </svg>
+                </div>
+                <h2 class="card-title solution-title">3. DDN A³I 解决方案核心组件</h2>
+              </div>
+              
+              <div class="card-content">
+                <div class="feature-item">
+                  <div class="item-icon storage-icon">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M2 20h20v-4H2v4zm2-3h2v2H4v-2zM2 4v4h20V4H2zm4 3H4V5h2v2zm-4 7h20v-4H2v4zm2-3h2v2H4v-2z"/>
+                    </svg>
+                  </div>
+                  <div class="item-title storage-title">DDN AI400X2T Appliance</div>
+                  <div class="item-details storage-details">
+                    <ul>
+                      <li>全闪存共享数据平台，集成 DDN EXAScaler 并行文件系统</li>
+                      <li>单台性能：<span class="highlight storage-highlight">>110 GB/s</span> 读取，<span class="highlight storage-highlight">3M IOPS</span></li>
+                      <li>可线性扩展性能与容量</li>
+                    </ul>
+                  </div>
+                </div>
+                
+                <div class="feature-item">
+                  <div class="item-icon data-icon">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/>
+                    </svg>
+                  </div>
+                  <div class="item-title data-title">DDN Insight</div>
+                  <div class="item-details data-details">
+                    <ul>
+                      <li>集中式管理和监控软件，简化运维</li>
+                      <li>全局数据视图和性能分析</li>
+                    </ul>
+                  </div>
+                </div>
+                
+              </div>
+            </div>
+            
+            <div class="card" style="margin-top: 15px;">
+              <div class="card-header">
+                <div class="card-icon config-icon">
+                  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c-.04.32-.07.65-.07.98s.03.66.07.98l-2.11 1.65c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.12-.22.07-.49-.12-.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/>
+                  </svg>
+                </div>
+                <h2 class="card-title config-title">4. 推荐存储配置</h2>
+              </div>
+              
+              <div class="card-content">
+                <div class="feature-item">
+                  <div class="item-icon storage-icon">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+			    <path d="M2 20h20v-4H2v4zm2-3h2v2H4v-2zM2 4v4h20V4H2zm4 3H4V5h2v2zm-4 7h20v-4H2v4zm2-3h2v2H4v-2z"/>
+                    </svg>
+                  </div>
+                  <div class="item-title storage-title">设备配置</div>
+                  <div class="item-details storage-details">
+                    <ul>
+                      <li>数据设备 (OSS)：<span class="highlight storage-highlight">24 台</span>，提供 >2.64 TB/s 读取性能</li>
+                      <li>元数据设备 (MDS)：<span class="highlight storage-highlight">4 台</span> (MDS:OSS 比例 1:6)</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div class="feature-item">
+                  <div class="item-icon data-icon">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/>
+                    </svg>
+                  </div>
+                  <div class="item-title data-title">存储容量</div>
+                  <div class="item-details data-details">
+                    <ul>
+                      <li>最低聚合容量：<span class="highlight data-highlight">2.8 PB</span> (24台 OSS × 120 TB)</li>
+                      <li>可选容量：每台 250 TB 或 500 TB</li>
+                      <li>Inode 数量：4 台 MDS × 9.2 亿 Inode = <span class="highlight data-highlight">36.8 亿 Inode</span></li>
+                    </ul>
+                  </div>
+                </div>
+
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="company-name">北京正阳恒卓科技有限公司</div>
+        <div class="page-number">22</div>
+      </div>
+    </div>
+  </div>
+    <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+        <a href="index3.8.1.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+        <a href="index3.8.3.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+    </div>
+</body>
+</html>

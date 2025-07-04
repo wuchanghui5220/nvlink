@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NVUE CLI 命令 - Cumulus Linux交换机管理</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f0f0f0;
+      font-family: 'Noto Sans SC', sans-serif;
+      overflow: hidden;
+    }
+
+    .slide-container {
+      width: 100vw;
+      height: 56.25vw; /* 16:9 aspect ratio */
+      max-height: 100vh;
+      max-width: 177.78vh; /* 16:9 aspect ratio (reversed) */
+      position: relative;
+      background: #111827;
+      color: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    /* 背景图形元素 */
+    .bg-grid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image:
+        linear-gradient(rgba(24, 92, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(24, 92, 255, 0.05) 1px, transparent 1px);
+      background-size: 20px 20px;
+      z-index: 0;
+    }
+
+    .bg-gradient {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 120% 45%, rgba(76, 29, 149, 0.7) 0%, rgba(17, 24, 39, 0) 50%);
+      z-index: 1;
+    }
+
+    .bg-circle1 {
+      position: absolute;
+      top: -15%;
+      right: -15%;
+      width: 40%;
+      height: 40%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #76b900 0%, #1a4163 100%);
+      filter: blur(80px);
+      opacity: 0.6;
+      z-index: 2;
+    }
+
+    .bg-circle2 {
+      position: absolute;
+      bottom: -10%;
+      left: -10%;
+      width: 30%;
+      height: 30%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0099da 0%, #1e40af 100%);
+      filter: blur(60px);
+      opacity: 0.5;
+      z-index: 2;
+    }
+
+    /* 主要内容 */
+    .content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    .header {
+      padding: 1.8% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .nvidia-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-box {
+      width: 8%;
+      min-width: 100px;
+      height: 36px;
+      background: #76b900;
+      border-radius: 4px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 700;
+      font-size: clamp(16px, 2vw, 22px);
+      transform: skew(-10deg);
+    }
+
+    .partner-text {
+      font-size: clamp(12px, 1.5vw, 16px);
+      font-weight: 500;
+      opacity: 0.9;
+    }
+
+    .slide-title {
+      font-size: clamp(16px, 1.8vw, 20px);
+      font-weight: 600;
+      padding: 0.5% 2%;
+      background: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(5px);
+      border-radius: 20px;
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 1.5% 3%;
+      overflow: hidden;
+    }
+
+    .solution-container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      width: 100%;
+    }
+
+    .solution-title {
+      text-align: center;
+      font-size: clamp(18px, 2.2vw, 24px);
+      font-weight: 600;
+      color: #76b900;
+      margin-bottom: 15px;
+      margin-top: 0;
+    }
+
+    .solution-content {
+      display: flex;
+      gap: 20px;
+      height: 100%;
+    }
+
+    .commands-container {
+      flex: 2.5;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.05);
+      padding: 15px;
+      overflow-y: auto;
+    }
+
+    .command-category {
+      margin-bottom: 20px;
+    }
+
+    .category-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #76b900;
+      margin-bottom: 10px;
+      padding-bottom: 5px;
+      border-bottom: 1px solid rgba(118, 185, 0, 0.3);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .category-icon {
+      width: 16px;
+      height: 16px;
+      background: #76b900;
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: bold;
+    }
+
+    .command-item {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 10px;
+      margin-bottom: 8px;
+      transition: all 0.3s ease;
+      border-left: 3px solid #0099da;
+    }
+
+    .command-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateX(5px);
+      border-left-color: #76b900;
+    }
+
+    .command-name {
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      font-weight: 600;
+      color: #60A5FA;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 4px 8px;
+      border-radius: 4px;
+      margin-bottom: 6px;
+      word-break: break-all;
+    }
+
+    .command-desc {
+      font-size: 11px;
+      line-height: 1.4;
+      color: rgba(255, 255, 255, 0.85);
+    }
+
+    .info-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .info-card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 12px;
+      flex: 1;
+    }
+
+    .info-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: #76b900;
+    }
+
+    .info-content {
+      font-size: 12px;
+      line-height: 1.5;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .info-list {
+      list-style: none;
+      padding: 0;
+      margin: 8px 0;
+    }
+
+    .info-list li {
+      margin-bottom: 6px;
+      padding-left: 15px;
+      position: relative;
+      font-size: 11px;
+    }
+
+    .info-list li::before {
+      content: "▸";
+      position: absolute;
+      left: 0;
+      color: #76b900;
+    }
+
+    .usage-tips {
+      background: rgba(0, 153, 218, 0.1);
+      border: 1px solid rgba(0, 153, 218, 0.3);
+      border-radius: 6px;
+      padding: 8px;
+      margin-top: 8px;
+    }
+
+    .tip-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: #0099da;
+      margin-bottom: 4px;
+    }
+
+    .tip-content {
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.8);
+      line-height: 1.3;
+    }
+
+    .shortcut-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .shortcut-item {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 4px;
+      padding: 4px 6px;
+      font-size: 10px;
+      text-align: center;
+    }
+
+    .shortcut-key {
+      color: #76b900;
+      font-weight: 600;
+      font-family: 'Courier New', monospace;
+    }
+
+    .footer {
+      padding: 1.5% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .company-name {
+      font-weight: 500;
+    }
+
+    .page-number {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .rotating-lines {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 50%;
+      height: 50%;
+      z-index: 5;
+      opacity: 0.15;
+      animation: rotate 60s linear infinite;
+    }
+
+    @keyframes rotate {
+      from {
+        transform: translate(-50%, -50%) rotate(0deg);
+      }
+      to {
+        transform: translate(-50%, -50%) rotate(360deg);
+      }
+    }
+
+    /* 滚动条样式 */
+    .commands-container::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .commands-container::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 3px;
+    }
+
+    .commands-container::-webkit-scrollbar-thumb {
+      background: rgba(118, 185, 0, 0.5);
+      border-radius: 3px;
+    }
+
+    .commands-container::-webkit-scrollbar-thumb:hover {
+      background: rgba(118, 185, 0, 0.7);
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <!-- 背景元素 -->
+    <div class="bg-grid"></div>
+    <div class="bg-gradient"></div>
+    <div class="bg-circle1"></div>
+    <div class="bg-circle2"></div>
+
+    <!-- 旋转线框背景 -->
+    <svg class="rotating-lines" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+      <path d="M250,10 L490,250 L250,490 L10,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,50 L450,250 L250,450 L50,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,90 L410,250 L250,410 L90,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,130 L370,250 L250,370 L130,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,170 L330,250 L250,330 L170,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,210 L290,250 L250,290 L210,250 Z" fill="none" stroke="white" stroke-width="1" />
+    </svg>
+
+    <!-- 主要内容 -->
+    <div class="content">
+      <div class="header">
+        <div class="nvidia-logo">
+          <div class="logo-box">NVIDIA</div>
+          <div class="partner-text">Networking NPN Elite Partner</div>
+        </div>
+        <div class="slide-title">NVUE CLI 命令</div>
+      </div>
+
+      <div class="main-content">
+        <div class="solution-container">
+          <h3 class="solution-title">NVUE CLI 命令 (在 Cumulus Linux 交换机上运行)</h3>
+          
+          <div class="solution-content">
+            <div class="commands-container">
+              
+              <!-- 基础配置管理 -->
+              <div class="command-category">
+                <div class="category-title">
+                  <div class="category-icon">⚙</div>
+                  基础配置管理
+                </div>
+                
+                <div class="command-item">
+                  <div class="command-name">nv config show</div>
+                  <div class="command-desc">显示当前的 NVUE 配置</div>
+                </div>
+
+                <div class="command-item">
+                  <div class="command-name">nv config show -o commands</div>
+                  <div class="command-desc">以 CLI 命令的形式显示当前的 NVUE 配置</div>
+                </div>
+              </div>
+
+              <!-- 网桥和MLAG管理 -->
+              <div class="command-category">
+                <div class="category-title">
+                  <div class="category-icon">🌉</div>
+                  网桥和MLAG管理
+                </div>
+                
+                <div class="command-item">
+                  <div class="command-name">nv show bridge domain br_default</div>
+                  <div class="command-desc">验证 br_default 网桥的配置</div>
+                </div>
+
+                <div class="command-item">
+                  <div class="command-name">nv show mlag</div>
+                  <div class="command-desc">验证 MLAG 的操作状态</div>
+                </div>
+
+                <div class="command-item">
+                  <div class="command-name">nv show interface --view=mlag-cc</div>
+                  <div class="command-desc">验证 MLAG 接口状态，并检查 MLAG 对等体之间是否存在配置冲突</div>
+                </div>
+
+                <div class="command-item">
+                  <div class="command-name">nv show mlag consistency-checker global</div>
+                  <div class="command-desc">验证两个 MLAG 对等体之间是否存在全局配置冲突</div>
+                </div>
+              </div>
+
+              <!-- VXLAN和BGP管理 -->
+              <div class="command-category">
+                <div class="category-title">
+                  <div class="category-icon">🔗</div>
+                  VXLAN和BGP管理
+                </div>
+                
+                <div class="command-item">
+                  <div class="command-name">nv show nve vxlan</div>
+                  <div class="command-desc">验证 NVE 接口 (VTEP) 的状态和配置</div>
+                </div>
+
+                <div class="command-item">
+                  <div class="command-name">nv show vrf default router bgp neighbor</div>
+                  <div class="command-desc">显示 BGP 邻居的详细信息，包括自治系统、会话状态、正常运行时间、收发的前缀计数等</div>
+                </div>
+              </div>
+
+              <!-- EVPN VNI管理 -->
+              <div class="command-category">
+                <div class="category-title">
+                  <div class="category-icon">📡</div>
+                  EVPN VNI管理
+                </div>
+                
+                <div class="command-item">
+                  <div class="command-name">nv show evpn vni &lt;VNI_ID&gt;</div>
+                  <div class="command-desc">验证特定 EVPN VNI 的条目（例如：nv show evpn vni 10）</div>
+                </div>
+
+                <div class="command-item">
+                  <div class="command-name">nv show evpn vni -o raw</div>
+                  <div class="command-desc">以原始格式显示 EVPN VNI 的信息，包括VNI类型、VXLAN接口、MAC地址数量、ARP数量、远程VTEP数量和租户VRF</div>
+                </div>
+
+                <div class="command-item">
+                  <div class="command-name">nv show evpn vni</div>
+                  <div class="command-desc">显示所有 EVPN VNI 的摘要信息，包括MAC地址数量、ARP数量和远程VTEP数量</div>
+                </div>
+              </div>
+
+              <!-- MAC地址表管理 -->
+              <div class="command-category">
+                <div class="category-title">
+                  <div class="category-icon">🔍</div>
+                  MAC地址表管理
+                </div>
+                
+                <div class="command-item">
+                  <div class="command-name">nv show bridge domain br_default mac-table</div>
+                  <div class="command-desc">验证 br_default 网桥上学习到的 MAC 条目</div>
+                </div>
+
+                <div class="command-item">
+                  <div class="command-name">nv show evpn vni &lt;VNI_ID&gt; mac</div>
+                  <div class="command-desc">验证特定 VNI 的 MAC 地址条目是否被填充到 EVPN 中（例如：nv show evpn vni 10 mac）</div>
+                </div>
+              </div>
+
+            </div>
+
+            <div class="info-section">
+              <!-- 使用技巧 -->
+              <div class="info-card">
+                <h4 class="info-title">使用技巧</h4>
+                <div class="info-content">
+                  <ul class="info-list">
+                    <li>使用 <strong>-o raw</strong> 参数获取详细原始信息</li>
+                    <li>使用 <strong>--view</strong> 参数查看特定视图</li>
+                    <li>命令支持<strong>Tab键补全</strong>功能</li>
+                    <li>可使用 <strong>|</strong> 管道符过滤输出</li>
+                  </ul>
+                  <div class="usage-tips">
+                    <div class="tip-title">💡 快捷提示</div>
+                    <div class="tip-content">
+                      大多数 nv show 命令都支持添加具体参数来查看详细信息。
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 重要说明 -->
+              <div class="info-card">
+                <h4 class="info-title">重要说明</h4>
+                <div class="info-content">
+                  <ul class="info-list">
+                    <li>NVUE CLI 是<strong>只读接口</strong>，用于查看状态</li>
+                    <li>配置修改需要通过配置文件或API</li>
+                    <li>支持<strong>JSON输出格式</strong>便于自动化</li>
+                    <li>命令执行需要<strong>适当权限</strong></li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- 输出格式 -->
+              <div class="info-card">
+                <h4 class="info-title">输出格式选项</h4>
+                <div class="info-content">
+                  <ul class="info-list">
+                    <li><strong>-o json</strong> - JSON格式输出</li>
+                    <li><strong>-o yaml</strong> - YAML格式输出</li>
+                    <li><strong>-o raw</strong> - 原始详细格式</li>
+                    <li><strong>-o commands</strong> - CLI命令格式</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="company-name">北京正阳恒卓科技有限公司</div>
+        <div class="page-number">5</div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 导航按钮 -->
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+    <a href="index4.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+    <a href="index6.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+  </div>
+</body>
+</html>

@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>智算中心项目设计规划与实施</title>
+    <style>
+        /* NVIDIA InfiniBand全局样式 - 改进版 */
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* 改为flex-start允许内容向下扩展 */
+            background: linear-gradient(135deg, rgba(175, 233, 207, 0.8) 0%, rgba(145, 210, 185, 0.8) 100%);
+            font-family: 'Arial', sans-serif;
+            overflow-y: auto; /* 允许页面滚动 */
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+
+        .slide-container {
+            width: 90%;
+            min-height: 85vh; /* 最小高度而不是固定高度 */
+            height: auto; /* 允许根据内容自动调整高度 */
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2);
+            display: flex;
+            flex-direction: column;
+            overflow: visible; /* 不裁剪溢出内容 */
+            margin-bottom: 20px; /* 底部添加空间 */
+        }
+
+        .header {
+            padding: 20px 40px;
+            background: rgba(0, 118, 82, 0.85);
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            border-radius: 20px 20px 0 0;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2.2em;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        h2 {
+            margin: 5px 0 0 0;
+            font-size: 1.3em;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+        }
+
+        .content {
+            display: flex;
+            flex: 1;
+            padding: 20px;
+            flex-wrap: wrap; /* 在小屏幕上允许换行 */
+        }
+
+        .left-panel, .right-panel {
+            flex: 1;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            min-width: 300px; /* 确保在小屏幕上有足够宽度 */
+        }
+
+        .panel-title {
+            font-size: 1.4em;
+            color: #005741;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .chart-container {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow-y: visible; /* 允许内容自然延伸 */
+            margin-bottom: 10px; /* 添加底部间距 */
+        }
+
+        .key-points {
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 10px;
+        }
+
+        .key-points ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .key-points li {
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .footer {
+            text-align: right;
+            padding: 10px 20px;
+            color: #005741;
+            font-style: italic;
+            font-size: 0.9em;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 0 0 20px 20px;
+        }
+
+        .tooltip {
+            position: absolute;
+            padding: 8px 12px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border-radius: 4px;
+            font-size: 12px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .advantage-box {
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-left: 4px solid #009B77;
+        }
+
+        .advantage-title {
+            font-weight: bold;
+            color: #005741;
+            margin-bottom: 5px;
+        }
+
+        .advantage-desc {
+            font-size: 0.9em;
+            color: #333;
+        }
+
+        /* 动画效果 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .left-panel, .right-panel {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        .right-panel {
+            animation-delay: 0.3s;
+        }
+
+        /* 为案例部分添加样式 */
+        .case-box {
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-left: 4px solid #009B77;
+        }
+
+        .case-title {
+            font-weight: bold;
+            color: #005741;
+            margin-bottom: 5px;
+        }
+
+        .case-desc {
+            font-size: 0.9em;
+            color: #333;
+            margin-left: 15px;
+        }
+
+        /* 导航按钮 */
+        .nav-buttons {
+            display: flex;
+            justify-content: center;
+            margin: 10px 0;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            background: rgba(0, 118, 82, 0.85);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 15px;
+            margin: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .nav-btn:hover {
+            background: rgba(0, 150, 100, 0.85);
+        }
+
+        /* 轮播样式 */
+        .slides {
+            display: none;
+            height: auto;
+            min-height: 300px;
+        }
+
+        .active-slide {
+            display: block;
+        }
+
+        /* 案例列表样式 */
+        .case-list {
+            padding-left: 0;
+        }
+        
+        .case-list li {
+            list-style-type: none;
+            margin-bottom: 15px;
+        }
+
+        /* 自动化工具列表样式 */
+        .tool-list {
+            padding-left: 20px;
+        }
+        
+        .tool-list li {
+            margin-bottom: 8px;
+        }
+        
+        /* FAQ部分样式 */
+        .faq-box {
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-left: 4px solid #009B77;
+        }
+        
+        .faq-question {
+            font-weight: bold;
+            color: #005741;
+            margin-bottom: 5px;
+        }
+        
+        .faq-answer {
+            font-size: 0.9em;
+            color: #333;
+            margin-left: 15px;
+        }
+        
+        /* 添加响应式设计 */
+        @media (max-width: 768px) {
+            .content {
+                flex-direction: column;
+            }
+            
+            .left-panel, .right-panel {
+                width: 100%;
+                margin-bottom: 20px;
+            }
+            
+            .nav-buttons {
+                flex-wrap: wrap;
+            }
+            
+            .nav-btn {
+                margin: 5px;
+                font-size: 12px;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            h2 {
+                font-size: 1.1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <!-- 顶部标题栏 -->
+        <div class="header">
+            <h1>智算中心项目设计规划与实施</h1>
+            <h2>NVIDIA InfiniBand解决方案专业服务</h2>
+        </div>
+        
+        <!-- 导航按钮 -->
+        <div class="nav-buttons">
+            <button class="nav-btn" onclick="changeSlide(0)">公司背景</button>
+            <button class="nav-btn" onclick="changeSlide(1)">技术能力</button>
+            <button class="nav-btn" onclick="changeSlide(2)">解决方案</button>
+            <button class="nav-btn" onclick="changeSlide(3)">成功案例</button>
+            <button class="nav-btn" onclick="changeSlide(4)">挑战与方案</button>
+            <button class="nav-btn" onclick="changeSlide(5)">FAQ</button>
+            <button class="nav-btn" onclick="changeSlide(6)">联系合作</button>
+        </div>
+        
+        <!-- 内容部分 - 幻灯片0：公司背景 -->
+        <div class="content slides active-slide" id="slide0">
+            <div class="left-panel">
+                <div class="panel-title">公司背景与专业优势</div>
+                <div class="chart-container">
+                    <div class="advantage-box">
+                        <div class="advantage-title">NVIDIA中国区代理商</div>
+                        <div class="advantage-desc">专注于智算中心解决方案</div>
+                    </div>
+                    <div class="advantage-box">
+                        <div class="advantage-title">10年Mellanox HPC网络集成经验</div>
+                        <div class="advantage-desc">提供高性能计算网络专业服务</div>
+                    </div>
+                    <div class="advantage-box">
+                        <div class="advantage-title">3年智算中心项目实施经验</div>
+                        <div class="advantage-desc">A100/H100/H200/H800超算部署经验</div>
+                    </div>
+                    <div class="advantage-box">
+                        <div class="advantage-title">完成超过15000P算力集成项目</div>
+                        <div class="advantage-desc">大规模算力集成能力</div>
+                    </div>
+                </div>
+                <div class="key-points">
+                    <ul>
+                        <li>多服务器品牌支持：超微、技嘉、Dell、浪潮、联想等</li>
+                        <li>丰富的大规模GPU集群交付经验</li>
+                        <li>全方位智算中心解决方案提供商</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="right-panel">
+                <div class="panel-title">InfiniBand网络设计与实施能力</div>
+                <div class="chart-container">
+                    <div class="advantage-box">
+                        <div class="advantage-title">10年InfiniBand网络组网设计与实施经验</div>
+                        <div class="advantage-desc">高性能低延迟网络专家</div>
+                    </div>
+                    <div class="advantage-title">自研自动化工具：</div>
+                    <ul class="tool-list">
+                        <li>自动组网拓扑生成工具</li>
+                        <li>自动端接连线表生成工具</li>
+                        <li>机房设备安装位置规划工具</li>
+                        <li>线缆连接规划工具</li>
+                        <li>端接正确性及故障检测工具</li>
+                    </ul>
+                    <svg width="100%" height="120" viewBox="0 0 500 120" preserveAspectRatio="xMidYMid meet">
+                        <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold">InfiniBand性能优势</text>
+                        
+                        <!-- X Axis -->
+                        <line x1="80" y1="90" x2="420" y2="90" stroke="#333" stroke-width="2"/>
+                        
+                        <!-- Scales -->
+                        <text x="80" y="105" text-anchor="middle" font-size="10">0</text>
+                        <text x="190" y="105" text-anchor="middle" font-size="10">200G</text>
+                        <text x="300" y="105" text-anchor="middle" font-size="10">400G</text>
+                        <text x="410" y="105" text-anchor="middle" font-size="10">800G</text>
+                        
+                        <!-- Bars for Bandwidth -->
+                        <rect x="130" y="70" width="40" height="20" fill="#009B77" opacity="0.8"/>
+                        <text x="150" y="85" text-anchor="middle" font-size="10" fill="white">HDR</text>
+                        
+                        <rect x="240" y="50" width="40" height="40" fill="#009B77" opacity="0.8"/>
+                        <text x="260" y="75" text-anchor="middle" font-size="10" fill="white">NDR</text>
+                        
+                        <rect x="350" y="30" width="40" height="60" fill="#009B77" opacity="0.8"/>
+                        <text x="370" y="65" text-anchor="middle" font-size="10" fill="white">XDR</text>
+                    </svg>
+                </div>
+                <div class="key-points">
+                    <ul>
+                        <li>行业领先的自动化技术</li>
+                        <li>完整的服务体系</li>
+                        <li>高效专业的交付团队</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 内容部分 - 幻灯片1：技术能力 -->
+        <div class="content slides" id="slide1">
+            <div class="left-panel">
+                <div class="panel-title">技术解决方案</div>
+                <div class="chart-container">
+                    <div class="advantage-box">
+                        <div class="advantage-title">大规模/超大规模IB网络线缆长度自动计算</div>
+                        <div class="advantage-desc">高效规划、节省时间、减少错误</div>
+                    </div>
+                    <div class="advantage-box">
+                        <div class="advantage-title">最佳网络路径选择算法</div>
+                        <div class="advantage-desc">提供高效线缆定制，降低网络延迟</div>
+                    </div>
+                    <div class="advantage-box">
+                        <div class="advantage-title">线缆端接正确性自动检查及故障排查工具</div>
+                        <div class="advantage-desc">减少90%故障排查时间</div>
+                    </div>
+                    <div class="advantage-box">
+                        <div class="advantage-title">收发器误码率自动检查工具</div>
+                        <div class="advantage-desc">确保网络稳定性与性能</div>
+                    </div>
+                    <div class="advantage-box">
+                        <div class="advantage-title">无需Nvidia UFM即可实现IB集群全面监控与管理</div>
+                        <div class="advantage-desc">降低成本、简化管理</div>
+                    </div>
+                </div>
+                <div class="key-points">
+                    <ul>
+                        <li>自研工具节省70%设计时间</li>
+                        <li>线缆管理降低90%错误率</li>
+                        <li>自研监控系统替代UFM功能</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="right-panel">
+                <div class="panel-title">项目管理与效率提升方案</div>
+                <div class="chart-container">
+                    <div class="advantage-box">
+                        <div class="advantage-title">批量更新QM9790交换机经验</div>
+                        <div class="advantage-desc">高效处理大规模设备升级</div>
+                    </div>
+                    <div class="advantage-box">
+                        <div class="advantage-title">自研自动化脚本</div>
+                        <div class="advantage-desc">大幅缩短部署调试周期，提高50%效率</div>
+                    </div>
+                    <div class="advantage-box">
+                        <div class="advantage-title">快速项目交付方法论</div>
+                        <div class="advantage-desc">标准化流程保障质量与速度</div>
+                    </div>
+                    
+                    <div class="advantage-title">服务器配置与管理：</div>
+                    <ul class="tool-list">
+                        <li>GPU服务器操作系统批量安装技术</li>
+                        <li>IB网卡驱动、GPU驱动批量安装方案</li>
+                        <li>服务器验机系统(U盘开机系统)应用</li>
+                        <li>快速开机检查及组件配置验证</li>
+                        <li>拆改配服务器组件信息完整</li>
+                        <li>适用于超大规模集群管理</li>
+                    </ul>
+                </div>
+                <div class="key-points">
+                    <ul>
+                        <li>批量部署工具缩短部署时间50%</li>
+                        <li>标准化流程确保项目质量</li>
+                        <li>自动化工具提高大规模集群管理效率</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 内容部分 - 幻灯片2：解决方案 -->
+        <div class="content slides" id="slide2">
+            <div class="left-panel">
+                <div class="panel-title">智算中心整体解决方案</div>
+                <div class="chart-container">
+                    <div class="advantage-box">
+                        <div class="advantage-title">InfiniBand高性能网络解决方案</div>
+                        <div class="advantage-desc">• HDR/NDR/XDR网络设计与实施</div>
+                        <div class="advantage-desc">• 高性能低延迟网络优化</div>
+                        <div class="advantage-desc">• 自研监控与管理工具</div>
+                    </div>
+                    
+                    <div class="advantage-box">
+                        <div class="advantage-title">GPU集群管理解决方案</div>
+                        <div class="advantage-desc">• 大规模GPU服务器批量部署</div>
+                        <div class="advantage-desc">• 自动化运维工具与流程</div>
+                        <div class="advantage-desc">• 性能优化与故障排查</div>
+                    </div>
+                    
+                    <div class="advantage-box">
+                        <div class="advantage-title">存储与数据管理解决方案</div>
+                        <div class="advantage-desc">• 高性能并行文件系统设计</div>
+                        <div class="advantage-desc">• 数据流优化与管理</div>
+                        <div class="advantage-desc">• 存储网络设计与实施</div>
+                    </div>
+                    
+                    <svg width="100%" height="120" viewBox="0 0 500 120" preserveAspectRatio="xMidYMid meet">
+                        <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold">智算中心整体架构</text>
+                        
+                        <!-- 简化架构图 -->
+                        <rect x="150" y="50" width="200" height="30" rx="5" fill="#009B77" opacity="0.8"/>
+                        <text x="250" y="70" text-anchor="middle" font-size="12" fill="white">GPU计算集群</text>
+                        
+                        <rect x="150" y="90" width="200" height="20" rx="5" fill="#009B77" opacity="0.6"/>
+                        <text x="250" y="105" text-anchor="middle" font-size="12" fill="white">InfiniBand高性能网络</text>
+                        
+                        <rect x="50" y="50" width="80" height="60" rx="5" fill="#009B77" opacity="0.4"/>
+                        <text x="90" y="85" text-anchor="middle" font-size="12" fill="#333">存储集群</text>
+                        
+                        <rect x="370" y="50" width="80" height="60" rx="5" fill="#009B77" opacity="0.4"/>
+                        <text x="410" y="85" text-anchor="middle" font-size="12" fill="#333">管理系统</text>
+                    </svg>
+                </div>
+                <div class="key-points">
+                    <ul>
+                        <li>端到端解决方案保障整体性能</li>
+                        <li>自研工具提升运维效率</li>
+                        <li>灵活方案适应不同客户需求</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="right-panel">
+                <div class="panel-title">解决方案优势对比</div>
+                <div class="chart-container">
+                    <div class="advantage-box">
+                        <div class="advantage-title">传统方案与我们方案对比</div>
+                        <div class="advantage-desc">• 部署效率：传统方案vs自动化方案 (1:3)</div>
+                        <div class="advantage-desc">• 运维成本：传统人工vs自研工具 (2:1)</div>
+                        <div class="advantage-desc">• 扩展性能：传统架构vs优化架构 (1:1.5)</div>
+                    </div>
+                    
+                    <svg width="100%" height="150" viewBox="0 0 500 150" preserveAspectRatio="xMidYMid meet">
+                        <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold">解决方案价值对比</text>
+                        
+                        <!-- 雷达图 -->
+                        <polygon points="250,50 350,100 250,150 150,100" fill="none" stroke="#333" stroke-width="1" stroke-dasharray="3,3"/>
+                        <polygon points="250,75 325,100 250,125 175,100" fill="#009B77" fill-opacity="0.3" stroke="#009B77" stroke-width="2"/>
+                        
+                        <!-- 坐标轴 -->
+                        <line x1="250" y1="30" x2="250" y2="150" stroke="#333" stroke-width="1"/>
+                        <line x1="130" y1="100" x2="370" y2="100" stroke="#333" stroke-width="1"/>
+                        
+                        <!-- 标签 -->
+                        <text x="250" y="45" text-anchor="middle" font-size="10">部署效率</text>
+                        <text x="360" y="100" text-anchor="start" font-size="10">运维成本</text>
+                        <text x="250" y="160" text-anchor="middle" font-size="10">可扩展性</text>
+                        <text x="130" y="100" text-anchor="end" font-size="10">稳定性</text>
+                        
+                        <!-- 图例 -->
+                        <rect x="380" y="40" width="15" height="15" fill="#009B77" fill-opacity="0.3" stroke="#009B77" stroke-width="2"/>
+                        <text x="400" y="52" font-size="10">我们的方案</text>
+                        
+                        <rect x="380" y="65" width="15" height="15" fill="none" stroke="#333" stroke-width="1" stroke-dasharray="3,3"/>
+                        <text x="400" y="77" font-size="10">传统方案</text>
+                    </svg>
+                    
+                    <div class="advantage-title">核心价值优势：</div>
+                    <ul class="tool-list">
+                        <li>降低项目复杂度，加速项目交付</li>
+                        <li>提高系统性能，降低运行故障率</li>
+                        <li>降低运维成本，提升用户体验</li>
+                        <li>灵活适应客户需求变化</li>
+                    </ul>
+                </div>
+                <div class="key-points">
+                    <ul>
+                        <li>整体解决方案价值提升50%</li>
+                        <li>运维效率提高70%</li>
+                        <li>节约30%总体拥有成本</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 内容部分 - 幻灯片3：成功案例 -->
+        <div class="content slides" id="slide3">
+            <div class="left-panel">
+                <div class="panel-title">国内成功案例</div>
+                <div class="chart-container">
+                    <ul class="case-list">
+                        <li>
+                            <div class="case-box">
+                                <div class="case-title">济南超算125台H800 GPU集群</div>
+                                <div class="case-desc">• IB计算及存储网络设计与部署</div>
+                                <div class="case-desc">• UFM HA部署</div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="case-box">
+                                <div class="case-title">杭州电信82台H100 GPU集群</div>
+                                <div class="case-desc">• 存储容量规划、IB计算及存储网络设计</div>
+                                <div class="case-desc">• UFM HA部署</div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="case-box">
+                                <div class="case-title">深圳运营商128台GPU集群</div>
+                                <div class="case-desc">• 总集成商角色，整体设计到实施</div>
+                                <div class="case-desc">• 多网络融合及安全隔离方案</div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="case-box">
+                                <div class="case-title">万卡集群项目</div>
+                                <div class="case-desc">• 超大规模集群部署，散热与供电、资源调度</div>
+                                <div class="case-desc">• 超过5万条线缆布线设计</div>
+                                <div class="case-desc">• 批量操作系统与驱动安装</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="key-points">
+                    <ul>
+                        <li>大规模GPU集群部署经验</li>
+                        <li>从设计到实施的全流程服务</li>
+                        <li>多样化网络环境的整合能力</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="right-panel">
+                <div class="panel-title">海外成功案例</div>
+                <div class="chart-container">
+                    <ul class="case-list">
+                        <li>
+                            <div class="case-box">
+                                <div class="case-title">新加坡64台H100 GPU集群</div>
+				<div class="case-desc">• 客户全套采用NVIDIA网络产品</div>
+                                <div class="case-desc">• IB网络设计和部署实施</div>
+                                <div class="case-desc">• Nvidia以太网交换机安装和部署（cumulus 5.9）</div>
+                            </div>
+                        </li>
+                        <li>
+                            <div class="case-box">
+                                <div class="case-title">马来西亚8台H200 GPU集群</div>
+                                <div class="case-desc">• 整体网络规划设计和部署</div>
+                                <div class="case-desc">• 包括IB，以太网（cumulus），飞塔防火墙</div>
+                                <div class="case-desc">• GPU服务器系统安装和驱动安装</div>
+                                <div class="case-desc">• IB网络和GPU精细化调优</div>
+                            </div>
+                        </li>
+                    </ul>
+
+                    <svg width="100%" height="120" viewBox="0 0 500 120" preserveAspectRatio="xMidYMid meet">
+                        <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold">案例分布</text>
+
+                        <!-- 地图简化轮廓 -->
+                        <path d="M100,80 Q200,40 300,50 T450,70" stroke="#009B77" fill="none" stroke-width="2"/>
+
+                        <!-- 项目点 -->
+                        <circle cx="150" cy="60" r="8" fill="#009B77" opacity="0.8"/>
+                        <text x="150" y="50" text-anchor="middle" font-size="10">济南</text>
+
+                        <circle cx="180" cy="70" r="8" fill="#009B77" opacity="0.8"/>
+                        <text x="180" y="90" text-anchor="middle" font-size="10">杭州</text>
+
+                        <circle cx="210" cy="80" r="8" fill="#009B77" opacity="0.8"/>
+                        <text x="210" y="100" text-anchor="middle" font-size="10">深圳</text>
+
+                        <circle cx="350" cy="65" r="8" fill="#009B77" opacity="0.8"/>
+                        <text x="350" y="85" text-anchor="middle" font-size="10">新加坡</text>
+
+                        <circle cx="370" cy="75" r="8" fill="#009B77" opacity="0.8"/>
+                        <text x="370" y="95" text-anchor="middle" font-size="10">马来西亚</text>
+                    </svg>
+                </div>
+                <div class="key-points">
+                    <ul>
+                        <li>跨国部署与本地化服务能力</li>
+                        <li>多样化网络环境整合经验</li>
+                        <li>高端GPU集群全生命周期管理</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 内容部分 - 幻灯片4：挑战与方案 -->
+        <div class="content slides" id="slide4">
+            <div class="left-panel">
+                <div class="panel-title">项目实施技术挑战</div>
+                <div class="chart-container">
+                    <div class="advantage-box">
+                        <div class="advantage-title">大规模IB网络低延迟保障</div>
+                        <div class="advantage-desc">解决方案：拓扑优化设计、链路平衡、自动化监控</div>
+                    </div>
+                    <div class="advantage-box">
+                        <div class="advantage-title">散热与电力需求平衡</div>
+                        <div class="advantage-desc">解决方案：定制散热、电力负载均衡</div>
+                    </div>
+                    <div class="advantage-box">
+                        <div class="advantage-title">不同厂商设备兼容性</div>
+                        <div class="advantage-desc">解决方案：标准化配置、兼容性测试</div>
+                    </div>
+
+                    <svg width="100%" height="150" viewBox="0 0 500 150" preserveAspectRatio="xMidYMid meet">
+                        <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold">项目风险降低</text>
+
+                        <!-- 风险矩阵 -->
+                        <rect x="100" y="50" width="300" height="80" fill="none" stroke="#333" stroke-width="1"/>
+
+                        <!-- 矩阵分区 -->
+                        <line x1="250" y1="50" x2="250" y2="130" stroke="#333" stroke-width="1" stroke-dasharray="3,3"/>
+                        <line x1="100" y1="90" x2="400" y2="90" stroke="#333" stroke-width="1" stroke-dasharray="3,3"/>
+
+                        <!-- 标签 -->
+                        <text x="175" y="45" text-anchor="middle" font-size="10">低影响</text>
+                        <text x="325" y="45" text-anchor="middle" font-size="10">高影响</text>
+                        <text x="90" y="70" text-anchor="end" font-size="10">低概率</text>
+                        <text x="90" y="110" text-anchor="end" font-size="10">高概率</text>
+
+                        <!-- 风险点和解决方案 -->
+                        <circle cx="325" cy="110" r="10" fill="red" opacity="0.3"/>
+                        <text x="325" y="113" text-anchor="middle" font-size="8">传统方案</text>
+
+                        <circle cx="175" cy="70" r="10" fill="green" opacity="0.3"/>
+                        <text x="175" y="73" text-anchor="middle" font-size="8">我们的方案</text>
+
+                        <!-- 箭头表示优化 -->
+                        <path d="M300,100 L200,80" stroke="#009B77" stroke-width="2" marker-end="url(#arrow4)"/>
+                        <defs>
+                            <marker id="arrow4" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+                                <path d="M0,0 L10,5 L0,10 Z" fill="#009B77"/>
+                            </marker>
+                        </defs>
+                    </svg>
+                </div>
+                <div class="key-points">
+                    <ul>
+                        <li>自研工具解决70%常见技术挑战</li>
+                        <li>标准化流程避免90%常见问题</li>
+                        <li>专家团队提供全程技术支持</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="right-panel">
+                <div class="panel-title">项目管理挑战与创新解决方案</div>
+                <div class="chart-container">
+                    <div class="advantage-box">
+                        <div class="advantage-title">大规模设备采购交付周期控制</div>
+                        <div class="advantage-desc">解决方案：多供应链策略、备选方案</div>
+                    </div>
+                    <div class="advantage-box">
+                        <div class="advantage-title">多方协作高效沟通</div>
+                        <div class="advantage-desc">解决方案：标准化沟通机制、问题跟踪系统</div>
+                    </div>
+                    <div class="advantage-box">
+                        <div class="advantage-title">复杂环境项目进度控制</div>
+                        <div class="advantage-desc">解决方案：敏捷管理、风险预评估、弹性资源分配</div>
+                    </div>
+
+                    <div class="advantage-title">创新解决方案成效：</div>
+                    <ul class="tool-list">
+                        <li>自研工具节省70%设计时间</li>
+                        <li>线缆管理降低90%错误率</li>
+                        <li>批量部署工具缩短部署时间50%</li>
+                        <li>自研监控系统，取代UFM功能</li>
+                    </ul>
+                </div>
+                <div class="key-points">
+                    <ul>
+                        <li>完整项目管理流程保障交付质量</li>
+                        <li>自动化工具显著提升效率</li>
+                        <li>标准化解决方案降低项目风险</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 内容部分 - 幻灯片5：FAQ -->
+        <div class="content slides" id="slide5">
+            <div class="left-panel">
+                <div class="panel-title">常见问题解答</div>
+                <div class="chart-container">
+                    <div class="faq-box">
+                        <div class="faq-question">公司核心竞争优势是什么？</div>
+                        <div class="faq-answer">• 丰富集成经验：10年Mellanox经验，15000P算力集成</div>
+                        <div class="faq-answer">• 自研自动化工具：大幅提升效率，降低错误率</div>
+                        <div class="faq-answer">• 高交付效率：批量部署能力，快速启动集群</div>
+                    </div>
+
+                    <div class="faq-box">
+                        <div class="faq-question">IB网络实施的主要挑战是什么？</div>
+                        <div class="faq-answer">• 线缆管理复杂：通过自动化工具解决线缆规划与管理</div>
+                        <div class="faq-answer">• 性能优化：通过拓扑设计与链路平衡确保低延迟</div>
+                        <div class="faq-answer">• 大规模部署：自动化脚本提高部署效率</div>
+                    </div>
+
+                    <div class="faq-box">
+                        <div class="faq-question">如何保障项目交付质量？</div>
+                        <div class="faq-answer">• 完整项目管理流程：从需求分析到实施验收</div>
+                        <div class="faq-answer">• 自研批量部署系统：确保一致性与稳定性</div>
+                        <div class="faq-answer">• 标准化验证流程：确保各环节质量</div>
+                    </div>
+
+                    <div class="faq-box">
+                        <div class="faq-question">无UFM管理方案的优势？</div>
+                        <div class="faq-answer">• 自研监控系统实现全面管理功能</div>
+                        <div class="faq-answer">• 降低许可成本，提高灵活性</div>
+                        <div class="faq-answer">• 与第三方监控系统更好集成</div>
+                    </div>
+                </div>
+                <div class="key-points">
+                    <ul>
+                        <li>自研工具解决70%常见技术挑战</li>
+                        <li>标准化流程避免90%常见问题</li>
+                        <li>专家团队提供全程技术支持</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="right-panel">
+                <div class="panel-title">突发故障与应急措施</div>
+                <div class="chart-container">
+                    <div class="faq-box">
+                        <div class="faq-question">如何应对突发故障？</div>
+                        <div class="faq-answer">• 应急响应机制：7x24小时快速响应</div>
+                        <div class="faq-answer">• 自动故障检测：快速定位问题</div>
+                        <div class="faq-answer">• 标准化解决方案：常见问题快速处理</div>
+                    </div>
+
+                    <svg width="100%" height="150" viewBox="0 0 500 150" preserveAspectRatio="xMidYMid meet">
+                        <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold">故障响应流程</text>
+
+                        <!-- 流程图 -->
+                        <rect x="200" y="40" width="100" height="30" rx="15" fill="#009B77" opacity="0.8"/>
+                        <text x="250" y="60" text-anchor="middle" font-size="12" fill="white">问题发现</text>
+
+                        <line x1="250" y1="70" x2="250" y2="85" stroke="#333" stroke-width="2" marker-end="url(#arrow5)"/>
+
+                        <rect x="200" y="85" width="100" height="30" rx="15" fill="#009B77" opacity="0.8"/>
+                        <text x="250" y="105" text-anchor="middle" font-size="12" fill="white">自动诊断</text>
+
+                        <line x1="250" y1="115" x2="250" y2="130" stroke="#333" stroke-width="2" marker-end="url(#arrow5)"/>
+
+                        <rect x="150" y="130" width="75" height="30" rx="15" fill="#009B77" opacity="0.8"/>
+                        <text x="187" y="150" text-anchor="middle" font-size="11" fill="white">远程解决</text>
+
+                        <rect x="275" y="130" width="75" height="30" rx="15" fill="#009B77" opacity="0.8"/>
+                        <text x="312" y="150" text-anchor="middle" font-size="11" fill="white">现场处理</text>
+
+                        <path d="M250,115 L187,130" stroke="#333" stroke-width="2" marker-end="url(#arrow5)"/>
+                        <path d="M250,115 L312,130" stroke="#333" stroke-width="2" marker-end="url(#arrow5)"/>
+
+                        <defs>
+                            <marker id="arrow5" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+                                <path d="M0,0 L10,5 L0,10 Z" fill="#333"/>
+                            </marker>
+                        </defs>
+                    </svg>
+                </div>
+                <div class="key-points">
+                    <ul>
+                        <li>平均故障响应时间小于2小时</li>
+                        <li>远程解决率超过80%</li>
+                        <li>紧急备件库支持关键项目</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 内容部分 - 幻灯片6：联系合作 -->
+        <div class="content slides" id="slide6">
+            <div class="left-panel">
+                <div class="panel-title">项目成果对比</div>
+                <div class="chart-container">
+                    <div class="advantage-box">
+                        <div class="advantage-title">效率提升</div>
+                        <div class="advantage-desc">• 设计阶段：节省70%设计时间</div>
+                        <div class="advantage-desc">• 实施阶段：部署时间缩短50%</div>
+                        <div class="advantage-desc">• 运维阶段：故障处理时间减少90%</div>
+                    </div>
+
+                    <div class="advantage-box">
+                        <div class="advantage-title">成本节约</div>
+                        <div class="advantage-desc">• 硬件投资：合理规划节省20%成本</div>
+                        <div class="advantage-desc">• 人力成本：自动化工具减少50%人力需求</div>
+                        <div class="advantage-desc">• 运维成本：自研监控替代商业软件</div>
+                    </div>
+
+                    <svg width="100%" height="150" viewBox="0 0 500 150" preserveAspectRatio="xMidYMid meet">
+                        <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold">项目对比分析</text>
+
+                        <!-- 对比柱状图 -->
+                        <line x1="100" y1="120" x2="400" y2="120" stroke="#333" stroke-width="2"/>
+                        <line x1="100" y1="120" x2="100" y2="40" stroke="#333" stroke-width="2"/>
+
+                        <!-- 第一组柱状 -->
+                        <rect x="150" y="80" width="25" height="40" fill="#6D9EEB" opacity="0.8"/>
+                        <rect x="180" y="50" width="25" height="70" fill="#009B77" opacity="0.8"/>
+
+                        <!-- 第二组柱状 -->
+                        <rect x="250" y="90" width="25" height="30" fill="#6D9EEB" opacity="0.8"/>
+                        <rect x="280" y="60" width="25" height="60" fill="#009B77" opacity="0.8"/>
+
+                        <!-- 第三组柱状 -->
+                        <rect x="350" y="70" width="25" height="50" fill="#6D9EEB" opacity="0.8"/>
+                        <rect x="380" y="45" width="25" height="75" fill="#009B77" opacity="0.8"/>
+
+                        <!-- 标签 -->
+                        <text x="165" y="135" text-anchor="middle" font-size="10">设计效率</text>
+                        <text x="265" y="135" text-anchor="middle" font-size="10">部署速度</text>
+                        <text x="365" y="135" text-anchor="middle" font-size="10">系统稳定性</text>
+
+                        <!-- 图例 -->
+                        <rect x="120" y="30" width="15" height="15" fill="#6D9EEB" opacity="0.8"/>
+                        <text x="140" y="42" font-size="10" text-anchor="start">传统方案</text>
+
+                        <rect x="220" y="30" width="15" height="15" fill="#009B77" opacity="0.8"/>
+                        <text x="240" y="42" font-size="10" text-anchor="start">我们的方案</text>
+                    </svg>
+                </div>
+                <div class="key-points">
+                    <ul>
+                        <li>自动化工具提升70%设计效率</li>
+                        <li>专业团队提高50%部署速度</li>
+                        <li>标准化方案确保卓越交付质量</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="right-panel">
+                <div class="panel-title">联系与合作</div>
+                <div class="chart-container">
+                    <div class="advantage-box">
+                        <div class="advantage-title">项目咨询</div>
+                        <div class="advantage-desc">深入了解您的需求，提供定制化解决方案</div>
+                    </div>
+                    <div class="advantage-box">
+                        <div class="advantage-title">技术支持</div>
+                        <div class="advantage-desc">专业团队提供全生命周期技术支持</div>
+                    </div>
+                    <div class="advantage-box">
+                        <div class="advantage-title">合作共赢</div>
+                        <div class="advantage-desc">共同探索智算未来，创造更大价值</div>
+                    </div>
+
+                    <svg width="100%" height="120" viewBox="0 0 500 120" preserveAspectRatio="xMidYMid meet">
+                        <!-- 联系方式图形 -->
+                        <rect x="125" y="20" width="250" height="80" rx="10" ry="10" fill="rgba(0, 118, 82, 0.1)" stroke="#009B77"/>
+                        <text x="250" y="50" text-anchor="middle" font-size="14" font-weight="bold">助力智算中心建设</text>
+                        <text x="250" y="80" text-anchor="middle" font-size="12">期待与您合作共赢</text>
+                    </svg>
+                </div>
+                <div class="key-points">
+                    <ul>
+                        <li>专业咨询为您节约20%投资成本</li>
+                        <li>降低50%运维复杂度</li>
+                        <li>提升30%运行效率</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            智算中心项目设计规划与实施 - NVIDIA InfiniBand解决方案专业服务
+        </div>
+    </div>
+
+    <script>
+        // 幻灯片切换功能
+        const slides = document.querySelectorAll('.slides');
+
+        function changeSlide(index) {
+            // 隐藏所有幻灯片
+            slides.forEach(slide => {
+                slide.classList.remove('active-slide');
+            });
+
+            // 显示选中的幻灯片
+            if (index < slides.length) {
+                slides[index].classList.add('active-slide');
+            } else {
+                // 如果索引超出范围，显示第一张
+                slides[0].classList.add('active-slide');
+            }
+        }
+
+        // 初始显示第一张幻灯片
+        changeSlide(0);
+    </script>
+</body>
+</html>

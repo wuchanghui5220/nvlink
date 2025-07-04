@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文件下载</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .download-link {
+            display: inline-block;
+            background-color: #007bff;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        .download-link:hover {
+            background-color: #0056b3;
+        }
+        .file-info {
+            margin-top: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+        .copy-link {
+            display: inline-block;
+            background-color: #28a745;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-left: 10px;
+            transition: background-color 0.3s;
+        }
+        .copy-link:hover {
+            background-color: #1e7e34;
+        }
+        .buttons {
+            margin-bottom: 20px;
+        }
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            display: none;
+            z-index: 1000;
+        }
+        .content {
+            text-align: left;
+            margin-top: 30px;
+        }
+        .content section {
+            margin-bottom: 30px;
+        }
+        .content h2 {
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+        }
+        .content h3 {
+            color: #555;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+        .content p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        .code-block {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px 0;
+            position: relative;
+            font-family: 'Courier New', monospace;
+        }
+        .code-block code {
+            background: none;
+            color: #333;
+            font-size: 14px;
+            display: block;
+            word-wrap: break-word;
+        }
+        .copy-code-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #6c757d;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .copy-code-btn:hover {
+            background-color: #5a6268;
+        }
+        .note {
+            font-style: italic;
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>UFMFV Docker 镜像</h1>
+        
+        <div class="buttons">
+            <a href="ufmfv.tar" class="download-link" download>
+                📥 下载 ufmfv.tar
+            </a>
+            <button class="copy-link" onclick="copyDownloadLink()">
+                📋 复制下载链接
+            </button>
+        </div>
+        
+        <div class="content">
+            <section class="overview">
+                <h2>概述</h2>
+                <p>UFM Fabric Validation (UFMFV) 插件是一个用于运行验证测试并可视化结果的工具。UFM FV 插件允许数据中心操作员选择计算节点范围和要在此范围内执行的测试列表。在作业执行期间，插件提供关于进度和节点状态的信息。测试结果可在插件的 GUI 应用程序以及基于 JSON 的 API 中查看。</p>
+            </section>
+
+            <section class="usage">
+                <h2>运行 UFMFV 容器</h2>
+                
+                <h3>从 Docker Hub 拉取镜像：</h3>
+                <div class="code-block">
+                    <code>docker pull mellanox/ufmfv</code>
+                    <button class="copy-code-btn" onclick="copyCode(this)">复制</button>
+                </div>
+
+                <h3>离线加载镜像（如无网络连接）：</h3>
+                <div class="code-block">
+                    <code>cp [location]/ufmfv.img.gz /tmp; docker load -i /tmp/ufmfv.img.gz</code>
+                    <button class="copy-code-btn" onclick="copyCode(this)">复制</button>
+                </div>
+
+                <h3>启动容器（绑定外部端口 9000）：</h3>
+                <div class="code-block">
+                    <code>docker run -dit --name ufmfv -p 9000:9000 mellanox/ufmfv</code>
+                    <button class="copy-code-btn" onclick="copyCode(this)">复制</button>
+                </div>
+            </section>
+
+            <section class="visualization">
+                <h2>UFMFV 可视化</h2>
+                <p>要查看 UFMFV，请浏览以下 URL：</p>
+                <div class="code-block">
+                    <code>http://[IP]:9000</code>
+                    <button class="copy-code-btn" onclick="copyCode(this)">复制</button>
+                </div>
+                <p class="note">将 [IP] 替换为您的服务器 IP 地址</p>
+            </section>
+        </div>
+    </div>
+    
+    <div id="toast" class="toast">
+        链接已复制到剪贴板！
+    </div>
+
+    <script>
+        function copyDownloadLink() {
+            const baseUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '');
+            const downloadUrl = baseUrl + '/ufmfv.tar';
+            
+            navigator.clipboard.writeText(downloadUrl).then(function() {
+                showToast();
+            }).catch(function(err) {
+                // 兼容旧浏览器的复制方法
+                const textArea = document.createElement('textarea');
+                textArea.value = downloadUrl;
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    showToast();
+                } catch (err) {
+                    alert('复制失败：' + downloadUrl);
+                }
+                document.body.removeChild(textArea);
+            });
+        }
+        
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.style.display = 'block';
+            setTimeout(function() {
+                toast.style.display = 'none';
+            }, 3000);
+        }
+        
+        function copyCode(button) {
+            const codeBlock = button.parentElement;
+            const code = codeBlock.querySelector('code').textContent;
+            
+            navigator.clipboard.writeText(code).then(function() {
+                button.textContent = '已复制!';
+                setTimeout(function() {
+                    button.textContent = '复制';
+                }, 2000);
+            }).catch(function(err) {
+                // 兼容旧浏览器的复制方法
+                const textArea = document.createElement('textarea');
+                textArea.value = code;
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    button.textContent = '已复制!';
+                    setTimeout(function() {
+                        button.textContent = '复制';
+                    }, 2000);
+                } catch (err) {
+                    alert('复制失败：' + code);
+                }
+                document.body.removeChild(textArea);
+            });
+        }
+    </script>
+</body>
+</html>

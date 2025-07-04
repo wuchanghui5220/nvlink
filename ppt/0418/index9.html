@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>NVIDIA InfiniBand End Slide</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, rgba(175, 233, 207, 0.8) 0%, rgba(145, 210, 185, 0.8) 100%);
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+        }
+
+        .end-slide-container {
+            width: 90%;
+            height: 85%;
+            overflow: hidden;
+            position: relative;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 87, 65, 0.25);
+        }
+
+        /* Main background with dark gradient */
+        .background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #1a2a32 0%, #0d1b21 100%);
+            z-index: 1;
+        }
+
+        /* Glowing circuit patterns */
+        .circuit-pattern {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.2;
+            z-index: 2;
+        }
+
+        /* Green accent shape */
+        .accent-shape {
+            position: absolute;
+            top: -180px;
+            left: -180px;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #009B77 0%, #00d4a3 100%);
+            opacity: 0.85;
+            z-index: 3;
+        }
+
+        /* Content area */
+        .content-area {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header logo area */
+        .header {
+            padding: 40px 60px 0 60px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        .logo-text {
+            color: white;
+            font-size: 2.4em;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .divider {
+            width: 2px;
+            height: 40px;
+            background-color: #009B77;
+            margin: 0 15px;
+        }
+
+        .product-name {
+            color: #009B77;
+            font-size: 2em;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        /* Thank you section */
+        .thank-you-section {
+            flex: 1;
+            padding: 50px 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-end;
+            text-align: right;
+        }
+
+        .thank-you-text {
+            color: white;
+            font-size: 4em;
+            font-weight: 700;
+            line-height: 1.2;
+            margin: 0;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Contact section */
+        .contact-section {
+            margin-top: 40px;
+            position: relative;
+            z-index: 5;
+        }
+
+        .contact-box {
+            position: relative;
+            overflow: hidden;
+            padding: 25px 40px;
+            background: rgba(0, 155, 119, 0.95);
+            border-radius: 100px 0 0 100px;
+            box-shadow: 0 10px 30px rgba(0, 155, 119, 0.4);
+        }
+
+        .contact-text {
+            color: white;
+            font-size: 1.4em;
+            font-weight: 500;
+            line-height: 1.4;
+            margin: 0;
+            position: relative;
+            z-index: 2;
+        }
+
+        .contact-item {
+            margin: 8px 0;
+        }
+
+        .contact-icon {
+            display: inline-block;
+            width: 20px;
+            margin-left: 10px;
+        }
+
+        /* Animated light effect */
+        .light-effect {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 150%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transform: skewX(-25deg);
+            animation: lightMove 5s infinite;
+        }
+
+        @keyframes lightMove {
+            0% {
+                left: -150%;
+            }
+            100% {
+                left: 150%;
+            }
+        }
+
+        /* Footer section */
+        .footer {
+            padding: 20px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+            position: relative;
+            z-index: 5;
+        }
+
+        .company-info {
+            font-style: italic;
+            opacity: 0.8;
+        }
+
+        .copyright {
+            font-style: italic;
+            text-align: right;
+        }
+
+        /* QR code */
+        .qr-code {
+            position: absolute;
+            bottom: 60px;
+            left: 100px;
+            width: 120px;
+            height: 120px;
+            background-color: white;
+            border-radius: 10px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            z-index: 10;
+        }
+
+        .qr-label {
+            color: #005741;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 8px;
+            text-align: center;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInRight {
+            from { opacity: 0; transform: translateX(30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes fadeInLeft {
+            from { opacity: 0; transform: translateX(-30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        .fade-in-right {
+            animation: fadeInRight 0.8s ease-out forwards;
+        }
+
+        .fade-in-left {
+            animation: fadeInLeft 0.8s ease-out forwards;
+        }
+
+        .pulse {
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        .delay-1 {
+            animation-delay: 0.3s;
+        }
+
+        .delay-2 {
+            animation-delay: 0.6s;
+        }
+
+        .delay-3 {
+            animation-delay: 0.9s;
+        }
+
+        /* Glowing dots */
+        .glow-dots {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 3;
+        }
+    </style>
+</head>
+<body>
+    <div class="end-slide-container">
+        <!-- Background and effects -->
+        <div class="background"></div>
+        
+        <!-- Circuit pattern background -->
+        <div class="circuit-pattern">
+            <svg width="100%" height="100%" viewBox="0 0 1000 800" preserveAspectRatio="xMidYMid slice">
+                <defs>
+                    <pattern id="smallGrid" width="30" height="30" patternUnits="userSpaceOnUse">
+                        <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#009B77" stroke-width="0.5"/>
+                    </pattern>
+                    <pattern id="grid" width="150" height="150" patternUnits="userSpaceOnUse">
+                        <rect width="150" height="150" fill="url(#smallGrid)"/>
+                        <path d="M 150 0 L 0 0 0 150" fill="none" stroke="#009B77" stroke-width="1"/>
+                    </pattern>
+                </defs>
+                
+                <rect width="100%" height="100%" fill="url(#grid)" />
+                
+                <!-- Circuit traces -->
+                <g stroke="#009B77" stroke-width="1.5" fill="none">
+                    <path d="M100,200 C250,150 300,350 450,300 S700,200 850,250" />
+                    <path d="M50,400 C200,350 250,500 400,450 S600,400 750,450" />
+                    <path d="M150,600 C300,550 350,650 500,600 S750,550 900,600" />
+                    <path d="M200,100 C200,250 350,300 350,450 S500,550 500,700" />
+                    <path d="M400,50 C400,200 550,250 550,400 S700,450 700,600" />
+                    <path d="M600,100 C600,200 750,250 750,400 S900,500 900,650" />
+                    
+                    <!-- Connection points -->
+                    <circle cx="100" cy="200" r="4" fill="#009B77" />
+                    <circle cx="450" cy="300" r="4" fill="#009B77" />
+                    <circle cx="850" cy="250" r="4" fill="#009B77" />
+                    <circle cx="50" cy="400" r="4" fill="#009B77" />
+                    <circle cx="400" cy="450" r="4" fill="#009B77" />
+                    <circle cx="750" cy="450" r="4" fill="#009B77" />
+                    <circle cx="150" cy="600" r="4" fill="#009B77" />
+                    <circle cx="500" cy="600" r="4" fill="#009B77" />
+                    <circle cx="900" cy="600" r="4" fill="#009B77" />
+                    <circle cx="200" cy="100" r="4" fill="#009B77" />
+                    <circle cx="350" cy="450" r="4" fill="#009B77" />
+                    <circle cx="500" cy="700" r="4" fill="#009B77" />
+                    <circle cx="400" cy="50" r="4" fill="#009B77" />
+                    <circle cx="550" cy="400" r="4" fill="#009B77" />
+                    <circle cx="700" cy="600" r="4" fill="#009B77" />
+                    <circle cx="600" cy="100" r="4" fill="#009B77" />
+                    <circle cx="750" cy="400" r="4" fill="#009B77" />
+                    <circle cx="900" cy="650" r="4" fill="#009B77" />
+                </g>
+            </svg>
+        </div>
+        
+        <!-- Moving dots -->
+        <div class="glow-dots">
+            <svg width="100%" height="100%" viewBox="0 0 1000 800" preserveAspectRatio="xMidYMid slice">
+                <circle cx="450" cy="300" r="3" fill="#009B77">
+                    <animate attributeName="opacity" values="1;0.3;1" dur="3s" repeatCount="indefinite"/>
+                </circle>
+                <circle cx="400" cy="450" r="3" fill="#009B77">
+                    <animate attributeName="opacity" values="0.3;1;0.3" dur="4s" repeatCount="indefinite"/>
+                </circle>
+                <circle cx="500" cy="600" r="3" fill="#009B77">
+                    <animate attributeName="opacity" values="0.7;0.2;0.7" dur="5s" repeatCount="indefinite"/>
+                </circle>
+                <circle cx="700" cy="600" r="3" fill="#009B77">
+                    <animate attributeName="opacity" values="0.5;1;0.5" dur="3.5s" repeatCount="indefinite"/>
+                </circle>
+                <circle cx="750" cy="400" r="3" fill="#009B77">
+                    <animate attributeName="opacity" values="1;0.4;1" dur="4.5s" repeatCount="indefinite"/>
+                </circle>
+            </svg>
+        </div>
+        
+        <!-- Green accent shape -->
+        <div class="accent-shape"></div>
+        
+        <!-- Main content -->
+        <div class="content-area">
+            <!-- Header with logo -->
+            <div class="header fade-in">
+                <div class="logo-text">NVIDIA</div>
+                <div class="divider"></div>
+                <div class="product-name">InfiniBand</div>
+            </div>
+            
+            <!-- Thank you section -->
+            <div class="thank-you-section">
+                <h1 class="thank-you-text fade-in delay-1">感谢您的关注<br>谢谢参与</h1>
+                
+                <!-- Contact section -->
+                <div class="contact-section fade-in-left delay-2">
+                    <div class="contact-box">
+                        <div class="light-effect"></div>
+                        <div class="contact-text">
+                            <div class="contact-item">吴昌辉 | NVIDIA NPN Partner 网络解决方案架构师</div>
+                            <div class="contact-item">邮箱: vincentwu@zhengytech.com <span class="contact-icon">✉️</span></div>
+                            <div class="contact-item">电话: 156 0127 5199 <span class="contact-icon">📱</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- QR Code -->
+            <div class="qr-code fade-in delay-3 pulse">
+                <!-- 使用默认占位图，您可以在实际使用时替换为自己的QR码图片 -->
+                <img src="gzh.jpg" alt="二维码" width="100" height="100" />
+                <div class="qr-label">扫码了解更多</div>
+            </div>
+            
+            <!-- Footer -->
+            <div class="footer fade-in delay-3">
+                <div class="company-info">
+                    深度了解NVIDIA网络解决方案
+                </div>
+                <div class="copyright">
+                    © 2025 NVIDIA Corporation
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

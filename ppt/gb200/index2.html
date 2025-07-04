@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>NVIDIA GB200与DGX B200技术详解</title>
+    <style>
+    /* NVIDIA GB200 PPT全局样式 */
+    body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(220, 240, 230, 0.8);
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+        }
+
+    .slide-container {
+            width: 96%;
+            max-width: 1600px;
+            aspect-ratio: 16/9;
+            background: #76a67e;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+    .header {
+        padding: 20px 40px;
+        background: rgba(0, 100, 0, 0.85);
+        color: white;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    h1 {
+        margin: 0;
+        font-size: 2.2em;
+        font-weight: 600;
+        letter-spacing: 1px;
+    }
+
+    h2 {
+        margin: 5px 0 0 0;
+        font-size: 1.3em;
+        font-weight: 400;
+        letter-spacing: 0.5px;
+    }
+
+    .content {
+        display: flex;
+        flex: 1;
+        padding: 20px;
+    }
+
+    .left-panel, .right-panel {
+        flex: 1;
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .panel-title {
+        font-size: 1.4em;
+        color: #005741;
+        margin-bottom: 15px;
+        font-weight: 600;
+    }
+
+    .chart-container {
+        flex: 1;
+        background: rgba(255, 255, 255, 0.5);
+        border-radius: 10px;
+        padding: 15px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        position: relative;
+    }
+
+    .key-points {
+        margin-top: 20px;
+        background: rgba(255, 255, 255, 0.5);
+        border-radius: 10px;
+        padding: 15px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .key-points ul {
+        margin: 0;
+        padding-left: 20px;
+    }
+
+    .key-points li {
+        margin-bottom: 8px;
+        color: #333;
+    }
+
+    .footer {
+        text-align: right;
+        padding: 10px 20px;
+        color: #005741;
+        font-style: italic;
+        font-size: 0.9em;
+    }
+
+    /* 悬停效果单独添加 */
+    .nav-button:hover {
+            background-color: #4a854c !important;
+            transform: scale(1.05);
+        }
+
+    .tooltip {
+        position: absolute;
+        padding: 8px 12px;
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        border-radius: 4px;
+        font-size: 12px;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+
+    .advantage-box {
+        background: rgba(255, 255, 255, 0.7);
+        border-radius: 8px;
+        margin-bottom: 10px;
+        padding: 10px;
+        border-left: 4px solid #009B77;
+    }
+
+    .advantage-title {
+        font-weight: bold;
+        color: #005741;
+        margin-bottom: 5px;
+    }
+
+    .advantage-desc {
+        font-size: 0.9em;
+        color: #333;
+    }
+
+    /* 动画效果 */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .left-panel, .right-panel {
+        animation: fadeIn 0.8s ease-out forwards;
+    }
+
+    .right-panel {
+        animation-delay: 0.3s;
+    }
+
+    .nav-dots {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        padding: 10px 0;
+    }
+
+    .nav-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: rgba(0, 87, 65, 0.3);
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+
+    .nav-dot.active {
+        background: rgba(0, 87, 65, 1);
+    }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="header">
+            <h1>NVIDIA GB200与DGX B200技术详解</h1>
+            <h2>高性能互连与计算架构对比</h2>
+        </div>
+        <div class="content">
+            <div class="left-panel">
+                <div class="panel-title">GPU互连架构对比</div>
+                <div class="chart-container" id="interconnect-comparison">
+                    <svg width="100%" height="100%" viewBox="0 0 500 300" preserveAspectRatio="xMidYMid meet">
+                        <!-- NVLink架构对比 -->
+                        <text x="250" y="30" text-anchor="middle" font-size="16" font-weight="bold">Blackwell GPU互连技术</text>
+                        
+                        <!-- GB200 NVL -->
+                        <rect x="50" y="60" width="180" height="80" rx="10" ry="10" fill="rgba(0, 155, 119, 0.8)" stroke="#333" stroke-width="1"/>
+                        <text x="140" y="85" text-anchor="middle" font-size="14" fill="white" font-weight="bold">GB200 NVL</text>
+                        <text x="140" y="110" text-anchor="middle" font-size="12" fill="white">• 第五代NVLink</text>
+                        <text x="140" y="130" text-anchor="middle" font-size="12" fill="white">• GPU间带宽130TB/s</text>
+                        
+                        <!-- DGX B200 -->
+                        <rect x="270" y="60" width="180" height="80" rx="10" ry="10" fill="rgba(0, 155, 119, 0.6)" stroke="#333" stroke-width="1"/>
+                        <text x="360" y="85" text-anchor="middle" font-size="14" fill="white" font-weight="bold">DGX B200</text>
+                        <text x="360" y="110" text-anchor="middle" font-size="12" fill="white">• 内置2个NVSwitch</text>
+                        <text x="360" y="130" text-anchor="middle" font-size="12" fill="white">• GPU间带宽14.4TB/s</text>
+                        
+                        <!-- 互连示意图 -->
+                        <text x="250" y="160" text-anchor="middle" font-size="14" fill="#333">NVLink带宽技术细节</text>
+                        
+                        <!-- 单点互连带宽 -->
+                        <rect x="100" y="180" width="300" height="30" rx="5" ry="5" fill="rgba(0, 155, 119, 0.5)" stroke="#333" stroke-width="1"/>
+                        <text x="250" y="200" text-anchor="middle" font-size="12" fill="white">单条NVLink连接: 双向100GB/s带宽</text>
+                        
+                        <!-- 单GPU总带宽 -->
+                        <rect x="100" y="220" width="300" height="30" rx="5" ry="5" fill="rgba(0, 155, 119, 0.4)" stroke="#333" stroke-width="1"/>
+                        <text x="250" y="240" text-anchor="middle" font-size="12" fill="white">每个Blackwell GPU: 1.8TB/s双向吞吐量</text>
+                        
+                        <!-- 显存带宽 -->
+                        <rect x="100" y="260" width="300" height="30" rx="5" ry="5" fill="rgba(0, 155, 119, 0.3)" stroke="#333" stroke-width="1"/>
+                        <text x="250" y="280" text-anchor="middle" font-size="12" fill="white">HBM3e显存带宽: 8TB/s (单GPU)</text>
+                    </svg>
+                </div>
+                <div class="key-points">
+                    <ul>
+                        <li>GB200 NVL采用外部NVSwitch Tray实现72/36个GPU全互联</li>
+                        <li>DGX B200内置2个NVSwitch芯片连接8个Blackwell GPU</li>
+                        <li>每个Blackwell GPU配有18个NVLink端口，每端口100GB/s</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="right-panel">
+                <div class="panel-title">GB200 NVL与DGX B200对比</div>
+                <div class="chart-container" id="dgx-specs">
+                    <svg width="100%" height="100%" viewBox="0 0 500 330" preserveAspectRatio="xMidYMid meet">
+                        <!-- 系统规格对比 -->
+                        <text x="250" y="30" text-anchor="middle" font-size="16" font-weight="bold">系统配置详细对比</text>
+                        
+                        <!-- 对比表格 -->
+                        <!-- 标题行 -->
+                        <rect x="50" y="50" width="160" height="40" rx="5" ry="5" fill="#005741" stroke="#333" stroke-width="1"/>
+                        <rect x="210" y="50" width="120" height="40" rx="5" ry="5" fill="#005741" stroke="#333" stroke-width="1"/>
+                        <rect x="330" y="50" width="120" height="40" rx="5" ry="5" fill="#005741" stroke="#333" stroke-width="1"/>
+                        
+                        <text x="130" y="75" text-anchor="middle" font-size="12" fill="white">技术规格</text>
+                        <text x="270" y="75" text-anchor="middle" font-size="12" fill="white">GB200 NVL</text>
+                        <text x="390" y="75" text-anchor="middle" font-size="12" fill="white">DGX B200</text>
+                        
+                        <!-- 内容行1: CPU -->
+                        <rect x="50" y="90" width="160" height="30" rx="5" ry="5" fill="rgba(0, 155, 119, 0.1)" stroke="#333" stroke-width="1"/>
+                        <rect x="210" y="90" width="120" height="30" rx="5" ry="5" fill="rgba(0, 155, 119, 0.1)" stroke="#333" stroke-width="1"/>
+                        <rect x="330" y="90" width="120" height="30" rx="5" ry="5" fill="rgba(0, 155, 119, 0.1)" stroke="#333" stroke-width="1"/>
+                        
+                        <text x="130" y="110" text-anchor="middle" font-size="12" fill="#333">CPU</text>
+                        <text x="270" y="110" text-anchor="middle" font-size="12" fill="#333">36x Grace CPU</text>
+                        <text x="390" y="110" text-anchor="middle" font-size="12" fill="#333">2x Intel Xeon 8570</text>
+                        
+                        <!-- 内容行2: GPU -->
+                        <rect x="50" y="120" width="160" height="30" rx="5" ry="5" fill="rgba(0, 155, 119, 0.2)" stroke="#333" stroke-width="1"/>
+                        <rect x="210" y="120" width="120" height="30" rx="5" ry="5" fill="rgba(0, 155, 119, 0.2)" stroke="#333" stroke-width="1"/>
+                        <rect x="330" y="120" width="120" height="30" rx="5" ry="5" fill="rgba(0, 155, 119, 0.2)" stroke="#333" stroke-width="1"/>
+                        
+                        <text x="130" y="140" text-anchor="middle" font-size="12" fill="#333">GPU</text>
+                        <text x="270" y="140" text-anchor="middle" font-size="12" fill="#333">72x Blackwell</text>
+                        <text x="390" y="140" text-anchor="middle" font-size="12" fill="#333">8x Blackwell</text>
+                        
+                        <!-- 内容行3: GPU内存 -->
+                        <rect x="50" y="150" width="160" height="30" rx="5" ry="5" fill="rgba(0, 155, 119, 0.1)" stroke="#333" stroke-width="1"/>
+                        <rect x="210" y="150" width="120" height="30" rx="5" ry="5" fill="rgba(0, 155, 119, 0.1)" stroke="#333" stroke-width="1"/>
+                        <rect x="330" y="150" width="120" height="30" rx="5" ry="5" fill="rgba(0, 155, 119, 0.1)" stroke="#333" stroke-width="1"/>
+                        
+                        <text x="130" y="170" text-anchor="middle" font-size="12" fill="#333">GPU内存</text>
+                        <text x="270" y="170" text-anchor="middle" font-size="12" fill="#333">13.5TB HBM3e</text>
+                        <text x="390" y="170" text-anchor="middle" font-size="12" fill="#333">1.44TB HBM3e</text>
+                        
+                        <!-- 内容行4: FP8训练 -->
+                        <rect x="50" y="180" width="160" height="30" rx="5" ry="5" fill="rgba(0, 155, 119, 0.2)" stroke="#333" stroke-width="1"/>
+                        <rect x="210" y="180" width="120" height="30" rx="5" ry="5" fill="rgba(0, 155, 119, 0.2)" stroke="#333" stroke-width="1"/>
+                        <rect x="330" y="180" width="120" height="30" rx="5" ry="5" fill="rgba(0, 155, 119, 0.2)" stroke="#333" stroke-width="1"/>
+                        
+                        <text x="130" y="200" text-anchor="middle" font-size="12" fill="#333">FP8训练性能</text>
+                        <text x="270" y="200" text-anchor="middle" font-size="12" fill="#333">720 PFLOPS</text>
+                        <text x="390" y="200" text-anchor="middle" font-size="12" fill="#333">72 PFLOPS</text>
+                        
+                        <!-- 内容行5: FP4推理 -->
+                        <rect x="50" y="210" width="160" height="30" rx="5" ry="5" fill="rgba(0, 155, 119, 0.1)" stroke="#333" stroke-width="1"/>
+                        <rect x="210" y="210" width="120" height="30" rx="5" ry="5" fill="rgba(0, 155, 119, 0.1)" stroke="#333" stroke-width="1"/>
+                        <rect x="330" y="210" width="120" height="30" rx="5" ry="5" fill="rgba(0, 155, 119, 0.1)" stroke="#333" stroke-width="1"/>
+                        
+                        <text x="130" y="230" text-anchor="middle" font-size="12" fill="#333">FP4推理性能</text>
+                        <text x="270" y="230" text-anchor="middle" font-size="12" fill="#333">1,440 PFLOPS</text>
+                        <text x="390" y="230" text-anchor="middle" font-size="12" fill="#333">144 PFLOPS</text>
+                        
+                        <!-- 内容行6: 网络 -->
+                        <rect x="50" y="240" width="160" height="30" rx="5" ry="5" fill="rgba(0, 155, 119, 0.2)" stroke="#333" stroke-width="1"/>
+                        <rect x="210" y="240" width="120" height="30" rx="5" ry="5" fill="rgba(0, 155, 119, 0.2)" stroke="#333" stroke-width="1"/>
+                        <rect x="330" y="240" width="120" height="30" rx="5" ry="5" fill="rgba(0, 155, 119, 0.2)" stroke="#333" stroke-width="1"/>
+                        
+                        <text x="130" y="260" text-anchor="middle" font-size="12" fill="#333">外部网络</text>
+                        <text x="270" y="260" text-anchor="middle" font-size="11" fill="#333">72x 400G OSFP</text>
+                        <text x="390" y="260" text-anchor="middle" font-size="11" fill="#333">8x 400G OSFP</text>
+                        
+                        <!-- 内容行7: 散热 -->
+                        <rect x="50" y="270" width="160" height="30" rx="5" ry="5" fill="rgba(0, 155, 119, 0.1)" stroke="#333" stroke-width="1"/>
+                        <rect x="210" y="270" width="120" height="30" rx="5" ry="5" fill="rgba(0, 155, 119, 0.1)" stroke="#333" stroke-width="1"/>
+                        <rect x="330" y="270" width="120" height="30" rx="5" ry="5" fill="rgba(0, 155, 119, 0.1)" stroke="#333" stroke-width="1"/>
+                        
+                        <text x="130" y="290" text-anchor="middle" font-size="12" fill="#333">散热方式</text>
+                        <text x="270" y="290" text-anchor="middle" font-size="12" fill="#333">液冷</text>
+                        <text x="390" y="290" text-anchor="middle" font-size="12" fill="#333">风冷</text>
+                        
+                        <!-- 内容行8: 功耗 -->
+                        <rect x="50" y="300" width="160" height="30" rx="5" ry="5" fill="rgba(0, 155, 119, 0.2)" stroke="#333" stroke-width="1"/>
+                        <rect x="210" y="300" width="120" height="30" rx="5" ry="5" fill="rgba(0, 155, 119, 0.2)" stroke="#333" stroke-width="1"/>
+                        <rect x="330" y="300" width="120" height="30" rx="5" ry="5" fill="rgba(0, 155, 119, 0.2)" stroke="#333" stroke-width="1"/>
+                        
+                        <text x="130" y="320" text-anchor="middle" font-size="12" fill="#333">系统功耗</text>
+                        <text x="270" y="320" text-anchor="middle" font-size="12" fill="#333">120KW</text>
+                        <text x="390" y="320" text-anchor="middle" font-size="12" fill="#333">14.3KW</text>
+                    </svg>
+                </div>
+                <div class="key-points">
+                    <ul>
+                        <li>DGX B200采用Intel Xeon处理器，GB200 NVL采用Grace ARM CPU</li>
+                        <li>DGX B200提供更紧凑的设计：10RU，易于在传统数据中心部署</li>
+                        <li>GB200 NVL性能更强，但需要专业数据中心基础设施支持</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="nav-dots">
+            <div class="nav-dot"></div>
+            <div class="nav-dot active"></div>
+            <div class="nav-dot"></div>
+        </div>
+        <div class="footer">
+            NVIDIA GB200 NVL系统 — 面向万亿参数级生成式AI的超级计算基础设施
+        </div>
+    </div>
+    <!-- 导航按钮 - 独立于主内容区 -->
+    <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+        <a href="index.html" class="nav-button" style="display: inline-block; width: 40px; height: 40px; line-height: 40px; text-align: center; background-color: #3e703e; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+        <a href="index3.html" class="nav-button" style="display: inline-block; width: 40px; height: 40px; line-height: 40px; text-align: center; background-color: #3e703e; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+    </div>
+    
+    <script>
+        // 添加导航点的交互效果
+        document.querySelectorAll('.nav-dot').forEach((dot, index) => {
+            dot.addEventListener('click', () => {
+                document.querySelectorAll('.nav-dot').forEach(d => d.classList.remove('active'));
+                dot.classList.add('active');
+                // 这里可以添加切换页面的逻辑
+            });
+        });
+    </script>
+</body>
+</html>

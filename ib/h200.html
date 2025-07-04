@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .slide {
+            width: 90%;
+            max-width: 1000px;
+            background: linear-gradient(145deg, #222222, #333333);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #76b900;
+            padding-bottom: 15px;
+        }
+        h1 {
+            font-size: 36px;
+            margin: 0;
+            background: linear-gradient(90deg, #76b900, #c8ff00);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        .content {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-gap: 20px;
+        }
+        .advantage {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            transition: all 0.3s ease;
+            border-left: 3px solid #76b900;
+            min-height: 190px;
+        }
+        .advantage:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(118, 185, 0, 0.3);
+        }
+        .advantage h3 {
+            color: #76b900;
+            margin-top: 0;
+            font-size: 18px;
+        }
+        .advantage ul {
+            padding-left: 20px;
+            margin: 10px 0;
+        }
+        .advantage li {
+            margin-bottom: 8px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 14px;
+            color: #999;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .nvidia-logo {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-weight: bold;
+            font-size: 24px;
+            color: #76b900;
+        }
+    </style>
+</head>
+<body>
+    <div class="nvidia-logo">NVIDIA</div>
+    <div class="slide">
+        <div class="header">
+            <h1>NVIDIA H系列GPU优势</h1>
+        </div>
+        <div class="content">
+            <div class="advantage">
+                <h3>AI专用架构</h3>
+                <ul>
+                    <li>采用最新Hopper架构</li>
+                    <li>专为大规模AI训练与推理优化</li>
+                    <li>相比A100提升3-9倍性能</li>
+                </ul>
+            </div>
+            <div class="advantage">
+                <h3>强大计算能力</h3>
+                <ul>
+                    <li>大规模Tensor核心</li>
+                    <li>优化矩阵运算加速</li>
+                    <li>Transformer引擎加速LLM处理</li>
+                </ul>
+            </div>
+            <div class="advantage">
+                <h3>超强内存系统</h3>
+                <ul>
+                    <li>HBM3高带宽内存</li>
+                    <li>高达141GB大容量(H200)</li>
+                    <li>超过5TB/s内存带宽</li>
+                </ul>
+            </div>
+            <div class="advantage">
+                <h3>高效互连技术</h3>
+                <ul>
+                    <li>NVLink高速互连</li>
+                    <li>支持多GPU集群计算</li>
+                    <li>优化分布式训练效率</li>
+                </ul>
+            </div>
+            <div class="advantage">
+                <h3>灵活精度支持</h3>
+                <ul>
+                    <li>支持FP8/FP16/BF16等格式</li>
+                    <li>优化性能与精度平衡</li>
+                    <li>适应不同AI任务需求</li>
+                </ul>
+            </div>
+            <div class="advantage">
+                <h3>卓越能源效率</h3>
+                <ul>
+                    <li>显著提升能效比</li>
+                    <li>降低数据中心能耗</li>
+                    <li>减少AI训练总体成本</li>
+                </ul>
+            </div>
+            <div class="advantage">
+                <h3>企业级可靠性</h3>
+                <ul>
+                    <li>专业数据中心解决方案</li>
+                    <li>全面软件生态支持</li>
+                    <li>高可用性与可扩展性</li>
+                </ul>
+            </div>
+            <div class="advantage">
+                <h3>行业广泛应用</h3>
+                <ul>
+                    <li>各大云服务商首选</li>
+                    <li>AI研究机构标配</li>
+                    <li>大模型训练与部署基础设施</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer">
+            NVIDIA H系列 - 引领AI计算新时代
+        </div>
+    </div>
+</body>
+</html>

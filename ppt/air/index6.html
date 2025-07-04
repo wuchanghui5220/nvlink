@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Linux/NCLU 命令 & 服务器命令</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f0f0f0;
+      font-family: 'Noto Sans SC', sans-serif;
+      overflow: hidden;
+    }
+
+    .slide-container {
+      width: 100vw;
+      height: 56.25vw; /* 16:9 aspect ratio */
+      max-height: 100vh;
+      max-width: 177.78vh; /* 16:9 aspect ratio (reversed) */
+      position: relative;
+      background: #111827;
+      color: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    /* 背景图形元素 */
+    .bg-grid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image:
+        linear-gradient(rgba(24, 92, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(24, 92, 255, 0.05) 1px, transparent 1px);
+      background-size: 20px 20px;
+      z-index: 0;
+    }
+
+    .bg-gradient {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 120% 45%, rgba(76, 29, 149, 0.7) 0%, rgba(17, 24, 39, 0) 50%);
+      z-index: 1;
+    }
+
+    .bg-circle1 {
+      position: absolute;
+      top: -15%;
+      right: -15%;
+      width: 40%;
+      height: 40%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #76b900 0%, #1a4163 100%);
+      filter: blur(80px);
+      opacity: 0.6;
+      z-index: 2;
+    }
+
+    .bg-circle2 {
+      position: absolute;
+      bottom: -10%;
+      left: -10%;
+      width: 30%;
+      height: 30%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0099da 0%, #1e40af 100%);
+      filter: blur(60px);
+      opacity: 0.5;
+      z-index: 2;
+    }
+
+    /* 主要内容 */
+    .content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    .header {
+      padding: 1.8% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .nvidia-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-box {
+      width: 8%;
+      min-width: 100px;
+      height: 36px;
+      background: #76b900;
+      border-radius: 4px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 700;
+      font-size: clamp(16px, 2vw, 22px);
+      transform: skew(-10deg);
+    }
+
+    .partner-text {
+      font-size: clamp(12px, 1.5vw, 16px);
+      font-weight: 500;
+      opacity: 0.9;
+    }
+
+    .slide-title {
+      font-size: clamp(16px, 1.8vw, 20px);
+      font-weight: 600;
+      padding: 0.5% 2%;
+      background: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(5px);
+      border-radius: 20px;
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 1.5% 3%;
+      overflow: hidden;
+    }
+
+    .solution-container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      width: 100%;
+    }
+
+    .solution-title {
+      text-align: center;
+      font-size: clamp(18px, 2.2vw, 24px);
+      font-weight: 600;
+      color: #76b900;
+      margin-bottom: 15px;
+      margin-top: 0;
+    }
+
+    .solution-content {
+      display: flex;
+      gap: 15px;
+      height: 100%;
+    }
+
+    .commands-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .section-header {
+      background: linear-gradient(135deg, #76b900 0%, #3e703e 100%);
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 14px;
+      font-weight: 600;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(118, 185, 0, 0.3);
+    }
+
+    .linux-section {
+      background: linear-gradient(135deg, #0099da 0%, #1e40af 100%);
+      box-shadow: 0 4px 15px rgba(0, 153, 218, 0.3);
+    }
+
+    .commands-container {
+      flex: 1;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.05);
+      padding: 12px;
+      overflow-y: auto;
+    }
+
+    .command-category {
+      margin-bottom: 15px;
+    }
+
+    .category-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: #76b900;
+      margin-bottom: 8px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid rgba(118, 185, 0, 0.3);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .server-category .category-title {
+      color: #0099da;
+      border-bottom-color: rgba(0, 153, 218, 0.3);
+    }
+
+    .category-icon {
+      width: 14px;
+      height: 14px;
+      background: #76b900;
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      font-weight: bold;
+    }
+
+    .server-category .category-icon {
+      background: #0099da;
+    }
+
+    .command-item {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 8px;
+      margin-bottom: 6px;
+      transition: all 0.3s ease;
+      border-left: 3px solid #76b900;
+    }
+
+    .server-category .command-item {
+      border-left-color: #0099da;
+    }
+
+    .command-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateX(3px);
+    }
+
+    .command-name {
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+      font-weight: 600;
+      color: #60A5FA;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 3px 6px;
+      border-radius: 3px;
+      margin-bottom: 4px;
+      word-break: break-all;
+      line-height: 1.2;
+    }
+
+    .command-desc {
+      font-size: 10px;
+      line-height: 1.3;
+      color: rgba(255, 255, 255, 0.85);
+    }
+
+    .info-section {
+      flex: 0.8;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .info-card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 10px;
+      flex: 1;
+    }
+
+    .info-title {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #76b900;
+    }
+
+    .info-content {
+      font-size: 11px;
+      line-height: 1.4;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .info-list {
+      list-style: none;
+      padding: 0;
+      margin: 6px 0;
+    }
+
+    .info-list li {
+      margin-bottom: 4px;
+      padding-left: 12px;
+      position: relative;
+      font-size: 10px;
+    }
+
+    .info-list li::before {
+      content: "▸";
+      position: absolute;
+      left: 0;
+      color: #76b900;
+    }
+
+    .platform-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .platform-item {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 4px;
+      padding: 6px;
+      text-align: center;
+      font-size: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .platform-name {
+      color: #76b900;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .scenario-tag {
+      background: linear-gradient(90deg, #EF4444, #DC2626);
+      color: white;
+      padding: 2px 6px;
+      border-radius: 10px;
+      font-size: 9px;
+      font-weight: 500;
+      margin: 2px;
+      display: inline-block;
+    }
+
+    .scenario-tag.connectivity {
+      background: linear-gradient(90deg, #10B981, #059669);
+    }
+
+    .scenario-tag.automation {
+      background: linear-gradient(90th, #8B5CF6, #7C3AED);
+    }
+
+    .best-practice {
+      background: rgba(118, 185, 0, 0.1);
+      border: 1px solid rgba(118, 185, 0, 0.3);
+      border-radius: 6px;
+      padding: 6px;
+      margin-top: 6px;
+    }
+
+    .practice-title {
+      font-size: 10px;
+      font-weight: 600;
+      color: #76b900;
+      margin-bottom: 3px;
+    }
+
+    .practice-content {
+      font-size: 9px;
+      color: rgba(255, 255, 255, 0.8);
+      line-height: 1.2;
+    }
+
+    .footer {
+      padding: 1.5% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .company-name {
+      font-weight: 500;
+    }
+
+    .page-number {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .rotating-lines {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 50%;
+      height: 50%;
+      z-index: 5;
+      opacity: 0.15;
+      animation: rotate 60s linear infinite;
+    }
+
+    @keyframes rotate {
+      from {
+        transform: translate(-50%, -50%) rotate(0deg);
+      }
+      to {
+        transform: translate(-50%, -50%) rotate(360deg);
+      }
+    }
+
+    /* 滚动条样式 */
+    .commands-container::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .commands-container::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 2px;
+    }
+
+    .commands-container::-webkit-scrollbar-thumb {
+      background: rgba(118, 185, 0, 0.5);
+      border-radius: 2px;
+    }
+
+    .commands-container::-webkit-scrollbar-thumb:hover {
+      background: rgba(118, 185, 0, 0.7);
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <!-- 背景元素 -->
+    <div class="bg-grid"></div>
+    <div class="bg-gradient"></div>
+    <div class="bg-circle1"></div>
+    <div class="bg-circle2"></div>
+
+    <!-- 旋转线框背景 -->
+    <svg class="rotating-lines" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+      <path d="M250,10 L490,250 L250,490 L10,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,50 L450,250 L250,450 L50,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,90 L410,250 L250,410 L90,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,130 L370,250 L250,370 L130,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,170 L330,250 L250,330 L170,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,210 L290,250 L250,290 L210,250 Z" fill="none" stroke="white" stroke-width="1" />
+    </svg>
+
+    <!-- 主要内容 -->
+    <div class="content">
+      <div class="header">
+        <div class="nvidia-logo">
+          <div class="logo-box">NVIDIA</div>
+          <div class="partner-text">Networking NPN Elite Partner</div>
+        </div>
+        <div class="slide-title">Linux/NCLU & 服务器命令</div>
+      </div>
+
+      <div class="main-content">
+        <div class="solution-container">
+          <h3 class="solution-title">Linux / NCLU 命令 & 服务器命令</h3>
+          
+          <div class="solution-content">
+            
+            <!-- Linux/NCLU 命令部分 -->
+            <div class="commands-section">
+              <div class="section-header">🐧 Linux / NCLU 命令 (Cumulus Linux 交换机)</div>
+              <div class="commands-container">
+                
+                <!-- 配置查看 -->
+                <div class="command-category">
+                  <div class="category-title">
+                    <div class="category-icon">📋</div>
+                    配置查看
+                  </div>
+                  
+                  <div class="command-item">
+                    <div class="command-name">sudo cat /etc/nvue.d/startup.yaml</div>
+                    <div class="command-desc">查看启动配置文件</div>
+                  </div>
+                </div>
+
+                <!-- BGP状态验证 -->
+                <div class="command-category">
+                  <div class="category-title">
+                    <div class="category-icon">🔗</div>
+                    BGP状态验证
+                  </div>
+                  
+                  <div class="command-item">
+                    <div class="command-name">sudo vtysh -c 'show bgp sum'</div>
+                    <div class="command-desc">验证 BGP 对等体（IPv4 和 EVPN AF）的摘要信息</div>
+                  </div>
+
+                  <div class="command-item">
+                    <div class="command-name">sudo vtysh -c 'show bgp l2vpn evpn vni'</div>
+                    <div class="command-desc">显示 EVPN VNI 条目，包括L2 VNI和L3 VNI的数量，以及每个VNI的路由区分器和路由目标</div>
+                  </div>
+
+                  <div class="command-item">
+                    <div class="command-name">sudo vtysh -c 'show bgp l2vpn evpn route type 2' | grep &lt;MAC_address&gt;</div>
+                    <div class="command-desc">验证远程服务器的 MAC 地址是否被填充到 EVPN 路由中（Type 2路由）</div>
+                  </div>
+                </div>
+
+                <!-- ARP和路由验证 -->
+                <div class="command-category">
+                  <div class="category-title">
+                    <div class="category-icon">🌐</div>
+                    ARP和路由验证
+                  </div>
+                  
+                  <div class="command-item">
+                    <div class="command-name">arp -n</div>
+                    <div class="command-desc">验证在边界叶交换机上学习到的邻居 (ARP) 条目</div>
+                  </div>
+
+                  <div class="command-item">
+                    <div class="command-name">sudo vtysh -c 'show ip route vrf RED'</div>
+                    <div class="command-desc">验证 VRF RED 中通过 L3VNI 学习到的 VLAN 间路由对等体的 IPv4 路由</div>
+                  </div>
+
+                  <div class="command-item">
+                    <div class="command-name">sudo vtysh -c 'show ip route vrf BLUE'</div>
+                    <div class="command-desc">验证 VRF BLUE 中通过 L3VNI 学习到的 VLAN 间路由对等体的 IPv4 路由</div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- 服务器命令部分 -->
+            <div class="commands-section">
+              <div class="section-header linux-section">🖥️ 服务器命令 (Ubuntu 服务器)</div>
+              <div class="commands-container">
+                
+                <!-- 连通性测试 -->
+                <div class="command-category server-category">
+                  <div class="category-title">
+                    <div class="category-icon">🔍</div>
+                    连通性测试
+                  </div>
+                  
+                  <div class="command-item">
+                    <div class="command-name">ping &lt;IP_address&gt; -c &lt;count&gt;</div>
+                    <div class="command-desc">检查 L2 VLAN 内连通性（例如：ping 10.1.10.104 -c 3）</div>
+                  </div>
+
+                  <div class="command-item">
+                    <div class="command-name">for srv in {&lt;IP_suffix1&gt;,&lt;IP_suffix2&gt;} ; do ping 10.1.${srv} -c 3; done</div>
+                    <div class="command-desc">检查 L3 VLAN 间连通性（例如：for srv in {20.102,20.105} ; do ping 10.1.${srv} -c 3; done）</div>
+                  </div>
+                </div>
+
+                <!-- Ansible自动化 -->
+                <div class="command-category server-category">
+                  <div class="category-title">
+                    <div class="category-icon">🤖</div>
+                    Ansible自动化
+                  </div>
+                  
+                  <div class="command-item">
+                    <div class="command-name">ansible pod1 -m ping</div>
+                    <div class="command-desc">检查节点ping pong 状态</div>
+                  </div>
+                  <div class="command-item">
+                    <div class="command-name">ansible leaf -m shell -a "nv show vrf default router bgp neighbor"</div>
+                    <div class="command-desc">检查leaf交换机bgp 状态</div>
+                  </div>
+
+                  <div class="command-item">
+                    <div class="command-name">ansible leaf -m shell -a "nv show interface --view=mlag-cc"</div>
+                    <div class="command-desc">验证 MLAG 接口状态，并检查 MLAG 对等体之间是否存在配置冲突</div>
+                  </div>
+
+                  <div class="command-item">
+                    <div class="command-name">ansible leaf -m shell -a "nv show interface bonds"</div>
+                    <div class="command-desc">检查交换机聚合端口 bond 状态</div>
+                  </div>
+
+                  <div class="command-item">
+                    <div class="command-name">ansible leaf -m shell -a "nv show platform""</div>
+                    <div class="command-desc">检查交换机型号和序列号</div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- 信息面板 -->
+            <div class="info-section">
+
+              <!-- 应用场景 -->
+              <div class="info-card">
+                <h4 class="info-title">应用场景</h4>
+                <div class="info-content">
+                  <div class="scenario-tag">故障排查</div>
+                  <div class="scenario-tag connectivity">连通性验证</div>
+                  <div class="scenario-tag automation">自动化部署</div>
+                  <ul class="info-list">
+                    <li><strong>网络状态验证</strong> - BGP、EVPN、路由</li>
+                    <li><strong>连通性测试</strong> - L2/L3通信验证</li>
+                    <li><strong>配置管理</strong> - Ansible自动化</li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- 使用技巧 -->
+              <div class="info-card">
+                <h4 class="info-title">使用技巧</h4>
+                <div class="info-content">
+                  <ul class="info-list">
+                    <li><strong>vtysh命令</strong>需要sudo权限</li>
+                    <li>使用<strong>grep过滤</strong>特定输出内容</li>
+                    <li><strong>for循环</strong>批量测试多个目标</li>
+                    <li><strong>Ansible</strong>适合批量管理设备</li>
+                  </ul>
+                  <div class="best-practice">
+                    <div class="practice-title">💡 最佳实践</div>
+                    <div class="practice-content">
+                      在生产环境中，建议先在测试环境验证命令效果，特别是涉及配置变更的操作。
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 权限要求 -->
+              <div class="info-card">
+                <h4 class="info-title">权限要求</h4>
+                <div class="info-content">
+                  <ul class="info-list">
+                    <li><strong>sudo</strong> - vtysh和系统配置命令</li>
+                    <li><strong>普通用户</strong> - ping和基础网络命令</li>
+                    <li><strong>SSH密钥</strong> - Ansible无密码访问</li>
+                    <li><strong>管理网络</strong> - OOB管理连接</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="company-name">北京正阳恒卓科技有限公司</div>
+        <div class="page-number">6</div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 导航按钮 -->
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+    <a href="index5.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+    <a href="index7.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+  </div>
+</body>
+</html>

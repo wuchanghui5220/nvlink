@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>NVIDIA ConnectX-7 Network Adapters</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(220, 240, 230, 0.8);
+            font-family: 'Arial', sans-serif;
+            overflow-x: hidden;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .slide-container {
+            width: 96%;
+            max-width: 1600px;
+            aspect-ratio: 16/9;
+            background: #76a67e;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            padding: 15px 40px;
+            background: #3e703e;
+            color: white;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2.2em;
+            font-weight: 600;
+        }
+
+        h2 {
+            margin: 5px 0 0 0;
+            font-size: 1.3em;
+            font-weight: 400;
+        }
+
+        .content {
+            display: flex;
+            flex: 1;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .left-panel {
+            flex: 1;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .right-panel {
+            flex: 2;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .image-container {
+            background: rgba(210, 225, 210, 0.8);
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 10px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .image-title {
+            font-size: 1.2em;
+            color: #2c5e2e;
+            text-align: center;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .image-box {
+            text-align: center;
+            background: white;
+            padding: 5px;
+            border-radius: 8px;
+            width: 90%;
+            height: 75%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .image-box img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        .section-title {
+            font-size: 1.5em;
+            color: #fff;
+            margin: 5px 0 10px 0;
+            font-weight: 600;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .specs-container {
+            background: rgba(210, 225, 210, 0.8);
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 10px;
+            flex: 1;
+            overflow: auto;
+        }
+
+        .specs-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .specs-table td {
+            padding: 6px;
+            border-bottom: 1px solid rgba(60, 120, 60, 0.2);
+        }
+
+        .specs-table td:first-child {
+            font-weight: bold;
+            color: #2c5e2e;
+            width: 40%;
+        }
+
+        .features-container {
+            background: rgba(210, 225, 210, 0.8);
+            border-radius: 10px;
+            padding: 10px;
+            flex: 1;
+            overflow: auto;
+            margin-bottom: 0;
+        }
+
+        .feature-column {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .feature-item {
+            flex: 1 0 45%;
+            margin: 3px;
+            padding: 4px 10px 4px 25px;
+            position: relative;
+        }
+
+        .feature-item::before {
+            content: "✓";
+            position: absolute;
+            left: 5px;
+            color: #4a854c;
+            font-weight: bold;
+        }
+
+        .footer {
+            text-align: right;
+            padding: 5px 20px;
+            color: white;
+            font-style: italic;
+            font-size: 0.9em;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+            background: #3e703e;
+        }
+
+        /* 悬停效果单独添加 */
+        .nav-button:hover {
+            background-color: #4a854c !important;
+            transform: scale(1.05);
+        }
+
+        @media screen and (max-width: 1200px) {
+            h1 {
+                font-size: 1.8em;
+            }
+            h2 {
+                font-size: 1.1em;
+            }
+            .section-title {
+                font-size: 1.3em;
+            }
+            .image-title {
+                font-size: 1em;
+            }
+            .feature-item {
+                font-size: 0.9em;
+            }
+            .specs-table td {
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="header">
+            <h1>NVIDIA ConnectX-7 400G Adapters</h1>
+            <h2>Accelerated networking for modern data center infrastructures</h2>
+        </div>
+        <div class="content">
+            <div class="left-panel">
+                <div class="image-container">
+                    <div class="image-title">Single-Port CX7 Adapter</div>
+                    <div class="image-box">
+                        <img src="cx7-1.png" alt="NVIDIA ConnectX-7 Single-Port Network Adapter">
+                    </div>
+                </div>
+                <div class="image-container">
+                    <div class="image-title">Dual-Port CX7 Adapter</div>
+                    <div class="image-box">
+                        <img src="cx7-2.png" alt="NVIDIA ConnectX-7 Dual-Port Network Adapter">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="right-panel">
+                <div class="section-title">Product Specifications</div>
+                <div class="specs-container">
+                    <table class="specs-table">
+                        <tr>
+                            <td>Supported network protocols</td>
+                            <td>InfiniBand, Ethernet</td>
+                        </tr>
+                        <tr>
+                            <td>Total bandwidth</td>
+                            <td>400Gb/s</td>
+                        </tr>
+                        <tr>
+                            <td>InfiniBand speeds</td>
+                            <td>NDR 400Gb/s, HDR 200Gb/s, EDR 100Gb/s</td>
+                        </tr>
+                        <tr>
+                            <td>Ethernet speeds</td>
+                            <td>400GbE, 200GbE, 100GbE, 50GbE, 25GbE, 10Gb</td>
+                        </tr>
+                        <tr>
+                            <td>Number of network ports</td>
+                            <td>1, 2, or 4</td>
+                        </tr>
+                        <tr>
+                            <td>Host interface</td>
+                            <td>PCIe Gen5, up to 32 lanes</td>
+                        </tr>
+                        <tr>
+                            <td>Form factors</td>
+                            <td>PCIe HHHL/FHHL and OCP3.0 TSFF/SFF</td>
+                        </tr>
+                        <tr>
+                            <td>Interface technologies</td>
+                            <td>NRZ (10G, 25G), PAM4 (50G, 100G)</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <div class="section-title">Key Features</div>
+                <div class="features-container">
+                    <div class="feature-column">
+                        <div class="feature-item">RDMA, send/receive semantics</div>
+                        <div class="feature-item">16 million IO channels</div>
+                        <div class="feature-item">Up to 400Gb/s total bandwidth</div>
+                        <div class="feature-item">NVIDIA GPUDirect RDMA</div>
+                        <div class="feature-item">Hardware-based reliable transport</div>
+                        <div class="feature-item">Zero-touch RoCE</div>
+                        <div class="feature-item">NVMe-oF and NVMe/TCP acceleration</div>
+                        <div class="feature-item">NVIDIA Multi-Host support</div>
+                        <div class="feature-item">Secure boot with hardware root of trust</div>
+                        <div class="feature-item">Advanced PTP: IEEE 1588v2</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            Powering the world's most demanding AI, scientific computing, and hyperscale cloud data center workloads
+        </div>
+    </div>
+    
+    <!-- 导航按钮 - 独立于主内容区 -->
+    <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+        <a href="index12.html" class="nav-button" style="display: inline-block; width: 40px; height: 40px; line-height: 40px; text-align: center; background-color: #3e703e; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+        <a href="index14.html" class="nav-button" style="display: inline-block; width: 40px; height: 40px; line-height: 40px; text-align: center; background-color: #3e703e; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+    </div>
+</body>
+</html>

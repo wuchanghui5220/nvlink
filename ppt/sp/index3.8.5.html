@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NVIDIA NPN SP技术大比武 - 网络互联</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f0f0f0;
+      font-family: 'Noto Sans SC', sans-serif;
+      overflow: hidden;
+    }
+
+    .slide-container {
+      width: 100vw;
+      height: 56.25vw; /* 16:9 aspect ratio */
+      max-height: 100vh;
+      max-width: 177.78vh; /* 16:9 aspect ratio (reversed) */
+      position: relative;
+      background: #111827;
+      color: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    /* 背景图形元素 */
+    .bg-grid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image:
+        linear-gradient(rgba(24, 92, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(24, 92, 255, 0.05) 1px, transparent 1px);
+      background-size: 20px 20px;
+      z-index: 0;
+    }
+
+    .bg-gradient {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 120% 45%, rgba(76, 29, 149, 0.7) 0%, rgba(17, 24, 39, 0) 50%);
+      z-index: 1;
+    }
+
+    .bg-circle1 {
+      position: absolute;
+      top: -15%;
+      right: -15%;
+      width: 40%;
+      height: 40%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #76b900 0%, #1a4163 100%);
+      filter: blur(80px);
+      opacity: 0.6;
+      z-index: 2;
+    }
+
+    .bg-circle2 {
+      position: absolute;
+      bottom: -10%;
+      left: -10%;
+      width: 30%;
+      height: 30%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0099da 0%, #1e40af 100%);
+      filter: blur(60px);
+      opacity: 0.5;
+      z-index: 2;
+    }
+
+    /* 主要内容 */
+    .content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    .header {
+      padding: 2% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .nvidia-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-box {
+      width: 8%;
+      min-width: 100px;
+      height: 36px;
+      background: #76b900;
+      border-radius: 4px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 700;
+      font-size: clamp(16px, 2vw, 22px);
+      transform: skew(-10deg);
+    }
+
+    .partner-text {
+      font-size: clamp(12px, 1.5vw, 16px);
+      font-weight: 500;
+      opacity: 0.9;
+    }
+
+    .slide-title {
+      font-size: clamp(16px, 1.8vw, 20px);
+      font-weight: 600;
+      padding: 0.5% 4%;
+      background: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(5px);
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      padding: 2% 4%;
+      overflow: hidden;
+    }
+
+    .left-content {
+      flex: 1;
+      padding-right: 20px;
+    }
+
+    .right-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .section-title {
+      font-size: clamp(18px, 2.2vw, 24px);
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: #76b900;
+      border-bottom: 1px solid rgba(118, 185, 0, 0.3);
+      padding-bottom: 8px;
+    }
+
+    .network-description {
+      margin-bottom: 25px;
+    }
+
+    .network-description p {
+      margin: 0 0 12px 0;
+      line-height: 1.6;
+      font-size: clamp(14px, 1.2vw, 16px);
+    }
+
+    .highlight {
+      color: #76b900;
+      font-weight: 600;
+    }
+
+    .network-diagram {
+      width: 100%;
+      height: 350px;
+      margin-bottom: 15px;
+      position: relative;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 15px;
+      box-sizing: border-box;
+    }
+
+    .diagram-content {
+      width: 100%;
+      height: 100%;
+      background: rgba(16, 24, 39, 0.7);
+      border-radius: 8px;
+      position: relative;
+    }
+
+    /* 网络拓扑图元素样式 */
+    .node {
+      position: absolute;
+      background-color: white;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 14px;
+      font-weight: 500;
+      color: #111827;
+      padding: 8px 12px;
+      z-index: 2;
+    }
+
+    .dots {
+      position: absolute;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 16px;
+      letter-spacing: 5px;
+      z-index: 1;
+    }
+
+    .svg-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    .storage-table {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 15px;
+      margin-bottom: 15px;
+    }
+
+    .storage-table table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: clamp(13px, 1.2vw, 14px);
+    }
+
+    .storage-table th {
+      background: rgba(118, 185, 0, 0.2);
+      text-align: left;
+      padding: 8px 12px;
+      font-weight: 600;
+      color: #76b900;
+    }
+
+    .storage-table td {
+      padding: 8px 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .storage-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .optimization-card {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 15px;
+      flex: 1;
+    }
+
+    .optimization-card h3 {
+      font-size: clamp(16px, 1.4vw, 18px);
+      font-weight: 600;
+      margin-top: 0;
+      margin-bottom: 15px;
+      color: #76b900;
+    }
+
+    .optimization-list {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .optimization-item {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+
+    .optimization-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #76b900 0%, #3e703e 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-right: 12px;
+      flex-shrink: 0;
+    }
+
+    .optimization-icon svg {
+      width: 14px;
+      height: 14px;
+      fill: white;
+    }
+
+    .optimization-text {
+      font-size: clamp(13px, 1.1vw, 14px);
+      line-height: 1.5;
+    }
+
+    .footer {
+      padding: 1.2% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .company-name {
+      font-weight: 500;
+    }
+
+    .page-number {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .rotating-lines {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 50%;
+      height: 50%;
+      z-index: 5;
+      opacity: 0.15;
+      animation: rotate 60s linear infinite;
+    }
+
+    @keyframes rotate {
+      from {
+        transform: translate(-50%, -50%) rotate(0deg);
+      }
+      to {
+        transform: translate(-50%, -50%) rotate(360deg);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <!-- 背景元素 -->
+    <div class="bg-grid"></div>
+    <div class="bg-gradient"></div>
+    <div class="bg-circle1"></div>
+    <div class="bg-circle2"></div>
+
+    <!-- 旋转线框背景 -->
+    <svg class="rotating-lines" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+      <path d="M250,10 L490,250 L250,490 L10,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,50 L450,250 L250,450 L50,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,90 L410,250 L250,410 L90,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,130 L370,250 L250,370 L130,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,170 L330,250 L250,330 L170,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,210 L290,250 L250,290 L210,250 Z" fill="none" stroke="white" stroke-width="1" />
+    </svg>
+
+    <!-- 主要内容 -->
+    <div class="content">
+      <div class="header">
+        <div class="nvidia-logo">
+          <div class="logo-box">NVIDIA</div>
+          <div class="partner-text">Networking NPN Elite Partner</div>
+        </div>
+        <div class="slide-title">3. 客户需求方案汇报 - 题目A：存储系统选型</div>
+      </div>
+
+      <div class="main-content">
+        <div class="left-content">
+          <div class="section-title">存储网络架构</div>
+
+          <div class="network-description">
+            <p>基于<span class="highlight">NVIDIA SuperPOD</span>参考架构，我们采用<span class="highlight">NDR 400Gb/s InfiniBand</span>作为存储网络主干，构建高吞吐量、低延迟的Fat-Tree拓扑，为300节点HGX集群和存储系统提供强大的网络基础。</p>
+            <p>部署<span class="highlight">7台NVIDIA Quantum-2 QM9790</span> Spine交换机和<span class="highlight">14台QM9790</span> Leaf交换机，每台Spine交换机全连接到所有Leaf交换机，Leaf1-10连接到HGX节点，而Leaf11和Leaf14全连接到所有存储设备，形成高度冗余的网络架构，提供<span class="highlight">无阻塞带宽</span>与<span class="highlight">多路径冗余</span>。</p>
+          </div>
+
+          <div class="network-diagram">
+            <div class="diagram-content">
+              <!-- 节点和连接线的SVG图 -->
+        <svg class="svg-container" viewBox="0 0 700 320" xmlns="http://www.w3.org/2000/svg">
+                <!-- Spine节点 -->
+                <rect x="155" y="40" width="100" height="40" rx="6" fill="white" stroke="#ddd"></rect>
+                <text x="205" y="65" font-size="16" text-anchor="middle" fill="#111827">Spine1</text>
+
+                <text x="320" y="65" font-size="16" text-anchor="middle" fill="rgba(255,255,255,0.7)">• • • • •</text>
+
+                <rect x="395" y="40" width="100" height="40" rx="6" fill="white" stroke="#ddd"></rect>
+                <text x="445" y="65" font-size="16" text-anchor="middle" fill="#111827">Spine7</text>
+
+                <rect x="545" y="40" width="80" height="40" rx="6" fill="white" stroke="#ddd"></rect>
+                <text x="585" y="65" font-size="16" text-anchor="middle" fill="#111827">UFM</text>
+
+                <!-- Leaf节点 -->
+                <rect x="75" y="140" width="100" height="40" rx="6" fill="white" stroke="#ddd"></rect>
+                <text x="125" y="165" font-size="16" text-anchor="middle" fill="#111827">Leaf1-2</text>
+
+                <text x="200" y="165" font-size="16" text-anchor="middle" fill="rgba(255,255,255,0.7)"> • • •</text>
+
+                <rect x="275" y="140" width="100" height="40" rx="6" fill="white" stroke="#ddd"></rect>
+                <text x="325" y="165" font-size="16" text-anchor="middle" fill="#111827">Leaf9-10</text>
+
+                <rect x="425" y="140" width="100" height="40" rx="6" fill="white" stroke="#ddd"></rect>
+                <text x="475" y="165" font-size="16" text-anchor="middle" fill="#111827">Leaf11</text>
+
+                <rect x="575" y="140" width="100" height="40" rx="6" fill="white" stroke="#ddd"></rect>
+                <text x="625" y="165" font-size="16" text-anchor="middle" fill="#111827">Leaf14</text>
+
+                <!-- 设备节点 -->
+                <rect x="75" y="240" width="100" height="40" rx="6" fill="white" stroke="#ddd"></rect>
+                <text x="125" y="265" font-size="16" text-anchor="middle" fill="#111827">HGX1-60</text>
+
+                <text x="200" y="265" font-size="16" text-anchor="middle" fill="rgba(255,255,255,0.7)"> • • •</text>
+
+                <rect x="275" y="240" width="100" height="40" rx="6" fill="white" stroke="#ddd"></rect>
+                <text x="325" y="265" font-size="16" text-anchor="middle" fill="#111827">HGX241-300</text>
+
+                <rect x="425" y="240" width="100" height="40" rx="6" fill="white" stroke="#ddd"></rect>
+                <text x="475" y="265" font-size="16" text-anchor="middle" fill="#111827">Storage1</text>
+
+                <rect x="575" y="240" width="100" height="40" rx="6" fill="white" stroke="#ddd"></rect>
+                <text x="625" y="265" font-size="16" text-anchor="middle" fill="#111827">Storage28</text>
+
+                <!-- Spine1 到所有 Leaf 的连接 -->
+
+                <line x1="205" y1="80" x2="125" y2="140" stroke="#76b900" stroke-width="1.5"></line>
+
+                <line x1="205" y1="80" x2="325" y2="140" stroke="#76b900" stroke-width="1.5"></line>
+
+                <line x1="205" y1="80" x2="625" y2="140" stroke="#76b900" stroke-width="1.5"></line>
+
+                <!-- Spine6 到所有 Leaf 的连接 -->
+                <line x1="450" y1="80" x2="125" y2="140" stroke="#76b900" stroke-width="1.5"></line>
+
+                <line x1="445" y1="80" x2="325" y2="140" stroke="#76b900" stroke-width="1.5"></line>
+
+                <line x1="205" y1="80" x2="475" y2="140" stroke="#76b900" stroke-width="1.5"></line>
+                <line x1="445" y1="80" x2="625" y2="140" stroke="#76b900" stroke-width="1.5"></line>
+
+                <!-- UFM 到 Spine 和 Leaf 的连接 -->
+                <line x1="545" y1="60" x2="495" y2="60" stroke="#76b900" stroke-width="1.5"></line>
+                <line x1="445" y1="80" x2="475" y2="140" stroke="#76b900" stroke-width="1.5"></line>
+
+
+
+                <!-- Leaf 到 HGX 的连接 -->
+                <line x1="100" y1="180" x2="90" y2="240" stroke="#76b900" stroke-width="1.5"></line>
+                <line x1="100" y1="180" x2="110" y2="240" stroke="#76b900" stroke-width="1.5"></line><line x1="150" y1="180" x2="140" y2="240" stroke="#76b900" stroke-width="1.5"></line><line x1="150" y1="180" x2="160" y2="240" stroke="#76b900" stroke-width="1.5"></line><line x1="300" y1="180" x2="290" y2="240" stroke="#76b900" stroke-width="1.5"></line>
+
+                <line x1="300" y1="180" x2="310" y2="240" stroke="#76b900" stroke-width="1.5"></line><line x1="350" y1="180" x2="340" y2="240" stroke="#76b900" stroke-width="1.5"></line><line x1="350" y1="180" x2="360" y2="240" stroke="#76b900" stroke-width="1.5"></line><!-- Leaf11 和 Leaf12 到所有存储设备的交叉连接 -->
+
+                <line x1="475" y1="180" x2="475" y2="240" stroke="#76b900" stroke-width="1.5"></line>
+
+                <line x1="475" y1="180" x2="625" y2="240" stroke="#76b900" stroke-width="1.5"></line>
+
+                <line x1="625" y1="180" x2="625" y2="240" stroke="#76b900" stroke-width="1.5"></line>
+
+
+                <line x1="625" y1="180" x2="475" y2="240" stroke="#76b900" stroke-width="1.5"></line>
+              </svg>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="right-content">
+          <div class="storage-table">
+            <div class="section-title">存储网络设备清单</div>
+            <table>
+              <thead>
+                <tr>
+                  <th>类型</th>
+                  <th>型号</th>
+                  <th>数量</th>
+                  <th>用途</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>IB交换机</td>
+                  <td>NVIDIA QM9790-NS2R</td>
+                  <td>21</td>
+                  <td>Spine/Leaf层交换机</td>
+                </tr>
+                <tr>
+                  <td>800G OSFP模块</td>
+                  <td>MMA4Z00-NS</td>
+                  <td>约630个</td>
+                  <td>交换机侧连接</td>
+                </tr>
+                <tr>
+                  <td>400G OSFP模块</td>
+                  <td>MMA1Z00-NS400</td>
+                  <td>约824个</td>
+                  <td>网卡侧连接(NDR200)</td>
+                </tr>
+                <tr>
+                  <td>MPO多模光纤</td>
+                  <td>MFP7E10-N030/50</td>
+                  <td>约420条</td>
+		  <td>交换机连接</td>
+                </tr>
+                <tr>
+                  <td>MPO多模光纤</td>
+                  <td>MFP7E20-N030</td>
+                  <td>约420条</td>
+                  <td>交换机至服务器(Y-Cable)</td>
+                </tr>
+                <tr>
+                  <td>管理软件</td>
+                  <td>UFM Enterprise</td>
+                  <td>1套</td>
+                  <td>网络监控与管理</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="optimization-card">
+            <h3>网络优化技术</h3>
+            <ul class="optimization-list">
+              <li class="optimization-item">
+                <div class="optimization-icon">
+                  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                  </svg>
+                </div>
+                <div class="optimization-text">
+			<strong><span class="highlight">Adaptive Routing</span></strong> - 实时监控网络流量，动态选择最佳路径，避免网络拥塞，提高带宽利用率
+                </div>
+              </li>
+              <li class="optimization-item">
+                <div class="optimization-icon">
+                  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19 8h-1V3H6v5H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zM8 5h8v3H8V5zm8 12v2H8v-4h8v2zm2-2v-2H6v2H4v-4c0-.55.45-1 1-1h14c.55 0 1 .45 1 1v4h-2z"/>
+                  </svg>
+                </div>
+                <div class="optimization-text">
+			<strong><span class="highlight">NVIDIA UFM</span></strong> - 全面监控网络状态，预测潜在故障，优化流量，提供实时性能分析
+                </div>
+              </li>
+              <li class="optimization-item">
+                <div class="optimization-icon">
+                  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M17 20.41L18.41 19 15 15.59 13.59 17 17 20.41zM7.5 8H11v5.59L5.59 19 7 20.41l6-6V8h3.5L12 3.5 7.5 8z"/>
+                  </svg>
+                </div>
+                <div class="optimization-text">
+			<strong><span class="highlight">交叉冗余连接</span></strong> - GPU节点和存储设备使用Y型线缆连接到Leaf交换机，实现双链路和负载均衡，排除单点故障风险
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="company-name">北京正阳恒卓科技有限公司</div>
+        <div class="page-number">25</div>
+      </div>
+    </div>
+  </div>
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+        <a href="index3.8.4.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+        <a href="index3.8.6.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+    </div>
+</body>
+</html>

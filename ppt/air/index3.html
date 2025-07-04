@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EVPN Route Types - 介绍和使用场景</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f0f0f0;
+      font-family: 'Noto Sans SC', sans-serif;
+      overflow: hidden;
+    }
+
+    .slide-container {
+      width: 100vw;
+      height: 56.25vw; /* 16:9 aspect ratio */
+      max-height: 100vh;
+      max-width: 177.78vh; /* 16:9 aspect ratio (reversed) */
+      position: relative;
+      background: #111827;
+      color: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    /* 背景图形元素 */
+    .bg-grid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image:
+        linear-gradient(rgba(24, 92, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(24, 92, 255, 0.05) 1px, transparent 1px);
+      background-size: 20px 20px;
+      z-index: 0;
+    }
+
+    .bg-gradient {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 120% 45%, rgba(76, 29, 149, 0.7) 0%, rgba(17, 24, 39, 0) 50%);
+      z-index: 1;
+    }
+
+    .bg-circle1 {
+      position: absolute;
+      top: -15%;
+      right: -15%;
+      width: 40%;
+      height: 40%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #76b900 0%, #1a4163 100%);
+      filter: blur(80px);
+      opacity: 0.6;
+      z-index: 2;
+    }
+
+    .bg-circle2 {
+      position: absolute;
+      bottom: -10%;
+      left: -10%;
+      width: 30%;
+      height: 30%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0099da 0%, #1e40af 100%);
+      filter: blur(60px);
+      opacity: 0.5;
+      z-index: 2;
+    }
+
+    /* 主要内容 */
+    .content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    .header {
+      padding: 1.8% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .nvidia-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-box {
+      width: 8%;
+      min-width: 100px;
+      height: 36px;
+      background: #76b900;
+      border-radius: 4px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 700;
+      font-size: clamp(16px, 2vw, 22px);
+      transform: skew(-10deg);
+    }
+
+    .partner-text {
+      font-size: clamp(12px, 1.5vw, 16px);
+      font-weight: 500;
+      opacity: 0.9;
+    }
+
+    .slide-title {
+      font-size: clamp(16px, 1.8vw, 20px);
+      font-weight: 600;
+      padding: 0.5% 2%;
+      background: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(5px);
+      border-radius: 20px;
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 1.5% 3%;
+      overflow: hidden;
+    }
+
+    .solution-container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      width: 100%;
+    }
+
+    .solution-title {
+      text-align: center;
+      font-size: clamp(18px, 2.2vw, 24px);
+      font-weight: 600;
+      color: #76b900;
+      margin-bottom: 15px;
+      margin-top: 0;
+    }
+
+    .solution-content {
+      display: flex;
+      gap: 20px;
+      height: 100%;
+    }
+
+    .route-types-container {
+      flex: 2.2;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.05);
+      padding: 15px;
+      overflow-y: auto;
+    }
+
+    .route-type-item {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 10px;
+      margin-bottom: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .route-type-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateX(5px);
+    }
+
+    .route-type-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .route-type-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: #76b900;
+    }
+
+    .frequency-badge {
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 10px;
+      font-weight: 500;
+    }
+
+    .freq-very-high {
+      background: linear-gradient(90deg, #EF4444, #DC2626);
+      color: white;
+    }
+
+    .freq-high {
+      background: linear-gradient(90deg, #F97316, #EA580C);
+      color: white;
+    }
+
+    .freq-medium {
+      background: linear-gradient(90deg, #EAB308, #CA8A04);
+      color: white;
+    }
+
+    .freq-low {
+      background: linear-gradient(90deg, #6B7280, #4B5563);
+      color: white;
+    }
+
+    .route-type-desc {
+      font-size: 12px;
+      line-height: 1.4;
+      color: rgba(255, 255, 255, 0.8);
+      margin-bottom: 6px;
+    }
+
+    .route-type-usage {
+      font-size: 11px;
+      color: #0099da;
+      font-style: italic;
+    }
+
+    .info-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .info-card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 12px;
+      flex: 1;
+    }
+
+    .info-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: #76b900;
+    }
+
+    .info-content {
+      font-size: 12px;
+      line-height: 1.5;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .info-list {
+      list-style: none;
+      padding: 0;
+      margin: 8px 0;
+    }
+
+    .info-list li {
+      margin-bottom: 6px;
+      padding-left: 15px;
+      position: relative;
+      font-size: 11px;
+    }
+
+    .info-list li::before {
+      content: "▸";
+      position: absolute;
+      left: 0;
+      color: #76b900;
+    }
+
+    .deployment-level {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 6px;
+      padding: 6px 8px;
+      margin-bottom: 4px;
+      border-left: 3px solid #76b900;
+    }
+
+    .deployment-title {
+      font-size: 11px;
+      font-weight: 600;
+      color: #76b900;
+      margin-bottom: 2px;
+    }
+
+    .deployment-types {
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .summary-points {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .summary-point {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 11px;
+      line-height: 1.4;
+    }
+
+    .point-type {
+      background: #0099da;
+      color: white;
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 9px;
+      font-weight: 600;
+      min-width: 45px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .footer {
+      padding: 1.5% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .company-name {
+      font-weight: 500;
+    }
+
+    .page-number {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .rotating-lines {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 50%;
+      height: 50%;
+      z-index: 5;
+      opacity: 0.15;
+      animation: rotate 60s linear infinite;
+    }
+
+    @keyframes rotate {
+      from {
+        transform: translate(-50%, -50%) rotate(0deg);
+      }
+      to {
+        transform: translate(-50%, -50%) rotate(360deg);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <!-- 背景元素 -->
+    <div class="bg-grid"></div>
+    <div class="bg-gradient"></div>
+    <div class="bg-circle1"></div>
+    <div class="bg-circle2"></div>
+
+    <!-- 旋转线框背景 -->
+    <svg class="rotating-lines" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+      <path d="M250,10 L490,250 L250,490 L10,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,50 L450,250 L250,450 L50,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,90 L410,250 L250,410 L90,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,130 L370,250 L250,370 L130,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,170 L330,250 L250,330 L170,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,210 L290,250 L250,290 L210,250 Z" fill="none" stroke="white" stroke-width="1" />
+    </svg>
+
+    <!-- 主要内容 -->
+    <div class="content">
+      <div class="header">
+        <div class="nvidia-logo">
+          <div class="logo-box">NVIDIA</div>
+          <div class="partner-text">Networking NPN Elite Partner</div>
+        </div>
+        <div class="slide-title">EVPN Route Types</div>
+      </div>
+
+      <div class="main-content">
+        <div class="solution-container">
+          <h3 class="solution-title">EVPN Route Types 介绍和使用场景</h3>
+          
+          <div class="solution-content">
+            <div class="route-types-container">
+              
+              <!-- Type 1 -->
+              <div class="route-type-item">
+                <div class="route-type-header">
+                  <div class="route-type-name">Type 1 - Ethernet AD Route</div>
+                  <div class="frequency-badge freq-medium">中等</div>
+                </div>
+                <div class="route-type-desc">以太网自动发现路由，用于多归属场景下的设备发现和快速收敛</div>
+                <div class="route-type-usage">应用场景：Multi-homing、快速故障切换、负载均衡</div>
+              </div>
+
+              <!-- Type 2 -->
+              <div class="route-type-item">
+                <div class="route-type-header">
+                  <div class="route-type-name">Type 2 - MAC/IP Advertisement</div>
+                  <div class="frequency-badge freq-very-high">极高</div>
+                </div>
+                <div class="route-type-desc">MAC/IP地址通告，实现主机信息学习和ARP抑制功能</div>
+                <div class="route-type-usage">应用场景：MAC学习、ARP抑制、主机移动性检测</div>
+              </div>
+
+              <!-- Type 3 -->
+              <div class="route-type-item">
+                <div class="route-type-header">
+                  <div class="route-type-name">Type 3 - Inclusive Multicast</div>
+                  <div class="frequency-badge freq-very-high">极高</div>
+                </div>
+                <div class="route-type-desc">包含性组播路由，用于VTEP发现和BUM（广播、未知单播、组播）流量处理</div>
+                <div class="route-type-usage">应用场景：VTEP发现、BUM流量分发、VXLAN隧道建立</div>
+              </div>
+
+              <!-- Type 4 -->
+              <div class="route-type-item">
+                <div class="route-type-header">
+                  <div class="route-type-name">Type 4 - Ethernet Segment</div>
+                  <div class="frequency-badge freq-medium">中等</div>
+                </div>
+                <div class="route-type-desc">以太网段路由，用于多归属场景下的指定转发器（DF）选举</div>
+                <div class="route-type-usage">应用场景：Multi-homing DF选举、分割水平、环路避免</div>
+              </div>
+
+              <!-- Type 5 -->
+              <div class="route-type-item">
+                <div class="route-type-header">
+                  <div class="route-type-name">Type 5 - IP Prefix Route</div>
+                  <div class="frequency-badge freq-high">高</div>
+                </div>
+                <div class="route-type-desc">IP前缀路由，实现L3 VPN功能和跨VRF通信</div>
+                <div class="route-type-usage">应用场景：L3路由、外部连接、跨租户通信、DCI互联</div>
+              </div>
+
+              <!-- Type 6 -->
+              <div class="route-type-item">
+                <div class="route-type-header">
+                  <div class="route-type-name">Type 6 - Selective Multicast</div>
+                  <div class="frequency-badge freq-low">低</div>
+                </div>
+                <div class="route-type-desc">选择性组播路由，用于优化组播流量转发</div>
+                <div class="route-type-usage">应用场景：组播优化、IGMP/MLD代理、带宽节省</div>
+              </div>
+
+              <!-- Type 7 -->
+              <div class="route-type-item">
+                <div class="route-type-header">
+                  <div class="route-type-name">Type 7 - IGMP Join Synch</div>
+                  <div class="frequency-badge freq-low">低</div>
+                </div>
+                <div class="route-type-desc">IGMP加入同步路由，用于组播组成员信息同步</div>
+                <div class="route-type-usage">应用场景：组播成员同步、IGMP状态维护</div>
+              </div>
+
+              <!-- Type 8 -->
+              <div class="route-type-item">
+                <div class="route-type-header">
+                  <div class="route-type-name">Type 8 - IGMP Leave Synch</div>
+                  <div class="frequency-badge freq-low">低</div>
+                </div>
+                <div class="route-type-desc">IGMP离开同步路由，用于组播组成员离开信息同步</div>
+                <div class="route-type-usage">应用场景：组播成员离开、IGMP状态清理</div>
+              </div>
+
+            </div>
+
+            <div class="info-section">
+              <!-- 实际部署建议 -->
+              <div class="info-card">
+                <h4 class="info-title">实际部署建议</h4>
+                <div class="info-content">
+                  <div class="deployment-level">
+                    <div class="deployment-title">基础部署</div>
+                    <div class="deployment-types">Type 2、3、5 (必需)</div>
+                  </div>
+                  <div class="deployment-level">
+                    <div class="deployment-title">高可用部署</div>
+                    <div class="deployment-types">增加 Type 1、4 (Multi-homing)</div>
+                  </div>
+                  <div class="deployment-level">
+                    <div class="deployment-title">组播优化</div>
+                    <div class="deployment-types">考虑 Type 6-8 (较少使用)</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 使用频率统计 -->
+              <div class="info-card">
+                <h4 class="info-title">使用频率分析</h4>
+                <div class="info-content">
+                  <ul class="info-list">
+                    <li><strong>Type 2/3:</strong> 所有EVPN部署必需</li>
+                    <li><strong>Type 5:</strong> L3功能和外部连接</li>
+                    <li><strong>Type 1/4:</strong> 多归属高可用场景</li>
+                    <li><strong>Type 6-8:</strong> 组播优化（可选）</li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- 技术总结 -->
+              <div class="info-card">
+                <h4 class="info-title">技术总结</h4>
+                <div class="info-content">
+                  <div class="summary-points">
+                    <div class="summary-point">
+                      <div class="point-type">冗余</div>
+                      <div>Type 1/4 提供冗余和快速收敛</div>
+                    </div>
+                    <div class="summary-point">
+                      <div class="point-type">L2扩展</div>
+                      <div>Type 2 实现L2扩展和主机学习</div>
+                    </div>
+                    <div class="summary-point">
+                      <div class="point-type">覆盖网</div>
+                      <div>Type 3 构建VXLAN overlay网络</div>
+                    </div>
+                    <div class="summary-point">
+                      <div class="point-type">L3互通</div>
+                      <div>Type 5 实现L3 VPN和外部连接</div>
+                    </div>
+                    <div class="summary-point">
+                      <div class="point-type">组播</div>
+                      <div>Type 6/7/8 优化组播转发效率</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="company-name">北京正阳恒卓科技有限公司</div>
+        <div class="page-number">4</div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 导航按钮 -->
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+    <a href="index2.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+    <a href="index4.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+  </div>
+</body>
+</html>

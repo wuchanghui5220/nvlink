@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NVIDIA SuperPOD 机房布线设计方案</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f0f0f0;
+      font-family: 'Noto Sans SC', sans-serif;
+      overflow: hidden;
+    }
+
+    .slide-container {
+      width: 100vw;
+      height: 56.25vw; /* 16:9 aspect ratio */
+      max-height: 100vh;
+      max-width: 177.78vh; /* 16:9 aspect ratio (reversed) */
+      position: relative;
+      background: #111827;
+      color: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    /* 背景图形元素 */
+    .bg-grid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image:
+        linear-gradient(rgba(24, 92, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(24, 92, 255, 0.05) 1px, transparent 1px);
+      background-size: 20px 20px;
+      z-index: 0;
+    }
+
+    .bg-gradient {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 120% 45%, rgba(76, 29, 149, 0.7) 0%, rgba(17, 24, 39, 0) 50%);
+      z-index: 1;
+    }
+
+    .bg-circle1 {
+      position: absolute;
+      top: -15%;
+      right: -15%;
+      width: 40%;
+      height: 40%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #76b900 0%, #1a4163 100%);
+      filter: blur(80px);
+      opacity: 0.6;
+      z-index: 2;
+    }
+
+    .bg-circle2 {
+      position: absolute;
+      bottom: -10%;
+      left: -10%;
+      width: 30%;
+      height: 30%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0099da 0%, #1e40af 100%);
+      filter: blur(60px);
+      opacity: 0.5;
+      z-index: 2;
+    }
+
+    /* 主要内容 */
+    .content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    .header {
+      padding: 2.5% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .nvidia-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-box {
+      width: 8%;
+      min-width: 100px;
+      height: 36px;
+      background: #76b900;
+      border-radius: 4px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 700;
+      font-size: clamp(16px, 2vw, 22px);
+      transform: skew(-10deg);
+    }
+
+    .partner-text {
+      font-size: clamp(12px, 1.5vw, 16px);
+      font-weight: 500;
+      opacity: 0.9;
+    }
+
+    .slide-title {
+      font-size: clamp(16px, 1.8vw, 20px);
+      font-weight: 600;
+      padding: 0.5% 4%;
+      background: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(5px);
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      padding: 2% 4%;
+      overflow: hidden;
+    }
+
+    .left-content {
+      width: 48%;
+      margin-right: 2%;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .right-content {
+      width: 48%;
+      margin-left: 2%;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .section-title {
+      font-size: clamp(18px, 2.2vw, 24px);
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: #76b900;
+      border-bottom: 1px solid rgba(118, 185, 0, 0.3);
+      padding-bottom: 8px;
+    }
+
+    .design-card {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 15px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .design-card-title {
+      font-size: clamp(16px, 1.6vw, 18px);
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: #0099da;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .icon-circle {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #0099da;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .design-content {
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .design-content::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .design-content::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 2px;
+    }
+
+    .design-content::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 2px;
+    }
+
+    .design-list {
+      margin: 0;
+      padding-left: 0;
+      list-style-type: none;
+    }
+
+    .design-item {
+      position: relative;
+      padding-left: 20px;
+      margin-bottom: 10px;
+      line-height: 1.5;
+      font-size: clamp(14px, 1.1vw, 15px);
+    }
+
+    .design-item::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 8px;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+
+    .compute-item::before {
+      background: #0099da;
+    }
+
+    .storage-item::before {
+      background: #76b900;
+    }
+
+    .ethernet-item::before {
+      background: #f59e0b;
+    }
+
+    .management-item::before {
+      background: #8b5cf6;
+    }
+
+    .highlight {
+      font-weight: 600;
+    }
+
+    .compute-highlight {
+      color: #0099da;
+    }
+
+    .storage-highlight {
+      color: #76b900;
+    }
+
+    .ethernet-highlight {
+      color: #f59e0b;
+    }
+
+    .management-highlight {
+      color: #8b5cf6;
+    }
+
+    .cable-diagram {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 15px;
+      height: 240px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    .cable-diagram svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .cable-stats {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .stats-title {
+      font-size: clamp(16px, 1.6vw, 18px);
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: #76b900;
+      text-align: center;
+    }
+
+    .stats-content {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .stats-column {
+      flex: 1;
+    }
+
+    .stats-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: clamp(13px, 1.1vw, 14px);
+      line-height: 1.4;
+    }
+
+    .stats-label {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .stats-value {
+      font-weight: 500;
+    }
+
+    .stats-highlight {
+      color: #76b900;
+      font-weight: 600;
+    }
+
+    .note-box {
+      background: rgba(118, 185, 0, 0.1);
+      border: 1px solid rgba(118, 185, 0, 0.3);
+      border-radius: 8px;
+      padding: 10px 15px;
+      margin-top: 10px;
+      font-size: clamp(13px, 1.1vw, 14px);
+    }
+
+    .note-title {
+      font-weight: 600;
+      color: #76b900;
+      margin-bottom: 5px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .footer {
+      padding: 1.5% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .company-name {
+      font-weight: 500;
+    }
+
+    .page-number {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .rotating-lines {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 50%;
+      height: 50%;
+      z-index: 5;
+      opacity: 0.15;
+      animation: rotate 60s linear infinite;
+    }
+
+    @keyframes rotate {
+      from {
+        transform: translate(-50%, -50%) rotate(0deg);
+      }
+      to {
+        transform: translate(-50%, -50%) rotate(360deg);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <!-- 背景元素 -->
+    <div class="bg-grid"></div>
+    <div class="bg-gradient"></div>
+    <div class="bg-circle1"></div>
+    <div class="bg-circle2"></div>
+
+    <!-- 旋转线框背景 -->
+    <svg class="rotating-lines" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+      <path d="M250,10 L490,250 L250,490 L10,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,50 L450,250 L250,450 L50,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,90 L410,250 L250,410 L90,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,130 L370,250 L250,370 L130,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,170 L330,250 L250,330 L170,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,210 L290,250 L250,290 L210,250 Z" fill="none" stroke="white" stroke-width="1" />
+    </svg>
+
+    <!-- 主要内容 -->
+    <div class="content">
+      <div class="header">
+        <div class="nvidia-logo">
+          <div class="logo-box">NVIDIA</div>
+          <div class="partner-text">Networking NPN Elite Partner</div>
+        </div>
+        <div class="slide-title">3. 客户需求方案汇报 - SuperPOD机房布线设计方案</div>
+      </div>
+
+      <div class="main-content">
+        <div class="left-content">
+          <div class="section-title">基于SuperPOD的布线架构设计</div>
+          
+          <div class="cable-diagram">
+            <svg viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
+              <!-- 网络拓扑图 - 基于SuperPOD架构 -->
+              
+              <!-- 机房区域 -->
+              <rect x="50" y="40" width="300" height="320" rx="5" fill="none" stroke="#0099da" stroke-width="2" stroke-dasharray="5,5" />
+              <text x="200" y="30" font-size="14" text-anchor="middle" fill="white">机房1 (150节点)</text>
+              
+              <rect x="450" y="40" width="300" height="320" rx="5" fill="none" stroke="#0099da" stroke-width="2" stroke-dasharray="5,5" />
+              <text x="600" y="30" font-size="14" text-anchor="middle" fill="white">机房2 (150节点)</text>
+              
+              <!-- 机房间距 -->
+              <line x1="350" y1="200" x2="450" y2="200" stroke="#76b900" stroke-width="3" />
+              <text x="400" y="190" font-size="12" text-anchor="middle" fill="white">50米</text>
+              
+              <!-- Core层交换机 -->
+              <rect x="180" y="70" width="80" height="25" rx="3" fill="#0099da" stroke="#fff" stroke-width="1" />
+              <text x="220" y="87" font-size="12" text-anchor="middle" fill="white">Compute Core</text>
+              
+              <rect x="580" y="70" width="80" height="25" rx="3" fill="#0099da" stroke="#fff" stroke-width="1" />
+              <text x="620" y="87" font-size="12" text-anchor="middle" fill="white">Compute Core</text>
+              
+              <!-- Spine层交换机 -->
+              <rect x="130" y="130" width="80" height="25" rx="3" fill="#1e40af" stroke="#fff" stroke-width="1" />
+              <text x="170" y="147" font-size="12" text-anchor="middle" fill="white">Compute Spine</text>
+              
+              <rect x="230" y="130" width="80" height="25" rx="3" fill="#1e40af" stroke="#fff" stroke-width="1" />
+              <text x="270" y="147" font-size="12" text-anchor="middle" fill="white">Storage Spine</text>
+              
+              <rect x="530" y="130" width="80" height="25" rx="3" fill="#1e40af" stroke="#fff" stroke-width="1" />
+              <text x="570" y="147" font-size="12" text-anchor="middle" fill="white">Compute Spine</text>
+              
+              <rect x="630" y="130" width="80" height="25" rx="3" fill="#1e40af" stroke="#fff" stroke-width="1" />
+              <text x="670" y="147" font-size="12" text-anchor="middle" fill="white">Storage Spine</text>
+              
+              <!-- Leaf层交换机 -->
+              <rect x="130" y="190" width="80" height="25" rx="3" fill="#3730a3" stroke="#fff" stroke-width="1" />
+              <text x="170" y="207" font-size="12" text-anchor="middle" fill="white">Compute Leaf</text>
+              
+              <rect x="230" y="190" width="80" height="25" rx="3" fill="#3730a3" stroke="#fff" stroke-width="1" />
+              <text x="270" y="207" font-size="12" text-anchor="middle" fill="white">Storage Leaf</text>
+              
+              <rect x="530" y="190" width="80" height="25" rx="3" fill="#3730a3" stroke="#fff" stroke-width="1" />
+              <text x="570" y="207" font-size="12" text-anchor="middle" fill="white">Compute Leaf</text>
+              
+              <rect x="630" y="190" width="80" height="25" rx="3" fill="#3730a3" stroke="#fff" stroke-width="1" />
+              <text x="670" y="207" font-size="12" text-anchor="middle" fill="white">Storage Leaf</text>
+              
+              <!-- In-Band和OOB管理网络 -->
+              <rect x="80" y="250" width="70" height="20" rx="3" fill="#f59e0b" stroke="#fff" stroke-width="1" />
+              <text x="115" y="265" font-size="11" text-anchor="middle" fill="white">In-Band Switch</text>
+              
+              <rect x="160" y="250" width="70" height="20" rx="3" fill="#8b5cf6" stroke="#fff" stroke-width="1" />
+              <text x="195" y="265" font-size="11" text-anchor="middle" fill="white">OOB Switch</text>
+              
+              <rect x="480" y="250" width="70" height="20" rx="3" fill="#f59e0b" stroke="#fff" stroke-width="1" />
+              <text x="515" y="265" font-size="11" text-anchor="middle" fill="white">In-Band Switch</text>
+              
+              <rect x="560" y="250" width="70" height="20" rx="3" fill="#8b5cf6" stroke="#fff" stroke-width="1" />
+              <text x="595" y="265" font-size="11" text-anchor="middle" fill="white">OOB Switch</text>
+              
+              <!-- 计算节点和管理节点 -->
+              <rect x="80" y="310" width="70" height="20" rx="3" fill="#4c1d95" stroke="#fff" stroke-width="1" />
+              <text x="115" y="325" font-size="11" text-anchor="middle" fill="white">DGX H100</text>
+              
+              <rect x="160" y="310" width="70" height="20" rx="3" fill="#10b981" stroke="#fff" stroke-width="1" />
+              <text x="195" y="325" font-size="11" text-anchor="middle" fill="white">管理节点</text>
+              
+              <rect x="240" y="310" width="70" height="20" rx="3" fill="#ef4444" stroke="#fff" stroke-width="1" />
+              <text x="275" y="325" font-size="11" text-anchor="middle" fill="white">存储节点</text>
+              
+              <rect x="480" y="310" width="70" height="20" rx="3" fill="#4c1d95" stroke="#fff" stroke-width="1" />
+              <text x="515" y="325" font-size="11" text-anchor="middle" fill="white">DGX H100</text>
+              
+              <rect x="560" y="310" width="70" height="20" rx="3" fill="#10b981" stroke="#fff" stroke-width="1" />
+              <text x="595" y="325" font-size="11" text-anchor="middle" fill="white">管理节点</text>
+              
+              <rect x="640" y="310" width="70" height="20" rx="3" fill="#ef4444" stroke="#fff" stroke-width="1" />
+              <text x="675" y="325" font-size="11" text-anchor="middle" fill="white">存储节点</text>
+              
+              <!-- 连接线 - Core到Spine -->
+              <path d="M180,95 L130,130" stroke="#0099da" stroke-width="1.5" fill="none" />
+              <path d="M220,95 L230,130" stroke="#76b900" stroke-width="1.5" fill="none" />
+              <path d="M580,95 L530,130" stroke="#0099da" stroke-width="1.5" fill="none" />
+              <path d="M620,95 L630,130" stroke="#76b900" stroke-width="1.5" fill="none" />
+              
+              <!-- 连接线 - Spine到Leaf -->
+              <path d="M130,155 L130,190" stroke="#0099da" stroke-width="1.5" />
+              <path d="M230,155 L230,190" stroke="#76b900" stroke-width="1.5" />
+              <path d="M530,155 L530,190" stroke="#0099da" stroke-width="1.5" />
+              <path d="M630,155 L630,190" stroke="#76b900" stroke-width="1.5" />
+              
+              <!-- 连接线 - Leaf到节点 -->
+              <path d="M130,215 L115,310" stroke="#0099da" stroke-width="1" />
+              <path d="M130,215 L195,250" stroke="#f59e0b" stroke-width="1" />
+              <path d="M160,250 L115,310" stroke="#8b5cf6" stroke-width="1" />
+              <path d="M230,215 L275,310" stroke="#76b900" stroke-width="1" />
+              <path d="M530,215 L515,310" stroke="#0099da" stroke-width="1" />
+              <path d="M530,215 L595,250" stroke="#f59e0b" stroke-width="1" />
+              <path d="M560,250 L515,310" stroke="#8b5cf6" stroke-width="1" />
+              <path d="M630,215 L675,310" stroke="#76b900" stroke-width="1" />
+              
+              <!-- 跨机房连接 -->
+              <path d="M220,70 Q350,30 580,70" stroke="#0099da" stroke-width="2" fill="none" stroke-dasharray="4,2" />
+              <path d="M270,130 Q350,100 530,130" stroke="#1e40af" stroke-width="2" fill="none" stroke-dasharray="4,2" />
+              <path d="M270,190 Q350,160 530,190" stroke="#3730a3" stroke-width="2" fill="none" stroke-dasharray="4,2" />
+              <path d="M195,250 L480,250" stroke="#f59e0b" stroke-width="1.5" />
+              
+              <!-- 图例 -->
+              <circle cx="80" y="372" r="5" fill="#0099da" />
+              <text x="90" y="375" font-size="11" text-anchor="start" fill="white">Compute Fabric</text>
+              
+              <circle cx="220" y="372" r="5" fill="#76b900" />
+              <text x="230" y="375" font-size="11" text-anchor="start" fill="white">Storage Fabric</text>
+              
+              <circle cx="380" y="372" r="5" fill="#f59e0b" />
+              <text x="390" y="375" font-size="11" text-anchor="start" fill="white">In-Band Management</text>
+              
+              <circle cx="580" y="372" r="5" fill="#8b5cf6" />
+              <text x="590" y="375" font-size="11" text-anchor="start" fill="white">OOB Management</text>
+            </svg>
+          </div>
+          
+          <div class="design-card">
+            <div class="design-card-title">
+              <div class="icon-circle">1</div>
+              Compute Fabric布线设计
+            </div>
+            <div class="design-content">
+              <ul class="design-list">
+                <li class="design-item compute-item">
+                  <span class="highlight compute-highlight">NDR 400Gbps InfiniBand：</span>使用NVIDIA Quantum-2 QM9700/QM9790 NDR 400Gbps 交换机构建无阻塞胖树拓扑网络
+                </li>
+                <li class="design-item compute-item">
+                  <span class="highlight compute-highlight">全FAT-TREE架构：</span>每个DGX H100服务器配备8个NDR 400Gbps连接（每节点8×400Gbps），通过Rail优化设计确保最佳性能
+                </li>
+                <li class="design-item compute-item">
+                  <span class="highlight compute-highlight">跨机房部署：</span>通过Core层交换机实现跨机房连接，两个机房的Spine层交换机通过Core层互联，实现任意节点间最多3跳可达
+                </li>
+                <li class="design-item compute-item">
+                  <span class="highlight compute-highlight">可扩展设计：</span>基于SU(Scalable Unit)构建，每个SU包含32台DGX节点，可灵活扩展至4个SU（共127节点，1台节点用于UFM）
+                </li>
+                <li class="design-item compute-item">
+                  <span class="highlight compute-highlight">关键布线规格：</span>DGX到Leaf使用2m NVIDIA LinkX OSFP直连铜缆，Leaf到Spine和Core层连接使用5-15m NVIDIA LinkX MPO光缆
+                </li>
+              </ul>
+            </div>
+          </div>
+          
+          <div class="design-card">
+            <div class="design-card-title">
+              <div class="icon-circle">3</div>
+              管理网络布线设计
+            </div>
+            <div class="design-content">
+              <ul class="design-list">
+                <li class="design-item ethernet-item">
+                  <span class="highlight ethernet-highlight">In-Band管理网络：</span>采用NVIDIA SN4600C 100Gbps以太网交换机，实现高性能带内管理、数据移动和Internet访问
+                </li>
+                <li class="design-item ethernet-item">
+                  <span class="highlight ethernet-highlight">DGX连接：</span>每台DGX配置2×100Gbps链路（双链路绑定提高可靠性），采用QSFP56 AOC光缆连接
+                </li>
+                <li class="design-item management-item">
+                  <span class="highlight management-highlight">OOB管理网络：</span>采用NVIDIA SN2201 1Gbps以太网交换机，连接所有BMC端口和其他独立管理设备
+                </li>
+                <li class="design-item management-item">
+                  <span class="highlight management-highlight">安全隔离：</span>OOB网络物理隔离并只对管理员开放，实现完整的安全管理架构
+                </li>
+                <li class="design-item ethernet-item">
+                  <span class="highlight ethernet-highlight">跨机房连接：</span>In-Band管理网络通过高速链路实现跨机房互联，提供统一管理视图
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        
+        <div class="right-content">
+          <div class="design-card">
+            <div class="design-card-title">
+              <div class="icon-circle">2</div>
+              Storage Fabric布线设计
+            </div>
+            <div class="design-content">
+              <ul class="design-list">
+                <li class="design-item storage-item">
+                  <span class="highlight storage-highlight">独立存储网络：</span>构建独立于Compute Fabric的InfiniBand存储网络，使用NVIDIA Quantum-2 QM9700 NDR 400Gbps交换机
+                </li>
+                <li class="design-item storage-item">
+                  <span class="highlight storage-highlight">高性能连接：</span>每台DGX配备2×400Gbps NDR存储连接，提供超过40GBps的单节点带宽
+                </li>
+                <li class="design-item storage-item">
+                  <span class="highlight storage-highlight">RDMA加速：</span>通过InfiniBand RDMA技术实现高带宽、低延迟存储访问，最大程度减少CPU开销
+                </li>
+		<li class="design-item storage-item">
+                  <span class="highlight storage-highlight">存储分区设计：</span>高性能并行文件系统和用户存储系统分离部署，针对不同I/O模式进行优化
+                </li>
+                <li class="design-item storage-item">
+                  <span class="highlight storage-highlight">跨机房存储访问：</span>两机房存储系统通过高速互联实现共享访问，确保任意节点均可访问全部数据
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="cable-stats">
+            <div class="stats-title">布线数量统计 (基于4 SU架构)</div>
+            <div class="stats-content">
+              <div class="stats-column">
+                <div class="stats-row">
+                  <span class="stats-label">Compute Fabric:</span>
+                  <span class="stats-value">2,044条</span>
+                </div>
+                <div class="stats-row">
+                  <span class="stats-label">- DGX到Leaf:</span>
+                  <span class="stats-value">1,020条</span>
+                </div>
+                <div class="stats-row">
+                  <span class="stats-label">- Spine-Leaf:</span>
+                  <span class="stats-value">1,024条</span>
+                </div>
+                <div class="stats-row">
+                  <span class="stats-label">Storage Fabric:</span>
+                  <span class="stats-value">约800条</span>
+                </div>
+              </div>
+              <div class="stats-column">
+                <div class="stats-row">
+                  <span class="stats-label">管理网络:</span>
+                  <span class="stats-value">约320条</span>
+                </div>
+                <div class="stats-row">
+                  <span class="stats-label">- In-Band:</span>
+                  <span class="stats-value">约280条</span>
+                </div>
+                <div class="stats-row">
+                  <span class="stats-label">- OOB:</span>
+                  <span class="stats-value">约330条</span>
+                </div>
+                <div class="stats-row">
+                  <span class="stats-label">总计线缆:</span>
+                  <span class="stats-value stats-highlight">约3,500条</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="design-card">
+            <div class="design-card-title">
+              <div class="icon-circle">4</div>
+              布线实施与管理方案
+            </div>
+            <div class="design-content">
+              <ul class="design-list">
+                <li class="design-item management-item">
+                  <span class="highlight management-highlight">线缆类型规范：</span>所有线缆采用NVIDIA LinkX认证光缆和铜缆，确保最佳兼容性和性能
+                </li>
+                <li class="design-item management-item">
+                  <span class="highlight management-highlight">冗余设计：</span>关键路径实施N+1物理冗余，确保单一链路故障不影响整体系统可用性
+                </li>
+                <li class="design-item management-item">
+                  <span class="highlight management-highlight">预留空间：</span>所有线槽和光纤通道预留50%扩容空间，满足未来系统扩展需求
+                </li>
+                <li class="design-item management-item">
+                  <span class="highlight management-highlight">标签系统：</span>实施端到端标签标识系统，包含设备ID、端口号、链路类型和连接关系
+                </li>
+                <li class="design-item management-item">
+                  <span class="highlight management-highlight">机房布线规范：</span>采用高架地板下走线方案，按网络层级分区规划，实施清晰的路径管理
+                </li>
+              </ul>
+
+              <div class="note-box">
+                <div class="note-title">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#76b900" stroke-width="2"/>
+                    <path d="M12 8V12M12 16V16.01" stroke="#76b900" stroke-width="2" stroke-linecap="round"/>
+                  </svg>
+                  NVIDIA SuperPOD布线最佳实践
+                </div>
+                实施分阶段部署策略：第一阶段部署核心网络骨干；第二阶段部署第一机房SU；第三阶段部署第二机房SU；第四阶段完成存储系统及跨机房互联。每阶段完成后进行全面测试，包括基准性能测试与应用级测试，确保系统达到设计指标。
+              </div>
+            </div>
+          </div>
+
+          <div class="design-card">
+            <div class="design-card-title">
+              <div class="icon-circle">5</div>
+              布线系统监控与维护
+            </div>
+            <div class="design-content">
+              <ul class="design-list">
+                <li class="design-item management-item">
+                  <span class="highlight management-highlight">实时监控：</span>使用NVIDIA UFM Enterprise实现InfiniBand网络实时监控与流量分析
+                </li>
+                <li class="design-item management-item">
+                  <span class="highlight management-highlight">自动化管理：</span>通过NVIDIA Base Command实现集中化布线系统管理与问题诊断
+                </li>
+                <li class="design-item management-item">
+                  <span class="highlight management-highlight">定期巡检：</span>建立季度布线系统全面检测计划，包括光纤信号质量与衰减检测
+                </li>
+                <li class="design-item management-item">
+                  <span class="highlight management-highlight">预置备件：</span>关键线缆和收发器预留10%作为备用，支持快速故障恢复
+                </li>
+                <li class="design-item management-item">
+                  <span class="highlight management-highlight">技术支持：</span>提供7×24小时远程技术支持，季度性能优化与评估服务
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="company-name">北京正阳恒卓科技有限公司</div>
+        <div class="page-number">17</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

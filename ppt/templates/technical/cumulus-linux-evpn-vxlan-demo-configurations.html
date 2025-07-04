@@ -1,0 +1,712 @@
+<div class="slide-container" style="
+    width: 100% !important;
+    height: 100% !important;
+    max-height: none !important;
+    max-width: none !important;
+    position: relative;
+    background: #111827;
+    color: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+">
+  <style>
+    /* 移除可能有问题的@import，使用系统字体 */
+    .slide-container * {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    }
+
+    /* 背景图形元素 */
+    .bg-grid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image:
+        linear-gradient(rgba(24, 92, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(24, 92, 255, 0.05) 1px, transparent 1px);
+      background-size: 20px 20px;
+      z-index: 0;
+    }
+
+    .bg-gradient {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 120% 45%, rgba(76, 29, 149, 0.7) 0%, rgba(17, 24, 39, 0) 50%);
+      z-index: 1;
+    }
+
+    .bg-circle1 {
+      position: absolute;
+      top: -15%;
+      right: -15%;
+      width: 40%;
+      height: 40%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #76b900 0%, #1a4163 100%);
+      filter: blur(80px);
+      opacity: 0.6;
+      z-index: 2;
+    }
+
+    .bg-circle2 {
+      position: absolute;
+      bottom: -10%;
+      left: -10%;
+      width: 30%;
+      height: 30%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0099da 0%, #1e40af 100%);
+      filter: blur(60px);
+      opacity: 0.5;
+      z-index: 2;
+    }
+
+    /* 主要内容 */
+    .content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    .header {
+      padding: 1.8% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .nvidia-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-box {
+      width: 8%;
+      min-width: 100px;
+      height: 36px;
+      background: #76b900;
+      border-radius: 4px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 700;
+      font-size: clamp(16px, 2vw, 22px);
+      transform: skew(-10deg);
+    }
+
+    .partner-text {
+      font-size: clamp(12px, 1.5vw, 16px);
+      font-weight: 500;
+      opacity: 0.9;
+    }
+
+    .slide-title {
+      font-size: clamp(16px, 1.8vw, 20px);
+      font-weight: 600;
+      padding: 0.5% 2%;
+      background: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(5px);
+      border-radius: 20px;
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 1.5% 3%;
+      overflow: hidden;
+    }
+
+    .solution-container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      width: 100%;
+    }
+
+    .solution-title {
+      text-align: center;
+      font-size: clamp(18px, 2.2vw, 24px);
+      font-weight: 600;
+      color: #76b900;
+      margin-bottom: 15px;
+      margin-top: 0;
+    }
+
+    /* 设备选择标签 */
+    .device-tabs {
+      display: flex;
+      gap: 3px;
+      margin-bottom: 15px;
+      overflow-x: auto;
+      padding-bottom: 5px;
+    }
+
+    .device-tab {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px 8px 0 0;
+      padding: 6px 12px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+      position: relative;
+      min-width: 70px;
+      text-align: center;
+    }
+
+    .device-tab:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateY(-2px);
+    }
+
+    .device-tab.active {
+      background: linear-gradient(135deg, #76b900 0%, #3e703e 100%);
+      border-color: #76b900;
+      color: white;
+      box-shadow: 0 4px 15px rgba(118, 185, 0, 0.3);
+    }
+
+    .device-tab.leaf {
+      border-bottom-color: #76b900;
+    }
+
+    .device-tab.spine {
+      border-bottom-color: #0099da;
+    }
+
+    .device-tab.border {
+      border-bottom-color: #8B5CF6;
+    }
+
+    .device-tab.server {
+      border-bottom-color: #EF4444;
+    }
+
+    .device-tab.spine.active {
+      background: linear-gradient(135deg, #0099da 0%, #1e40af 100%);
+      border-color: #0099da;
+      box-shadow: 0 4px 15px rgba(0, 153, 218, 0.3);
+    }
+
+    .device-tab.border.active {
+      background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
+      border-color: #8B5CF6;
+      box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+    }
+
+    .device-tab.server.active {
+      background: linear-gradient(135deg, #EF4444 0%, #DC2626 100%);
+      border-color: #EF4444;
+      box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+    }
+
+    /* 配置内容区域 */
+    .config-container {
+      flex: 1;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(0, 0, 0, 0.4);
+      padding: 15px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .config-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .device-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: #76b900;
+    }
+
+    .device-type {
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-weight: 500;
+    }
+
+    .type-leaf {
+      background: linear-gradient(90deg, #76b900, #3e703e);
+    }
+
+    .type-spine {
+      background: linear-gradient(90deg, #0099da, #1e40af);
+    }
+
+    .type-border {
+      background: linear-gradient(90deg, #8B5CF6, #7C3AED);
+    }
+
+    .type-server {
+      background: linear-gradient(90deg, #EF4444, #DC2626);
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+    }
+
+    .copy-button, .reload-button {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-size: 10px;
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .copy-button:hover, .reload-button:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .config-content {
+      height: calc(100% - 60px);
+      overflow-y: auto;
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+      line-height: 1.5;
+      color: #E5E7EB;
+      white-space: pre-wrap;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      padding: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .spinner {
+      width: 30px;
+      height: 30px;
+      border: 3px solid rgba(255, 255, 255, 0.1);
+      border-top: 3px solid #76b900;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .error {
+      color: #EF4444;
+      text-align: center;
+      padding: 20px;
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: 8px;
+      margin: 10px 0;
+    }
+
+    .file-info {
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.6);
+      margin-top: 8px;
+      text-align: right;
+    }
+
+    .footer {
+      padding: 1.5% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .company-name {
+      font-weight: 500;
+    }
+
+    .page-number {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .rotating-lines {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 50%;
+      height: 50%;
+      z-index: 5;
+      opacity: 0.15;
+      animation: rotate 60s linear infinite;
+    }
+
+    @keyframes rotate {
+      from {
+        transform: translate(-50%, -50%) rotate(0deg);
+      }
+      to {
+        transform: translate(-50%, -50%) rotate(360deg);
+      }
+    }
+
+    /* 滚动条样式 */
+    .device-tabs::-webkit-scrollbar,
+    .config-content::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+
+    .device-tabs::-webkit-scrollbar-track,
+    .config-content::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 2px;
+    }
+
+    .device-tabs::-webkit-scrollbar-thumb,
+    .config-content::-webkit-scrollbar-thumb {
+      background: rgba(118, 185, 0, 0.5);
+      border-radius: 2px;
+    }
+
+    .device-tabs::-webkit-scrollbar-thumb:hover,
+    .config-content::-webkit-scrollbar-thumb:hover {
+      background: rgba(118, 185, 0, 0.7);
+    }
+  </style>
+
+  <!-- 背景元素 -->
+  <div class="bg-grid"></div>
+  <div class="bg-gradient"></div>
+  <div class="bg-circle1"></div>
+  <div class="bg-circle2"></div>
+
+  <!-- 旋转线框背景 -->
+  <svg class="rotating-lines" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+    <path d="M250,10 L490,250 L250,490 L10,250 Z" fill="none" stroke="white" stroke-width="1" />
+    <path d="M250,50 L450,250 L250,450 L50,250 Z" fill="none" stroke="white" stroke-width="1" />
+    <path d="M250,90 L410,250 L250,410 L90,250 Z" fill="none" stroke="white" stroke-width="1" />
+    <path d="M250,130 L370,250 L250,370 L130,250 Z" fill="none" stroke="white" stroke-width="1" />
+    <path d="M250,170 L330,250 L250,330 L170,250 Z" fill="none" stroke="white" stroke-width="1" />
+    <path d="M250,210 L290,250 L250,290 L210,250 Z" fill="none" stroke="white" stroke-width="1" />
+  </svg>
+
+  <!-- 主要内容 -->
+  <div class="content">
+    <div class="header">
+      <div class="nvidia-logo">
+        <div class="logo-box">NVIDIA</div>
+        <div class="partner-text">Networking NPN Elite Partner</div>
+      </div>
+      <div class="slide-title">设备配置命令</div>
+    </div>
+
+    <div class="main-content">
+      <div class="solution-container">
+        <h3 class="solution-title">EVPN 网络设备配置命令</h3>
+
+        <!-- 设备选择标签 -->
+        <div class="device-tabs" id="deviceTabs">
+          <!-- 标签将通过JavaScript动态生成 -->
+        </div>
+
+        <!-- 配置内容区域 -->
+        <div class="config-container">
+          <div class="config-header">
+            <div class="device-name" id="currentDeviceName">选择设备</div>
+            <div class="device-type" id="currentDeviceType">-</div>
+            <div class="action-buttons">
+              <div class="reload-button" onclick="reloadConfig()">🔄 重新加载</div>
+              <div class="copy-button" onclick="copyConfig()">📋 复制配置</div>
+            </div>
+          </div>
+
+          <div class="config-content" id="configContent">
+            <div class="loading">
+              <div class="spinner"></div>
+              <div>请选择设备查看配置...</div>
+            </div>
+          </div>
+
+          <div class="file-info" id="fileInfo"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="footer">
+      <div class="company-name">北京正阳恒卓科技有限公司</div>
+      <div class="page-number">8</div>
+    </div>
+  </div>
+
+  <script>
+    // 设备配置 - 完全复制原始代码的设备列表
+    const devices = [
+      { name: 'leaf01', type: 'leaf', displayName: 'Leaf Switch' },
+      { name: 'leaf02', type: 'leaf', displayName: 'Leaf Switch' },
+      { name: 'leaf03', type: 'leaf', displayName: 'Leaf Switch' },
+      { name: 'leaf04', type: 'leaf', displayName: 'Leaf Switch' },
+      { name: 'spine01', type: 'spine', displayName: 'Spine Switch' },
+      { name: 'spine02', type: 'spine', displayName: 'Spine Switch' },
+      { name: 'spine03', type: 'spine', displayName: 'Spine Switch' },
+      { name: 'spine04', type: 'spine', displayName: 'Spine Switch' },
+      { name: 'border01', type: 'border', displayName: 'Border Switch' },
+      { name: 'border02', type: 'border', displayName: 'Border Switch' },
+      { name: 'Firewall', type: 'server', displayName: 'Firewall' },
+      { name: 'ansible', type: 'server', displayName: 'ansible Server' },
+      { name: 'server', type: 'server', displayName: 'Ubuntu Server' },
+      { name: 'oob-switch', type: 'leaf', displayName: 'oob-mgmt-switch' }
+    ];
+
+    let currentDevice = null;
+    let configCache = {};
+
+    // 初始化页面 - 添加更多调试信息
+    function initializePage() {
+      console.log('initializePage被调用');
+      
+      try {
+        generateDeviceTabs();
+        
+        // 默认选择第一个设备
+        if (devices.length > 0) {
+          console.log('准备选择默认设备:', devices[0].name);
+          switchDevice(devices[0].name);
+        } else {
+          console.log('设备列表为空');
+        }
+      } catch (error) {
+        console.error('初始化失败:', error);
+      }
+    }
+
+    // 生成设备标签 - 添加更多调试信息
+    function generateDeviceTabs() {
+      console.log('generateDeviceTabs被调用');
+      
+      const tabsContainer = document.getElementById('deviceTabs');
+      if (!tabsContainer) {
+        console.error('找不到deviceTabs容器');
+        return;
+      }
+      
+      console.log('找到deviceTabs容器，清空内容');
+      tabsContainer.innerHTML = '';
+
+      console.log('开始生成设备标签，设备数量:', devices.length);
+      
+      devices.forEach((device, index) => {
+        console.log(`生成设备标签: ${device.name}`);
+        
+        const tab = document.createElement('div');
+        tab.className = `device-tab ${device.type}`;
+        if (index === 0) tab.classList.add('active');
+        tab.setAttribute('data-device', device.name);
+        tab.textContent = device.name;
+        tab.addEventListener('click', () => {
+          console.log(`点击设备: ${device.name}`);
+          switchDevice(device.name);
+        });
+        tabsContainer.appendChild(tab);
+      });
+      
+      console.log('设备标签生成完成');
+    }
+
+    // 切换设备 - 完全复制原始代码逻辑
+    async function switchDevice(deviceName) {
+      currentDevice = deviceName;
+
+      // 更新标签状态
+      document.querySelectorAll('.device-tab').forEach(tab => {
+        tab.classList.remove('active');
+        if (tab.getAttribute('data-device') === deviceName) {
+          tab.classList.add('active');
+        }
+      });
+
+      // 找到设备信息
+      const device = devices.find(d => d.name === deviceName);
+      if (!device) return;
+
+      // 更新设备信息
+      document.getElementById('currentDeviceName').textContent = deviceName;
+      const deviceTypeEl = document.getElementById('currentDeviceType');
+      deviceTypeEl.textContent = device.displayName;
+      deviceTypeEl.className = `device-type type-${device.type}`;
+
+      // 加载配置
+      await loadDeviceConfig(deviceName);
+    }
+
+    // 加载设备配置 - 完全复制原始代码逻辑
+    async function loadDeviceConfig(deviceName) {
+      const configContent = document.getElementById('configContent');
+      const fileInfo = document.getElementById('fileInfo');
+
+      // 如果已缓存，直接使用
+      if (configCache[deviceName]) {
+        configContent.textContent = configCache[deviceName].content;
+        fileInfo.textContent = configCache[deviceName].info;
+        return;
+      }
+
+      // 显示加载状态
+      configContent.innerHTML = `
+        <div class="loading">
+          <div class="spinner"></div>
+          <div>正在加载 ${deviceName} 配置...</div>
+        </div>
+      `;
+      fileInfo.textContent = '';
+
+      try {
+        // 尝试加载配置文件
+        const response = await fetch(`${deviceName}.txt`);
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        const content = await response.text();
+        const lastModified = response.headers.get('last-modified');
+
+        // 缓存配置
+        configCache[deviceName] = {
+          content: content,
+          info: `文件: ${deviceName}.txt${lastModified ? ' | 修改时间: ' + new Date(lastModified).toLocaleString() : ''}`
+        };
+
+        // 显示配置
+        configContent.textContent = content;
+        fileInfo.textContent = configCache[deviceName].info;
+
+      } catch (error) {
+        console.error(`加载 ${deviceName} 配置失败:`, error);
+
+        // 显示错误信息
+        configContent.innerHTML = `
+          <div class="error">
+            <h4>⚠️ 无法加载配置文件</h4>
+            <p><strong>文件:</strong> ${deviceName}.txt</p>
+            <p><strong>错误:</strong> ${error.message}</p>
+            <p><strong>解决方案:</strong></p>
+            <ul style="text-align: left; margin: 10px 0;">
+              <li>确保 ${deviceName}.txt 文件存在于当前目录</li>
+              <li>检查文件权限和网络连接</li>
+              <li>如果使用本地文件系统，请通过HTTP服务器访问</li>
+            </ul>
+            <p style="font-size: 10px; margin-top: 15px; opacity: 0.7;">
+              提示: 可以使用 <code>python -m http.server 8000</code> 启动本地HTTP服务器
+            </p>
+          </div>
+        `;
+        fileInfo.textContent = `错误: 无法加载 ${deviceName}.txt`;
+      }
+    }
+
+    // 重新加载配置 - 完全复制原始代码逻辑
+    async function reloadConfig() {
+      if (!currentDevice) return;
+
+      // 清除缓存
+      delete configCache[currentDevice];
+
+      // 重新加载
+      await loadDeviceConfig(currentDevice);
+
+      // 显示重新加载提示
+      const button = event.target;
+      const originalText = button.textContent;
+      button.textContent = '✅ 已重新加载';
+      button.style.background = 'rgba(16, 185, 129, 0.2)';
+
+      setTimeout(() => {
+        button.textContent = originalText;
+        button.style.background = 'rgba(255, 255, 255, 0.1)';
+      }, 2000);
+    }
+
+    // 复制配置 - 完全复制原始代码逻辑
+    function copyConfig() {
+      if (!currentDevice) return;
+
+      const configContent = document.getElementById('configContent');
+      const content = configContent.textContent;
+
+      if (!content || content.includes('正在加载') || content.includes('无法加载')) {
+        alert('当前没有可复制的配置内容');
+        return;
+      }
+
+      const configText = `# ${currentDevice.toUpperCase()} 配置\n# 生成时间: ${new Date().toLocaleString()}\n\n${content}`;
+
+      navigator.clipboard.writeText(configText).then(() => {
+        // 显示复制成功提示
+        const button = event.target;
+        const originalText = button.textContent;
+        button.textContent = '✅ 已复制';
+        button.style.background = 'rgba(16, 185, 129, 0.2)';
+
+        setTimeout(() => {
+          button.textContent = originalText;
+          button.style.background = 'rgba(255, 255, 255, 0.1)';
+        }, 2000);
+      }).catch(err => {
+        console.error('复制失败:', err);
+        alert('复制失败，请手动选择复制');
+      });
+    }
+
+    // 页面加载完成后初始化 - 使用多种方式确保初始化
+    console.log('脚本开始执行');
+    
+    // 方式1: DOMContentLoaded
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('DOMContentLoaded触发');
+      initializePage();
+    });
+    
+    // 方式2: 如果DOM已经准备好，立即执行
+    if (document.readyState === 'loading') {
+      console.log('DOM正在加载，等待DOMContentLoaded');
+    } else {
+      console.log('DOM已准备就绪，立即初始化');
+      setTimeout(initializePage, 10);
+    }
+    
+    // 方式3: window.onload作为后备
+    window.addEventListener('load', function() {
+      console.log('window.load触发');
+      if (!currentDevice) {
+        console.log('currentDevice为空，执行后备初始化');
+        initializePage();
+      }
+    });
+  </script>
+</div>

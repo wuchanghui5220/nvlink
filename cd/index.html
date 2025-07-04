@@ -1,0 +1,1397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+      <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <base href="/" />
+<style>
+  body {
+    background: #1a1a1a;
+    color: #fff;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    height: 100vh;
+    box-sizing: border-box;
+    overflow: hidden; 
+  }
+  
+  .controls {
+    margin-bottom: 20px;
+  }
+
+  .add-controls {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-right: 20px;
+  }
+
+  .add-controls input[type="number"] {
+    background: #333;
+    border: 1px solid #444;
+    color: #fff;
+    padding: 6px;
+    border-radius: 4px;
+  }
+  
+  .btn {
+    background: #333;
+    border: none;
+    color: #fff;
+    padding: 8px 16px;
+    margin-right: 10px;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  
+  .btn:hover {
+    background: #444;
+  }
+  
+  .network-container {
+    position: relative;
+    min-height: 600px;
+    min-width: 100%;
+    height: calc(100vh - 100px);
+    border: 1px solid #333;
+    margin-top: 20px;
+    overflow: auto;
+    padding: 20px; 
+    transform-origin: 0 0;
+  }
+
+  .switch, .host {
+    position: absolute;
+/*    background: #333;*/
+    background-color: #333;
+    border: 2px solid #444;
+    padding: 10px;
+    border-radius: 4px;
+    cursor: move;
+    opacity: 0.5;
+  }
+  
+  .label {
+    cursor: pointer;
+    user-select: none;
+  }
+  
+  .label-edit {
+    background: #333;
+    border: 1px solid #444;
+    color: #fff;
+    padding: 2px 4px;
+    font-family: Arial, sans-serif;
+    position: absolute;
+    z-index: 1001;
+  }
+  
+  .switch .label {
+    position: absolute;
+    top: -20px;
+    left: 0;
+  }
+  
+  .host .label {
+    position: absolute;
+    bottom: -20px;
+    left: 0;
+  }
+  
+  .port {
+    width: 12px;
+    height: 12px;
+    background: #666;
+    border-radius: 50%;
+    display: inline-block;
+    margin: 2px;
+    cursor: pointer;
+  }
+  
+  .port:hover {
+    background: #888;
+  }
+  
+  .port.connected {
+    background: #4CAF50;
+  }
+  
+  .connections-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1000;
+  }
+  
+  .connection {
+    fill: none;
+    stroke-width: 2;
+    cursor: pointer;
+    transition: stroke-width 0.2s;
+  }
+  
+  .connection:hover {
+    stroke-width: 4;
+  }
+  
+  .connection.selected {
+    stroke-width: 4;
+    stroke-dasharray: 5;
+  }
+  
+  .device-controls {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    display: none;
+    background: #1a1a1a;
+    padding: 4px;
+    border-radius: 4px;
+    border: 1px solid #444;
+  }
+  
+  .switch:hover .device-controls,
+  .host:hover .device-controls {
+    display: block;
+  }
+  
+  .delete-btn {
+    background: #f44336;
+    color: white;
+    border: none;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  .delete-btn:hover {
+    background: #d32f2f;
+  }
+
+  .color-picker {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 10px;
+  }
+
+  .color-picker span {
+    margin-right: 8px;
+  }
+
+  .color-buttons {
+    display: inline-flex;
+    gap: 4px;
+  }
+
+  .color-btn {
+    width: 24px;
+    height: 24px;
+    border: 2px solid #444;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: transform 0.2s;
+  }
+
+  .color-btn:hover {
+    transform: scale(1.1);
+  }
+
+  .color-btn.selected {
+    border-color: #fff;
+  }
+
+  .device-controls input[type="number"] {
+    background: #333;
+    border: 1px solid #444;
+    color: #fff;
+    padding: 4px;
+    border-radius: 4px;
+  }
+
+  .state-controls {
+    display: inline-flex;
+    align-items: center;
+  }
+  .network-container {
+    position: relative;
+  }
+
+  .switch, .host {
+    z-index: 1;
+  }
+
+  .connections-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* 防止影响下面的元素 */
+    z-index: 2; /* 确保在设备之上 */
+  }
+  .port-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 12px);
+    gap: 4px;
+  }
+
+
+</style>
+
+</head>
+<body>
+  <div class="controls">
+    <div class="add-controls">
+      <input type="number" id="switchCount" min="1" max="10" value="1" style="width: 50px;">
+      <button class="btn" id="addSwitch">添加交换机</button>
+      <input type="number" id="hostCount" min="1" max="10" value="1" style="width: 50px;">
+      <button class="btn" id="addHost">添加主机</button>
+    </div>
+    <button class="btn" id="startConnection">开始连线</button>
+    <button class="btn" id="undoButton" disabled>撤销</button>
+    <button class="btn" id="clearAll">清除所有</button>
+    <div class="color-picker">
+      <span>连线颜色:</span>
+      <div class="color-buttons"></div>
+    </div>
+    <div class="state-controls">
+      <button class="btn" id="saveState">保存状态</button>
+      <button class="btn" id="loadState">加载状态</button>
+      <button class="btn" id="exportJSON">导出配置</button>
+      <input type="file" id="importJSON" style="display:none" accept=".json">
+      <button class="btn" id="importJSONBtn">导入配置</button>
+    </div>
+  </div>
+
+  <div class="network-container" id="networkContainer">
+    <svg class="connections-layer" id="connectionsLayer"></svg>
+  </div>
+
+
+    <script>
+    let isDragging = false;
+    let selectedDevice = null;
+    let isConnecting = false;
+    let isDeleteMode = false;
+    let connectionStart = null;
+    let deviceCounter = 0;
+    let connectionsLayer = document.getElementById('connectionsLayer');
+    let selectedConnection = null;
+
+    let currentScale = 1;
+    const MIN_SCALE = 0.1;
+    const MAX_SCALE = 3;
+
+    const COLORS = [
+      '#4CAF50', 
+      '#2196F3', 
+      '#FFC107', 
+      '#E91E63', 
+      '#9C27B0', 
+      '#FF5722', 
+      '#00BCD4', 
+      '#FFEB3B', 
+      '#795548', 
+      '#607D8B'  
+    ];
+
+    let selectedColor = COLORS[0];
+
+    const MAX_HISTORY = 3;
+    const operationHistory = [];
+
+    const OperationType = {
+      CREATE_DEVICE: 'CREATE_DEVICE',
+      DELETE_DEVICE: 'DELETE_DEVICE',
+      CREATE_CONNECTION: 'CREATE_CONNECTION',
+      DELETE_CONNECTION: 'DELETE_CONNECTION',
+      RENAME_DEVICE: 'RENAME_DEVICE'
+    };
+
+    const container = document.getElementById('networkContainer');
+
+    function initializeColorPicker() {
+      const colorButtons = document.querySelector('.color-buttons');
+      
+      COLORS.forEach(color => {
+        const btn = document.createElement('div');
+        btn.className = 'color-btn';
+        btn.style.backgroundColor = color;
+        if (color === selectedColor) {
+          btn.classList.add('selected');
+        }
+        
+        btn.onclick = () => {
+          document.querySelectorAll('.color-btn').forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          selectedColor = color;
+        };
+        
+        colorButtons.appendChild(btn);
+      });
+    }
+
+    // Function to get current network state
+    function getNetworkState() {
+      const devices = Array.from(container.querySelectorAll('.switch, .host')).map(device => ({
+        id: device.id,
+        type: device.classList.contains('switch') ? 'switch' : 'host',
+        label: device.querySelector('.label').textContent,
+        x: parseInt(device.style.left),
+        y: parseInt(device.style.top),
+        portCount: device.querySelectorAll('.port').length
+      }));
+
+      const connections = Array.from(connectionsLayer.querySelectorAll('.connection')).map(conn => ({
+        startDeviceId: conn.dataset.startDeviceId,
+        startPortId: conn.dataset.startPortId,
+        endDeviceId: conn.dataset.endDeviceId,
+        endPortId: conn.dataset.endPortId,
+        color: conn.getAttribute('stroke')
+      }));
+
+      return {
+        devices,
+        connections,
+        deviceCounter
+      };
+    }
+
+    // Function to save state to localStorage
+    function saveNetworkState() {
+      const state = getNetworkState();
+      localStorage.setItem('networkState', JSON.stringify(state));
+      alert('状态已保存');
+    }
+
+    // Function to load state from localStorage 
+    function loadNetworkState() {
+      const savedState = localStorage.getItem('networkState');
+      if (!savedState) {
+        alert('没有找到保存的状态');
+        return;
+      }
+      
+      restoreState(JSON.parse(savedState));
+    }
+
+    function restoreState(state) {
+      // Clear current state
+      document.getElementById('clearAll').click();
+      
+      // Restore device counter
+      deviceCounter = state.deviceCounter;
+
+      // Create devices
+      state.devices.forEach(device => {
+        const newDevice = createDevice(device.type, device.x, device.y);
+        newDevice.id = device.id;
+        const label = newDevice.querySelector('.label');
+        if (label) {
+          label.textContent = device.label;
+        }
+        
+        // Update port count if different from default
+        const portInput = newDevice.querySelector('.device-controls input');
+        if (portInput && device.portCount) {
+          portInput.value = device.portCount;
+          portInput.dispatchEvent(new Event('change'));
+        }
+      });
+
+      setTimeout(() => {
+        state.connections.forEach(conn => {
+          const startPort = document.querySelector(`#${conn.startDeviceId} [data-port-id="${conn.startPortId}"]`);
+          const endPort = document.querySelector(`#${conn.endDeviceId} [data-port-id="${conn.endPortId}"]`);
+          if (startPort && endPort) {
+            selectedColor = conn.color;
+            createConnection(startPort, endPort);
+            // 这里确保端口的连接状态被设置
+            startPort.classList.add('connected');
+            endPort.classList.add('connected');
+          }
+        });
+      }, 100);
+
+    }
+
+
+    // Export configuration as JSON file
+    function exportConfig() {
+      const state = getNetworkState();
+      const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'network-config.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // Import configuration from JSON file
+    function importConfig(file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const state = JSON.parse(e.target.result);
+          restoreState(state);
+        } catch (error) {
+          alert('导入配置文件失败: ' + error.message);
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    // Add event listeners
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('saveState').onclick = saveNetworkState;
+      document.getElementById('loadState').onclick = loadNetworkState;
+      document.getElementById('exportJSON').onclick = exportConfig;
+      document.getElementById('importJSONBtn').onclick = () => document.getElementById('importJSON').click();
+      document.getElementById('importJSON').onchange = (e) => {
+        if (e.target.files.length > 0) {
+          importConfig(e.target.files[0]);
+        }
+      };
+    });
+
+    function createPorts(count, isSwitch = true) {
+      const portsContainer = document.createElement('div');
+      portsContainer.style.display = 'grid';
+      portsContainer.style.gridTemplateColumns = isSwitch ? 'repeat(16, auto)' : 'repeat(8, auto)';
+      
+      for (let i = 0; i < count; i++) {
+        const port = document.createElement('div');
+        port.className = 'port';
+        port.dataset.portId = i;
+        port.title = `Port ${i}`;
+        portsContainer.appendChild(port);
+      }
+      
+      return portsContainer;
+    }
+
+    function addOperation(type, data) {
+      operationHistory.unshift({ type, data });
+      if (operationHistory.length > MAX_HISTORY) {
+        operationHistory.pop();
+      }
+      document.getElementById('undoButton').disabled = operationHistory.length === 0;
+    }
+
+    function undoLastOperation() {
+      if (operationHistory.length === 0) return;
+      
+      const operation = operationHistory.shift();
+      document.getElementById('undoButton').disabled = operationHistory.length === 0;
+      
+      try {
+        switch (operation.type) {
+          case OperationType.CREATE_DEVICE:
+            const deviceToDelete = document.getElementById(operation.data.deviceId);
+            if (deviceToDelete) {
+              deleteDevice(deviceToDelete);
+            }
+            break;
+            
+          case OperationType.DELETE_DEVICE:
+            const device = createDevice(operation.data.type, operation.data.x, operation.data.y);
+            device.id = operation.data.deviceId;
+            const label = device.querySelector('.label');
+            if (label) {
+              label.textContent = operation.data.label;
+            }
+            
+            setTimeout(() => {
+              operation.data.connections.forEach(conn => {
+                const startPort = document.querySelector(`#${conn.startDeviceId} [data-port-id="${conn.startPortId}"]`);
+                const endPort = document.querySelector(`#${conn.endDeviceId} [data-port-id="${conn.endPortId}"]`);
+                if (startPort && endPort) {
+                  createConnection(startPort, endPort);
+                }
+              });
+            }, 0);
+            break;
+            
+          case OperationType.CREATE_CONNECTION:
+            const connToDelete = document.querySelector(
+              `.connection[data-start-device-id="${operation.data.startDeviceId}"][data-start-port-id="${operation.data.startPortId}"][data-end-device-id="${operation.data.endDeviceId}"][data-end-port-id="${operation.data.endPortId}"]`
+            );
+            if (connToDelete) {
+              deleteConnection(connToDelete);
+            }
+            break;
+            
+          case OperationType.DELETE_CONNECTION:
+            const startPort = document.querySelector(`#${operation.data.startDeviceId} [data-port-id="${operation.data.startPortId}"]`);
+            const endPort = document.querySelector(`#${operation.data.endDeviceId} [data-port-id="${operation.data.endPortId}"]`);
+            if (startPort && endPort) {
+              createConnection(startPort, endPort);
+            }
+            break;
+            
+          case OperationType.RENAME_DEVICE:
+            const deviceLabel = document.querySelector(`#${operation.data.deviceId} .label`);
+            if (deviceLabel) {
+              deviceLabel.textContent = operation.data.oldName;
+            }
+            break;
+        }
+      } catch (error) {
+        console.error('Error during undo operation:', error);
+      }
+    }
+
+    function deleteDevice(device) {
+      if (!device) return; 
+      
+      const connections = Array.from(connectionsLayer.querySelectorAll('.connection'))
+        .filter(conn => {
+          return conn && (conn.dataset.startDeviceId === device.id || 
+                 conn.dataset.endDeviceId === device.id);
+        })
+        .map(conn => ({
+          startDeviceId: conn.dataset.startDeviceId,
+          startPortId: conn.dataset.startPortId,
+          endDeviceId: conn.dataset.endDeviceId,
+          endPortId: conn.dataset.endPortId
+        }));
+
+      connections.forEach(conn => {
+        const connElement = connectionsLayer.querySelector(
+          `.connection[data-start-device-id="${conn.startDeviceId}"][data-start-port-id="${conn.startPortId}"][data-end-device-id="${conn.endDeviceId}"][data-end-port-id="${conn.endPortId}"]`
+        );
+        if (connElement) {
+          connElement.remove();
+        }
+      });
+
+      addOperation(OperationType.DELETE_DEVICE, {
+        deviceId: device.id,
+        type: device.classList.contains('switch') ? 'switch' : 'host',
+        label: device.querySelector('.label')?.textContent || device.id,
+        x: parseInt(device.style.left) || 0,
+        y: parseInt(device.style.top) || 0,
+        connections: connections
+      });
+
+      device.remove();
+      updateContainerSize();
+    }
+
+    function createDevice(type, x, y) {
+      const device = document.createElement('div');
+      device.className = type;
+      device.id = `${type}-${deviceCounter++}`;
+      device.style.left = `${x}px`;
+      device.style.top = `${y}px`;
+      
+      const label = document.createElement('div');
+      label.className = 'label';
+      label.textContent = device.id;
+      label.onclick = (e) => {
+        e.stopPropagation();
+        startEditing(label);
+      };
+      device.appendChild(label);
+      
+      const controls = document.createElement('div');
+      controls.className = 'device-controls';
+      
+      const portInput = document.createElement('input');
+      portInput.type = 'number';
+      portInput.min = '1';
+      portInput.max = '128';
+      portInput.value = type === 'switch' ? '64' : '8';
+      portInput.style.width = '50px';
+      portInput.style.marginRight = '4px';
+      portInput.onchange = (e) => {
+        const portCount = parseInt(e.target.value) || (type === 'switch' ? 64 : 8);
+        const oldPorts = device.querySelector('div:last-child');
+        const newPorts = createPorts(portCount, type === 'switch');
+        device.replaceChild(newPorts, oldPorts);
+        updateConnections();
+      };
+      
+      const deleteBtn = document.createElement('button');
+      deleteBtn.className = 'delete-btn';
+      deleteBtn.textContent = '删除';
+      deleteBtn.onclick = (e) => {
+        e.stopPropagation();
+        deleteDevice(device);
+      };
+      
+      controls.appendChild(portInput);
+      controls.appendChild(deleteBtn);
+      device.appendChild(controls);
+      
+      const portCount = type === 'switch' ? 64 : 8;
+      const ports = createPorts(portCount, type === 'switch');
+      device.appendChild(ports);
+      
+      makeDraggable(device);
+      container.appendChild(device);
+      updateContainerSize();
+
+      addOperation(OperationType.CREATE_DEVICE, {
+        deviceId: device.id,
+        type: type,
+        x: x,
+        y: y
+      });
+
+      return device;
+    }
+
+    function startEditing(label) {
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.className = 'label-edit';
+      input.value = label.textContent;
+      input.style.left = label.style.left;
+      input.style.top = label.style.top;
+      
+      label.style.visibility = 'hidden';
+      label.parentNode.appendChild(input);
+      input.focus();
+      
+      input.addEventListener('blur', () => {
+        finishEditing(input, label);
+      });
+      
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          input.blur(); 
+        }
+        if (e.key === 'Escape') {
+          input.value = label.textContent;
+          input.blur(); 
+        }
+      });
+    }
+
+    function finishEditing(input, label) {
+      if (input && input.parentNode) {
+        const oldName = label.textContent;
+        label.textContent = input.value;
+        label.style.visibility = 'visible';
+        input.parentNode.removeChild(input);
+        
+        addOperation(OperationType.RENAME_DEVICE, {
+          deviceId: label.closest('.switch, .host').id,
+          oldName: oldName,
+          newName: input.value
+        });
+      }
+    }
+
+    function deleteConnection(connection) {
+      const startPort = document.querySelector(`#${connection.dataset.startDeviceId} [data-port-id="${connection.dataset.startPortId}"]`);
+      const endPort = document.querySelector(`#${connection.dataset.endDeviceId} [data-port-id="${connection.dataset.endPortId}"]`);
+      
+      if (startPort) startPort.classList.remove('connected');
+      if (endPort) endPort.classList.remove('connected');
+
+      addOperation(OperationType.DELETE_CONNECTION, {
+        startDeviceId: connection.dataset.startDeviceId,
+        startPortId: connection.dataset.startPortId,
+        endDeviceId: connection.dataset.endDeviceId,
+        endPortId: connection.dataset.endPortId
+      });
+      
+      connection.remove();
+      updateContainerSize();
+    }
+
+    function createConnection(startPort, endPort) {
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.classList.add('connection');
+      path.setAttribute('stroke', selectedColor);
+      path.dataset.startPortId = startPort.dataset.portId;
+      path.dataset.startDeviceId = startPort.closest('.switch, .host').id;
+      path.dataset.endPortId = endPort.dataset.portId;
+      path.dataset.endDeviceId = endPort.closest('.switch, .host').id;
+      // 确保端口的连接状态被设置为connected
+      startPort.classList.add('connected');
+      endPort.classList.add('connected');
+
+      path.onclick = (e) => {
+        e.stopPropagation();
+        if (isDeleteMode) {
+          deleteConnection(path);
+          return;
+        }
+        if (isConnecting) {
+          deleteConnection(path);
+        } else {
+          if (selectedConnection === path) {
+            path.classList.remove('selected');
+            selectedConnection = null;
+          } else {
+            if (selectedConnection) {
+              selectedConnection.classList.remove('selected');
+            }
+            selectedConnection = path;
+            path.classList.add('selected');
+          }
+        }
+      };
+
+      updateConnectionPosition(path);
+      connectionsLayer.appendChild(path);
+
+      addOperation(OperationType.CREATE_CONNECTION, {
+        startDeviceId: path.dataset.startDeviceId,
+        startPortId: path.dataset.startPortId,
+        endDeviceId: path.dataset.endDeviceId,
+        endPortId: path.dataset.endPortId
+      });
+
+      updateTooltip(startPort, endPort);
+      updateTooltip(endPort, startPort); // Update tooltip for both ports
+      return path;
+    }
+
+    function updateTooltip(port, connectedPort) {
+      let tooltip = `Port ${port.dataset.portId + 1}`;
+      if (port.classList.contains('connected')) {
+        const connection = connectionsLayer.querySelector(`.connection[data-start-port-id="${port.dataset.portId}"][data-start-device-id="${port.closest('.switch, .host').id}"]`);
+        if (connection) {
+          const connectedDevice = document.querySelector(`#${connection.dataset.endDeviceId}`);
+          const connectedPortId = parseInt(connection.dataset.endPortId) + 1;
+          tooltip += `\nConnected to: ${connectedDevice.querySelector('.label').textContent} Port ${connectedPortId}`;
+        }
+      }
+      port.setAttribute('title', tooltip);
+    }
+
+    // Update event listeners for ports
+    function handlePortClick(e) {
+      if (!e.target.classList.contains('port')) return;
+      
+      if (!connectionStart) {
+        connectionStart = e.target;
+        e.target.classList.add('connected');
+      } else {
+        if (connectionStart === e.target) {
+          connectionStart.classList.remove('connected');
+          connectionStart = null;
+          return;
+        }
+        
+        const path = createConnection(connectionStart, e.target);
+        e.target.classList.add('connected');
+        connectionStart = null;
+
+        // Update tooltip for both ports involved in the connection
+        updateTooltip(e.target, connectionStart);
+        updateTooltip(connectionStart, e.target);
+      }
+    }
+
+    function updateConnectionPosition(connection) {
+      const startPort = document.querySelector(`#${connection.dataset.startDeviceId} [data-port-id="${connection.dataset.startPortId}"]`);
+      const endPort = document.querySelector(`#${connection.dataset.endDeviceId} [data-port-id="${connection.dataset.endPortId}"]`);
+      
+      if (startPort && endPort) {
+        const startRect = startPort.getBoundingClientRect();
+        const endRect = endPort.getBoundingClientRect();
+        const containerRect = container.getBoundingClientRect();
+        
+        const x1 = (startRect.left - containerRect.left) / currentScale + startRect.width/(2 * currentScale);
+        const y1 = (startRect.top - containerRect.top) / currentScale + startRect.height/(2 * currentScale);
+        const x2 = (endRect.left - containerRect.left) / currentScale + endRect.width/(2 * currentScale);
+        const y2 = (endRect.top - containerRect.top) / currentScale + endRect.height/(2 * currentScale);
+        
+        const dx = x2 - x1;
+        const dy = y2 - y1;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        const controlDistance = distance * 0.5;
+        
+        const cx1 = x1;
+        const cy1 = y1 + controlDistance;
+        const cx2 = x2;
+        const cy2 = y2 - controlDistance;
+        
+        const d = `M ${x1},${y1} C ${cx1},${cy1} ${cx2},${cy2} ${x2},${y2}`;
+        connection.setAttribute('d', d);
+      }
+    }
+
+    function updateConnections() {
+      const connections = connectionsLayer.querySelectorAll('.connection');
+      connections.forEach(updateConnectionPosition);
+    }
+
+    function handlePortClick(e) {
+      if (!e.target.classList.contains('port')) return;
+      
+      if (!connectionStart) {
+        connectionStart = e.target;
+        e.target.classList.add('connected');
+      } else {
+        if (connectionStart === e.target) {
+          connectionStart.classList.remove('connected');
+          connectionStart = null;
+          return;
+        }
+        
+        createConnection(connectionStart, e.target);
+        e.target.classList.add('connected');
+        connectionStart = null;
+      }
+    }
+
+    document.getElementById('addSwitch').onclick = () => {
+      const count = parseInt(document.getElementById('switchCount').value) || 1;
+      const spacing = 120; // Spacing between devices
+      
+      for(let i = 0; i < count; i++) {
+        const x = 100 + (i % 3) * spacing; // 3 devices per row
+        const y = 100 + Math.floor(i / 3) * spacing;
+        createDevice('switch', x, y);
+      }
+    };
+
+    document.getElementById('addHost').onclick = () => {
+      const count = parseInt(document.getElementById('hostCount').value) || 1;
+      const spacing = 120; // Spacing between devices
+      
+      for(let i = 0; i < count; i++) {
+        const x = 100 + (i % 3) * spacing; // 3 devices per row
+        const y = 300 + Math.floor(i / 3) * spacing;
+        createDevice('host', x, y);
+      }
+    };
+
+    document.getElementById('startConnection').onclick = function() {
+      isConnecting = !isConnecting;
+      this.textContent = isConnecting ? '取消连线' : '开始连线';
+      
+      if (isConnecting) {
+        container.addEventListener('click', handlePortClick);
+      } else {
+        container.removeEventListener('click', handlePortClick);
+        if (connectionStart) {
+          connectionStart.classList.remove('connected');
+          connectionStart = null;
+        }
+      }
+    };
+
+    document.getElementById('undoButton').onclick = undoLastOperation;
+
+    document.getElementById('clearAll').onclick = () => {
+      while (container.firstChild) {
+        container.removeChild(container.firstChild);
+      }
+      const newSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      newSvg.className = 'connections-layer';
+      newSvg.id = 'connectionsLayer';
+      container.appendChild(newSvg);
+      connectionsLayer = document.getElementById('connectionsLayer');
+      deviceCounter = 0;
+      
+      container.style.minHeight = '600px';
+      container.style.minWidth = '100%';
+      updateSVGViewport();
+    };
+
+    container.addEventListener('wheel', (e) => {
+      if (e.ctrlKey) {
+        e.preventDefault();
+        
+        const rect = container.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+
+        const delta = e.deltaY < 0 ? 1.1 : 0.9;
+        const newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, currentScale * delta));
+        
+        if (newScale !== currentScale) {
+          currentScale = newScale;
+          
+          container.style.transform = `scale(${currentScale})`;
+          
+          updateContainerSize();
+        }
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Delete' && selectedConnection) {
+        deleteConnection(selectedConnection);
+        selectedConnection = null;
+      }
+      if (e.ctrlKey && e.key === 'z') {
+        e.preventDefault();
+        undoLastOperation();
+      }
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!e.target.classList.contains('connection') && selectedConnection) {
+        selectedConnection.classList.remove('selected');
+        selectedConnection = null;
+      }
+    });
+
+    function updateContainerSize() {
+      const devices = container.querySelectorAll('.switch, .host');
+      let maxX = 0;
+      let maxY = 0;
+      
+      devices.forEach(device => {
+        const rect = device.getBoundingClientRect();
+        const rightEdge = (rect.left - container.getBoundingClientRect().left) / currentScale + rect.width / currentScale + 100;
+        const bottomEdge = (rect.top - container.getBoundingClientRect().top) / currentScale + rect.height / currentScale + 100;
+        
+        maxX = Math.max(maxX, rightEdge);
+        maxY = Math.max(maxY, bottomEdge);
+      });
+      
+      container.style.minHeight = `${Math.max(600, maxY)}px`;
+      container.style.minWidth = `${Math.max(window.innerWidth - 40, maxX)}px`;
+      
+      updateSVGViewport();
+    }
+
+    function updateSVGViewport() {
+      const rect = container.getBoundingClientRect();
+      connectionsLayer.setAttribute('width', rect.width);
+      connectionsLayer.setAttribute('height', rect.height);
+    }
+
+    const resizeObserver = new ResizeObserver(() => {
+      updateSVGViewport();
+    });
+    resizeObserver.observe(container);
+
+    function makeDraggable(element) {
+      let offsetX, offsetY;
+      
+      element.onmousedown = startDragging;
+      
+      function startDragging(e) {
+        if (isConnecting) return;
+        if (e.target.classList.contains('port')) return;
+        if (e.target.classList.contains('delete-btn')) return;
+        
+        isDragging = true;
+        selectedDevice = element;
+        
+        const rect = element.getBoundingClientRect();
+        offsetX = e.clientX - rect.left;
+        offsetY = e.clientY - rect.top;
+        
+        document.addEventListener('mousemove', drag);
+        document.addEventListener('mouseup', stopDragging);
+      }
+      
+      function drag(e) {
+        if (!isDragging) return;
+        
+        const containerRect = container.getBoundingClientRect();
+        const x = e.clientX - containerRect.left - offsetX;
+        const y = e.clientY - containerRect.top - offsetY;
+        
+        selectedDevice.style.left = `${x}px`;
+        selectedDevice.style.top = `${y}px`;
+        
+        updateConnections();
+        updateContainerSize();
+      }
+      
+      function stopDragging() {
+        isDragging = false;
+        selectedDevice = null;
+        document.removeEventListener('mousemove', drag);
+        document.removeEventListener('mouseup', stopDragging);
+      }
+    }
+
+
+    function createPorts(count, isSwitch = true) {
+      const portsContainer = document.createElement('div');
+      portsContainer.className = 'port-grid';
+
+      const columns = isSwitch ? (count <= 40 ? 20 : 32) : 8; // Set columns based on port count
+      portsContainer.style.gridTemplateColumns = `repeat(${columns}, auto)`;
+
+      for (let i = 0; i < count; i++) {
+        const port = document.createElement('div');
+        port.className = 'port';
+        port.dataset.portId = i;
+        port.title = `Port ${i + 1}`; // Port numbers start from 1 for display
+
+        // Add event listener for hover information
+        port.addEventListener('mouseenter', function(e) {
+          let tooltip = this.title;
+          if (this.classList.contains('connected')) {
+            const connection = connectionsLayer.querySelector(`.connection[data-start-port-id="${this.dataset.portId}"]`);
+            if (connection) {
+              const endPort = document.querySelector(`#${connection.dataset.endDeviceId} [data-port-id="${connection.dataset.endPortId}"]`);
+              tooltip += `\nConnected to: ${endPort.closest('.switch, .host').querySelector('.label').textContent} Port ${parseInt(connection.dataset.endPortId) + 1}`;
+            }
+          }
+          this.setAttribute('title', tooltip);
+        });
+
+        port.addEventListener('mouseleave', function(e) {
+          this.setAttribute('title', `Port ${this.dataset.portId}`);
+        });
+
+        portsContainer.appendChild(port);
+      }
+      
+      return portsContainer;
+    }
+
+    // Update the `makeDraggable` function to handle new layout
+    function makeDraggable(element) {
+      let offsetX, offsetY;
+      
+      element.onmousedown = startDragging;
+      
+      function startDragging(e) {
+        if (isConnecting) return;
+        if (e.target.classList.contains('port')) return;
+        if (e.target.classList.contains('delete-btn')) return;
+        
+        isDragging = true;
+        selectedDevice = element;
+        
+        const rect = element.getBoundingClientRect();
+        offsetX = e.clientX - rect.left;
+        offsetY = e.clientY - rect.top;
+        
+        document.addEventListener('mousemove', drag);
+        document.addEventListener('mouseup', stopDragging);
+
+        // Ensure ports layout updates after dragging
+        const portInput = element.querySelector('.device-controls input');
+        if (portInput) {
+          portInput.dispatchEvent(new Event('change'));
+        }
+      }
+        function drag(e) {
+          if (!isDragging) return;
+          
+          const containerRect = container.getBoundingClientRect();
+          const x = e.clientX - containerRect.left - offsetX;
+          const y = e.clientY - containerRect.top - offsetY;
+          
+          selectedDevice.style.left = `${x}px`;
+          selectedDevice.style.top = `${y}px`;
+          
+          updateConnections();
+          updateContainerSize();
+        }
+        
+        function stopDragging() {
+          isDragging = false;
+          selectedDevice = null;
+          document.removeEventListener('mousemove', drag);
+          document.removeEventListener('mouseup', stopDragging);
+        }
+    }
+
+    initializeColorPicker();
+
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html>
+<head>      <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      background: #1e1e1e;
+      margin: 0;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+    }
+    
+    .toolbar {
+      background: #333;
+      padding: 10px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    
+    .btn {
+      background: #444;
+      border: none;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    
+    .btn:hover {
+      background: #555;
+    }
+    
+    .color-btn {
+      width: 20px;
+      height: 20px;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    
+    .workspace {
+      position: relative;
+      width: 100%;
+      height: calc(100vh - 100px);
+    }
+    
+    .switch {
+      position: absolute;
+      background: rgba(60, 60, 60, 0.8);
+      border-radius: 4px;
+      padding: 10px;
+    }
+    
+    .switch-title {
+      color: white;
+      margin: 0 0 10px 0;
+      font-size: 14px;
+    }
+    
+    .port-grid {
+      display: grid;
+      grid-template-columns: repeat(15, 12px);
+      gap: 4px;
+    }
+    
+    .port {
+      width: 12px;
+      height: 12px;
+      background: #666;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+    
+    .port.active {
+      background: #4CAF50;
+    }
+    
+    svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+    
+    .connection {
+      fill: none;
+      stroke-width: 2;
+    }
+    .network-container {
+      position: relative;
+    }
+
+    .switch, .host {
+      z-index: 1;
+    }
+
+    .connections-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none; /* 防止影响下面的元素 */
+      z-index: 2; /* 确保在设备之上 */
+    }
+   .port-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 12px);
+    gap: 4px;
+  }
+
+  </style>
+</head>
+<body>
+  <div class="toolbar">
+    <input type="number" class="btn" value="1" min="1" style="width: 40px">
+    <button class="btn">添加交换机</button>
+    <input type="number" class="btn" value="1" min="1" style="width: 40px">
+    <button class="btn">添加主机</button>
+    <button class="btn">取消连线</button>
+    <button class="btn">撤销</button>
+    <button class="btn">清除所有</button>
+    <span style="color: white;">连线颜色:</span>
+    <button class="color-btn" style="background: #4CAF50"></button>
+    <button class="color-btn" style="background: #2196F3"></button>
+    <button class="color-btn" style="background: #FFC107"></button>
+    <button class="color-btn" style="background: #E91E63"></button>
+    <button class="color-btn" style="background: #9C27B0"></button>
+    <button class="color-btn" style="background: #FF5722"></button>
+    <button class="color-btn" style="background: #00BCD4"></button>
+    <button class="color-btn" style="background: #FFEB3B"></button>
+    <button class="color-btn" style="background: #795548"></button>
+    <button class="color-btn" style="background: #607D8B"></button>
+    <button class="btn">保存状态</button>
+    <button class="btn">加载状态</button>
+    <button class="btn">导出配置</button>
+    <button class="btn">导入配置</button>
+  </div>
+
+  <div class="workspace">
+    <svg id="connections"></svg>
+    
+    <div class="switch" style="top: 100px; left: 100px;">
+      <h3 class="switch-title">switch-0</h3>
+      <div class="port-grid">
+        <!-- 45个端口点 -->
+        <div class="port"></div><div class="port"></div><div class="port"></div>
+        <div class="port"></div><div class="port"></div><div class="port active"></div>
+        <div class="port active"></div><div class="port"></div><div class="port active"></div>
+        <div class="port"></div><div class="port active"></div><div class="port active"></div>
+        <div class="port active"></div><div class="port active"></div><div class="port active"></div>
+        <!-- 重复port div直到45个 -->
+      </div>
+    </div>
+
+    <div class="switch" style="top: 100px; left: 400px;">
+      <h3 class="switch-title">switch-2</h3>
+      <div class="port-grid">
+        <div class="port active"></div><div class="port active"></div>
+        <div class="port"></div><div class="port active"></div>
+        <div class="port active"></div><div class="port active"></div>
+        <div class="port active"></div>
+        <!-- 重复port div -->
+      </div>
+    </div>
+
+    <div class="switch" style="top: 300px; left: 100px;">
+      <h3 class="switch-title">switch-1</h3>
+      <div class="port-grid">
+        <!-- 端口点 -->
+      </div>
+    </div>
+
+    <div class="switch" style="top: 300px; left: 400px;">
+      <h3 class="switch-title">switch-3</h3>
+      <div class="port-grid">
+        <!-- 端口点 -->
+      </div>
+    </div>
+
+    <div class="switch" style="top: 500px; left: 100px;">
+      <h3 class="switch-title">host-5</h3>
+      <div class="port-grid">
+        <!-- 8个端口点 -->
+      </div>
+    </div>
+
+    <div class="switch" style="top: 500px; left: 400px;">
+      <h3 class="switch-title">host-4</h3>
+      <div class="port-grid">
+        <!-- 8个端口点 -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 用于存储连接的起点和终点
+    let startPort = null;
+    let currentColor = '#4CAF50';
+    
+    // 添加端口点击事件处理
+    document.querySelectorAll('.port').forEach(port => {
+      port.addEventListener('click', e => {
+        if (!startPort) {
+          startPort = e.target;
+          e.target.style.border = '2px solid white';
+        } else {
+          drawConnection(startPort, e.target);
+          startPort.style.border = 'none';
+          startPort = null;
+        }
+      });
+    });
+
+    // 添加颜色选择功能
+    document.querySelectorAll('.color-btn').forEach(btn => {
+      btn.addEventListener('click', e => {
+        currentColor = e.target.style.background;
+      });
+    });
+
+    // 绘制连接线
+    function drawConnection(start, end) {
+      const svg = document.getElementById('connections');
+      const startRect = start.getBoundingClientRect();
+      const endRect = end.getBoundingClientRect();
+      
+      const startX = startRect.left + startRect.width/2;
+      const startY = startRect.top + startRect.height/2;
+      const endX = endRect.left + endRect.width/2;
+      const endY = endRect.top + endRect.height/2;
+      
+      // 创建贝塞尔曲线
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      const dx = endX - startX;
+      const dy = endY - startY;
+      const controlX1 = startX + dx/3;
+      const controlY1 = startY;
+      const controlX2 = endX - dx/3;
+      const controlY2 = endY;
+      
+      path.setAttribute('d', `M ${startX} ${startY} C ${controlX1} ${controlY1}, ${controlX2} ${controlY2}, ${endX} ${endY}`);
+      path.setAttribute('class', 'connection');
+      path.style.stroke = currentColor;
+      
+      svg.appendChild(path);
+    }
+
+    // 使设备可拖动
+    document.querySelectorAll('.switch').forEach(makeDeviceDraggable);
+
+    function makeDeviceDraggable(device) {
+      let isDragging = false;
+      let currentX;
+      let currentY;
+      let initialX;
+      let initialY;
+
+      device.addEventListener('mousedown', dragStart);
+      document.addEventListener('mousemove', drag);
+      document.addEventListener('mouseup', dragEnd);
+
+      function dragStart(e) {
+        initialX = e.clientX - device.offsetLeft;
+        initialY = e.clientY - device.offsetTop;
+        isDragging = true;
+      }
+
+      function drag(e) {
+        if (isDragging) {
+          e.preventDefault();
+          currentX = e.clientX - initialX;
+          currentY = e.clientY - initialY;
+          device.style.left = currentX + 'px';
+          device.style.top = currentY + 'px';
+        }
+      }
+
+      function dragEnd() {
+        isDragging = false;
+      }
+    }
+  </script>
+</body>
+</html>

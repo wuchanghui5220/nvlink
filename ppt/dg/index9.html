@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NVIDIA Quantum-2 QM9700系列交换机详解</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f0f0f0;
+      font-family: 'Noto Sans SC', sans-serif;
+      overflow: hidden;
+    }
+
+    .slide-container {
+      width: 100vw;
+      height: 56.25vw; /* 16:9 aspect ratio */
+      max-height: 100vh;
+      max-width: 177.78vh; /* 16:9 aspect ratio (reversed) */
+      position: relative;
+      background: #111827;
+      color: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    /* 背景图形元素 */
+    .bg-grid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image:
+        linear-gradient(rgba(24, 92, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(24, 92, 255, 0.05) 1px, transparent 1px);
+      background-size: 20px 20px;
+      z-index: 0;
+    }
+
+    .bg-gradient {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 120% 45%, rgba(76, 29, 149, 0.7) 0%, rgba(17, 24, 39, 0) 50%);
+      z-index: 1;
+    }
+
+    .bg-circle1 {
+      position: absolute;
+      top: -15%;
+      right: -15%;
+      width: 40%;
+      height: 40%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #76b900 0%, #1a4163 100%);
+      filter: blur(80px);
+      opacity: 0.6;
+      z-index: 2;
+    }
+
+    .bg-circle2 {
+      position: absolute;
+      bottom: -10%;
+      left: -10%;
+      width: 30%;
+      height: 30%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0099da 0%, #1e40af 100%);
+      filter: blur(60px);
+      opacity: 0.5;
+      z-index: 2;
+    }
+
+    /* 主要内容 */
+    .content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    .header {
+      padding: 1.8% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .nvidia-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-box {
+      width: 8%;
+      min-width: 100px;
+      height: 36px;
+      background: #76b900;
+      border-radius: 4px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 700;
+      font-size: clamp(16px, 2vw, 22px);
+      transform: skew(-10deg);
+    }
+
+    .partner-text {
+      font-size: clamp(12px, 1.5vw, 16px);
+      font-weight: 500;
+      opacity: 0.9;
+    }
+
+    .slide-title {
+      font-size: clamp(16px, 1.8vw, 20px);
+      font-weight: 600;
+      padding: 0.5% 2%;
+      background: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(5px);
+      border-radius: 20px;
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 1.5% 3%;
+      overflow: hidden;
+    }
+
+    .solution-container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      width: 100%;
+    }
+
+    .solution-title {
+      text-align: center;
+      font-size: clamp(20px, 2.5vw, 28px);
+      font-weight: 700;
+      color: #76b900;
+      margin-bottom: 20px;
+      margin-top: 0;
+      background: linear-gradient(135deg, #76b900 0%, #a5b4fc 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .solution-content {
+      display: flex;
+      gap: 25px;
+      height: 100%;
+    }
+
+    .left-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .right-panel {
+      flex: 2;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .panel-title {
+      font-size: clamp(16px, 1.8vw, 20px);
+      font-weight: 600;
+      color: #76b900;
+      margin-bottom: 10px;
+    }
+
+    .image-container {
+      flex: 1;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.05);
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .image-container:hover {
+      background: rgba(255, 255, 255, 0.08);
+      transform: scale(1.02);
+    }
+
+    .image-container img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .zoom-hint {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .image-container:hover .zoom-hint {
+      opacity: 1;
+    }
+
+    .features-container {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 15px;
+      overflow-y: auto;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .feature-box {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 12px;
+      border-left: 4px solid #76b900;
+      transition: all 0.3s ease;
+    }
+
+    .feature-box:hover {
+      background: rgba(255, 255, 255, 0.12);
+      transform: translateY(-2px);
+    }
+
+    .feature-title {
+      font-weight: 600;
+      color: #76b900;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .feature-desc {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .footer {
+      padding: 1.5% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .company-name {
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    .page-number {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .rotating-lines {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 50%;
+      height: 50%;
+      z-index: 5;
+      opacity: 0.15;
+      animation: rotate 60s linear infinite;
+    }
+
+    @keyframes rotate {
+      from {
+        transform: translate(-50%, -50%) rotate(0deg);
+      }
+      to {
+        transform: translate(-50%, -50%) rotate(360deg);
+      }
+    }
+
+    /* 全屏图片显示样式 */
+    .fullscreen-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.95);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 2000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .fullscreen-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .fullscreen-image {
+      max-width: 90%;
+      max-height: 90%;
+      object-fit: contain;
+      border-radius: 8px;
+      box-shadow: 0 0 30px rgba(118, 185, 0, 0.3);
+    }
+
+    .close-button {
+      position: absolute;
+      top: 30px;
+      right: 30px;
+      color: white;
+      font-size: 30px;
+      cursor: pointer;
+      background: rgba(0, 0, 0, 0.7);
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.3s ease;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .close-button:hover {
+      background: rgba(255, 0, 0, 0.7);
+      transform: scale(1.1);
+    }
+
+    /* 动画效果 */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .left-panel, .right-panel {
+      animation: fadeIn 0.8s ease-out forwards;
+    }
+
+    .right-panel {
+      animation-delay: 0.3s;
+    }
+
+    /* 滚动条样式 */
+    .features-container::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .features-container::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 3px;
+    }
+
+    .features-container::-webkit-scrollbar-thumb {
+      background: rgba(118, 185, 0, 0.6);
+      border-radius: 3px;
+    }
+
+    .features-container::-webkit-scrollbar-thumb:hover {
+      background: rgba(118, 185, 0, 0.8);
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <!-- 背景元素 -->
+    <div class="bg-grid"></div>
+    <div class="bg-gradient"></div>
+    <div class="bg-circle1"></div>
+    <div class="bg-circle2"></div>
+
+    <!-- 旋转线框背景 -->
+    <svg class="rotating-lines" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+      <path d="M250,10 L490,250 L250,490 L10,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,50 L450,250 L250,450 L50,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,90 L410,250 L250,410 L90,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,130 L370,250 L250,370 L130,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,170 L330,250 L250,330 L170,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,210 L290,250 L250,290 L210,250 Z" fill="none" stroke="white" stroke-width="1" />
+    </svg>
+
+    <!-- 主要内容 -->
+    <div class="content">
+      <div class="header">
+        <div class="nvidia-logo">
+          <div class="logo-box">NVIDIA</div>
+          <div class="partner-text">Quantum-2 InfiniBand Switch</div>
+        </div>
+        <div class="slide-title">智能交换机解决方案</div>
+      </div>
+
+      <div class="main-content">
+        <div class="solution-container">
+          <h3 class="solution-title">NVIDIA Quantum-2 QM9700系列交换机详解</h3>
+          
+          <div class="solution-content">
+            <div class="left-panel">
+              <div class="panel-title">📡 Quantum-2 QM9700系列</div>
+              <div class="image-container" id="zoomable-image">
+                <img src="qm9700-2.png" alt="NVIDIA Quantum-2 QM9700系列交换机">
+                <div class="zoom-hint">🔍 点击查看大图</div>
+              </div>
+            </div>
+
+            <div class="right-panel">
+              <div class="panel-title">🚀 核心特性</div>
+              <div class="features-container">
+                <div class="feature-box">
+                  <div class="feature-title">⚡ 性能规格</div>
+                  <div class="feature-desc">
+                    每端口400Gb/s的InfiniBand吞吐量，64个无阻塞端口，总计提供高达51.2Tb/s的双向聚合吞吐量和超过66.5 BPPS的处理能力。
+                  </div>
+                </div>
+                
+                <div class="feature-box">
+                  <div class="feature-title">🌐 网络技术</div>
+                  <div class="feature-desc">
+                    采用先进技术如远程直接内存访问(RDMA)、自适应路由和NVIDIA可扩展分层聚合与归约协议(SHARP)，实现高速、超低延迟和可扩展的网络解决方案。
+                  </div>
+                </div>
+                
+                <div class="feature-box">
+                  <div class="feature-title">🔄 自愈网络</div>
+                  <div class="feature-desc">
+                    不同于其他网络解决方案，NVIDIA InfiniBand集成了自愈网络功能、服务质量、增强型虚拟通道映射和高级拥塞控制，最大化应用程序整体吞吐量。
+                  </div>
+                </div>
+                
+                <div class="feature-box">
+                  <div class="feature-title">🔧 拓扑灵活性</div>
+                  <div class="feature-desc">
+                    作为理想的机架式InfiniBand解决方案，QM9700和QM9790交换机支持多种网络拓扑，如Fat Tree、SlimFly、DragonFly+和多维Torus等，同时保持向后兼容性。
+                  </div>
+                </div>
+                
+                <div class="feature-box">
+                  <div class="feature-title">🎯 SHARPv3技术</div>
+                  <div class="feature-desc">
+                    集成第三代NVIDIA SHARP技术(SHARPv3)，支持网络上小型和大型数据聚合的几乎无限扩展，大幅提升复杂计算应用程序的性能。
+                  </div>
+                </div>
+                
+                <div class="feature-box">
+                  <div class="feature-title">🔀 端口分割技术</div>
+                  <div class="feature-desc">
+                    实现NVIDIA端口分割技术，提供200Gb/s数据速度的双倍密度基数，降低网络设计和网络拓扑的成本。支持高达128个200Gb/s端口，提供高密度的顶架式(TOR)交换机。
+                  </div>
+                </div>
+                
+                <div class="feature-box">
+                  <div class="feature-title">⚙️ 管理功能</div>
+                  <div class="feature-desc">
+                    QM9700内部管理型交换机配备板载子网管理器，实现多达2,000个节点的即插即用启动。运行NVIDIA MLNX-OS软件包，通过CLI、WebUI、SNMP或JSON接口提供完整的机箱管理。
+                  </div>
+                </div>
+                
+                <div class="feature-box">
+                  <div class="feature-title">♻️ 能源效率</div>
+                  <div class="feature-desc">
+                    使用铜缆代替光缆提高能效，将每OSFP端口功耗从30瓦降至0-3瓦。这种降低不仅减少了延迟并提高了可靠性，还降低了总体拥有成本。
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="company-name">NVIDIA Quantum-2 QM9700系列 — 为复杂HPC和AI应用提供高性能网络解决方案</div>
+        <div class="page-number">Quantum-2 详解</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 全屏图片显示区域 -->
+  <div class="fullscreen-overlay" id="image-overlay">
+    <img src="qm9700-2.png" alt="全屏图片" class="fullscreen-image" id="fullscreen-image">
+    <div class="close-button" id="close-button">×</div>
+  </div>
+  
+  <!-- 导航按钮 -->
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+    <a href="index8.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+    <a href="#" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+  </div>
+
+  <!-- JavaScript实现全屏功能 -->
+  <script>
+    // 获取元素
+    const zoomableImage = document.getElementById('zoomable-image');
+    const imageOverlay = document.getElementById('image-overlay');
+    const fullscreenImage = document.getElementById('fullscreen-image');
+    const closeButton = document.getElementById('close-button');
+
+    // 点击图片显示全屏
+    zoomableImage.addEventListener('click', function() {
+      const img = this.querySelector('img');
+      fullscreenImage.src = img.src;
+      imageOverlay.classList.add('active');
+      document.body.style.overflow = 'hidden'; // 防止背景滚动
+    });
+
+    // 点击关闭按钮关闭全屏
+    closeButton.addEventListener('click', function() {
+      imageOverlay.classList.remove('active');
+      document.body.style.overflow = ''; // 恢复背景滚动
+    });
+
+    // 点击黑色背景也可关闭全屏
+    imageOverlay.addEventListener('click', function(e) {
+      if (e.target === imageOverlay) {
+        imageOverlay.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    });
+
+    // ESC键关闭全屏
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && imageOverlay.classList.contains('active')) {
+        imageOverlay.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    });
+
+    // 鼠标悬停效果
+    const navButtons = document.querySelectorAll('.nav-button');
+    navButtons.forEach(button => {
+      button.addEventListener('mouseenter', function() {
+        this.style.backgroundColor = '#4a854c';
+        this.style.transform = 'scale(1.05)';
+      });
+      
+      button.addEventListener('mouseleave', function() {
+        this.style.backgroundColor = '#111827';
+        this.style.transform = 'scale(1)';
+      });
+    });
+  </script>
+</body>
+</html>

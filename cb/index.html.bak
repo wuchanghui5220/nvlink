@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>网络配置计算器</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- 添加拓扑图相关样式 -->
+    <style>
+    /* Topology Tab Styles */
+    .topology-container {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    .left-panel, .right-panel {
+        width: 100%;
+    }
+    
+    .input-group {
+        margin-bottom: 15px;
+    }
+    
+    .input-row {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .input-col {
+        width: 100%;
+    }
+    
+    #results {
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 4px;
+        font-size: 0.9em;
+    }
+    
+    #diagram {
+        margin-top: 20px;
+        width: 100%;
+        overflow-x: auto;
+    }
+    
+    svg {
+        width: 100%;
+        height: auto;
+        min-width: 300px;
+    }
+    
+    .diagram-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    @media (min-width: 768px) {
+        .topology-container {
+            flex-direction: row;
+        }
+        .left-panel, .right-panel {
+            width: 48%;
+        }
+        .input-row {
+            flex-direction: row;
+        }
+        .input-col {
+            width: 48%;
+        }
+    }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>网络配置计算器</h1>
+        
+        <div class="tab">
+            <button class="tablinks active" id="inputTabBtn">参数输入</button>
+            <button class="tablinks" id="resultsTabBtn">计算结果</button>
+            <button class="tablinks" id="productTabBtn">配置清单</button>
+            <!-- 添加新选项卡按钮 -->
+            <button class="tablinks" id="topologyTabBtn">拓扑连接</button>
+        </div>
+        
+        <div id="inputTab" class="tabcontent" style="display: block;">
+            <div class="card">
+                <h2>基本参数</h2>
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="ratio">比例 (默认为 1:1)</label>
+                            <input type="number" id="ratio" value="1" min="1" max="10">
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            <label for="speed">速度选择</label>
+                            <select id="speed">
+                                <option value="1">HDR</option>
+                                <option value="2" selected>NDR</option>
+                                <option value="3">SN5600 (NDR 400G)</option>
+                                <option value="4">Q3400 (XDR)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="divider"></div>
+                
+                <h2>服务器配置</h2>
+                
+                <div class="server-section">
+                    <h3>GPU 服务器</h3>
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="gpuServerNum">GPU 服务器数量</label>
+                                <input type="number" id="gpuServerNum" value="0" min="0">
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="gpuType">GPU 型号 (默认为 H800)</label>
+                                <input type="text" id="gpuType" value="H800">
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="gpuCardNum">GPU 服务器 NIC 数量</label>
+                                <select id="gpuCardNum">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="4">4</option>
+                                    <option value="8" selected>8</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="server-section">
+                    <h3>存储服务器</h3>
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="storageServerNum">存储服务器数量</label>
+                                <input type="number" id="storageServerNum" value="0" min="0">
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="storageCardNum">存储服务器 NIC 数量</label>
+                                <select id="storageCardNum">
+                                    <option value="1" selected>1</option>
+                                    <option value="2">2</option>
+                                    <option value="4">4</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="server-section">
+                    <h3>CPU 服务器</h3>
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="cpuServerNum">CPU 服务器数量</label>
+                                <input type="number" id="cpuServerNum" value="0" min="0">
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="cpuCardNum">CPU 服务器 NIC 数量</label>
+                                <select id="cpuCardNum">
+                                    <option value="1" selected>1</option>
+                                    <option value="2">2</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="server-section">
+                    <h3>其他服务器</h3>
+                    <div class="form-row">
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="otherServerNum">其他服务器数量</label>
+                                <input type="number" id="otherServerNum" value="0" min="0">
+                            </div>
+                        </div>
+                        <div class="form-col">
+                            <div class="form-group">
+                                <label for="otherCardNum">其他服务器 NIC 数量</label>
+                                <select id="otherCardNum">
+                                    <option value="1" selected>1</option>
+                                    <option value="2">2</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="dacCableNumber">DAC 线缆数量</label>
+                    <input type="number" id="dacCableNumber" value="0" min="0">
+                </div>
+                
+                <button id="calculateButton">计算拓扑</button>
+            </div>
+        </div>
+        
+        <div id="resultsTab" class="tabcontent">
+            <div class="card">
+                <h2>计算结果</h2>
+                <div class="info-box">
+                    <p><strong>Fabric 速度：</strong> <span id="resultFabricSpeed"></span></p>
+                    <p><strong>比例：</strong> <span id="resultRatio"></span></p>
+                </div>
+                
+                <h3>服务器信息</h3>
+                <table>
+                    <tr>
+                        <th>服务器类型</th>
+                        <th>服务器数量</th>
+                        <th>节点数量</th>
+                        <th>叶子交换机数量</th>
+                    </tr>
+                    <tr>
+                        <td>GPU 服务器</td>
+                        <td id="gpuServerNumResult">0</td>
+                        <td id="gpuNodesResult">0</td>
+                        <td id="gpuLeafsResult">0</td>
+                    </tr>
+                    <tr>
+                        <td>存储服务器</td>
+                        <td id="storageServerNumResult">0</td>
+                        <td id="storageNodesResult">0</td>
+                        <td id="storageLeafsResult">0</td>
+                    </tr>
+                    <tr>
+                        <td>CPU 服务器</td>
+                        <td id="cpuServerNumResult">0</td>
+                        <td id="cpuNodesResult">0</td>
+                        <td id="cpuLeafsResult">0</td>
+                    </tr>
+                    <tr>
+                        <td>其他服务器</td>
+                        <td id="otherServerNumResult">0</td>
+                        <td id="otherNodesResult">0</td>
+                        <td id="otherLeafsResult">0</td>
+                    </tr>
+                    <tr>
+                        <td><strong>总计</strong></td>
+                        <td id="totalServerNumResult">0</td>
+                        <td id="totalNodesResult">0</td>
+                        <td id="totalLeafsResult">0</td>
+                    </tr>
+                </table>
+                
+                <h3>交换机拓扑</h3>
+                <table>
+                    <tr>
+                        <th>参数</th>
+                        <th>值</th>
+                    </tr>
+                    <tr>
+                        <td>Spine 交换机数量</td>
+                        <td id="spinesResult">0</td>
+                    </tr>
+                    <tr>
+                        <td>Leaf 交换机数量</td>
+                        <td id="leafsResult">0</td>
+                    </tr>
+                    <tr>
+                        <td>Spine 到 Leaf 线缆数量</td>
+                        <td id="spineToLeafCablesResult">0</td>
+                    </tr>
+                    <tr>
+                        <td>Leaf 到服务器线缆数量</td>
+                        <td id="leafToServerCablesResult">0</td>
+                    </tr>
+                    <tr>
+                        <td>最大 Leaf 到服务器线缆数量</td>
+                        <td id="maxLeafToServerCablesResult">0</td>
+                    </tr>
+                    <tr>
+                        <td>总线缆数量</td>
+                        <td id="totalCablesResult">0</td>
+                    </tr>
+                </table>
+                
+                <div id="opticalTransceiverSection">
+                    <h3>光模块信息</h3>
+                    <table id="otTable">
+                        <!-- Content will be dynamically generated -->
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div id="productTab" class="tabcontent">
+            <div class="card">
+                <h2>配置清单</h2>
+                <div class="info-box" id="productSummary">
+                    <!-- 总结描述将在这里动态生成 -->
+                </div>
+                <table id="productTable">
+                    <tr>
+                        <th>产品名称</th>
+                        <th>产品型号</th>
+                        <th>产品描述</th>
+                        <th>数量</th>
+                        <th>备注</th>
+                    </tr>
+                    <!-- Content will be dynamically generated -->
+                </table>
+            </div>
+        </div>
+        
+        <!-- 新添加的拓扑连接选项卡内容 -->
+        <div id="topologyTab" class="tabcontent">
+            <div class="card">
+                <h2>Advanced Infiniband Fabric Spine-Leaf Network</h2>
+                
+                <div class="topology-container">
+                    <div class="left-panel">
+                        <h3>Results</h3>
+                        <div id="results">
+                            <!-- Results will be populated here -->
+                        </div>
+                    </div>
+                    
+                    <div class="right-panel">
+                        <h3>Configuration</h3>
+                        <div class="input-row">
+                            <div class="input-col">
+                                <label for="switchType">Switch Type:</label>
+                                <select id="switchType">
+                                    <option value="QM8700">QM8700 (40-port)</option>
+                                    <option value="QM9700" selected>QM9700 (64-port)</option>
+                                    <option value="Q3400">Q3400 (144-port)</option>
+                                    <option value="SN5600">SN5600 (128-port)</option>
+                                </select>
+                            </div>
+                            <div class="input-col">
+                                <label for="networkCardType">Network Card Type:</label>
+                                <select id="networkCardType">
+                                    <option value="200G">200G</option>
+                                    <option value="400G" selected>400G</option>
+                                    <option value="800G">800G</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="input-row">
+                            <div class="input-col">
+                                <label for="numServers">Number of Servers:</label>
+                                <input type="number" id="numServers" min="1" value="63">
+                            </div>
+                            <div class="input-col">
+                                <label for="numNetworkCardsPerServer">Network Cards per Server:</label>
+                                <input type="number" id="numNetworkCardsPerServer" min="1" max="8" value="8">
+                            </div>
+                        </div>
+                        
+                        <div class="input-row">
+                            <div class="input-col">
+                                <label for="spineLeafDistance">Spine-Leaf Distance (px):</label>
+                                <input type="number" id="spineLeafDistance" min="100" max="500" value="200">
+                            </div>
+                            <div class="input-col">
+                                <label for="leafNodeDistance">Leaf-Node Distance (px):</label>
+                                <input type="number" id="leafNodeDistance" min="100" max="500" value="100">
+                            </div>
+                        </div>
+                        
+                        <div class="input-row">
+                            <div class="input-col">
+                                <label for="serversPerRow">Servers per Row:</label>
+                                <select id="serversPerRow">
+                                    <option value="4">4</option>
+                                    <option value="8" selected>8</option>
+                                    <option value="10">10</option>
+                                    <option value="12">12</option>
+                                    <option value="16">16</option>
+                                    <option value="18">18</option>
+                                </select>
+                            </div>
+                            <div class="input-col">
+                                <label for="diagramHeight">Diagram Height (px):</label>
+                                <input type="number" id="diagramHeight" min="600" max="2000" value="1000">
+                            </div>
+                        </div>
+                        
+                        <div class="input-row">
+                            <div class="input-col">
+                                <label for="nodeRowSpacing">Node Row Spacing (px):</label>
+                                <input type="number" id="nodeRowSpacing" min="20" max="200" value="60">
+                            </div>
+                        </div>
+                        
+                        <button id="topologyCalculateButton">Calculate and Generate Diagram</button>
+                    </div>
+                </div>
+                
+                <div class="diagram-container">
+                    <div id="diagram"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 添加 D3.js 和 topology.js 引用 -->
+    <script src="d3.v7.min.js"></script>
+    <script src="script.js"></script>
+    <script src="topology.js"></script>
+    
+    <!-- 添加拓扑选项卡的初始化脚本 -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 为拓扑选项卡添加点击事件
+        document.getElementById('topologyTabBtn').addEventListener('click', function() {
+            openTab('topologyTab');
+            // 延迟调用以确保选项卡显示后再计算绘制
+            setTimeout(function() {
+                if (typeof calculateAndDraw === 'function') {
+                    calculateAndDraw();
+                }
+            }, 100);
+        });
+        
+        // 绑定拓扑计算按钮事件
+        document.getElementById('topologyCalculateButton').addEventListener('click', function() {
+            if (typeof calculateAndDraw === 'function') {
+                calculateAndDraw();
+            }
+        });
+        
+        // 绑定交换机类型变更事件
+        document.getElementById('switchType').addEventListener('change', function() {
+            if (typeof updateNetworkCardOptions === 'function') {
+                updateNetworkCardOptions();
+            }
+        });
+    });
+    </script>
+</body>
+</html>

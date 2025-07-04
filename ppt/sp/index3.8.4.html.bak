@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NVIDIA NPN SP技术大比武 - 分布式文件系统</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f0f0f0;
+      font-family: 'Noto Sans SC', sans-serif;
+      overflow: hidden;
+    }
+
+    .slide-container {
+      width: 100vw;
+      height: 56.25vw; /* 16:9 aspect ratio */
+      max-height: 100vh;
+      max-width: 177.78vh; /* 16:9 aspect ratio (reversed) */
+      position: relative;
+      background: #111827;
+      color: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    /* 背景图形元素 */
+    .bg-grid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image:
+        linear-gradient(rgba(24, 92, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(24, 92, 255, 0.05) 1px, transparent 1px);
+      background-size: 20px 20px;
+      z-index: 0;
+    }
+
+    .bg-gradient {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 120% 45%, rgba(76, 29, 149, 0.7) 0%, rgba(17, 24, 39, 0) 50%);
+      z-index: 1;
+    }
+
+    .bg-circle1 {
+      position: absolute;
+      top: -15%;
+      right: -15%;
+      width: 40%;
+      height: 40%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #76b900 0%, #1a4163 100%);
+      filter: blur(80px);
+      opacity: 0.6;
+      z-index: 2;
+    }
+
+    .bg-circle2 {
+      position: absolute;
+      bottom: -10%;
+      left: -10%;
+      width: 30%;
+      height: 30%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0099da 0%, #1e40af 100%);
+      filter: blur(60px);
+      opacity: 0.5;
+      z-index: 2;
+    }
+
+    /* 主要内容 */
+    .content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    .header {
+      padding: 2% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .nvidia-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-box {
+      width: 8%;
+      min-width: 100px;
+      height: 36px;
+      background: #76b900;
+      border-radius: 4px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 700;
+      font-size: clamp(16px, 2vw, 22px);
+      transform: skew(-10deg);
+    }
+
+    .partner-text {
+      font-size: clamp(12px, 1.5vw, 16px);
+      font-weight: 500;
+      opacity: 0.9;
+    }
+
+    .slide-title {
+      font-size: clamp(16px, 1.8vw, 20px);
+      font-weight: 600;
+      padding: 0.5% 4%;
+      background: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(5px);
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 1.5% 4%;
+      overflow: hidden;
+    }
+
+    .section-title {
+      font-size: clamp(22px, 2.8vw, 28px);
+      font-weight: 700;
+      margin-bottom: 15px;
+      color: #76b900;
+      text-align: center;
+    }
+
+    .fs-container {
+      display: flex;
+      flex: 1;
+      gap: 20px;
+    }
+
+    .left-panel, .right-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .fs-card {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 15px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .fs-header {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .fs-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin: 0;
+      color: #76b900;
+    }
+
+    .fs-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      overflow-y: auto;
+    }
+
+    .fs-content::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .fs-content::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 2px;
+    }
+
+    .fs-content::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 2px;
+    }
+
+    .fs-item {
+      margin-bottom: 12px;
+    }
+
+    .fs-item-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .fs-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .magnumio-icon {
+      background: linear-gradient(135deg, #76b900 0%, #3e703e 100%);
+    }
+
+    .weka-icon {
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    }
+
+    .lustre-icon {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    }
+
+    .beegfs-icon {
+      background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+    }
+
+    .config-item-icon {
+      background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+    }
+
+    .fs-icon svg {
+      width: 16px;
+      height: 16px;
+      fill: white;
+    }
+
+    .fs-item-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .magnumio-title {
+      color: #76b900;
+    }
+
+    .weka-title {
+      color: #3b82f6;
+    }
+
+    .lustre-title {
+      color: #f59e0b;
+    }
+
+    .beegfs-title {
+      color: #8b5cf6;
+    }
+
+    .config-item-title {
+      color: #ef4444;
+    }
+
+    .fs-item-details {
+      padding-left: 36px;
+      font-size: 13px;
+      line-height: 1.5;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .fs-item-details p {
+      margin: 0 0 5px 0;
+    }
+
+    .highlight {
+      font-weight: 600;
+    }
+
+    .magnumio-highlight {
+      color: #76b900;
+    }
+
+    .weka-highlight {
+      color: #3b82f6;
+    }
+
+    .lustre-highlight {
+      color: #f59e0b;
+    }
+
+    .beegfs-highlight {
+      color: #8b5cf6;
+    }
+
+    .config-item-highlight {
+      color: #ef4444;
+    }
+
+    .config-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .config-icon-small {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .config-icon-small svg {
+      width: 12px;
+      height: 12px;
+      fill: white;
+    }
+
+    .config-text {
+      flex: 1;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .footer {
+      padding: 1.2% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .page-number {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .company-name {
+      font-weight: 500;
+    }
+
+    .rotating-lines {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 50%;
+      height: 50%;
+      z-index: 5;
+      opacity: 0.15;
+      animation: rotate 60s linear infinite;
+    }
+
+    @keyframes rotate {
+      from {
+        transform: translate(-50%, -50%) rotate(0deg);
+      }
+      to {
+        transform: translate(-50%, -50%) rotate(360deg);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <!-- 背景元素 -->
+    <div class="bg-grid"></div>
+    <div class="bg-gradient"></div>
+    <div class="bg-circle1"></div>
+    <div class="bg-circle2"></div>
+
+    <!-- 旋转线框背景 -->
+    <svg class="rotating-lines" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+      <path d="M250,10 L490,250 L250,490 L10,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,50 L450,250 L250,450 L50,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,90 L410,250 L250,410 L90,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,130 L370,250 L250,370 L130,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,170 L330,250 L250,330 L170,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,210 L290,250 L250,290 L210,250 Z" fill="none" stroke="white" stroke-width="1" />
+    </svg>
+
+    <!-- 主要内容 -->
+    <div class="content">
+      <div class="header">
+        <div class="nvidia-logo">
+          <div class="logo-box">NVIDIA</div>
+          <div class="partner-text">Networking NPN Elite Partner</div>
+        </div>
+        <div class="slide-title">3. 客户需求方案汇报 - 题目A：存储系统选型</div>
+      </div>
+
+      <div class="main-content">
+        <div class="section-title">分布式文件系统</div>
+        
+        <div class="fs-container">
+          <!-- 左侧面板：推荐文件系统 -->
+          <div class="left-panel">
+            <div class="fs-card">
+              <div class="fs-header">
+                <h3 class="fs-title">推荐文件系统</h3>
+              </div>
+              
+              <div class="fs-content">
+                <!-- NVIDIA Magnum IO GPUDirect Storage -->
+                <div class="fs-item">
+                  <div class="fs-item-header">
+                    <div class="fs-icon magnumio-icon">
+                      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M17 7h-4v2h4c1.65 0 3 1.35 3 3s-1.35 3-3 3h-4v2h4c2.76 0 5-2.24 5-5s-2.24-5-5-5zm-6 8H7c-1.65 0-3-1.35-3-3s1.35-3 3-3h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-2zm-3-4h8v2H8z"/>
+                      </svg>
+                    </div>
+                    <h4 class="fs-item-title magnumio-title">NVIDIA Magnum IO GPUDirect Storage</h4>
+                  </div>
+                  <div class="fs-item-details">
+                    <p>核心技术，<span class="highlight magnumio-highlight">直接从存储到H200 GPU内存</span>，优化LLM训练数据管道，实现微秒级延迟</p>
+                  </div>
+                </div>
+                
+                <!-- WEKA Data Platform -->
+                <div class="fs-item">
+                  <div class="fs-item-header">
+                    <div class="fs-icon weka-icon">
+                      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M2 20h20v-4H2v4zm2-3h2v2H4v-2zM2 4v4h20V4H2zm4 3H4V5h2v2zm-4 7h20v-4H2v4zm2-3h2v2H4v-2z"/>
+                      </svg>
+                    </div>
+                    <h4 class="fs-item-title weka-title">WEKA Data Platform</h4>
+                  </div>
+                  <div class="fs-item-details">
+                    <p><span class="highlight weka-highlight">高性能文件系统</span>，支持<span class="highlight weka-highlight">超大规模并发访问</span>，适合320节点集群，同时提供快速检查点和恢复功能</p>
+                  </div>
+                </div>
+                
+                <!-- Lustre -->
+                <div class="fs-item">
+                  <div class="fs-item-header">
+                    <div class="fs-icon lustre-icon">
+                      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M13.17 4L18 8.83V20H6V4h7.17M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-2 12c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm4 3.43c0-.81-.48-1.53-1.22-1.85-.85-.37-1.79-.58-2.78-.58-.99 0-1.93.21-2.78.58C8.48 15.9 8 16.62 8 17.43V18h8v-.57z"/>
+                      </svg>
+                    </div>
+                    <h4 class="fs-item-title lustre-title">Lustre</h4>
+                  </div>
+                  <div class="fs-item-details">
+                    <p><span class="highlight lustre-highlight">高吞吐量并行文件系统</span>，适合PB级数据集的LLM训练，广泛应用于超算环境</p>
+                  </div>
+                </div>
+                
+                <!-- BeeGFS -->
+                <div class="fs-item">
+                  <div class="fs-item-header">
+                    <div class="fs-icon beegfs-icon">
+                      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zM6 20V4h7.17L18 8.83V20H6zm7-5h-2v-2h2v2zm0-6h-2V7h2v2z"/>
+                      </svg>
+                    </div>
+                    <h4 class="fs-item-title beegfs-title">BeeGFS</h4>
+                  </div>
+                  <div class="fs-item-details">
+                    <p><span class="highlight beegfs-highlight">低延迟和高IOPS</span>，适合混合工作负载，配置简单灵活，易于与现有系统集成</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 右侧面板：配置建议 -->
+          <div class="right-panel">
+            <div class="fs-card">
+              <div class="fs-header">
+                <h3 class="fs-title">配置建议</h3>
+              </div>
+              
+              <div class="fs-content">
+                <!-- 专用存储节点 -->
+                <div class="config-item">
+                  <div class="config-icon-small">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M2 20h20v-4H2v4zm2-3h2v2H4v-2zM2 4v4h20V4H2zm4 3H4V5h2v2zm-4 7h20v-4H2v4zm2-3h2v2H4v-2z"/>
+                    </svg>
+                  </div>
+                  <div class="config-text">
+                    部署<span class="highlight config-item-highlight">专用存储节点</span>（如DDN AI400X2）作为文件系统服务器，配备高性能NVMe SSD，提供一致的I/O性能
+                  </div>
+                </div>
+                
+                <!-- InfiniBand RDMA优化 -->
+                <div class="config-item">
+                  <div class="config-icon-small">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M4 11h4a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1zm0-7h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zm12 7h4a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1zm0-7h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zM8 13v-2h8v2H8z"/>
+                    </svg>
+                  </div>
+                  <div class="config-text">
+                    使用<span class="highlight config-item-highlight">InfiniBand RDMA</span>优化数据传输，降低I/O瓶颈，为AI工作负载提供最低延迟
+                  </div>
+                </div>
+                
+                <!-- 数据冗余 -->
+                <div class="config-item">
+                  <div class="config-icon-small">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/>
+                    </svg>
+                  </div>
+                  <div class="config-text">
+                    配置<span class="highlight config-item-highlight">纠删码（8+2或12+4）或RAID 6</span>，确保数据冗余和高可用性，防止硬件故障导致训练中断
+                  </div>
+                </div>
+                
+                <!-- 检查点存储 -->
+                <div class="config-item">
+                  <div class="config-icon-small">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                    </svg>
+                  </div>
+                  <div class="config-text">
+                    为<span class="highlight config-item-highlight">检查点存储配置单独的高速存储层</span>（如全NVMe分区），加速模型保存和恢复，降低训练中断时间
+                  </div>
+                </div>
+                
+                <!-- 数据分层 -->
+                <div class="config-item">
+                  <div class="config-icon-small">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/>
+                    </svg>
+                  </div>
+                  <div class="config-text">
+                    实施<span class="highlight config-item-highlight">数据分层策略</span>，热数据（如训练集）存放于高性能存储，冷数据（如归档模型）迁移至容量存储
+                  </div>
+                </div>
+                
+                <!-- 缓存优化 -->
+                <div class="config-item">
+                  <div class="config-icon-small">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M15.9 5c-.17 0-.32.09-.41.23l-.07.15-5.18 11.65c-.16.29-.26.61-.26.96 0 1.11.9 2.01 2.01 2.01.96 0 1.77-.68 1.96-1.59l.01-.03L16.4 5.5c0-.28-.22-.5-.5-.5zM1 9l2 2c2.88-2.88 6.79-4.08 10.53-3.62l1.19-2.68C9.89 3.84 4.74 5.27 1 9zm20 0l2-2c-3.74-3.73-8.89-5.17-13.71-4.28l1.18 2.68C14.21 4.93 18.12 6.13 21 9z"/>
+                    </svg>
+                  </div>
+                  <div class="config-text">
+                    利用<span class="highlight config-item-highlight">DGX H200节点上的本地NVMe SSD</span>作为缓存层，配合分布式文件系统优化频繁访问数据的性能
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="company-name">北京正阳恒卓科技有限公司</div>
+        <div class="page-number">24</div>
+      </div>
+    </div>
+  </div>
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+        <a href="index3.8.3.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+        <a href="index3.8.5.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+    </div>
+</body>
+</html>

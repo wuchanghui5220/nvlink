@@ -1,0 +1,23 @@
+# 1. 创建VLAN 200
+nv set bridge domain br_default vlan 200
+
+# 2. 配置所有48个千兆端口 (swp1-swp48)
+# 将所有端口加入br_default网桥并配置为VLAN 200
+nv set interface swp1-48 bridge domain br_default
+nv set interface swp1-48 bridge domain br_default vlan 200
+nv set interface swp1-48 link state up
+
+# 3. 配置VLAN 200 的SVI接口（管理接口）
+sudo nv set interface vlan200 ip address 192.168.200.1/24
+sudo nv set interface vlan200 vlan 10
+
+# 4. 配置管理接口eth0（如果需要,配置上行到管理核心或者管理汇聚）
+# 根据实际网络环境修改IP地址
+nv set interface eth0 ip address 10.0.0.100/24
+nv set interface eth0 ip gateway 10.0.0.1
+
+# 5. 配置hostname
+nv set system hostname oob-mgmt-switch01
+
+# 6. 应用配置
+nv config apply

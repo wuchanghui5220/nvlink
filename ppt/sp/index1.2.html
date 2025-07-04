@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NVIDIA NPN SP技术大比武 - 技术团队成员介绍</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f0f0f0;
+      font-family: 'Noto Sans SC', sans-serif;
+      overflow: hidden;
+    }
+
+    .slide-container {
+      width: 100vw;
+      height: 56.25vw; /* 16:9 aspect ratio */
+      max-height: 100vh;
+      max-width: 177.78vh; /* 16:9 aspect ratio (reversed) */
+      position: relative;
+      background: #111827;
+      color: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    /* 背景图形元素 */
+    .bg-grid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image:
+        linear-gradient(rgba(24, 92, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(24, 92, 255, 0.05) 1px, transparent 1px);
+      background-size: 20px 20px;
+      z-index: 0;
+    }
+
+    .bg-gradient {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 120% 45%, rgba(76, 29, 149, 0.7) 0%, rgba(17, 24, 39, 0) 50%);
+      z-index: 1;
+    }
+
+    .bg-circle1 {
+      position: absolute;
+      top: -15%;
+      right: -15%;
+      width: 40%;
+      height: 40%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #76b900 0%, #1a4163 100%);
+      filter: blur(80px);
+      opacity: 0.6;
+      z-index: 2;
+    }
+
+    .bg-circle2 {
+      position: absolute;
+      bottom: -10%;
+      left: -10%;
+      width: 30%;
+      height: 30%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0099da 0%, #1e40af 100%);
+      filter: blur(60px);
+      opacity: 0.5;
+      z-index: 2;
+    }
+
+    /* 主要内容 */
+    .content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    .header {
+      padding: 2.5% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .nvidia-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-box {
+      width: 8%;
+      min-width: 100px;
+      height: 36px;
+      background: #76b900;
+      border-radius: 4px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 700;
+      font-size: clamp(16px, 2vw, 22px);
+      transform: skew(-10deg);
+    }
+
+    .partner-text {
+      font-size: clamp(12px, 1.5vw, 16px);
+      font-weight: 500;
+      opacity: 0.9;
+    }
+
+    .slide-title {
+      font-size: clamp(16px, 1.8vw, 20px);
+      font-weight: 600;
+      padding: 0.5% 4%;
+      background: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(5px);
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 2% 4%;
+      overflow: hidden;
+    }
+
+    .section-title {
+      font-size: clamp(20px, 2.5vw, 28px);
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section-title::before {
+      content: "";
+      width: 6px;
+      height: 28px;
+      background: #76b900;
+      border-radius: 3px;
+    }
+
+    .team-grid {
+      display: flex;
+      gap: 25px;
+      height: 100%;
+    }
+
+    .member-card {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .member-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .role-badge {
+      font-size: 13px;
+      padding: 4px 10px;
+      border-radius: 30px;
+      margin-bottom: 8px;
+      display: inline-block;
+      font-weight: 500;
+    }
+
+    .director-badge {
+      background: linear-gradient(90deg, rgba(118, 185, 0, 0.2) 0%, rgba(62, 112, 62, 0.2) 100%);
+      border: 1px solid rgba(118, 185, 0, 0.3);
+      color: #76b900;
+    }
+
+    .sales-badge {
+      background: linear-gradient(90deg, rgba(0, 153, 218, 0.2) 0%, rgba(30, 64, 175, 0.2) 100%);
+      border: 1px solid rgba(0, 153, 218, 0.3);
+      color: #0099da;
+    }
+
+    .member-name {
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+
+    .member-role {
+      font-size: 15px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .member-avatar {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 28px;
+      font-weight: 700;
+      color: white;
+      margin-right: 15px;
+      flex-shrink: 0;
+    }
+
+    .director-avatar {
+      background: linear-gradient(135deg, #76b900 0%, #3e703e 100%);
+      box-shadow: 0 5px 15px rgba(118, 185, 0, 0.3);
+    }
+
+    .sales-avatar {
+      background: linear-gradient(135deg, #0099da 0%, #1e40af 100%);
+      box-shadow: 0 5px 15px rgba(0, 153, 218, 0.3);
+    }
+
+    .member-content {
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 5px;
+    }
+
+    .member-content::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .member-content::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 2px;
+    }
+
+    .member-content::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 2px;
+    }
+
+    .info-section {
+      margin-bottom: 15px;
+    }
+
+    .info-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #76b900;
+      margin-bottom: 8px;
+    }
+
+    .info-content {
+      font-size: 15px;
+      line-height: 1.5;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .info-content ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .info-content li {
+      margin-bottom: 6px;
+    }
+
+    .footer {
+      padding: 1.5% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .page-number {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .company-name {
+      font-weight: 500;
+    }
+
+    .rotating-lines {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 50%;
+      height: 50%;
+      z-index: 5;
+      opacity: 0.15;
+      animation: rotate 60s linear infinite;
+    }
+
+    @keyframes rotate {
+      from {
+        transform: translate(-50%, -50%) rotate(0deg);
+      }
+      to {
+        transform: translate(-50%, -50%) rotate(360deg);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <!-- 背景元素 -->
+    <div class="bg-grid"></div>
+    <div class="bg-gradient"></div>
+    <div class="bg-circle1"></div>
+    <div class="bg-circle2"></div>
+
+    <!-- 旋转线框背景 -->
+    <svg class="rotating-lines" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+      <path d="M250,10 L490,250 L250,490 L10,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,50 L450,250 L250,450 L50,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,90 L410,250 L250,410 L90,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,130 L370,250 L250,370 L130,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,170 L330,250 L250,330 L170,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,210 L290,250 L250,290 L210,250 Z" fill="none" stroke="white" stroke-width="1" />
+    </svg>
+
+    <!-- 主要内容 -->
+    <div class="content">
+      <div class="header">
+        <div class="nvidia-logo">
+          <div class="logo-box">NVIDIA</div>
+          <div class="partner-text">Networking NPN Elite Partner</div>
+        </div>
+        <div class="slide-title">1. 技术团队成员-介绍</div>
+      </div>
+
+      <div class="main-content">
+        <div class="section-title">技术团队成员介绍</div>
+        
+        <div class="team-grid">
+          <!-- 技术总监 -->
+          <div class="member-card">
+            <div class="member-header">
+              <div class="member-avatar director-avatar">吴</div>
+              <div>
+                <div class="role-badge director-badge">技术总监</div>
+                <div class="member-name">吴昌辉</div>
+              </div>
+            </div>
+            
+            <div class="member-content">
+              <div class="info-section">
+                <div class="info-title">履历</div>
+                <div class="info-content">
+                  10年网络架构设计与数据中心建设经验，NVIDIA认证网络架构师
+                </div>
+              </div>
+              
+              <div class="info-section">
+                <div class="info-title">项目经验</div>
+                <div class="info-content">
+                  <ul>
+                    <li>主导完成某超算中心InfiniBand网络项目</li>
+                    <li>带领团队完成10+个大型AI数据中心网络建设</li>
+                  </ul>
+                </div>
+              </div>
+              
+              <div class="info-section">
+                <div class="info-title">贡献</div>
+                <div class="info-content">
+                  建立了公司完整的网络解决方案框架，负责公司NVIDIA网络产品线技术培训体系建设
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 高级售前工程师 - 王正宗 -->
+          <div class="member-card">
+            <div class="member-header">
+              <div class="member-avatar sales-avatar">王</div>
+              <div>
+                <div class="role-badge sales-badge">高级售前工程师</div>
+                <div class="member-name">王正宗</div>
+              </div>
+            </div>
+            
+            <div class="member-content">
+              <div class="info-section">
+                <div class="info-title">履历</div>
+                <div class="info-content">
+                  10年数据中心网络设计经验，NVIDIA认证网络工程师
+                </div>
+              </div>
+              
+              <div class="info-section">
+                <div class="info-title">项目经验</div>
+                <div class="info-content">
+                  主导设计某互联网巨头AI训练集群网络架构
+                </div>
+              </div>
+              
+              <div class="info-section">
+                <div class="info-title">贡献</div>
+                <div class="info-content">
+                  建立了公司 RoCE 性能优化最佳实践
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 高级售前工程师 - 刘腾旭 -->
+          <div class="member-card">
+            <div class="member-header">
+              <div class="member-avatar sales-avatar">刘</div>
+              <div>
+                <div class="role-badge sales-badge">高级售前工程师</div>
+                <div class="member-name">刘腾旭</div>
+              </div>
+            </div>
+            
+            <div class="member-content">
+              <div class="info-section">
+                <div class="info-title">履历</div>
+                <div class="info-content">
+                  5年NVIDIA GPU和网络经验，NVIDIA认证网络工程师
+                </div>
+              </div>
+              
+              <div class="info-section">
+                <div class="info-title">项目经验</div>
+                <div class="info-content">
+                  负责某运营商InfiniBand网络设计与优化，GPU性能调优
+                </div>
+              </div>
+              
+              <div class="info-section">
+                <div class="info-title">贡献</div>
+                <div class="info-content">
+                  开发了公司AI数据中心网络评估工具，提高方案设计效率40%
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="company-name">北京正阳恒卓科技有限公司</div>
+        <div class="page-number">4</div>
+      </div>
+    </div>
+  </div>
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+        <a href="index1.1.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+        <a href="index1.3.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+    </div>
+</body>
+</html>

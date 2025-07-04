@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>NVIDIA InfiniBand智算中心组网创新与Quantum-X800高性能交换解决方案</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, rgba(175, 233, 207, 0.8) 0%, rgba(145, 210, 185, 0.8) 100%);
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+        }
+
+        .cover-container {
+            width: 90%;
+            height: 85%;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2);
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Split background with dramatic angle */
+        .split-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(115deg, 
+                #ffffff 0%, 
+                #f5f5f5 48%, 
+                #005741 48%, 
+                #009B77 100%);
+            z-index: 1;
+        }
+
+        /* Content container */
+        .content-wrapper {
+            position: relative;
+            z-index: 3;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top bar with logo */
+        .top-bar {
+            padding: 25px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-text {
+            color: #005741;
+            font-size: 2.2em;
+            font-weight: 700;
+        }
+
+        .divider {
+            width: 2px;
+            height: 35px;
+            background-color: #005741;
+            margin: 0 12px;
+        }
+
+        .product-name {
+            color: #005741;
+            font-size: 1.8em;
+            font-weight: 400;
+        }
+
+        /* Main content area with split design */
+        .main-content {
+            flex: 1;
+            display: flex;
+        }
+
+        .left-panel {
+            width: 45%;
+            padding: 40px 40px 40px 60px;
+        }
+
+        .right-panel {
+            width: 55%;
+            padding: 40px 60px 40px 0;
+            color: white;
+        }
+
+        /* Title styling */
+        .main-title {
+            font-size: 3.6em;
+            font-weight: 800;
+            color: #005741;
+            margin: 0 0 30px 0;
+            line-height: 1.2;
+            position: relative;
+        }
+
+        /* Main subtitle - the key focal element */
+        .key-subtitle-container {
+            margin: 20px 0 40px 0;
+            position: relative;
+        }
+
+        .key-subtitle {
+            font-size: 1.6em;
+            line-height: 1.4;
+            background: linear-gradient(90deg, rgba(0, 87, 65, 0.1), rgba(0, 155, 119, 0.3));
+            border-left: 5px solid #009B77;
+            padding: 20px 25px;
+            border-radius: 0 15px 15px 0;
+            position: relative;
+            color: #005741;
+            font-weight: 600;
+            z-index: 2;
+        }
+
+        /* Animated highlight for subtitle */
+        .subtitle-highlight {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            background: linear-gradient(90deg, 
+                rgba(0, 155, 119, 0) 0%, 
+                rgba(0, 155, 119, 0.3) 50%, 
+                rgba(0, 155, 119, 0) 100%);
+            background-size: 200% 100%;
+            border-radius: 0 15px 15px 0;
+            z-index: 1;
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 100% 0; }
+            100% { background-position: -100% 0; }
+        }
+
+        /* Right panel content */
+        .right-content {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .right-tagline {
+            font-size: 2.4em;
+            font-weight: 700;
+            margin: 0 0 20px 0;
+            line-height: 1.2;
+        }
+
+        .tech-highlight {
+            font-size: 5em;
+            font-weight: 800;
+            margin: 0;
+            background: linear-gradient(90deg, #ffffff, #f0f0f0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Footer */
+        .footer {
+            padding: 20px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 3;
+        }
+
+        .presenter-info {
+            color: #005741;
+        }
+
+        .presenter-name {
+            font-weight: 600;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+
+        .presenter-title {
+            font-style: italic;
+            font-size: 0.9em;
+        }
+
+        .company-info {
+            text-align: right;
+            color: white;
+            font-style: italic;
+        }
+
+        /* Abstract tech elements overlay */
+        .abstract-tech-elements {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 65%;
+            height: 100%;
+            z-index: 2;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        .slide-in-right {
+            animation: slideInRight 0.8s ease-out forwards;
+        }
+
+        .slide-in-left {
+            animation: slideInLeft 0.8s ease-out forwards;
+        }
+
+        .float-element {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .rotate-slow {
+            animation: rotate 20s linear infinite;
+        }
+
+        .delay-1 {
+            animation-delay: 0.3s;
+        }
+
+        .delay-2 {
+            animation-delay: 0.6s;
+        }
+
+        .delay-3 {
+            animation-delay: 0.9s;
+        }
+    </style>
+</head>
+<body>
+    <div class="cover-container">
+        <!-- Dramatic split background -->
+        <div class="split-background"></div>
+        
+        <!-- Abstract tech elements overlay -->
+        <div class="abstract-tech-elements">
+            <svg width="100%" height="100%" viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice">
+                <!-- Circuit-like pattern for the green side -->
+                <g opacity="0.15" stroke="white" stroke-width="1.5">
+                    <!-- Horizontal lines -->
+                    <line x1="200" y1="100" x2="700" y2="100" />
+                    <line x1="250" y1="200" x2="750" y2="200" />
+                    <line x1="300" y1="300" x2="800" y2="300" />
+                    <line x1="250" y1="400" x2="750" y2="400" />
+                    <line x1="200" y1="500" x2="700" y2="500" />
+                    
+                    <!-- Vertical lines -->
+                    <line x1="300" y1="50" x2="300" y2="550" />
+                    <line x1="500" y1="50" x2="500" y2="550" />
+                    <line x1="700" y1="50" x2="700" y2="550" />
+                    
+                    <!-- Connection nodes -->
+                    <circle cx="300" cy="100" r="5" fill="white" />
+                    <circle cx="500" cy="100" r="5" fill="white" />
+                    <circle cx="700" cy="100" r="5" fill="white" />
+                    
+                    <circle cx="300" cy="200" r="5" fill="white" />
+                    <circle cx="500" cy="200" r="5" fill="white" />
+                    <circle cx="700" cy="200" r="5" fill="white" />
+                    
+                    <circle cx="300" cy="300" r="5" fill="white" />
+                    <circle cx="500" cy="300" r="5" fill="white" />
+                    <circle cx="700" cy="300" r="5" fill="white" />
+                    
+                    <circle cx="300" cy="400" r="5" fill="white" />
+                    <circle cx="500" cy="400" r="5" fill="white" />
+                    <circle cx="700" cy="400" r="5" fill="white" />
+                    
+                    <circle cx="300" cy="500" r="5" fill="white" />
+                    <circle cx="500" cy="500" r="5" fill="white" />
+                    <circle cx="700" cy="500" r="5" fill="white" />
+                </g>
+                
+                <!-- Quantum symbol in background -->
+                <g transform="translate(600, 300)" class="rotate-slow">
+                    <circle cx="0" cy="0" r="120" fill="none" stroke="white" stroke-width="2" opacity="0.2" />
+                    <circle cx="0" cy="0" r="80" fill="none" stroke="white" stroke-width="2" opacity="0.3" />
+                    
+                    <!-- Orbital rings -->
+                    <ellipse cx="0" cy="0" rx="150" ry="60" fill="none" stroke="white" stroke-width="1" opacity="0.15" 
+                            transform="rotate(30)" />
+                    <ellipse cx="0" cy="0" rx="150" ry="60" fill="none" stroke="white" stroke-width="1" opacity="0.15" 
+                            transform="rotate(150)" />
+                </g>
+                
+                <!-- Dynamic data particles -->
+                <g>
+                    <circle cx="400" cy="150" r="3" fill="white" opacity="0.8">
+                        <animate attributeName="cx" values="300;700;300" dur="8s" repeatCount="indefinite" />
+                        <animate attributeName="cy" values="150;150;150" dur="8s" repeatCount="indefinite" />
+                    </circle>
+                    
+                    <circle cx="500" cy="250" r="3" fill="white" opacity="0.8">
+                        <animate attributeName="cx" values="500;700;500;300;500" dur="12s" repeatCount="indefinite" />
+                        <animate attributeName="cy" values="250;300;400;300;250" dur="12s" repeatCount="indefinite" />
+                    </circle>
+                    
+                    <circle cx="350" cy="450" r="3" fill="white" opacity="0.8">
+                        <animate attributeName="cx" values="350;700;350" dur="10s" repeatCount="indefinite" />
+                        <animate attributeName="cy" values="450;500;450" dur="10s" repeatCount="indefinite" />
+                    </circle>
+                </g>
+                
+                <!-- Core tech element -->
+                <g transform="translate(600, 300)">
+                    <polygon points="0,-50 43,-25 43,25 0,50 -43,25 -43,-25" fill="none" stroke="white" stroke-width="3" opacity="0.7" />
+                    <text x="0" y="5" text-anchor="middle" font-size="22" fill="white" font-weight="bold" opacity="0.9">XDR</text>
+                    <text x="0" y="30" text-anchor="middle" font-size="20" fill="white" opacity="0.9">800G</text>
+                </g>
+            </svg>
+        </div>
+        
+        <!-- Main content structure -->
+        <div class="content-wrapper">
+            <!-- Top bar with logo -->
+            <div class="top-bar">
+                <div class="logo-container fade-in">
+                    <div class="logo-text">NVIDIA</div>
+                    <div class="divider"></div>
+                    <div class="product-name">InfiniBand</div>
+                </div>
+            </div>
+            
+            <!-- Main content with split design -->
+            <div class="main-content">
+                <!-- Left panel (light background) -->
+                <div class="left-panel">
+                    <h1 class="main-title slide-in-left">智算中心<br>高性能网络革新</h1>
+                    
+                    <!-- Key subtitle with highlight effect -->
+                    <div class="key-subtitle-container slide-in-left delay-1">
+                        <div class="subtitle-highlight"></div>
+                        <div class="key-subtitle">NVIDIA InfiniBand智算中心组网创新与<br>Quantum-X800高性能交换解决方案</div>
+                    </div>
+                </div>
+                
+                <!-- Right panel (green background) -->
+                <div class="right-panel">
+                    <div class="right-content slide-in-right delay-2">
+                        <h2 class="right-tagline">突破网络性能极限<br>加速AI计算革命</h2>
+                        <p class="tech-highlight float-element">XDR 800G</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Footer -->
+            <div class="footer">
+                <div class="presenter-info fade-in delay-3">
+                    <div class="presenter-name">[讲师姓名]</div>
+                    <div class="presenter-title">NVIDIA 网络解决方案架构师</div>
+                </div>
+                <div class="company-info fade-in delay-3">
+                    2024 NVIDIA Corporation
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
