@@ -288,10 +288,10 @@ list_clients() {
         if [[ $line =~ ^#\ 客户端:\ (.+) ]]; then
             mac="${BASH_REMATCH[1]}"
             echo -n "MAC: $mac"
-        elif [[ $line =~ fixed-address\ (.+); ]]; then
+        elif [[ $line =~ fixed-address\ ([^;]+) ]]; then
             ip="${BASH_REMATCH[1]}"
             echo -n " -> IP: $ip"
-        elif [[ $line =~ option\ host-name\ \"(.+)\"; ]]; then
+        elif [[ $line =~ option\ host-name\ \"([^\"]+)\" ]]; then
             hostname="${BASH_REMATCH[1]}"
             echo " -> 主机名: $hostname"
         fi
