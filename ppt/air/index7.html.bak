@@ -241,16 +241,6 @@
       position: relative;
     }
 
-    .config-content {
-      display: none;
-      height: 100%;
-      overflow-y: auto;
-    }
-
-    .config-content.active {
-      display: block;
-    }
-
     .config-header {
       display: flex;
       justify-content: space-between;
@@ -289,7 +279,12 @@
       background: linear-gradient(90deg, #EF4444, #DC2626);
     }
 
-    .copy-button {
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+    }
+
+    .copy-button, .reload-button {
       background: rgba(255, 255, 255, 0.1);
       border: 1px solid rgba(255, 255, 255, 0.2);
       border-radius: 6px;
@@ -300,55 +295,62 @@
       transition: all 0.3s ease;
     }
 
-    .copy-button:hover {
+    .copy-button:hover, .reload-button:hover {
       background: rgba(255, 255, 255, 0.2);
     }
 
-    .command-block {
-      background: rgba(0, 0, 0, 0.6);
-      border-radius: 8px;
-      padding: 12px;
-      margin-bottom: 10px;
-      border-left: 4px solid #76b900;
-    }
-
-    .command-title {
-      font-size: 12px;
-      font-weight: 600;
-      color: #76b900;
-      margin-bottom: 8px;
-    }
-
-    .command-list {
+    .config-content {
+      height: calc(100% - 60px);
+      overflow-y: auto;
       font-family: 'Courier New', monospace;
       font-size: 11px;
-      line-height: 1.4;
+      line-height: 1.5;
       color: #E5E7EB;
+      white-space: pre-wrap;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      padding: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
-    .command-line {
-      margin-bottom: 4px;
-      padding: 2px 0;
-      border-radius: 3px;
-      transition: background 0.2s ease;
+    .loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      flex-direction: column;
+      gap: 10px;
     }
 
-    .command-line:hover {
-      background: rgba(255, 255, 255, 0.1);
-      padding-left: 4px;
+    .spinner {
+      width: 30px;
+      height: 30px;
+      border: 3px solid rgba(255, 255, 255, 0.1);
+      border-top: 3px solid #76b900;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
     }
 
-    .prompt {
-      color: #76b900;
-      font-weight: 600;
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
 
-    .command {
-      color: #60A5FA;
+    .error {
+      color: #EF4444;
+      text-align: center;
+      padding: 20px;
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: 8px;
+      margin: 10px 0;
     }
 
-    .parameter {
-      color: #A78BFA;
+    .file-info {
+      font-size: 10px;
+      color: rgba(255, 255, 255, 0.6);
+      margin-top: 8px;
+      text-align: right;
     }
 
     .footer {
@@ -447,365 +449,241 @@
           <h3 class="solution-title">EVPN 网络设备配置命令</h3>
           
           <!-- 设备选择标签 -->
-          <div class="device-tabs">
-            <div class="device-tab leaf active" data-device="leaf01">leaf01</div>
-            <div class="device-tab leaf" data-device="leaf02">leaf02</div>
-            <div class="device-tab leaf" data-device="leaf03">leaf03</div>
-            <div class="device-tab leaf" data-device="leaf04">leaf04</div>
-            <div class="device-tab spine" data-device="spine01">spine01</div>
-            <div class="device-tab spine" data-device="spine02">spine02</div>
-            <div class="device-tab spine" data-device="spine03">spine03</div>
-            <div class="device-tab spine" data-device="spine04">spine04</div>
-            <div class="device-tab border" data-device="border01">border01</div>
-            <div class="device-tab border" data-device="border02">border02</div>
-            <div class="device-tab server" data-device="server01">server01</div>
-            <div class="device-tab server" data-device="server02">server02</div>
+          <div class="device-tabs" id="deviceTabs">
+            <!-- 标签将通过JavaScript动态生成 -->
           </div>
 
           <!-- 配置内容区域 -->
           <div class="config-container">
+            <div class="config-header">
+              <div class="device-name" id="currentDeviceName">选择设备</div>
+              <div class="device-type" id="currentDeviceType">-</div>
+              <div class="action-buttons">
+                <div class="reload-button" onclick="reloadConfig()">🔄 重新加载</div>
+                <div class="copy-button" onclick="copyConfig()">📋 复制配置</div>
+              </div>
+            </div>
             
-            <!-- Leaf01 配置 -->
-            <div class="config-content active" id="leaf01">
-              <div class="config-header">
-                <div class="device-name">leaf01</div>
-                <div class="device-type type-leaf">Leaf Switch</div>
-                <div class="copy-button" onclick="copyConfig('leaf01')">📋 复制配置</div>
-              </div>
-              
-              <div class="command-block">
-                <div class="command-title">基础接口配置</div>
-                <div class="command-list">
-                  <div class="command-line"><span class="prompt">cumulus@leaf01:~$</span> <span class="command">nv set interface lo ip address</span> <span class="parameter">10.10.10.1/32</span></div>
-                  <div class="command-line"><span class="prompt">cumulus@leaf01:~$</span> <span class="command">nv set interface</span> <span class="parameter">swp1-2,swp49-54</span></div>
-                  <div class="command-line"><span class="prompt">cumulus@leaf01:~$</span> <span class="command">nv set interface bond1 bond member</span> <span class="parameter">swp1</span></div>
-                  <div class="command-line"><span class="prompt">cumulus@leaf01:~$</span> <span class="command">nv set interface bond2 bond member</span> <span class="parameter">swp2</span></div>
-                </div>
-              </div>
-
-              <div class="command-block">
-                <div class="command-title">MLAG 配置</div>
-                <div class="command-list">
-                  <div class="command-line"><span class="prompt">cumulus@leaf01:~$</span> <span class="command">nv set interface bond1 bond mlag id</span> <span class="parameter">1</span></div>
-                  <div class="command-line"><span class="prompt">cumulus@leaf01:~$</span> <span class="command">nv set interface bond2 bond mlag id</span> <span class="parameter">2</span></div>
-                  <div class="command-line"><span class="prompt">cumulus@leaf01:~$</span> <span class="command">nv set interface bond1 bond lacp-bypass</span> <span class="parameter">on</span></div>
-                  <div class="command-line"><span class="prompt">cumulus@leaf01:~$</span> <span class="command">nv set interface bond2 bond lacp-bypass</span> <span class="parameter">on</span></div>
-                </div>
-              </div>
-
-              <div class="command-block">
-                <div class="command-title">VLAN 和 Bridge 配置</div>
-                <div class="command-list">
-                  <div class="command-line"><span class="prompt">cumulus@leaf01:~$</span> <span class="command">nv set interface bond1 link mtu</span> <span class="parameter">9000</span></div>
-                  <div class="command-line"><span class="prompt">cumulus@leaf01:~$</span> <span class="command">nv set interface bond2 link mtu</span> <span class="parameter">9000</span></div>
-                  <div class="command-line"><span class="prompt">cumulus@leaf01:~$</span> <span class="command">nv set interface bond1-2 bridge domain</span> <span class="parameter">br_default</span></div>
-                  <div class="command-line"><span class="prompt">cumulus@leaf01:~$</span> <span class="command">nv set bridge domain br_default vlan</span> <span class="parameter">10,20,30</span></div>
-                </div>
-              </div>
-
-              <div class="command-block">
-                <div class="command-title">VRF 和 VXLAN 配置</div>
-                <div class="command-list">
-                  <div class="command-line"><span class="prompt">cumulus@leaf01:~$</span> <span class="command">nv set vrf RED</span></div>
-                  <div class="command-line"><span class="prompt">cumulus@leaf01:~$</span> <span class="command">nv set vrf BLUE</span></div>
-                  <div class="command-line"><span class="prompt">cumulus@leaf01:~$</span> <span class="command">nv set interface vlan10 ip address</span> <span class="parameter">10.1.10.2/24</span></div>
-                  <div class="command-line"><span class="prompt">cumulus@leaf01:~$</span> <span class="command">nv set interface vlan10 ip vrf</span> <span class="parameter">RED</span></div>
-                  <div class="command-line"><span class="prompt">cumulus@leaf01:~$</span> <span class="command">nv set nve vxlan source address</span> <span class="parameter">10.10.10.1</span></div>
-                </div>
-              </div>
-
-              <div class="command-block">
-                <div class="command-title">BGP EVPN 配置</div>
-                <div class="command-list">
-                  <div class="command-line"><span class="prompt">cumulus@leaf01:~$</span> <span class="command">nv set router bgp autonomous-system</span> <span class="parameter">65101</span></div>
-                  <div class="command-line"><span class="prompt">cumulus@leaf01:~$</span> <span class="command">nv set router bgp router-id</span> <span class="parameter">10.10.10.1</span></div>
-                  <div class="command-line"><span class="prompt">cumulus@leaf01:~$</span> <span class="command">nv set vrf default router bgp neighbor</span> <span class="parameter">underlay</span></div>
-                  <div class="command-line"><span class="prompt">cumulus@leaf01:~$</span> <span class="command">nv set vrf default router bgp address-family l2vpn-evpn</span> <span class="parameter">enable on</span></div>
-                </div>
+            <div class="config-content" id="configContent">
+              <div class="loading">
+                <div class="spinner"></div>
+                <div>请选择设备查看配置...</div>
               </div>
             </div>
-
-            <!-- Spine01 配置 -->
-            <div class="config-content" id="spine01">
-              <div class="config-header">
-                <div class="device-name">spine01</div>
-                <div class="device-type type-spine">Spine Switch</div>
-                <div class="copy-button" onclick="copyConfig('spine01')">📋 复制配置</div>
-              </div>
-              
-              <div class="command-block">
-                <div class="command-title">基础配置</div>
-                <div class="command-list">
-                  <div class="command-line"><span class="prompt">cumulus@spine01:~$</span> <span class="command">nv set interface lo ip address</span> <span class="parameter">10.10.10.101/32</span></div>
-                  <div class="command-line"><span class="prompt">cumulus@spine01:~$</span> <span class="command">nv set interface</span> <span class="parameter">swp1-6</span></div>
-                  <div class="command-line"><span class="prompt">cumulus@spine01:~$</span> <span class="command">nv set interface swp1-6 link mtu</span> <span class="parameter">9000</span></div>
-                </div>
-              </div>
-
-              <div class="command-block">
-                <div class="command-title">BGP 配置</div>
-                <div class="command-list">
-                  <div class="command-line"><span class="prompt">cumulus@spine01:~$</span> <span class="command">nv set router bgp autonomous-system</span> <span class="parameter">65100</span></div>
-                  <div class="command-line"><span class="prompt">cumulus@spine01:~$</span> <span class="command">nv set router bgp router-id</span> <span class="parameter">10.10.10.101</span></div>
-                  <div class="command-line"><span class="prompt">cumulus@spine01:~$</span> <span class="command">nv set vrf default router bgp neighbor</span> <span class="parameter">underlay</span></div>
-                  <div class="command-line"><span class="prompt">cumulus@spine01:~$</span> <span class="command">nv set vrf default router bgp address-family l2vpn-evpn</span> <span class="parameter">enable on</span></div>
-                  <div class="command-line"><span class="prompt">cumulus@spine01:~$</span> <span class="command">nv set vrf default router bgp neighbor underlay remote-as external</span></div>
-                </div>
-              </div>
-
-              <div class="command-block">
-                <div class="command-title">路由反射器配置</div>
-                <div class="command-list">
-                  <div class="command-line"><span class="prompt">cumulus@spine01:~$</span> <span class="command">nv set vrf default router bgp address-family l2vpn-evpn route-reflector-client</span> <span class="parameter">enable</span></div>
-                  <div class="command-line"><span class="prompt">cumulus@spine01:~$</span> <span class="command">nv set vrf default router bgp neighbor underlay address-family l2vpn-evpn activate</span> <span class="parameter">on</span></div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Border01 配置 -->
-            <div class="config-content" id="border01">
-              <div class="config-header">
-                <div class="device-name">border01</div>
-                <div class="device-type type-border">Border Switch</div>
-                <div class="copy-button" onclick="copyConfig('border01')">📋 复制配置</div>
-              </div>
-              
-              <div class="command-block">
-                <div class="command-title">基础配置</div>
-                <div class="command-list">
-                  <div class="command-line"><span class="prompt">cumulus@border01:~$</span> <span class="command">nv set interface lo ip address</span> <span class="parameter">10.10.10.63/32</span></div>
-                  <div class="command-line"><span class="prompt">cumulus@border01:~$</span> <span class="command">nv set interface</span> <span class="parameter">swp51-54</span></div>
-                  <div class="command-line"><span class="prompt">cumulus@border01:~$</span> <span class="command">nv set nve vxlan source address</span> <span class="parameter">10.10.10.63</span></div>
-                </div>
-              </div>
-
-              <div class="command-block">
-                <div class="command-title">VRF 和外部连接</div>
-                <div class="command-list">
-                  <div class="command-line"><span class="prompt">cumulus@border01:~$</span> <span class="command">nv set vrf RED</span></div>
-                  <div class="command-line"><span class="prompt">cumulus@border01:~$</span> <span class="command">nv set vrf BLUE</span></div>
-                  <div class="command-line"><span class="prompt">cumulus@border01:~$</span> <span class="command">nv set interface swp3 ip vrf</span> <span class="parameter">RED</span></div>
-                  <div class="command-line"><span class="prompt">cumulus@border01:~$</span> <span class="command">nv set interface swp4 ip vrf</span> <span class="parameter">BLUE</span></div>
-                </div>
-              </div>
-
-              <div class="command-block">
-                <div class="command-title">BGP EVPN Type-5 路由</div>
-                <div class="command-list">
-                  <div class="command-line"><span class="prompt">cumulus@border01:~$</span> <span class="command">nv set router bgp autonomous-system</span> <span class="parameter">65163</span></div>
-                  <div class="command-line"><span class="prompt">cumulus@border01:~$</span> <span class="command">nv set vrf RED router bgp address-family ipv4-unicast redistribute connected</span> <span class="parameter">enable on</span></div>
-                  <div class="command-line"><span class="prompt">cumulus@border01:~$</span> <span class="command">nv set vrf RED router bgp address-family ipv4-unicast route-export to-evpn</span> <span class="parameter">enable on</span></div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Server01 配置 -->
-
-            <!-- 添加更多设备配置... -->
-            <div class="config-content" id="leaf03">
-              <div class="config-header">
-                <div class="device-name">leaf03</div>
-                <div class="device-type type-leaf">Leaf Switch</div>
-                <div class="copy-button" onclick="copyConfig('leaf03')">📋 复制配置</div>
-              </div>
-
-              <div class="command-block">
-                <div class="command-title">基础配置</div>
-                <div class="command-list">
-                  <div class="command-line"><span class="prompt">cumulus@leaf03:~$</span> <span class="command">nv set interface lo ip address</span> <span class="parameter">10.10.10.3/32</span></div>
-                  <div class="command-line"><span class="prompt">cumulus@leaf03:~$</span> <span class="command">nv set router bgp autonomous-system</span> <span class="parameter">65103</span></div>
-                  <div class="command-line"><span class="prompt">cumulus@leaf03:~$</span> <span class="command">nv set nve vxlan source address</span> <span class="parameter">10.10.10.3</span></div>
-                </div>
-              </div>
-            </div>
-
-            <div class="config-content" id="leaf04">
-              <div class="config-header">
-                <div class="device-name">leaf04</div>
-                <div class="device-type type-leaf">Leaf Switch</div>
-                <div class="copy-button" onclick="copyConfig('leaf04')">📋 复制配置</div>
-              </div>
-
-              <div class="command-block">
-                <div class="command-title">基础配置</div>
-                <div class="command-list">
-                  <div class="command-line"><span class="prompt">cumulus@leaf04:~$</span> <span class="command">nv set interface lo ip address</span> <span class="parameter">10.10.10.4/32</span></div>
-                  <div class="command-line"><span class="prompt">cumulus@leaf04:~$</span> <span class="command">nv set router bgp autonomous-system</span> <span class="parameter">65104</span></div>
-                  <div class="command-line"><span class="prompt">cumulus@leaf04:~$</span> <span class="command">nv set nve vxlan source address</span> <span class="parameter">10.10.10.4</span></div>
-                </div>
-              </div>
-            </div>
-
-            <div class="config-content" id="spine02">
-              <div class="config-header">
-                <div class="device-name">spine02</div>
-                <div class="device-type type-spine">Spine Switch</div>
-                <div class="copy-button" onclick="copyConfig('spine02')">📋 复制配置</div>
-              </div>
-
-              <div class="command-block">
-                <div class="command-title">基础配置</div>
-                <div class="command-list">
-                  <div class="command-line"><span class="prompt">cumulus@spine02:~$</span> <span class="command">nv set interface lo ip address</span> <span class="parameter">10.10.10.102/32</span></div>
-                  <div class="command-line"><span class="prompt">cumulus@spine02:~$</span> <span class="command">nv set router bgp autonomous-system</span> <span class="parameter">65100</span></div>
-                  <div class="command-line"><span class="prompt">cumulus@spine02:~$</span> <span class="command">nv set router bgp router-id</span> <span class="parameter">10.10.10.102</span></div>
-                </div>
-              </div>
-            </div>
-
-            <div class="config-content" id="spine03">
-              <div class="config-header">
-                <div class="device-name">spine03</div>
-                <div class="device-type type-spine">Spine Switch</div>
-                <div class="copy-button" onclick="copyConfig('spine03')">📋 复制配置</div>
-              </div>
-
-              <div class="command-block">
-                <div class="command-title">基础配置</div>
-                <div class="command-list">
-                  <div class="command-line"><span class="prompt">cumulus@spine03:~$</span> <span class="command">nv set interface lo ip address</span> <span class="parameter">10.10.10.103/32</span></div>
-                  <div class="command-line"><span class="prompt">cumulus@spine03:~$</span> <span class="command">nv set router bgp autonomous-system</span> <span class="parameter">65100</span></div>
-                  <div class="command-line"><span class="prompt">cumulus@spine03:~$</span> <span class="command">nv set router bgp router-id</span> <span class="parameter">10.10.10.103</span></div>
-                </div>
-              </div>
-            </div>
-
-            <div class="config-content" id="spine04">
-              <div class="config-header">
-                <div class="device-name">spine04</div>
-                <div class="device-type type-spine">Spine Switch</div>
-                <div class="copy-button" onclick="copyConfig('spine04')">📋 复制配置</div>
-              </div>
-
-              <div class="command-block">
-                <div class="command-title">基础配置</div>
-                <div class="command-list">
-                  <div class="command-line"><span class="prompt">cumulus@spine04:~$</span> <span class="command">nv set interface lo ip address</span> <span class="parameter">10.10.10.104/32</span></div>
-                  <div class="command-line"><span class="prompt">cumulus@spine04:~$</span> <span class="command">nv set router bgp autonomous-system</span> <span class="parameter">65100</span></div>
-                  <div class="command-line"><span class="prompt">cumulus@spine04:~$</span> <span class="command">nv set router bgp router-id</span> <span class="parameter">10.10.10.104</span></div>
-                </div>
-              </div>
-            </div>
-
-            <div class="config-content" id="border02">
-              <div class="config-header">
-                <div class="device-name">border02</div>
-                <div class="device-type type-border">Border Switch</div>
-                <div class="copy-button" onclick="copyConfig('border02')">📋 复制配置</div>
-              </div>
-
-              <div class="command-block">
-                <div class="command-title">基础配置</div>
-                <div class="command-list">
-                  <div class="command-line"><span class="prompt">cumulus@border02:~$</span> <span class="command">nv set interface lo ip address</span> <span class="parameter">10.10.10.64/32</span></div>
-                  <div class="command-line"><span class="prompt">cumulus@border02:~$</span> <span class="command">nv set router bgp autonomous-system</span> <span class="parameter">65164</span></div>
-                  <div class="command-line"><span class="prompt">cumulus@border02:~$</span> <span class="command">nv set nve vxlan source address</span> <span class="parameter">10.10.10.64</span></div>
-                </div>
-              </div>
-            </div>
-
-            <div class="config-content" id="server02">
-              <div class="config-header">
-                <div class="device-name">server02</div>
-                <div class="device-type type-server">Ubuntu Server</div>
-                <div class="copy-button" onclick="copyConfig('server02')">📋 复制配置</div>
-              </div>
-
-              <div class="command-block">
-                <div class="command-title">网络配置</div>
-                <div class="command-list">
-                  <div class="command-line"><span class="prompt">ubuntu@server02:~$</span> <span class="command">sudo nano /etc/netplan/01-netcfg.yaml</span></div>
-                  <div class="command-line">    uplink:</div>
-                  <div class="command-line">      addresses: [<span class="parameter">10.1.20.102/24</span>]</div>
-                  <div class="command-line">      gateway4: <span class="parameter">10.1.20.1</span></div>
-                  <div class="command-line"><span class="prompt">ubuntu@server02:~$</span> <span class="command">sudo netplan apply</span></div>
-                </div>
-              </div>
-            </div>
-
+            
+            <div class="file-info" id="fileInfo"></div>
           </div>
+
         </div>
       </div>
 
       <div class="footer">
-        <div class="company-name">EVPN技术分享</div>
+        <div class="company-name">北京正阳恒卓科技有限公司</div>
         <div class="page-number">8</div>
       </div>
     </div>
   </div>
-
+  
   <!-- 导航按钮 -->
   <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
     <a href="index6.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
-    <a href="#" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+    <a href="index8.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
   </div>
 
   <script>
-    // 标签切换功能
-    function switchDevice(deviceId) {
-      // 隐藏所有配置内容
-      const allContents = document.querySelectorAll('.config-content');
-      allContents.forEach(content => {
-        content.classList.remove('active');
-      });
+    // 设备配置
+    const devices = [
+      { name: 'leaf01', type: 'leaf', displayName: 'Leaf Switch' },
+      { name: 'leaf02', type: 'leaf', displayName: 'Leaf Switch' },
+      { name: 'leaf03', type: 'leaf', displayName: 'Leaf Switch' },
+      { name: 'leaf04', type: 'leaf', displayName: 'Leaf Switch' },
+      { name: 'spine01', type: 'spine', displayName: 'Spine Switch' },
+      { name: 'spine02', type: 'spine', displayName: 'Spine Switch' },
+      { name: 'spine03', type: 'spine', displayName: 'Spine Switch' },
+      { name: 'spine04', type: 'spine', displayName: 'Spine Switch' },
+      { name: 'border01', type: 'border', displayName: 'Border Switch' },
+      { name: 'border02', type: 'border', displayName: 'Border Switch' },
+      { name: 'Firewall', type: 'server', displayName: 'Firewall' },
+      { name: 'ansible', type: 'server', displayName: 'ansible Server' },
+      { name: 'server', type: 'server', displayName: 'Ubuntu Server' },
+      { name: 'oob-switch', type: 'leaf', displayName: 'oob-mgmt-switch' }
+    ];
 
-      // 移除所有标签的活动状态
-      const allTabs = document.querySelectorAll('.device-tab');
-      allTabs.forEach(tab => {
+    let currentDevice = null;
+    let configCache = {};
+
+    // 初始化页面
+    function initializePage() {
+      generateDeviceTabs();
+      // 默认选择第一个设备
+      if (devices.length > 0) {
+        switchDevice(devices[0].name);
+      }
+    }
+
+    // 生成设备标签
+    function generateDeviceTabs() {
+      const tabsContainer = document.getElementById('deviceTabs');
+      tabsContainer.innerHTML = '';
+
+      devices.forEach((device, index) => {
+        const tab = document.createElement('div');
+        tab.className = `device-tab ${device.type}`;
+        if (index === 0) tab.classList.add('active');
+        tab.setAttribute('data-device', device.name);
+        tab.textContent = device.name;
+        tab.addEventListener('click', () => switchDevice(device.name));
+        tabsContainer.appendChild(tab);
+      });
+    }
+
+    // 切换设备
+    async function switchDevice(deviceName) {
+      currentDevice = deviceName;
+      
+      // 更新标签状态
+      document.querySelectorAll('.device-tab').forEach(tab => {
         tab.classList.remove('active');
+        if (tab.getAttribute('data-device') === deviceName) {
+          tab.classList.add('active');
+        }
       });
 
-      // 显示选中的配置内容
-      const selectedContent = document.getElementById(deviceId);
-      if (selectedContent) {
-        selectedContent.classList.add('active');
+      // 找到设备信息
+      const device = devices.find(d => d.name === deviceName);
+      if (!device) return;
+
+      // 更新设备信息
+      document.getElementById('currentDeviceName').textContent = deviceName;
+      const deviceTypeEl = document.getElementById('currentDeviceType');
+      deviceTypeEl.textContent = device.displayName;
+      deviceTypeEl.className = `device-type type-${device.type}`;
+
+      // 加载配置
+      await loadDeviceConfig(deviceName);
+    }
+
+    // 加载设备配置
+    async function loadDeviceConfig(deviceName) {
+      const configContent = document.getElementById('configContent');
+      const fileInfo = document.getElementById('fileInfo');
+
+      // 如果已缓存，直接使用
+      if (configCache[deviceName]) {
+        configContent.textContent = configCache[deviceName].content;
+        fileInfo.textContent = configCache[deviceName].info;
+        return;
       }
 
-      // 激活选中的标签
-      const selectedTab = document.querySelector(`[data-device="${deviceId}"]`);
-      if (selectedTab) {
-        selectedTab.classList.add('active');
+      // 显示加载状态
+      configContent.innerHTML = `
+        <div class="loading">
+          <div class="spinner"></div>
+          <div>正在加载 ${deviceName} 配置...</div>
+        </div>
+      `;
+      fileInfo.textContent = '';
+
+      try {
+        // 尝试加载配置文件
+        const response = await fetch(`${deviceName}.txt`);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+
+        const content = await response.text();
+        const lastModified = response.headers.get('last-modified');
+        
+        // 缓存配置
+        configCache[deviceName] = {
+          content: content,
+          info: `文件: ${deviceName}.txt${lastModified ? ' | 修改时间: ' + new Date(lastModified).toLocaleString() : ''}`
+        };
+
+        // 显示配置
+        configContent.textContent = content;
+        fileInfo.textContent = configCache[deviceName].info;
+
+      } catch (error) {
+        console.error(`加载 ${deviceName} 配置失败:`, error);
+        
+        // 显示错误信息
+        configContent.innerHTML = `
+          <div class="error">
+            <h4>⚠️ 无法加载配置文件</h4>
+            <p><strong>文件:</strong> ${deviceName}.txt</p>
+            <p><strong>错误:</strong> ${error.message}</p>
+            <p><strong>解决方案:</strong></p>
+            <ul style="text-align: left; margin: 10px 0;">
+              <li>确保 ${deviceName}.txt 文件存在于当前目录</li>
+              <li>检查文件权限和网络连接</li>
+              <li>如果使用本地文件系统，请通过HTTP服务器访问</li>
+            </ul>
+            <p style="font-size: 10px; margin-top: 15px; opacity: 0.7;">
+              提示: 可以使用 <code>python -m http.server 8000</code> 启动本地HTTP服务器
+            </p>
+          </div>
+        `;
+        fileInfo.textContent = `错误: 无法加载 ${deviceName}.txt`;
       }
     }
 
-    // 复制配置功能
-    function copyConfig(deviceId) {
-      const configContent = document.getElementById(deviceId);
-      if (configContent) {
-        const commands = configContent.querySelectorAll('.command-line');
-        let configText = `# ${deviceId.toUpperCase()} 配置\n\n`;
-
-        commands.forEach(cmd => {
-          configText += cmd.textContent + '\n';
-        });
-
-        navigator.clipboard.writeText(configText).then(() => {
-          // 显示复制成功提示
-          const button = event.target;
-          const originalText = button.textContent;
-          button.textContent = '✅ 已复制';
-          button.style.background = 'rgba(16, 185, 129, 0.2)';
-
-          setTimeout(() => {
-            button.textContent = originalText;
-            button.style.background = 'rgba(255, 255, 255, 0.1)';
-          }, 2000);
-        }).catch(err => {
-          console.error('复制失败:', err);
-        });
-      }
+    // 重新加载配置
+    async function reloadConfig() {
+      if (!currentDevice) return;
+      
+      // 清除缓存
+      delete configCache[currentDevice];
+      
+      // 重新加载
+      await loadDeviceConfig(currentDevice);
+      
+      // 显示重新加载提示
+      const button = event.target;
+      const originalText = button.textContent;
+      button.textContent = '✅ 已重新加载';
+      button.style.background = 'rgba(16, 185, 129, 0.2)';
+      
+      setTimeout(() => {
+        button.textContent = originalText;
+        button.style.background = 'rgba(255, 255, 255, 0.1)';
+      }, 2000);
     }
 
-    // 为标签添加点击事件
-    document.addEventListener('DOMContentLoaded', function() {
-      const tabs = document.querySelectorAll('.device-tab');
-      tabs.forEach(tab => {
-        tab.addEventListener('click', function() {
-          const deviceId = this.getAttribute('data-device');
-          switchDevice(deviceId);
-        });
+    // 复制配置
+    function copyConfig() {
+      if (!currentDevice) return;
+
+      const configContent = document.getElementById('configContent');
+      const content = configContent.textContent;
+
+      if (!content || content.includes('正在加载') || content.includes('无法加载')) {
+        alert('当前没有可复制的配置内容');
+        return;
+      }
+
+      const configText = `# ${currentDevice.toUpperCase()} 配置\n# 生成时间: ${new Date().toLocaleString()}\n\n${content}`;
+
+      navigator.clipboard.writeText(configText).then(() => {
+        // 显示复制成功提示
+        const button = event.target;
+        const originalText = button.textContent;
+        button.textContent = '✅ 已复制';
+        button.style.background = 'rgba(16, 185, 129, 0.2)';
+        
+        setTimeout(() => {
+          button.textContent = originalText;
+          button.style.background = 'rgba(255, 255, 255, 0.1)';
+        }, 2000);
+      }).catch(err => {
+        console.error('复制失败:', err);
+        alert('复制失败，请手动选择复制');
       });
-    });
+    }
+
+    // 页面加载完成后初始化
+    document.addEventListener('DOMContentLoaded', initializePage);
   </script>
 </body>
 </html>

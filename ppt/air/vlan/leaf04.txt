@@ -1,4 +1,5 @@
 cumulus@leaf04:mgmt:~$ nv config show -o commands
+nv set bridge domain br_default vlan 1 vni 1
 nv set bridge domain br_default vlan 10 vni 10
 nv set bridge domain br_default vlan 20 vni 20
 nv set bridge domain br_default vlan 30 vni 30
