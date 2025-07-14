@@ -1,0 +1,176 @@
+# server01 网卡bond配置, vlan 10
+sudo cat /etc/netplan/01-netcfg.yaml
+network:
+  version: 2
+  bonds:
+    uplink:
+      interfaces:
+        - eth1
+        - eth2
+      parameters:
+        mode: 802.3ad
+        mii-monitor-interval: 100
+        lacp-rate: fast
+      dhcp4: false
+      addresses:
+        - 10.1.10.101/24
+      routes:
+        - to: default
+          via: 10.1.10.1
+      nameservers:
+        addresses:
+          - 8.8.8.8
+          - 1.1.1.1
+  ethernets:
+    eth1:
+      dhcp4: false
+    eth2:
+      dhcp4: false
+
+# server02 网卡bond配置, vlan 20
+sudo cat /etc/netplan/01-netcfg.yaml
+network:
+  version: 2
+  bonds:
+    uplink:
+      interfaces:
+        - eth1
+        - eth2
+      parameters:
+        mode: 802.3ad
+        mii-monitor-interval: 100
+        lacp-rate: fast
+      dhcp4: false
+      addresses:
+        - 10.1.20.102/24
+      routes:
+        - to: default
+          via: 10.1.20.1
+      nameservers:
+        addresses:
+          - 8.8.8.8
+          - 1.1.1.1
+  ethernets:
+    eth1:
+      dhcp4: false
+    eth2:
+      dhcp4: false
+
+# server03 网卡bond配置 ，vlan 30
+sudo cat /etc/netplan/01-netcfg.yaml
+network:
+  version: 2
+  bonds:
+    uplink:
+      interfaces:
+        - eth2
+        - eth1
+      parameters:
+        mode: 802.3ad
+        mii-monitor-interval: 100
+        lacp-rate: fast
+      dhcp4: false
+      addresses:
+        - 10.1.30.103/24
+      routes:
+        - to: default
+          via: 10.1.30.1
+      nameservers:
+        addresses:
+          - 8.8.8.8
+          - 1.1.1.1
+  ethernets:
+    eth2:
+      dhcp4: false
+    eth1:
+      dhcp4: false
+
+
+# server04 网卡bond配置, vlan 10
+sudo cat /etc/netplan/01-netcfg.yaml
+network:
+  version: 2
+  bonds:
+    uplink:
+      interfaces:
+        - eth1
+        - eth2
+      parameters:
+        mode: 802.3ad
+        mii-monitor-interval: 100
+        lacp-rate: fast
+      dhcp4: false
+      addresses:
+        - 10.1.10.104/24
+      routes:
+        - to: default
+          via: 10.1.10.1
+      nameservers:
+        addresses:
+          - 8.8.8.8
+          - 1.1.1.1
+  ethernets:
+    eth1:
+      dhcp4: false
+    eth2:
+      dhcp4: false
+
+
+# server05 网卡bond配置, vlan 20
+sudo cat /etc/netplan/01-netcfg.yaml
+network:
+  version: 2
+  bonds:
+    uplink:
+      interfaces:
+        - eth1
+        - eth2
+      parameters:
+        mode: 802.3ad
+        mii-monitor-interval: 100
+        lacp-rate: fast
+      dhcp4: false
+      addresses:
+        - 10.1.20.105/24
+      routes:
+        - to: default
+          via: 10.1.20.1
+      nameservers:
+        addresses:
+          - 8.8.8.8
+          - 1.1.1.1
+  ethernets:
+    eth1:
+      dhcp4: false
+    eth2:
+      dhcp4: false
+
+
+# server06 网卡bond配置 ，vlan 30
+sudo cat /etc/netplan/01-netcfg.yaml
+network:
+  version: 2
+  bonds:
+    uplink:
+      interfaces:
+        - eth2
+        - eth1
+      parameters:
+        mode: 802.3ad
+        mii-monitor-interval: 100
+        lacp-rate: fast
+      dhcp4: false
+      addresses:
+        - 10.1.30.106/24
+      routes:
+        - to: default
+          via: 10.1.30.1
+      nameservers:
+        addresses:
+          - 8.8.8.8
+          - 1.1.1.1
+  ethernets:
+    eth2:
+      dhcp4: false
+    eth1:
+      dhcp4: false
