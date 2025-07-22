@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excel表格SN列对比工具</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .upload-section {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .upload-box {
+            flex: 1;
+            border: 2px dashed #007bff;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            background-color: #f8f9fa;
+            transition: all 0.3s ease;
+        }
+        .upload-box:hover {
+            border-color: #0056b3;
+            background-color: #e7f3ff;
+        }
+        .upload-box.dragover {
+            border-color: #28a745;
+            background-color: #d4edda;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        .upload-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        .upload-btn:hover {
+            background-color: #0056b3;
+        }
+        .file-info {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        .compare-btn {
+            display: block;
+            margin: 20px auto;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background-color 0.3s;
+        }
+        .compare-btn:hover {
+            background-color: #218838;
+        }
+        .compare-btn:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+        .results {
+            margin-top: 30px;
+        }
+        .result-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #007bff;
+        }
+        .result-section h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .only-in-file1 {
+            background-color: #fff3cd;
+            border-left-color: #ffc107;
+        }
+        .only-in-file2 {
+            background-color: #d1ecf1;
+            border-left-color: #17a2b8;
+        }
+        .common {
+            background-color: #d4edda;
+            border-left-color: #28a745;
+        }
+        .sn-list {
+            max-height: 300px;
+            overflow-y: auto;
+            background-color: white;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 10px;
+            margin-top: 10px;
+        }
+        .sn-item {
+            padding: 5px 10px;
+            border-bottom: 1px solid #f8f9fa;
+            font-family: 'Courier New', monospace;
+        }
+        .sn-item:last-child {
+            border-bottom: none;
+        }
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+        .stat-item {
+            text-align: center;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            flex: 1;
+            margin: 0 5px;
+        }
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #007bff;
+        }
+        .stat-label {
+            color: #6c757d;
+            font-size: 14px;
+        }
+        .error {
+            color: #dc3545;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Excel表格SN列对比工具</h1>
+        
+        <div class="upload-section">
+            <div class="upload-box" id="uploadBox1">
+                <h3>表格1</h3>
+                <button class="upload-btn" onclick="document.getElementById('file1').click()">选择文件</button>
+                <input type="file" id="file1" accept=".xlsx,.xls" onchange="handleFile(event, 1)">
+                <p>或拖拽文件到此处</p>
+                <div id="fileInfo1" class="file-info" style="display: none;"></div>
+            </div>
+            
+            <div class="upload-box" id="uploadBox2">
+                <h3>表格2</h3>
+                <button class="upload-btn" onclick="document.getElementById('file2').click()">选择文件</button>
+                <input type="file" id="file2" accept=".xlsx,.xls" onchange="handleFile(event, 2)">
+                <p>或拖拽文件到此处</p>
+                <div id="fileInfo2" class="file-info" style="display: none;"></div>
+            </div>
+        </div>
+        
+        <button class="compare-btn" id="compareBtn" onclick="compareFiles()" disabled>开始对比</button>
+        
+        <div id="results" class="results" style="display: none;"></div>
+    </div>
+
+    <script>
+        let file1Data = null;
+        let file2Data = null;
+        let file1Name = '';
+        let file2Name = '';
+
+        // 拖拽功能
+        function setupDragDrop() {
+            ['uploadBox1', 'uploadBox2'].forEach((boxId, index) => {
+                const box = document.getElementById(boxId);
+                const fileNum = index + 1;
+                
+                box.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    box.classList.add('dragover');
+                });
+                
+                box.addEventListener('dragleave', (e) => {
+                    e.preventDefault();
+                    box.classList.remove('dragover');
+                });
+                
+                box.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    box.classList.remove('dragover');
+                    const files = e.dataTransfer.files;
+                    if (files.length > 0) {
+                        handleFileUpload(files[0], fileNum);
+                    }
+                });
+            });
+        }
+
+        function handleFile(event, fileNum) {
+            const file = event.target.files[0];
+            if (file) {
+                handleFileUpload(file, fileNum);
+            }
+        }
+
+        function handleFileUpload(file, fileNum) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, {type: 'array'});
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet, {header: 1});
+                    
+                    // 找到SN列的位置
+                    const headers = jsonData[0];
+                    const snIndex = headers.findIndex(header => 
+                        header && header.toString().toUpperCase().includes('SN')
+                    );
+                    
+                    if (snIndex === -1) {
+                        showError(`文件 ${file.name} 中未找到SN列`);
+                        return;
+                    }
+                    
+                    // 提取SN列数据
+                    const snData = jsonData.slice(1)
+                        .map(row => row[snIndex])
+                        .filter(sn => sn && sn.toString().trim() !== '')
+                        .map(sn => sn.toString().trim());
+                    
+                    if (fileNum === 1) {
+                        file1Data = snData;
+                        file1Name = file.name;
+                        document.getElementById('fileInfo1').innerHTML = `
+                            <strong>${file.name}</strong><br>
+                            SN列位置: ${headers[snIndex]}<br>
+                            SN数量: ${snData.length}
+                        `;
+                        document.getElementById('fileInfo1').style.display = 'block';
+                    } else {
+                        file2Data = snData;
+                        file2Name = file.name;
+                        document.getElementById('fileInfo2').innerHTML = `
+                            <strong>${file.name}</strong><br>
+                            SN列位置: ${headers[snIndex]}<br>
+                            SN数量: ${snData.length}
+                        `;
+                        document.getElementById('fileInfo2').style.display = 'block';
+                    }
+                    
+                    // 检查是否可以进行对比
+                    if (file1Data && file2Data) {
+                        document.getElementById('compareBtn').disabled = false;
+                    }
+                    
+                } catch (error) {
+                    showError(`读取文件 ${file.name} 时出错: ${error.message}`);
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        function compareFiles() {
+            if (!file1Data || !file2Data) {
+                showError('请先上传两个文件');
+                return;
+            }
+
+            const set1 = new Set(file1Data);
+            const set2 = new Set(file2Data);
+            
+            const onlyInFile1 = file1Data.filter(sn => !set2.has(sn));
+            const onlyInFile2 = file2Data.filter(sn => !set1.has(sn));
+            const common = file1Data.filter(sn => set2.has(sn));
+            
+            displayResults(onlyInFile1, onlyInFile2, common);
+        }
+
+        function displayResults(onlyInFile1, onlyInFile2, common) {
+            const resultsDiv = document.getElementById('results');
+            
+            resultsDiv.innerHTML = `
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-number">${onlyInFile1.length}</div>
+                        <div class="stat-label">仅在表格1中</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">${onlyInFile2.length}</div>
+                        <div class="stat-label">仅在表格2中</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">${common.length}</div>
+                        <div class="stat-label">共同存在</div>
+                    </div>
+                </div>
+
+                <div class="result-section only-in-file1">
+                    <h3>仅在 "${file1Name}" 中存在的SN (${onlyInFile1.length}个)</h3>
+                    <div class="sn-list">
+                        ${onlyInFile1.length > 0 ? 
+                            onlyInFile1.map(sn => `<div class="sn-item">${sn}</div>`).join('') : 
+                            '<div class="sn-item">无</div>'
+                        }
+                    </div>
+                </div>
+
+                <div class="result-section only-in-file2">
+                    <h3>仅在 "${file2Name}" 中存在的SN (${onlyInFile2.length}个)</h3>
+                    <div class="sn-list">
+                        ${onlyInFile2.length > 0 ? 
+                            onlyInFile2.map(sn => `<div class="sn-item">${sn}</div>`).join('') : 
+                            '<div class="sn-item">无</div>'
+                        }
+                    </div>
+                </div>
+
+                <div class="result-section common">
+                    <h3>两个表格共同存在的SN (${common.length}个)</h3>
+                    <div class="sn-list">
+                        ${common.length > 0 ? 
+                            common.map(sn => `<div class="sn-item">${sn}</div>`).join('') : 
+                            '<div class="sn-item">无</div>'
+                        }
+                    </div>
+                </div>
+            `;
+            
+            resultsDiv.style.display = 'block';
+        }
+
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error';
+            errorDiv.textContent = message;
+            document.body.appendChild(errorDiv);
+            setTimeout(() => {
+                document.body.removeChild(errorDiv);
+            }, 5000);
+        }
+
+        // 初始化
+        setupDragDrop();
+    </script>
+</body>
+</html>

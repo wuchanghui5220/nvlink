@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测试用条形码生成器</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsbarcode/3.11.5/JsBarcode.all.min.js"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.2em;
+        }
+        
+        .barcode-section {
+            margin-bottom: 40px;
+            padding: 25px;
+            border: 2px solid #f0f0f0;
+            border-radius: 10px;
+            background: #fafafa;
+            transition: all 0.3s ease;
+        }
+        
+        .barcode-section:hover {
+            border-color: #667eea;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.1);
+        }
+        
+        .barcode-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #444;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .barcode-title::before {
+            content: "📱";
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+        
+        .barcode-info {
+            background: #e8f4fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #2196F3;
+        }
+        
+        .barcode-canvas {
+            text-align: center;
+            margin: 20px 0;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+        
+        svg {
+            max-width: 100%;
+            height: auto;
+        }
+        
+        .data-info {
+            font-family: monospace;
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            word-break: break-all;
+        }
+        
+        .controls {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .input-group {
+            margin: 15px 0;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            max-width: 400px;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        button {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .generate-section {
+            background: #f8f9ff;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border: 2px dashed #667eea;
+        }
+        
+        .note {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 测试用条形码生成器</h1>
+        
+        <div class="generate-section">
+            <h2 style="text-align: center; color: #667eea; margin-bottom: 20px;">自定义生成条形码</h2>
+            
+            <div class="input-group">
+                <label for="customText">输入文本或数字：</label>
+                <input type="text" id="customText" placeholder="例如：123456789 或 Hello World" value="123456789">
+            </div>
+            
+            <div class="input-group">
+                <label for="barcodeType">选择条形码类型：</label>
+                <select id="barcodeType" style="width: 100%; max-width: 400px; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px;">
+                    <option value="CODE128">CODE128 (通用)</option>
+                    <option value="CODE39">CODE39 (数字+字母)</option>
+                    <option value="EAN13">EAN13 (商品条码)</option>
+                    <option value="EAN8">EAN8 (短商品条码)</option>
+                    <option value="UPC">UPC (美国商品条码)</option>
+                    <option value="ITF14">ITF14 (物流条码)</option>
+                </select>
+            </div>
+            
+            <div style="text-align: center;">
+                <button onclick="generateCustomBarcode()">🚀 生成条形码</button>
+                <button onclick="generateRandomSamples()">🎲 生成随机示例</button>
+            </div>
+            
+            <div id="customBarcodeContainer"></div>
+        </div>
+
+        <!-- 预设的示例条形码 -->
+        <div class="barcode-section">
+            <div class="barcode-title">📦 商品条形码 (EAN-13)</div>
+            <div class="barcode-info">
+                <strong>用途：</strong>超市商品、零售商品标识<br>
+                <strong>特点：</strong>13位数字，全球通用标准
+            </div>
+            <div class="barcode-canvas">
+                <svg id="barcode1"></svg>
+            </div>
+            <div class="data-info">数据：6901028089296</div>
+        </div>
+
+        <div class="barcode-section">
+            <div class="barcode-title">🏭 工业条形码 (CODE128)</div>
+            <div class="barcode-info">
+                <strong>用途：</strong>仓库管理、物流跟踪<br>
+                <strong>特点：</strong>支持数字、字母和特殊字符
+            </div>
+            <div class="barcode-canvas">
+                <svg id="barcode2"></svg>
+            </div>
+            <div class="data-info">数据：WH2024001</div>
+        </div>
+
+        <div class="barcode-section">
+            <div class="barcode-title">📚 图书条形码 (EAN-13)</div>
+            <div class="barcode-info">
+                <strong>用途：</strong>图书、期刊识别 (ISBN)<br>
+                <strong>特点：</strong>国际标准图书编号
+            </div>
+            <div class="barcode-canvas">
+                <svg id="barcode3"></svg>
+            </div>
+            <div class="data-info">数据：9780134685991</div>
+        </div>
+
+        <div class="barcode-section">
+            <div class="barcode-title">🎫 票据条形码 (CODE39)</div>
+            <div class="barcode-info">
+                <strong>用途：</strong>门票、会员卡、身份识别<br>
+                <strong>特点：</strong>支持大写字母和数字
+            </div>
+            <div class="barcode-canvas">
+                <svg id="barcode4"></svg>
+            </div>
+            <div class="data-info">数据：TICKET2024A</div>
+        </div>
+
+        <div class="barcode-section">
+            <div class="barcode-title">🇺🇸 UPC 条形码</div>
+            <div class="barcode-info">
+                <strong>用途：</strong>北美地区商品标识<br>
+                <strong>特点：</strong>12位数字，美国标准
+            </div>
+            <div class="barcode-canvas">
+                <svg id="barcode5"></svg>
+            </div>
+            <div class="data-info">数据：123456789012</div>
+        </div>
+
+        <div class="note">
+            <strong>💡 使用提示：</strong>
+            <ul style="margin: 10px 0; padding-left: 20px;">
+                <li>保存这个页面或截图这些条形码用于测试</li>
+                <li>每种条形码都有不同的数据格式要求</li>
+                <li>建议测试多种类型以确保应用兼容性</li>
+                <li>可以用手机扫描这些条形码验证功能</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // 生成预设的示例条形码
+        function generateSampleBarcodes() {
+            try {
+                // 商品条形码 (EAN13) - 确保有效的校验位
+                JsBarcode("#barcode1", "6901028089296", {format: "EAN13", width: 2, height: 100, displayValue: true});
+                
+                // 工业条形码 (CODE128) 
+                JsBarcode("#barcode2", "WH2024001", {format: "CODE128", width: 2, height: 100, displayValue: true});
+                
+                // 图书条形码 (EAN13) - 使用有效的ISBN
+                JsBarcode("#barcode3", "9780134685991", {format: "EAN13", width: 2, height: 100, displayValue: true});
+                
+                // 票据条形码 (CODE39)
+                JsBarcode("#barcode4", "TICKET2024A", {format: "CODE39", width: 2, height: 100, displayValue: true});
+                
+                // UPC条形码 - 使用有效的12位数字
+                JsBarcode("#barcode5", "123456789012", {format: "UPC", width: 2, height: 100, displayValue: true});
+                
+            } catch (error) {
+                console.error('生成预设条形码时出错:', error);
+                // 如果出错，尝试逐个生成以找出问题
+                tryGenerateIndividually();
+            }
+        }
+
+        // 逐个尝试生成条形码，如果某个失败就显示错误信息
+        function tryGenerateIndividually() {
+            const barcodes = [
+                {id: "#barcode1", data: "6901028089296", format: "EAN13", name: "商品条形码"},
+                {id: "#barcode2", data: "WH2024001", format: "CODE128", name: "工业条形码"},
+                {id: "#barcode3", data: "9780134685991", format: "EAN13", name: "图书条形码"},
+                {id: "#barcode4", data: "TICKET2024A", format: "CODE39", name: "票据条形码"},
+                {id: "#barcode5", data: "123456789012", format: "UPC", name: "UPC条形码"}
+            ];
+
+            barcodes.forEach(barcode => {
+                try {
+                    JsBarcode(barcode.id, barcode.data, {
+                        format: barcode.format, 
+                        width: 2, 
+                        height: 100, 
+                        displayValue: true
+                    });
+                } catch (error) {
+                    console.error(`生成${barcode.name}失败:`, error);
+                    document.querySelector(barcode.id).innerHTML = `
+                        <text x="50%" y="50%" text-anchor="middle" fill="red" font-size="14">
+                            ${barcode.name}生成失败: ${error.message}
+                        </text>
+                    `;
+                }
+            });
+        }
+
+        // 生成自定义条形码
+        function generateCustomBarcode() {
+            const text = document.getElementById('customText').value.trim();
+            const type = document.getElementById('barcodeType').value;
+            const container = document.getElementById('customBarcodeContainer');
+
+            if (!text) {
+                alert('请输入要生成的文本或数字');
+                return;
+            }
+
+            try {
+                container.innerHTML = `
+                    <div class="barcode-section">
+                        <div class="barcode-title">🎯 自定义条形码 (${type})</div>
+                        <div class="barcode-canvas">
+                            <svg id="customBarcode"></svg>
+                        </div>
+                        <div class="data-info">数据：${text}</div>
+                    </div>
+                `;
+
+                const options = {
+                    format: type,
+                    width: 2,
+                    height: 100,
+                    displayValue: true
+                };
+
+                // 根据不同类型调整参数
+                if (type === 'EAN13' || type === 'EAN8' || type === 'UPC') {
+                    // 这些格式对数字有严格要求
+                    if (!/^\d+$/.test(text)) {
+                        throw new Error('该格式只支持纯数字');
+                    }
+                }
+
+                JsBarcode("#customBarcode", text, options);
+            } catch (error) {
+                container.innerHTML = `
+                    <div class="barcode-section" style="background: #ffe6e6; border-color: #ff9999;">
+                        <div class="barcode-title" style="color: #cc0000;">❌ 生成失败</div>
+                        <div class="barcode-info" style="background: #ffcccc; border-color: #ff6666;">
+                            <strong>错误信息：</strong>${error.message}<br>
+                            <strong>建议：</strong>
+                            <ul style="margin: 10px 0; padding-left: 20px;">
+                                <li>EAN13 需要13位数字</li>
+                                <li>EAN8 需要8位数字</li>
+                                <li>UPC 需要12位数字</li>
+                                <li>CODE39 支持大写字母、数字和部分符号</li>
+                                <li>CODE128 支持所有ASCII字符</li>
+                            </ul>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        // 生成随机示例
+        function generateRandomSamples() {
+            const samples = [
+                {text: Math.floor(Math.random() * 1000000000000).toString().padStart(12, '0') + '5', type: 'EAN13', desc: '随机商品码'},
+                {text: 'RAND' + Math.floor(Math.random() * 10000), type: 'CODE39', desc: '随机票据'},
+                {text: 'LOT' + new Date().getTime().toString().slice(-8), type: 'CODE128', desc: '随机批次'},
+                {text: Math.floor(Math.random() * 100000000).toString().padStart(8, '0'), type: 'EAN8', desc: '随机短码'}
+            ];
+
+            const randomSample = samples[Math.floor(Math.random() * samples.length)];
+            document.getElementById('customText').value = randomSample.text;
+            document.getElementById('barcodeType').value = randomSample.type;
+            generateCustomBarcode();
+        }
+
+        // 页面加载完成后生成示例
+        window.onload = function() {
+            generateSampleBarcodes();
+        };
+    </script>
+</body>
+</html>
