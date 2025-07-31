@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>60台RTX 4090集群网络LLD设计表</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            margin: 20px;
+            background: linear-gradient(135deg, #1e40af 0%, #3730a3 25%, #4338ca 50%, #4f46e5 75%, #6366f1 100%);
+            min-height: 100vh;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            background: rgba(255,255,255,0.95);
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        
+        h1 {
+            color: #1e293b;
+            margin: 0;
+            font-size: 32px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .subtitle {
+            color: #64748b;
+            margin-top: 8px;
+            font-size: 18px;
+            font-weight: 500;
+        }
+        
+        .network-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        
+        .info-card {
+            background: linear-gradient(135deg, #f1f5f9, #e2e8f0);
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 4px solid #4f46e5;
+            color: #334155;
+        }
+        
+        .table-container {
+            background: rgba(255,255,255,0.95);
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;  
+            font-size: 10px;
+        }
+        
+        th {
+            background: linear-gradient(135deg, #1e40af, #3730a3, #4338ca);
+            color: white;
+            padding: 16px 8px;
+            text-align: center;
+            font-weight: 700;
+            border-right: 1px solid rgba(255,255,255,0.2);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            font-size: 10px;
+        }
+        
+        th:last-child {
+            border-right: none;
+        }
+        
+        td {
+            padding: 12px 8px;
+            text-align: center;
+            border-bottom: 1px solid #e2e8f0;
+            border-right: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+            vertical-align: middle;
+        }
+        
+        td:last-child {
+            border-right: none;
+        }
+        
+        tr:nth-child(even) {
+            background: linear-gradient(90deg, #f8fafc 0%, #ffffff 100%);
+        }
+        
+        tr:hover {
+            background: linear-gradient(90deg, #ddd6fe 0%, #ede9fe 100%);
+            transform: scale(1.002);
+            box-shadow: 0 4px 20px rgba(79, 70, 229, 0.15);
+        }
+        
+        .device-core {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 9px;
+            display: inline-block;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+        
+        .device-access {
+            background: linear-gradient(135deg, #16a34a, #15803d);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 9px;
+            display: inline-block;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+        
+        .device-oob {
+            background: linear-gradient(135deg, #ea580c, #c2410c);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 9px;
+            display: inline-block;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+        
+        .device-server {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 9px;
+            display: inline-block;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+        
+        .ip-address {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #4f46e5, #4338ca);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 9px;
+            font-weight: bold;
+            display: inline-block;
+            margin: 1px;
+        }
+        
+        .vlan-business {
+            background: linear-gradient(135deg, #059669, #047857);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 10px;
+            font-size: 9px;
+            font-weight: bold;
+            margin: 1px;
+            display: inline-block;
+        }
+        
+        .vlan-mgmt {
+            background: linear-gradient(135deg, #0891b2, #0e7490);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 10px;
+            font-size: 9px;
+            font-weight: bold;
+            margin: 1px;
+            display: inline-block;
+        }
+        
+        .vlan-oob {
+            background: linear-gradient(135deg, #7c2d12, #92400e);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 10px;
+            font-size: 9px;
+            font-weight: bold;
+            margin: 1px;
+            display: inline-block;
+        }
+        
+        .interface-25g {
+            background: rgba(22, 163, 74, 0.1);
+            border: 1px solid #16a34a;
+            border-radius: 6px;
+            padding: 4px 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 9px;
+            color: #15803d;
+            font-weight: 600;
+        }
+        
+        .interface-100g {
+            background: rgba(220, 38, 38, 0.1);
+            border: 1px solid #dc2626;
+            border-radius: 6px;
+            padding: 4px 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 9px;
+            color: #b91c1c;
+            font-weight: 600;
+        }
+        
+        .interface-10g {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid #3b82f6;
+            border-radius: 6px;
+            padding: 4px 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 9px;
+            color: #1d4ed8;
+            font-weight: 600;
+        }
+        
+        .interface-1g {
+            background: rgba(107, 114, 128, 0.1);
+            border: 1px solid #6b7280;
+            border-radius: 6px;
+            padding: 4px 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 9px;
+            color: #4b5563;
+            font-weight: 600;
+        }
+        
+        .mlag-primary {
+            background: linear-gradient(135deg, #059669, #047857);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 10px;
+            font-size: 9px;
+            font-weight: bold;
+        }
+        
+        .mlag-secondary {
+            background: linear-gradient(135deg, #0891b2, #0e7490);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 10px;
+            font-size: 9px;
+            font-weight: bold;
+        }
+        
+        .lacp-bond {
+            background: linear-gradient(135deg, #7c3aed, #6d28d9);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 10px;
+            font-size: 9px;
+            font-weight: bold;
+        }
+        
+        .protocol-stp {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+            padding: 3px 6px;
+            border-radius: 8px;
+            font-size: 8px;
+            margin: 1px;
+            display: inline-block;
+            font-weight: bold;
+        }
+        
+        .protocol-lacp {
+            background: linear-gradient(135deg, #16a34a, #15803d);
+            color: white;
+            padding: 3px 6px;
+            border-radius: 8px;
+            font-size: 8px;
+            margin: 1px;
+            display: inline-block;
+            font-weight: bold;
+        }
+        
+        .protocol-mlag {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            color: white;
+            padding: 3px 6px;
+            border-radius: 8px;
+            font-size: 8px;
+            margin: 1px;
+            display: inline-block;
+            font-weight: bold;
+        }
+        
+        .bandwidth-100g {
+            color: #dc2626;
+            font-weight: bold;
+            font-size: 10px;
+        }
+        
+        .bandwidth-25g {
+            color: #16a34a;
+            font-weight: bold;
+            font-size: 10px;
+        }
+        
+        .bandwidth-10g {
+            color: #2563eb;
+            font-weight: bold;
+            font-size: 10px;
+        }
+        
+        .bandwidth-1g {
+            color: #6b7280;
+            font-weight: bold;
+            font-size: 10px;
+        }
+        
+        .footer {
+            margin-top: 25px;
+            text-align: center;
+            color: white;
+            font-size: 12px;
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .topology-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .topo-card {
+            background: rgba(255,255,255,0.2);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        
+        @media (max-width: 1600px) {
+            table {
+                font-size: 8px;
+            }
+            th, td {
+                padding: 8px 4px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>60台RTX 4090集群网络 LLD 设计</h1>
+        <div class="subtitle">GPU Inference Cluster Network - Low Level Design</div>
+        <div class="network-info">
+            <div class="info-card">
+                <strong>服务器规模:</strong> 60台RTX 4090服务器
+            </div>
+            <div class="info-card">
+                <strong>网络架构:</strong> 双层网络 + 带外管理
+            </div>
+            <div class="info-card">
+                <strong>接入交换机:</strong> 4台25G MLAG交换机
+            </div>
+            <div class="info-card">
+                <strong>汇聚交换机:</strong> 2台100G MLAG交换机
+            </div>
+            <div class="info-card">
+                <strong>管理交换机:</strong> 2台1G带外交换机
+            </div>
+            <div class="info-card">
+                <strong>设计版本:</strong> v1.0 | 2025-07-23
+            </div>
+        </div>
+    </div>
+    
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>设备名称</th>
+                    <th>设备角色</th>
+                    <th>管理IP地址</th>
+                    <th>接口配置</th>
+                    <th>VLAN配置</th>
+                    <th>IP子网规划</th>
+                    <th>冗余协议</th>
+                    <th>链路带宽</th>
+                    <th>上行连接</th>
+                    <th>IPL/Keepalive</th>
+                    <th>服务器连接</th>
+                    <th>端口分配</th>
+                    <th>配置备注</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>AGG-SW-01</strong></td>
+                    <td><span class="device-core">汇聚交换机</span></td>
+                    <td><span class="ip-address">192.168.100.10/24</span></td>
+                    <td><span class="interface-100g">48×100GbE SFP28</span></td>
+                    <td>
+                        <span class="vlan-business">VLAN 100</span>
+                        <span class="vlan-mgmt">VLAN 999</span>
+                    </td>
+                    <td>
+                        <span class="ip-address">10.10.100.1/24</span><br>
+                        <span class="ip-address">192.168.100.0/24</span>
+                    </td>
+                    <td>
+                        <span class="protocol-mlag">MLAG Primary</span><br>
+                        <span class="protocol-stp">MSTP</span>
+                    </td>
+                    <td><span class="bandwidth-100g">100Gbps×48</span></td>
+                    <td><span class="interface-10g">2×10G to FW</span></td>
+                    <td>
+                        <span class="interface-100g">IPL: 2×100G</span><br>
+                        <span class="interface-100g">KA: 1×100G</span>
+                    </td>
+                    <td>通过MLAG接入交换机</td>
+                    <td>Port 1-8: ACC-SW上行<br>Port 45-46: 防火墙上行</td>
+                    <td>MLAG Domain-ID: 100<br>Priority: 32768</td>
+                </tr>
+                <tr>
+                    <td><strong>AGG-SW-02</strong></td>
+                    <td><span class="device-core">汇聚交换机</span></td>
+                    <td><span class="ip-address">192.168.100.11/24</span></td>
+                    <td><span class="interface-100g">48×100GbE SFP28</span></td>
+                    <td>
+                        <span class="vlan-business">VLAN 100</span>
+                        <span class="vlan-mgmt">VLAN 999</span>
+                    </td>
+                    <td>
+                        <span class="ip-address">10.10.100.2/24</span><br>
+                        <span class="ip-address">192.168.100.0/24</span>
+                    </td>
+                    <td>
+                        <span class="protocol-mlag">MLAG Secondary</span><br>
+                        <span class="protocol-stp">MSTP</span>
+                    </td>
+                    <td><span class="bandwidth-100g">100Gbps×48</span></td>
+                    <td><span class="interface-10g">2×10G to FW</span></td>
+                    <td>
+                        <span class="interface-100g">IPL: 2×100G</span><br>
+                        <span class="interface-100g">KA: 1×100G</span>
+                    </td>
+                    <td>通过MLAG接入交换机</td>
+                    <td>Port 1-8: ACC-SW上行<br>Port 45-46: 防火墙上行</td>
+                    <td>MLAG Domain-ID: 100<br>Priority: 36864</td>
+                </tr>
+                <tr>
+                    <td><strong>ACC-SW-A01</strong></td>
+                    <td><span class="device-access">接入交换机A组</span></td>
+                    <td><span class="ip-address">192.168.100.21/24</span></td>
+                    <td><span class="interface-25g">48×25GbE SFP28<br>6×100GbE QSFP28</span></td>
+                    <td>
+                        <span class="vlan-business">VLAN 100</span>
+                        <span class="vlan-mgmt">VLAN 999</span>
+                    </td>
+                    <td>
+                        <span class="ip-address">10.10.100.21/24</span><br>
+                        <span class="ip-address">192.168.100.0/24</span>
+                    </td>
+                    <td>
+                        <span class="protocol-mlag">MLAG Primary</span><br>
+                        <span class="protocol-lacp">LACP</span>
+                    </td>
+                    <td><span class="bandwidth-25g">25Gbps×48</span></td>
+                    <td><span class="interface-100g">4×100G to AGG</span></td>
+                    <td>
+                        <span class="interface-100g">IPL: 2×100G</span><br>
+                        <span class="interface-25g">KA: 1×25G</span>
+                    </td>
+                    <td>GPU-01~30 双归接入</td>
+                    <td>Port 1-30: 服务器1-15<br>Port 31-48: 服务器16-30<br>Port 49-52: 汇聚上行</td>
+                    <td>MLAG Domain-ID: 10<br>负责1-30号服务器</td>
+                </tr>
+                <tr>
+                    <td><strong>ACC-SW-A02</strong></td>
+                    <td><span class="device-access">接入交换机A组</span></td>
+                    <td><span class="ip-address">192.168.100.22/24</span></td>
+                    <td><span class="interface-25g">48×25GbE SFP28<br>6×100GbE QSFP28</span></td>
+                    <td>
+                        <span class="vlan-business">VLAN 100</span>
+                        <span class="vlan-mgmt">VLAN 999</span>
+                    </td>
+                    <td>
+                        <span class="ip-address">10.10.100.22/24</span><br>
+                        <span class="ip-address">192.168.100.0/24</span>
+                    </td>
+                    <td>
+                        <span class="protocol-mlag">MLAG Secondary</span><br>
+                        <span class="protocol-lacp">LACP</span>
+                    </td>
+                    <td><span class="bandwidth-25g">25Gbps×48</span></td>
+                    <td><span class="interface-100g">4×100G to AGG</span></td>
+                    <td>
+                        <span class="interface-100g">IPL: 2×100G</span><br>
+                        <span class="interface-25g">KA: 1×25G</span>
+                    </td>
+                    <td>GPU-01~30 双归接入</td>
+                    <td>Port 1-30: 服务器1-15<br>Port 31-48: 服务器16-30<br>Port 49-52: 汇聚上行</td>
+                    <td>MLAG Domain-ID: 10<br>负责1-30号服务器</td>
+                </tr>
+                <tr>
+                    <td><strong>ACC-SW-B01</strong></td>
+                    <td><span class="device-access">接入交换机B组</span></td>
+                    <td><span class="ip-address">192.168.100.23/24</span></td>
+                    <td><span class="interface-25g">48×25GbE SFP28<br>6×100GbE QSFP28</span></td>
+                    <td>
+                        <span class="vlan-business">VLAN 100</span>
+                        <span class="vlan-mgmt">VLAN 999</span>
+                    </td>
+                    <td>
+                        <span class="ip-address">10.10.100.23/24</span><br>
+                        <span class="ip-address">192.168.100.0/24</span>
+                    </td>
+                    <td>
+                        <span class="protocol-mlag">MLAG Primary</span><br>
+                        <span class="protocol-lacp">LACP</span>
+                    </td>
+                    <td><span class="bandwidth-25g">25Gbps×48</span></td>
+                    <td><span class="interface-100g">4×100G to AGG</span></td>
+                    <td>
+                        <span class="interface-100g">IPL: 2×100G</span><br>
+                        <span class="interface-25g">KA: 1×25G</span>
+                    </td>
+                    <td>GPU-31~60 双归接入</td>
+                    <td>Port 1-30: 服务器31-45<br>Port 31-48: 服务器46-60<br>Port 49-52: 汇聚上行</td>
+                    <td>MLAG Domain-ID: 20<br>负责31-60号服务器</td>
+                </tr>
+                <tr>
+                    <td><strong>ACC-SW-B02</strong></td>
+                    <td><span class="device-access">接入交换机B组</span></td>
+                    <td><span class="ip-address">192.168.100.24/24</span></td>
+                    <td><span class="interface-25g">48×25GbE SFP28<br>6×100GbE QSFP28</span></td>
+                    <td>
+                        <span class="vlan-business">VLAN 100</span>
+                        <span class="vlan-mgmt">VLAN 999</span>
+                    </td>
+                    <td>
+                        <span class="ip-address">10.10.100.24/24</span><br>
+                        <span class="ip-address">192.168.100.0/24</span>
+                    </td>
+                    <td>
+                        <span class="protocol-mlag">MLAG Secondary</span><br>
+                        <span class="protocol-lacp">LACP</span>
+                    </td>
+                    <td><span class="bandwidth-25g">25Gbps×48</span></td>
+                    <td><span class="interface-100g">4×100G to AGG</span></td>
+                    <td>
+                        <span class="interface-100g">IPL: 2×100G</span><br>
+                        <span class="interface-25g">KA: 1×25G</span>
+                    </td>
+                    <td>GPU-31~60 双归接入</td>
+                    <td>Port 1-30: 服务器31-45<br>Port 31-48: 服务器46-60<br>Port 49-52: 汇聚上行</td>
+                    <td>MLAG Domain-ID: 20<br>负责31-60号服务器</td>
+                </tr>
+                <tr>
+                    <td><strong>OOB-SW-01</strong></td>
+                    <td><span class="device-oob">带外管理交换机</span></td>
+                    <td><span class="ip-address">192.168.200.10/24</span></td>
+                    <td><span class="interface-1g">48×1GbE RJ45<br>2×10GbE SFP+</span></td>
+                    <td>
+                        <span class="vlan-oob">VLAN 200</span>
+                        <span class="vlan-mgmt">VLAN 999</span>
+                    </td>
+                    <td>
+                        <span class="ip-address">192.168.200.0/24</span><br>
+                        <span class="ip-address">192.168.100.0/24</span>
+                    </td>
+                    <td>
+                        <span class="protocol-stp">RSTP</span><br>
+                        <span class="protocol-lacp">LACP</span>
+                    </td>
+                    <td><span class="bandwidth-1g">1Gbps×48</span></td>
+                    <td><span class="interface-10g">2×10G to FW</span></td>
+                    <td>独立设备，无IPL</td>
+                    <td>60台服务器IPMI</td>
+                    <td>Port 1-48: 服务器IPMI<br>Port 49-50: 防火墙上行</td>
+                    <td>IPMI专用网络<br>静态路由到防火墙</td>
+                </tr>
+                <tr>
+                    <td><strong>OOB-SW-02</strong></td>
+                    <td><span class="device-oob">带外管理交换机</span></td>
+                    <td><span class="ip-address">192.168.200.11/24</span></td>
+                    <td><span class="interface-1g">48×1GbE RJ45<br>2×10GbE SFP+</span></td>
+                    <td>
+                        <span class="vlan-oob">VLAN 200</span>
+                        <span class="vlan-mgmt">VLAN 999</span>
+                    </td>
+                    <td>
+                        <span class="ip-address">192.168.200.0/24</span><br>
+                        <span class="ip-address">192.168.100.0/24</span>
+                    </td>
+                    <td>
+                        <span class="protocol-stp">RSTP</span><br>
+                        <span class="protocol-lacp">LACP</span>
+                    </td>
+                    <td><span class="bandwidth-1g">1Gbps×48</span></td>
+                    <td><span class="interface-10g">2×10G to FW</span></td>
+                    <td>独立设备，无IPL</td>
+                    <td>60台服务器IPMI</td>
+                    <td>Port 1-48: 交换机管理<br>Port 49-50: 防火墙上行</td>
+                    <td>交换机带外管理<br>冗余上行到防火墙</td>
+                </tr>
+                <tr>
+                    <td><strong>GPU-SRV-01~30</strong></td>
+                    <td><span class="device-server">RTX 4090服务器</span></td>
+                    <td><span class="ip-address">192.168.200.101-130</span></td>
+                    <td><span class="interface-25g">2×25GbE SFP28<br>1×1GbE RJ45 IPMI</span></td>
+                    <td>
+                        <span class="vlan-business">VLAN 100</span>
+                        <span class="vlan-oob">VLAN 200</span>
+                    </td>
+                    <td>
+                        <span class="ip-address">10.10.100.101-130/24</span><br>
+                        <span class="ip-address">192.168.200.101-130/24</span>
+                    </td>
+		    <td>
+                        <span class="protocol-lacp">LACP Bond</span><br>
+                        <span class="protocol-stp">Access Port</span>
+                    </td>
+                    <td><span class="bandwidth-25g">25Gbps×2</span></td>
+                    <td>双归到ACC-SW-A组</td>
+                    <td>N/A</td>
+                    <td>AI推理计算节点</td>
+                    <td>eth0/1: ACC-SW-A01/A02<br>IPMI: OOB-SW-01</td>
+                    <td>服务器1-30组<br>双25G网卡Bond0</td>
+                </tr>
+                <tr>
+                    <td><strong>GPU-SRV-31~60</strong></td>
+                    <td><span class="device-server">RTX 4090服务器</span></td>
+                    <td><span class="ip-address">192.168.200.131-160</span></td>
+                    <td><span class="interface-25g">2×25GbE SFP28<br>1×1GbE RJ45 IPMI</span></td>
+                    <td>
+                        <span class="vlan-business">VLAN 100</span>
+                        <span class="vlan-oob">VLAN 200</span>
+                    </td>
+                    <td>
+                        <span class="ip-address">10.10.100.131-160/24</span><br>
+                        <span class="ip-address">192.168.200.131-160/24</span>
+                    </td>
+                    <td>
+                        <span class="protocol-lacp">LACP Bond</span><br>
+                        <span class="protocol-stp">Access Port</span>
+                    </td>
+                    <td><span class="bandwidth-25g">25Gbps×2</span></td>
+                    <td>双归到ACC-SW-B组</td>
+                    <td>N/A</td>
+                    <td>AI推理计算节点</td>
+                    <td>eth0/1: ACC-SW-B01/B02<br>IPMI: OOB-SW-01/02</td>
+                    <td>服务器31-60组<br>双25G网卡Bond0</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="footer">
+        <p><strong>© 2025 网络架构部 | 60台RTX 4090集群网络详细设计</strong></p>
+        <div class="topology-summary">
+            <div class="topo-card">
+                <strong>网络拓扑</strong><br>
+                双层MLAG架构<br>
+                4台接入 + 2台汇聚
+            </div>
+            <div class="topo-card">
+                <strong>服务器分组</strong><br>
+                1-30: ACC-SW-A组<br>
+                31-60: ACC-SW-B组
+            </div>
+            <div class="topo-card">
+                <strong>链路规格</strong><br>
+                25G: 服务器接入<br>
+                100G: 交换机上行
+            </div>
+            <div class="topo-card">
+                <strong>MLAG配置</strong><br>
+                Domain-ID: 10/20/100<br>
+                IPL: 2×100G + KA
+            </div>
+            <div class="topo-card">
+                <strong>带外管理</strong><br>
+                IPMI: 1G RJ45<br>
+                上行: 2×10G to FW
+            </div>
+            <div class="topo-card">
+                <strong>IP地址规划</strong><br>
+                业务: 10.10.100.0/24<br>
+                管理: 192.168.100.0/24<br>
+                IPMI: 192.168.200.0/24
+            </div>
+        </div>
+        <p style="margin-top: 15px; font-size: 11px;">
+            <strong>设计特点:</strong> MLAG双活架构 | 无单点故障 | 分组管理 | 链路聚合 | 带外独立
+        </p>
+    </div>
+</body>
+</html>

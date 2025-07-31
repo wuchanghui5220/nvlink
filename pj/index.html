@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>到货情况记录表</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        
+        .controls {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        button:hover {
+            background: #2980b9;
+        }
+        
+        .export-btn {
+            background: #27ae60;
+        }
+        
+        .export-btn:hover {
+            background: #229954;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            background: white;
+        }
+        
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        
+        th {
+            background: #3498db;
+            color: white;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+        }
+        
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        tr:hover {
+            background: #e8f4f8;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 4px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+        }
+        
+        .status-pending { background-color: #fff3cd; }
+        .status-received { background-color: #d4edda; }
+        .status-used { background-color: #f8d7da; }
+        
+        .summary {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e8f6f3;
+            border-radius: 5px;
+            border-left: 4px solid #27ae60;
+        }
+        
+        .delete-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📦 货物到货情况记录表</h1>
+        
+        <div class="controls">
+            <button onclick="addRow()">➕ 添加记录</button>
+            <button onclick="exportToCSV()" class="export-btn">📄 导出CSV</button>
+            <button onclick="clearAll()">🗑️ 清空数据</button>
+        </div>
+        
+        <table id="deliveryTable">
+            <thead>
+                <tr>
+                    <th>快递单号</th>
+                    <th>快递件数</th>
+                    <th>收货日期</th>
+                    <th>物品类型</th>
+                    <th>规格/型号</th>
+                    <th>数量</th>
+                    <th>单位</th>
+                    <th>状态</th>
+                    <th>已使用数量</th>
+                    <th>剩余数量</th>
+                    <th>备注</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <tr>
+                    <td><input type="text" value="SF1234567890" onchange="updateData()"></td>
+                    <td><input type="text" value="1/2" onchange="updateData()" placeholder="如: 1/3"></td>
+                    <td><input type="date" value="2025-07-28" onchange="updateData()"></td>
+                    <td><input type="text" value="MPO光纤跳线" onchange="updateData()"></td>
+                    <td><input type="text" value="12芯" onchange="updateData()"></td>
+                    <td><input type="number" value="10" onchange="updateData()"></td>
+                    <td><input type="text" value="条" onchange="updateData()"></td>
+                    <td>
+                        <select onchange="updateData()">
+                            <option value="已收货">已收货</option>
+                            <option value="待收货">待收货</option>
+                            <option value="部分使用">部分使用</option>
+                            <option value="已用完">已用完</option>
+                        </select>
+                    </td>
+                    <td><input type="number" value="0" onchange="updateData()"></td>
+                    <td><input type="number" value="10" readonly></td>
+                    <td><input type="text" placeholder="备注信息" onchange="updateData()"></td>
+                    <td><button class="delete-btn" onclick="deleteRow(this)">删除</button></td>
+                </tr>
+                <tr>
+                    <td><input type="text" value="SF1234567890" onchange="updateData()"></td>
+                    <td><input type="text" value="2/2" onchange="updateData()" placeholder="如: 1/3"></td>
+                    <td><input type="date" value="2025-07-28" onchange="updateData()"></td>
+                    <td><input type="text" value="LC-LC光纤跳线" onchange="updateData()"></td>
+                    <td><input type="text" value="单模" onchange="updateData()"></td>
+                    <td><input type="number" value="4" onchange="updateData()"></td>
+                    <td><input type="text" value="条" onchange="updateData()"></td>
+                    <td>
+                        <select onchange="updateData()">
+                            <option value="已收货">已收货</option>
+                            <option value="待收货">待收货</option>
+                            <option value="部分使用">部分使用</option>
+                            <option value="已用完">已用完</option>
+                        </select>
+                    </td>
+                    <td><input type="number" value="0" onchange="updateData()"></td>
+                    <td><input type="number" value="4" readonly></td>
+                    <td><input type="text" placeholder="备注信息" onchange="updateData()"></td>
+                    <td><button class="delete-btn" onclick="deleteRow(this)">删除</button></td>
+                </tr>
+                <tr>
+                    <td><input type="text" value="SF0987654321" onchange="updateData()"></td>
+                    <td><input type="text" value="1/1" onchange="updateData()" placeholder="如: 1/3"></td>
+                    <td><input type="date" value="2025-07-28" onchange="updateData()"></td>
+                    <td><input type="text" value="LC-LC光纤跳线" onchange="updateData()"></td>
+                    <td><input type="text" value="单模" onchange="updateData()"></td>
+                    <td><input type="number" value="128" onchange="updateData()"></td>
+                    <td><input type="text" value="条" onchange="updateData()"></td>
+                    <td>
+                        <select onchange="updateData()">
+                            <option value="已收货">已收货</option>
+                            <option value="待收货">待收货</option>
+                            <option value="部分使用">部分使用</option>
+                            <option value="已用完">已用完</option>
+                        </select>
+                    </td>
+                    <td><input type="number" value="0" onchange="updateData()"></td>
+                    <td><input type="number" value="128" readonly></td>
+                    <td><input type="text" placeholder="备注信息" onchange="updateData()"></td>
+                    <td><button class="delete-btn" onclick="deleteRow(this)">删除</button></td>
+                </tr>
+                <tr>
+                    <td><input type="text" value="SF1122334455" onchange="updateData()"></td>
+                    <td><input type="text" value="1/1" onchange="updateData()" placeholder="如: 1/3"></td>
+                    <td><input type="date" value="2025-07-28" onchange="updateData()"></td>
+                    <td><input type="text" value="网线" onchange="updateData()"></td>
+                    <td><input type="text" value="CAT6" onchange="updateData()"></td>
+                    <td><input type="number" value="67" onchange="updateData()"></td>
+                    <td><input type="text" value="条" onchange="updateData()"></td>
+                    <td>
+                        <select onchange="updateData()">
+                            <option value="已收货">已收货</option>
+                            <option value="待收货">待收货</option>
+                            <option value="部分使用">部分使用</option>
+                            <option value="已用完">已用完</option>
+                        </select>
+                    </td>
+                    <td><input type="number" value="0" onchange="updateData()"></td>
+                    <td><input type="number" value="67" readonly></td>
+                    <td><input type="text" placeholder="备注信息" onchange="updateData()"></td>
+                    <td><button class="delete-btn" onclick="deleteRow(this)">删除</button></td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="summary" id="summary">
+            <h3>📊 库存汇总</h3>
+            <div id="summaryData"></div>
+        </div>
+    </div>
+
+    <script>
+        function addRow() {
+            const tbody = document.getElementById('tableBody');
+            const newRow = tbody.insertRow();
+            newRow.innerHTML = `
+                <td><input type="text" placeholder="快递单号" onchange="updateData()"></td>
+                <td><input type="text" placeholder="如: 1/3" onchange="updateData()"></td>
+                <td><input type="date" onchange="updateData()"></td>
+                <td><input type="text" placeholder="物品类型" onchange="updateData()"></td>
+                <td><input type="text" placeholder="规格/型号" onchange="updateData()"></td>
+                <td><input type="number" placeholder="数量" onchange="updateData()"></td>
+                <td><input type="text" placeholder="单位" onchange="updateData()"></td>
+                <td>
+                    <select onchange="updateData()">
+                        <option value="待收货">待收货</option>
+                        <option value="已收货">已收货</option>
+                        <option value="部分使用">部分使用</option>
+                        <option value="已用完">已用完</option>
+                    </select>
+                </td>
+                <td><input type="number" value="0" onchange="updateData()"></td>
+                <td><input type="number" readonly></td>
+                <td><input type="text" placeholder="备注信息" onchange="updateData()"></td>
+                <td><button class="delete-btn" onclick="deleteRow(this)">删除</button></td>
+            `;
+            updateData();
+        }
+
+        function deleteRow(btn) {
+            if (confirm('确定要删除这条记录吗？')) {
+                const row = btn.parentNode.parentNode;
+                row.parentNode.removeChild(row);
+                updateData();
+            }
+        }
+
+        function updateData() {
+            const tbody = document.getElementById('tableBody');
+            const rows = tbody.getElementsByTagName('tr');
+            
+            // 更新剩余数量
+            for (let i = 0; i < rows.length; i++) {
+                const cells = rows[i].getElementsByTagName('td');
+                const totalQty = parseInt(cells[5].querySelector('input').value) || 0;
+                const usedQty = parseInt(cells[8].querySelector('input').value) || 0;
+                const remainingQty = totalQty - usedQty;
+                cells[9].querySelector('input').value = remainingQty;
+                
+                // 根据状态设置行颜色
+                const status = cells[7].querySelector('select').value;
+                rows[i].className = '';
+                if (status === '待收货') rows[i].className = 'status-pending';
+                else if (status === '已收货') rows[i].className = 'status-received';
+                else if (status === '已用完') rows[i].className = 'status-used';
+            }
+            
+            updateSummary();
+            saveData();
+        }
+
+        function saveData() {
+            const tbody = document.getElementById('tableBody');
+            const rows = tbody.getElementsByTagName('tr');
+            const data = [];
+            
+            for (let i = 0; i < rows.length; i++) {
+                const cells = rows[i].getElementsByTagName('td');
+                const rowData = [];
+                
+                // 获取所有input和select的值（除了最后的操作列）
+                for (let j = 0; j < cells.length - 1; j++) {
+                    const input = cells[j].querySelector('input, select');
+                    if (input) {
+                        rowData.push(input.value);
+                    }
+                }
+                data.push(rowData);
+            }
+            
+            // 保存到本地存储，使用JSON格式
+            try {
+                const dataString = JSON.stringify(data);
+                // 使用内存变量模拟存储
+                window.deliveryData = dataString;
+            } catch (e) {
+                console.log('数据保存失败:', e);
+            }
+        }
+
+        function loadData() {
+            try {
+                // 从内存变量读取数据
+                const savedData = window.deliveryData;
+                if (savedData) {
+                    const data = JSON.parse(savedData);
+                    const tbody = document.getElementById('tableBody');
+                    tbody.innerHTML = '';
+                    
+                    data.forEach(rowData => {
+                        const newRow = tbody.insertRow();
+                        newRow.innerHTML = `
+                            <td><input type="text" value="${rowData[0] || ''}" onchange="updateData()"></td>
+                            <td><input type="text" value="${rowData[1] || ''}" placeholder="如: 1/3" onchange="updateData()"></td>
+                            <td><input type="date" value="${rowData[2] || ''}" onchange="updateData()"></td>
+                            <td><input type="text" value="${rowData[3] || ''}" onchange="updateData()"></td>
+                            <td><input type="text" value="${rowData[4] || ''}" onchange="updateData()"></td>
+                            <td><input type="number" value="${rowData[5] || ''}" onchange="updateData()"></td>
+                            <td><input type="text" value="${rowData[6] || ''}" onchange="updateData()"></td>
+                            <td>
+                                <select onchange="updateData()">
+                                    <option value="待收货" ${rowData[7] === '待收货' ? 'selected' : ''}>待收货</option>
+                                    <option value="已收货" ${rowData[7] === '已收货' ? 'selected' : ''}>已收货</option>
+                                    <option value="部分使用" ${rowData[7] === '部分使用' ? 'selected' : ''}>部分使用</option>
+                                    <option value="已用完" ${rowData[7] === '已用完' ? 'selected' : ''}>已用完</option>
+                                </select>
+                            </td>
+                            <td><input type="number" value="${rowData[8] || '0'}" onchange="updateData()"></td>
+                            <td><input type="number" value="${rowData[9] || ''}" readonly></td>
+                            <td><input type="text" value="${rowData[10] || ''}" placeholder="备注信息" onchange="updateData()"></td>
+                            <td><button class="delete-btn" onclick="deleteRow(this)">删除</button></td>
+                        `;
+                    });
+                    
+                    updateData();
+                    return true;
+                }
+            } catch (e) {
+                console.log('数据加载失败:', e);
+            }
+            return false;
+        }
+
+        function updateSummary() {
+            const tbody = document.getElementById('tableBody');
+            const rows = tbody.getElementsByTagName('tr');
+            const summary = {};
+            
+            for (let i = 0; i < rows.length; i++) {
+                const cells = rows[i].getElementsByTagName('td');
+                const itemType = cells[3].querySelector('input').value;
+                const totalQty = parseInt(cells[5].querySelector('input').value) || 0;
+                const usedQty = parseInt(cells[8].querySelector('input').value) || 0;
+                const remainingQty = totalQty - usedQty;
+                const unit = cells[6].querySelector('input').value;
+                
+                if (itemType && totalQty > 0) {
+                    if (!summary[itemType]) {
+                        summary[itemType] = { total: 0, used: 0, remaining: 0, unit: unit };
+                    }
+                    summary[itemType].total += totalQty;
+                    summary[itemType].used += usedQty;
+                    summary[itemType].remaining += remainingQty;
+                }
+            }
+            
+            let summaryHTML = '';
+            for (const [type, data] of Object.entries(summary)) {
+                summaryHTML += `
+                    <p><strong>${type}:</strong> 
+                    总量 ${data.total} ${data.unit} | 
+                    已用 ${data.used} ${data.unit} | 
+                    剩余 ${data.remaining} ${data.unit}
+                    </p>
+                `;
+            }
+            
+            if (summaryHTML === '') {
+                summaryHTML = '<p>暂无数据</p>';
+            }
+            
+            document.getElementById('summaryData').innerHTML = summaryHTML;
+        }
+
+        function exportToCSV() {
+            const table = document.getElementById('deliveryTable');
+            const rows = table.querySelectorAll('tr');
+            let csv = [];
+            
+            // 获取表头
+            const headers = [];
+            rows[0].querySelectorAll('th').forEach(th => {
+                if (th.textContent !== '操作') {
+                    headers.push(th.textContent);
+                }
+            });
+            csv.push(headers.join(','));
+            
+            // 获取数据行
+            for (let i = 1; i < rows.length; i++) {
+                const row = rows[i];
+                const rowData = [];
+                const inputs = row.querySelectorAll('input, select');
+                
+                for (let j = 0; j < inputs.length - 1; j++) { // 排除最后的操作列
+                    let value = inputs[j].value || '';
+                    if (value.includes(',')) {
+                        value = `"${value}"`;
+                    }
+                    rowData.push(value);
+                }
+                csv.push(rowData.join(','));
+            }
+            
+            // 下载CSV文件
+            const csvContent = csv.join('\n');
+            const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', '货物到货记录_' + new Date().toISOString().slice(0, 10) + '.csv');
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function clearAll() {
+            if (confirm('确定要清空所有数据吗？此操作不可恢复！')) {
+                document.getElementById('tableBody').innerHTML = '';
+                window.deliveryData = null; // 清空保存的数据
+                updateData();
+            }
+        }
+
+        // 页面加载时加载保存的数据
+        window.onload = function() {
+            // 先尝试加载保存的数据，如果没有则使用默认数据
+            if (!loadData()) {
+                updateData(); // 使用默认的预填数据
+            }
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>软件下载 - Clash Verge Rev</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+        }
+
+        .download-container {
+            background: white;
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            transform: translateY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .download-container:hover {
+            transform: translateY(-5px);
+        }
+
+        .icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+            color: white;
+            font-size: 2rem;
+        }
+
+        h1 {
+            color: #2d3748;
+            margin-bottom: 1rem;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .version {
+            color: #718096;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+        .download-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .download-btn {
+            display: flex;
+            align-items: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            padding: 1rem 1.5rem;
+            border-radius: 15px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            position: relative;
+            overflow: hidden;
+            min-width: 180px;
+            gap: 0.8rem;
+        }
+
+        .windows-btn {
+            background: linear-gradient(135deg, #0078d4 0%, #106ebe 100%);
+            box-shadow: 0 10px 20px rgba(0, 120, 212, 0.3);
+        }
+
+        .macos-btn {
+            background: linear-gradient(135deg, #007aff 0%, #5856d6 100%);
+            box-shadow: 0 10px 20px rgba(0, 122, 255, 0.3);
+        }
+
+        .platform-icon {
+            font-size: 1.8rem;
+            flex-shrink: 0;
+        }
+
+        .btn-content {
+            text-align: left;
+        }
+
+        .btn-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .btn-subtitle {
+            font-size: 0.85rem;
+            opacity: 0.9;
+            line-height: 1.2;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .download-btn:active {
+            transform: translateY(0);
+        }
+
+        .download-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .download-btn:hover::before {
+            left: 100%;
+        }
+
+        .file-info {
+            margin-top: 2rem;
+            color: #718096;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .file-info div {
+            margin-bottom: 0.5rem;
+        }
+
+        .loading {
+            display: none;
+            margin-top: 1rem;
+            color: #667eea;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @media (max-width: 480px) {
+            .download-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .download-btn {
+                width: 100%;
+                max-width: 280px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="download-container">
+        <div class="icon">📥</div>
+        
+        <h1>Clash Verge Rev</h1>
+        <div class="version">版本 v2.0.3</div>
+        
+        <div class="download-buttons">
+            <a href="Clash.Verge_2.0.3_x64-setup.exe" 
+               class="download-btn windows-btn" 
+               onclick="startDownload('windows')">
+                <span class="platform-icon">🪟</span>
+                <div class="btn-content">
+                    <div class="btn-title">Windows</div>
+                    <div class="btn-subtitle">x64 安装程序</div>
+                </div>
+            </a>
+            
+            <a href="Clash.Verge_2.0.3_aarch64.dmg" 
+               class="download-btn macos-btn" 
+               onclick="startDownload('macos')">
+                <span class="platform-icon">🍎</span>
+                <div class="btn-content">
+                    <div class="btn-title">macOS</div>
+                    <div class="btn-subtitle">Apple Silicon</div>
+                </div>
+            </a>
+        </div>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            下载准备中...
+        </div>
+        
+        <div class="file-info" id="fileInfo">
+            <div>请选择适合您系统的版本进行下载</div>
+        </div>
+    </div>
+
+    <script>
+        function startDownload(platform) {
+            const loading = document.getElementById('loading');
+            const fileInfo = document.getElementById('fileInfo');
+            const buttons = document.querySelectorAll('.download-btn');
+            
+            // 显示加载状态
+            loading.style.display = 'block';
+            buttons.forEach(btn => {
+                btn.style.opacity = '0.7';
+                btn.style.pointerEvents = 'none';
+            });
+            
+            // 更新文件信息
+            if (platform === 'windows') {
+                fileInfo.innerHTML = `
+                    <div><strong>文件名：</strong>Clash.Verge_2.0.3_x64-setup.exe</div>
+                    <div><strong>平台：</strong>Windows x64</div>
+                    <div><strong>类型：</strong>安装程序</div>
+                `;
+            } else if (platform === 'macos') {
+                fileInfo.innerHTML = `
+                    <div><strong>文件名：</strong>Clash.Verge_2.0.3_aarch64.dmg</div>
+                    <div><strong>平台：</strong>macOS (Apple Silicon)</div>
+                    <div><strong>类型：</strong>磁盘映像</div>
+                `;
+            }
+            
+            // 2秒后恢复按钮状态
+            setTimeout(() => {
+                loading.style.display = 'none';
+                buttons.forEach(btn => {
+                    btn.style.opacity = '1';
+                    btn.style.pointerEvents = 'auto';
+                });
+            }, 2000);
+        }
+    </script>
+    <!--https://ZLE7Ur.cloudedge.cloud:8443/api/v1/client/fd37063443643bb8fe89101f2b4dc871 -->
+    <!-- 通过网盘分享的文件：VMware-workstation-full-17.0.0-20800274.exe
+链接: https://pan.baidu.com/s/1DGWWNbMzVqsF8DnKkbUNqA?pwd=qkdv 提取码: qkdv 
+    -->
+</body> 
+</html>
