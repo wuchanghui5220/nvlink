@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NVIDIA驱动下载</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo h1 {
+            color: #76b900;
+            font-size: 2.5em;
+            margin: 0;
+        }
+        .driver-info {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 5px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .info-item:last-child {
+            border-bottom: none;
+        }
+        .label {
+            font-weight: bold;
+            color: #495057;
+        }
+        .value {
+            color: #212529;
+        }
+        .download-btn {
+            display: block;
+            width: 100%;
+            background-color: #76b900;
+            color: white;
+            text-decoration: none;
+            padding: 15px 30px;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            margin-bottom: 20px;
+        }
+        .download-btn:hover {
+            background-color: #5a8f00;
+        }
+        .note {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .note h4 {
+            margin-top: 0;
+        }
+        .download-section {
+            margin-bottom: 30px;
+        }
+        .download-section h3 {
+            color: #495057;
+            margin-bottom: 15px;
+        }
+        .url-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .url-input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            background-color: #f8f9fa;
+        }
+        .copy-btn {
+            background-color: #76b900;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        .copy-btn:hover {
+            background-color: #5a8f00;
+        }
+        .copy-message {
+            color: #28a745;
+            font-weight: bold;
+            margin: 0;
+        }
+    </style>
+    <script>
+        function copyUrl() {
+            const urlInput = document.getElementById('downloadUrl');
+            const copyMessage = document.getElementById('copyMessage');
+
+            urlInput.select();
+            urlInput.setSelectionRange(0, 99999); // 移动端兼容
+
+            try {
+                document.execCommand('copy');
+                copyMessage.style.display = 'block';
+                setTimeout(() => {
+                    copyMessage.style.display = 'none';
+                }, 3000);
+            } catch (err) {
+                // 使用现代API作为备选
+                navigator.clipboard.writeText(urlInput.value).then(() => {
+                    copyMessage.style.display = 'block';
+                    setTimeout(() => {
+                        copyMessage.style.display = 'none';
+                    }, 3000);
+                }).catch(() => {
+                    alert('复制失败，请手动选择并复制链接');
+                });
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">
+            <h1>NVIDIA</h1>
+            <p>驱动程序下载</p>
+        </div>
+
+        <div class="driver-info">
+            <div class="info-item">
+                <span class="label">驱动版本:</span>
+                <span class="value">570.172.08</span>
+            </div>
+            <div class="info-item">
+                <span class="label">系统架构:</span>
+                <span class="value">Linux x86_64</span>
+            </div>
+            <div class="info-item">
+                <span class="label">文件名:</span>
+                <span class="value">NVIDIA-Linux-x86_64-570.172.08.run</span>
+            </div>
+            <div class="info-item">
+                <span class="label">下载服务器:</span>
+                <span class="value">download.nvidia.com</span>
+            </div>
+        </div>
+
+        <div class="download-section">
+            <h3>下载链接</h3>
+            <div class="url-container">
+                <input type="text" id="downloadUrl" readonly
+			value="
+https://download.nvidia.com/XFree86/Linux-x86_64/570.172.08/NVIDIA-Linux-x86_64-570.172.08.run
+"
+                       class="url-input">
+                <button onclick="copyUrl()" class="copy-btn">复制</button>
+            </div>
+            <p class="copy-message" id="copyMessage" style="display: none;">链接已复制到剪贴板!</p>
+        </div>
+
+        <div class="note">
+            <h4>安装说明:</h4>
+            <ol>
+                <li>复制上述链接，使用wget下载: <code>wget [复制的链接]</code></li>
+                <li>给文件执行权限: <code>chmod +x NVIDIA-Linux-x86_64-570.172.08.run</code></li>
+                <li>停止图形界面服务: <code>sudo systemctl stop gdm</code> (或 lightdm/sddm)</li>
+                <li>运行安装程序: <code>sudo sh ./NVIDIA-Linux-x86_64-570.172.08.run</code></li>
+                <li>重启系统完成安装</li>
+            </ol>
+            <p><strong>注意:</strong> 安装前请确保已卸载旧版本驱动程序</p>
+        </div>
+    </div>
+    <!-- 
+    -->
+</body>
+</html>
