@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>基础运维操作命令</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    :root { --primary-green: #76b900; --primary-orange: #ffa500; --primary-blue: #00a2ff; --primary-red: #ff6b6b; --primary-purple: #4834d4; --text-primary: #ffffff; --text-secondary: rgba(255, 255, 255, 0.87); --glass-light: rgba(255, 255, 255, 0.08); --glass-border: rgba(255, 255, 255, 0.2); --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .main-content { padding: 1% 2%; flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden; max-width: 1400px; margin: 0 auto; width: 100%; }
+    .page-title { text-align: center; margin-bottom: 1.5%; flex-shrink: 0; }
+    .title-main { font-size: clamp(24px, 2.8vw, 32px); font-weight: 800; background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-orange) 50%, var(--primary-blue) 100%); -webkit-background-clip: text; background-clip: text; color: transparent; margin-bottom: 0.8%; }
+    .title-sub { font-size: clamp(14px, 1.6vw, 18px); color: rgba(255, 255, 255, 0.8); font-weight: 400; margin-bottom: 0.8%; }
+    .content-wrapper { flex: 1; display: flex; flex-direction: column; gap: 1.5%; min-height: 0; overflow-y: auto; }
+    
+    /* 命令分类样式 */
+    .command-categories { display: flex; flex-direction: column; gap: 2%; }
+    .category-section { background: linear-gradient(135deg, var(--glass-light), rgba(255, 255, 255, 0.04)); border: 1px solid var(--glass-border); border-radius: 15px; padding: 2%; box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15); }
+    .category-header { display: flex; align-items: center; gap: 15px; margin-bottom: 1.5%; padding-bottom: 1%; border-bottom: 1px solid rgba(255, 255, 255, 0.15); }
+    .category-icon { width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px; font-weight: 700; }
+    .system-cat .category-icon { background: linear-gradient(135deg, #00a2ff, #0078d4); }
+    .gpu-cat .category-icon { background: linear-gradient(135deg, #ff6b6b, #e53e3e); }
+    .network-cat .category-icon { background: linear-gradient(135deg, #76b900, #4caf50); }
+    .storage-cat .category-icon { background: linear-gradient(135deg, #4834d4, #6b46c1); }
+    .job-cat .category-icon { background: linear-gradient(135deg, #ffa500, #ff8c00); }
+    .log-cat .category-icon { background: linear-gradient(135deg, #9c88ff, #805ad5); }
+    .category-title { font-size: clamp(18px, 2vw, 22px); font-weight: 700; color: var(--text-primary); }
+    .category-desc { font-size: clamp(13px, 1.4vw, 15px); color: var(--text-secondary); margin-left: auto; }
+    
+    /* 命令卡片样式 */
+    .commands-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5%; }
+    .command-card { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 1.5%; transition: var(--transition-smooth); }
+    .command-card:hover { background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.2); transform: translateY(-2px); }
+    .command-header { display: flex; align-items: center; justify-content: between; margin-bottom: 1%; }
+    .command-name { font-size: clamp(15px, 1.6vw, 17px); font-weight: 700; color: var(--text-primary); flex: 1; }
+    .command-type { padding: 3px 8px; background: rgba(255, 165, 0, 0.2); color: #ffa500; border-radius: 10px; font-size: clamp(10px, 1.1vw, 12px); font-weight: 600; }
+    .command-syntax { background: rgba(0, 0, 0, 0.3); border-radius: 6px; padding: 1%; margin: 1% 0; font-family: 'Monaco', 'Consolas', monospace; font-size: clamp(11px, 1.2vw, 13px); color: #e8f4fd; overflow-x: auto; }
+    .command-desc { font-size: clamp(12px, 1.3vw, 14px); color: var(--text-secondary); line-height: 1.5; margin-bottom: 1%; }
+    .command-examples { }
+    .examples-title { font-size: clamp(12px, 1.3vw, 14px); font-weight: 600; color: rgba(255, 255, 255, 0.8); margin-bottom: 0.5%; }
+    .example-list { list-style: none; padding: 0; margin: 0; }
+    .example-item { background: rgba(0, 0, 0, 0.2); border-radius: 4px; padding: 0.5%; margin: 0.3% 0; font-family: 'Monaco', 'Consolas', monospace; font-size: clamp(10px, 1.1vw, 12px); color: #a8e6cf; }
+    
+    /* 快速参考样式 */
+    .quick-reference { background: linear-gradient(135deg, rgba(118, 185, 0, 0.15), rgba(118, 185, 0, 0.08)); border: 2px solid rgba(118, 185, 0, 0.4); border-radius: 12px; padding: 2%; margin-bottom: 2%; }
+    .reference-header { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 1.5%; }
+    .reference-icon { width: 40px; height: 40px; background: linear-gradient(135deg, var(--primary-green), #4caf50); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-size: 18px; font-weight: bold; }
+    .reference-title { font-size: clamp(18px, 2vw, 22px); font-weight: 700; color: var(--text-primary); }
+    .reference-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5%; }
+    .reference-card { background: rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 1.5%; text-align: center; }
+    .ref-title { font-size: clamp(13px, 1.4vw, 15px); font-weight: 600; color: #76b900; margin-bottom: 0.8%; }
+    .ref-content { font-family: 'Monaco', 'Consolas', monospace; font-size: clamp(11px, 1.2vw, 13px); color: var(--text-secondary); }
+    
+    /* 注意事项样式 */
+    .important-notes { background: linear-gradient(135deg, rgba(255, 165, 0, 0.15), rgba(255, 165, 0, 0.08)); border: 2px solid rgba(255, 165, 0, 0.4); border-radius: 12px; padding: 2%; margin-top: 2%; }
+    .notes-header { display: flex; align-items: center; gap: 12px; margin-bottom: 1.5%; }
+    .notes-icon { width: 35px; height: 35px; background: linear-gradient(135deg, #ffa500, #ff8c00); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 16px; font-weight: bold; }
+    .notes-title { font-size: clamp(16px, 1.7vw, 19px); font-weight: 700; color: var(--text-primary); }
+    .notes-list { list-style: none; padding: 0; margin: 0; }
+    .notes-list li { padding: 0.5% 0; position: relative; padding-left: 25px; font-size: clamp(13px, 1.4vw, 15px); color: var(--text-secondary); }
+    .notes-list li::before { content: '⚠️'; position: absolute; left: 0; }
+    
+    .summary-note { background: linear-gradient(135deg, rgba(0, 162, 255, 0.2), rgba(0, 162, 255, 0.1)); border: 2px solid rgba(0, 162, 255, 0.4); border-radius: 12px; padding: 2%; text-align: center; box-shadow: 0 6px 15px rgba(0, 162, 255, 0.2); margin-top: 2%; }
+    .summary-text { font-size: clamp(15px, 1.6vw, 18px); color: rgba(255, 255, 255, 0.9); font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 12px; }
+    .highlight { color: #00a2ff; font-weight: 700; }
+    
+    @media (max-width: 1200px) { .commands-grid { grid-template-columns: 1fr; } .reference-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <div class="bg-elements"><div class="brain-pattern"></div><div class="network-signals"><div class="signal-dot"></div><div class="signal-dot"></div><div class="signal-dot"></div><div class="signal-dot"></div><div class="signal-dot"></div></div></div>
+    <div class="content">
+      <div class="header" style="padding: 0.6% 2%;">
+        <div class="day-info"><div class="day-badge">4</div><div class="day-text">第四天：基础运维培训</div></div>
+        <div class="section-indicator">运维操作命令</div>
+      </div>
+      <div class="main-content">
+        <div class="page-title">
+          <div class="title-main">基础运维操作命令大全</div>
+          <div class="title-sub">常用命令详解 · 使用场景 · 实践示例 · 故障排查工具</div>
+        </div>
+        
+        <div class="content-wrapper">
+          <!-- 快速参考 -->
+          <div class="quick-reference">
+            <div class="reference-header">
+              <div class="reference-icon">⚡</div>
+              <div class="reference-title">常用命令快速参考</div>
+            </div>
+            <div class="reference-grid">
+              <div class="reference-card">
+                <div class="ref-title">系统状态</div>
+                <div class="ref-content">htop, top, uptime<br>free -h, df -h, lsblk</div>
+              </div>
+              <div class="reference-card">
+                <div class="ref-title">GPU监控</div>
+		<div class="ref-content">nvidia-smi, nvidia-smi -q<br>nvidia-smi topo -m, nvidia-smi topo -p2p r/w/n/a</div>
+              </div>
+              <div class="reference-card">
+                <div class="ref-title">网络诊断</div>
+		<div class="ref-content">ibstat, ibdev2netdev, sminfo, ibswitches<br>ping, traceroute, mtr, netstat</div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 命令分类 -->
+          <div class="command-categories">
+            <!-- 系统状态监控 -->
+            <div class="category-section system-cat">
+              <div class="category-header">
+                <div class="category-icon">💻</div>
+                <div class="category-title">系统状态查询和监控</div>
+                <div class="category-desc">基础系统信息获取</div>
+              </div>
+              <div class="commands-grid">
+                <div class="command-card">
+                  <div class="command-header">
+                    <div class="command-name">htop / top</div>
+                    <div class="command-type">实时监控</div>
+                  </div>
+                  <div class="command-syntax">htop</div>
+                  <div class="command-desc">实时显示系统进程、CPU和内存使用情况，htop提供更友好的界面</div>
+                  <div class="command-examples">
+                    <div class="examples-title">使用场景：</div>
+                    <ul class="example-list">
+                      <li>监控系统整体负载</li>
+                      <li>查找高CPU/内存消耗进程</li>
+                      <li>终止异常进程</li>
+                    </ul>
+                  </div>
+                </div>
+                
+                <div class="command-card">
+                  <div class="command-header">
+                    <div class="command-name">free</div>
+                    <div class="command-type">内存状态</div>
+                  </div>
+                  <div class="command-syntax">free -h</div>
+                  <div class="command-desc">显示系统内存使用情况，包括总内存、已用内存、空闲内存等</div>
+                  <div class="command-examples">
+                    <div class="examples-title">常用参数：</div>
+                    <ul class="example-list">
+                      <li>-h: 人类可读格式</li>
+                      <li>-m: 以MB为单位显示</li>
+                      <li>-s 5: 每5秒刷新一次</li>
+                    </ul>
+                  </div>
+                </div>
+                
+                <div class="command-card">
+                  <div class="command-header">
+                    <div class="command-name">df / du</div>
+                    <div class="command-type">存储监控</div>
+                  </div>
+                  <div class="command-syntax">df -h && du -sh /path/*</div>
+                  <div class="command-desc">df显示文件系统磁盘使用情况，du显示目录空间占用</div>
+                  <div class="command-examples">
+                    <div class="examples-title">常用组合：</div>
+                    <ul class="example-list">
+                      <li>df -h: 查看挂载点使用率</li>
+                      <li>du -sh /*: 查看根目录各子目录大小</li>
+                    </ul>
+                  </div>
+                </div>
+                
+                <div class="command-card">
+                  <div class="command-header">
+                    <div class="command-name">uptime / w</div>
+                    <div class="command-type">负载查询</div>
+                  </div>
+                  <div class="command-syntax">uptime && w</div>
+                  <div class="command-desc">显示系统运行时间、负载平均值和当前登录用户信息</div>
+                  <div class="command-examples">
+                    <div class="examples-title">负载解读：</div>
+                    <ul class="example-list">
+                      <li>1分钟、5分钟、15分钟负载</li>
+                      <li>负载 > CPU核数表示高负载</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- GPU设备管理 -->
+            <div class="category-section gpu-cat">
+              <div class="category-header">
+                <div class="category-icon">🎯</div>
+                <div class="category-title">GPU设备管理和诊断</div>
+                <div class="category-desc">GPU状态监控与控制</div>
+              </div>
+              <div class="commands-grid">
+                <div class="command-card">
+                  <div class="command-header">
+                    <div class="command-name">nvidia-smi</div>
+                    <div class="command-type">核心工具</div>
+                  </div>
+                  <div class="command-syntax">nvidia-smi -l 1</div>
+                  <div class="command-desc">NVIDIA GPU管理和监控的核心工具，显示GPU状态、进程、温度等信息</div>
+                  <div class="command-examples">
+                    <div class="examples-title">常用参数：</div>
+                    <ul class="example-list">
+                      <li>-l 1: 每秒刷新显示</li>
+                      <li>-i 0: 查看特定GPU</li>
+                      <li>-q: 详细查询模式</li>
+                    </ul>
+                  </div>
+                </div>
+                
+                <div class="command-card">
+                  <div class="command-header">
+                    <div class="command-name">nvidia-ml-py3</div>
+                    <div class="command-type">编程接口</div>
+                  </div>
+                  <div class="command-syntax">python3 -c "import pynvml; pynvml.nvmlInit()"</div>
+                  <div class="command-desc">Python接口访问NVIDIA管理库，用于脚本化GPU监控</div>
+                  <div class="command-examples">
+                    <div class="examples-title">应用场景：</div>
+                    <ul class="example-list">
+                      <li>自动化监控脚本</li>
+                      <li>GPU状态数据采集</li>
+                      <li>告警系统集成</li>
+                    </ul>
+                  </div>
+                </div>
+                
+                <div class="command-card">
+                  <div class="command-header">
+                    <div class="command-name">nvidia-persistenced</div>
+                    <div class="command-type">服务管理</div>
+                  </div>
+                  <div class="command-syntax">systemctl status nvidia-persistenced</div>
+                  <div class="command-desc">NVIDIA驱动持久化守护进程，确保GPU驱动在无用户登录时保持加载</div>
+                  <div class="command-examples">
+                    <div class="examples-title">管理命令：</div>
+                    <ul class="example-list">
+                      <li>systemctl start nvidia-persistenced</li>
+                      <li>systemctl enable nvidia-persistenced</li>
+                    </ul>
+                  </div>
+                </div>
+                
+                <div class="command-card">
+                  <div class="command-header">
+                    <div class="command-name">dcgmi</div>
+                    <div class="command-type">企业管理</div>
+                  </div>
+                  <div class="command-syntax">dcgmi discovery -l</div>
+                  <div class="command-desc">NVIDIA数据中心GPU管理工具，提供企业级GPU监控和管理功能</div>
+                  <div class="command-examples">
+                    <div class="examples-title">高级功能：</div>
+                    <ul class="example-list">
+                      <li>GPU健康检查</li>
+                      <li>错误注入测试</li>
+                      <li>性能分析和调优</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 网络配置和故障排查 -->
+            <div class="category-section network-cat">
+              <div class="category-header">
+                <div class="category-icon">🌐</div>
+                <div class="category-title">网络配置和故障排查</div>
+                <div class="category-desc">网络连通性和性能诊断</div>
+              </div>
+              <div class="commands-grid">
+                <div class="command-card">
+                  <div class="command-header">
+                    <div class="command-name">ibstat / ibdev2netdev</div>
+                    <div class="command-type">IB网络</div>
+                  </div>
+                  <div class="command-syntax">ibstat && ibdev2netdev</div>
+                  <div class="command-desc">InfiniBand网络状态查询，显示IB端口状态和网络设备映射关系</div>
+                  <div class="command-examples">
+                    <div class="examples-title">关键信息：</div>
+                    <ul class="example-list">
+                      <li>端口状态：Active/Down/Init</li>
+                      <li>链路速度和宽度</li>
+                      <li>设备到网络接口映射</li>
+                    </ul>
+                  </div>
+                </div>
+                
+                <div class="command-card">
+                  <div class="command-header">
+                    <div class="command-name">iperf3</div>
+                    <div class="command-type">性能测试</div>
+                  </div>
+                  <div class="command-syntax">iperf3 -c server_ip -t 30</div>
+                  <div class="command-desc">网络带宽和延迟测试工具，验证网络性能是否达到设计指标</div>
+                  <div class="command-examples">
+                    <div class="examples-title">测试场景：</div>
+                    <ul class="example-list">
+                      <li>节点间带宽测试</li>
+                      <li>存储网络性能验证</li>
+                      <li>网络配置优化验证</li>
+                    </ul>
+                  </div>
+                </div>
+                
+                <div class="command-card">
+                  <div class="command-header">
+                    <div class="command-name">netstat / ss</div>
+                    <div class="command-type">连接状态</div>
+                  </div>
+                  <div class="command-syntax">ss -tulpn | grep :22</div>
+                  <div class="command-desc">显示网络连接状态、监听端口和进程信息，ss是netstat的现代替代品</div>
+                  <div class="command-examples">
+                    <div class="examples-title">常用选项：</div>
+                    <ul class="example-list">
+                      <li>-t: TCP连接</li>
+                      <li>-u: UDP连接</li>
+                      <li>-l: 仅监听端口</li>
+                    </ul>
+                  </div>
+                </div>
+                
+                <div class="command-card">
+                  <div class="command-header">
+                    <div class="command-name">traceroute / mtr</div>
+                    <div class="command-type">路径诊断</div>
+                  </div>
+                  <div class="command-syntax">mtr -r -c 10 target_host</div>
+                  <div class="command-desc">网络路径追踪和连续ping测试，诊断网络路由和丢包问题</div>
+                  <div class="command-examples">
+                    <div class="examples-title">诊断场景：</div>
+                    <ul class="example-list">
+                      <li>网络延迟异常定位</li>
+                      <li>丢包问题排查</li>
+                      <li>路由路径分析</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 作业调度和资源管理 -->
+            <div class="category-section job-cat">
+              <div class="category-header">
+                <div class="category-icon">⚙️</div>
+                <div class="category-title">作业调度和资源管理</div>
+                <div class="category-desc">Slurm集群作业管理</div>
+              </div>
+              <div class="commands-grid">
+                <div class="command-card">
+                  <div class="command-header">
+                    <div class="command-name">sinfo / squeue</div>
+                    <div class="command-type">状态查询</div>
+                  </div>
+                  <div class="command-syntax">sinfo -N -l && squeue -u $USER</div>
+                  <div class="command-desc">sinfo显示节点状态信息，squeue显示作业队列状态</div>
+                  <div class="command-examples">
+                    <div class="examples-title">关键信息：</div>
+                    <ul class="example-list">
+                      <li>节点状态：idle/alloc/down/drain</li>
+                      <li>作业状态：PENDING/RUNNING/COMPLETED</li>
+                      <li>资源分配和使用情况</li>
+                    </ul>
+                  </div>
+                </div>
+                
+                <div class="command-card">
+                  <div class="command-header">
+                    <div class="command-name">sbatch / srun</div>
+                    <div class="command-type">作业提交</div>
+                  </div>
+                  <div class="command-syntax">sbatch --gres=gpu:8 script.sh</div>
+                  <div class="command-desc">sbatch提交批处理作业，srun直接运行交互式作业</div>
+                  <div class="command-examples">
+                    <div class="examples-title">GPU作业示例：</div>
+                    <ul class="example-list">
+                      <li>--gres=gpu:8: 申请8个GPU</li>
+                      <li>--exclusive: 独占节点</li>
+                      <li>--time=24:00:00: 时间限制</li>
+                    </ul>
+                  </div>
+                </div>
+                
+                <div class="command-card">
+                  <div class="command-header">
+                    <div class="command-name">scancel / scontrol</div>
+                    <div class="command-type">作业控制</div>
+                  </div>
+                  <div class="command-syntax">scancel jobid && scontrol show job jobid</div>
+                  <div class="command-desc">scancel取消作业，scontrol显示和修改作业/节点详细信息</div>
+                  <div class="command-examples">
+                    <div class="examples-title">管理操作：</div>
+                    <ul class="example-list">
+                      <li>scancel -u username: 取消用户所有作业</li>
+                      <li>scontrol hold jobid: 暂停作业</li>
+                      <li>scontrol release jobid: 释放作业</li>
+                    </ul>
+                  </div>
+                </div>
+                
+                <div class="command-card">
+                  <div class="command-header">
+                    <div class="command-name">sacct / sreport</div>
+                    <div class="command-type">统计报告</div>
+                  </div>
+                  <div class="command-syntax">sacct -j jobid --format=ALL</div>
+                  <div class="command-desc">作业历史统计和集群使用报告生成</div>
+                  <div class="command-examples">
+                    <div class="examples-title">报告类型：</div>
+                    <ul class="example-list">
+                      <li>作业执行历史</li>
+                      <li>资源使用统计</li>
+                      <li>用户使用报告</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 重要注意事项 -->
+          <div class="important-notes">
+            <div class="notes-header">
+              <div class="notes-icon">⚠️</div>
+              <div class="notes-title">重要注意事项</div>
+            </div>
+            <ul class="notes-list">
+              <li>在生产环境执行命令前，务必在测试环境验证</li>
+              <li>涉及系统配置修改的操作需要先备份原始配置</li>
+              <li>GPU相关命令可能需要管理员权限或特定用户组</li>
+              <li>网络诊断命令在高负载时可能影响性能，谨慎使用</li>
+              <li>作业管理命令的参数因Slurm版本而异，查阅文档确认</li>
+              <li>定期更新命令手册，保持与系统版本同步</li>
+            </ul>
+          </div>
+        </div>
+        
+        <div class="summary-note">
+          <div class="summary-text"><div>🔧</div><span><span class="highlight">实践要点：</span>熟练掌握这些基础命令是GPU集群运维的必备技能，需要通过大量实践来熟悉各种使用场景</span></div>
+        </div>
+      </div>
+      <div class="footer" style="padding: 0.6% 2%;">
+        <div class="footer-left"><div class="status-dot"></div><span>第四天 - 基础运维培训</span></div>
+        <div class="footer-badges"><div class="footer-badge badge-install">命令行</div><div class="footer-badge badge-config">运维工具</div><div class="footer-badge badge-command">实践</div></div>
+      </div>
+    </div>
+  </div>
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+    <a href="index27.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+    <a href="index29.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+  </div>
+</body>
+</html>

@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>集群常见故障处理方法</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    :root { --primary-green: #76b900; --primary-orange: #ffa500; --primary-blue: #00a2ff; --primary-red: #ff6b6b; --primary-purple: #4834d4; --text-primary: #ffffff; --text-secondary: rgba(255, 255, 255, 0.87); --glass-light: rgba(255, 255, 255, 0.08); --glass-border: rgba(255, 255, 255, 0.2); --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .main-content { padding: 1% 2%; flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden; max-width: 1400px; margin: 0 auto; width: 100%; }
+    .page-title { text-align: center; margin-bottom: 1.5%; flex-shrink: 0; }
+    .title-main { font-size: clamp(24px, 2.8vw, 32px); font-weight: 800; background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-orange) 50%, var(--primary-blue) 100%); -webkit-background-clip: text; background-clip: text; color: transparent; margin-bottom: 0.8%; }
+    .title-sub { font-size: clamp(14px, 1.6vw, 18px); color: rgba(255, 255, 255, 0.8); font-weight: 400; margin-bottom: 0.8%; }
+    .content-wrapper { flex: 1; display: flex; flex-direction: column; gap: 1.5%; min-height: 0; overflow-y: auto; }
+    
+    /* 故障分类样式 */
+    .fault-categories { display: flex; flex-direction: column; gap: 2%; }
+    .fault-section { background: linear-gradient(135deg, var(--glass-light), rgba(255, 255, 255, 0.04)); border: 1px solid var(--glass-border); border-radius: 15px; padding: 2%; box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15); }
+    .fault-header { display: flex; align-items: center; gap: 15px; margin-bottom: 1.5%; padding-bottom: 1%; border-bottom: 1px solid rgba(255, 255, 255, 0.15); }
+    .fault-icon { width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px; font-weight: 700; }
+    .hardware-fault .fault-icon { background: linear-gradient(135deg, #ff6b6b, #e53e3e); }
+    .network-fault .fault-icon { background: linear-gradient(135deg, #00a2ff, #0078d4); }
+    .gpu-fault .fault-icon { background: linear-gradient(135deg, #ffa500, #ff8c00); }
+    .storage-fault .fault-icon { background: linear-gradient(135deg, #4834d4, #6b46c1); }
+    .system-fault .fault-icon { background: linear-gradient(135deg, #76b900, #4caf50); }
+    .fault-title { font-size: clamp(18px, 2vw, 22px); font-weight: 700; color: var(--text-primary); }
+    .fault-count { background: rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.8); padding: 4px 10px; border-radius: 15px; font-size: clamp(12px, 1.3vw, 14px); font-weight: 600; margin-left: auto; }
+    
+    /* 故障处理卡片样式 */
+    .fault-cards { display: grid; grid-template-columns: 1fr; gap: 1.5%; }
+    .fault-card { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 1.8%; transition: var(--transition-smooth); }
+    .fault-card:hover { background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.2); transform: translateY(-2px); }
+    .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.2%; }
+    .fault-name { font-size: clamp(15px, 1.6vw, 18px); font-weight: 700; color: var(--text-primary); }
+    .severity-badge { padding: 4px 10px; border-radius: 12px; font-size: clamp(10px, 1.1vw, 12px); font-weight: 600; }
+    .severity-critical { background: rgba(255, 107, 107, 0.2); color: #ff6b6b; border: 1px solid rgba(255, 107, 107, 0.3); }
+    .severity-high { background: rgba(255, 165, 0, 0.2); color: #ffa500; border: 1px solid rgba(255, 165, 0, 0.3); }
+    .severity-medium { background: rgba(0, 162, 255, 0.2); color: #00a2ff; border: 1px solid rgba(0, 162, 255, 0.3); }
+    .severity-low { background: rgba(118, 185, 0, 0.2); color: #76b900; border: 1px solid rgba(118, 185, 0, 0.3); }
+    
+    .fault-content { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.5%; }
+    .content-section { }
+    .section-title { font-size: clamp(13px, 1.4vw, 15px); font-weight: 600; color: var(--text-primary); margin-bottom: 0.8%; display: flex; align-items: center; gap: 8px; }
+    .section-list { list-style: none; padding: 0; margin: 0; }
+    .section-list li { padding: 3px 0; position: relative; padding-left: 15px; font-size: clamp(12px, 1.3vw, 14px); color: var(--text-secondary); line-height: 1.4; }
+    .section-list li::before { content: '▪'; position: absolute; left: 0; color: rgba(255, 255, 255, 0.6); }
+    .solution-step { background: rgba(0, 0, 0, 0.2); border-radius: 6px; padding: 0.8%; margin: 0.5% 0; font-family: 'Monaco', 'Consolas', monospace; font-size: clamp(11px, 1.2vw, 13px); color: #a8e6cf; }
+    
+    /* 应急响应流程样式 */
+    .emergency-response { background: linear-gradient(135deg, rgba(255, 107, 107, 0.15), rgba(255, 107, 107, 0.08)); border: 2px solid rgba(255, 107, 107, 0.4); border-radius: 15px; padding: 2%; margin-bottom: 2%; box-shadow: 0 8px 20px rgba(255, 107, 107, 0.15); }
+    .emergency-header { display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 2%; }
+    .emergency-icon { width: 50px; height: 50px; background: linear-gradient(135deg, #ff6b6b, #e53e3e); border-radius: 15px; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; font-weight: bold; }
+    .emergency-title { font-size: clamp(20px, 2.2vw, 26px); font-weight: 700; color: var(--text-primary); }
+    .response-steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5%; }
+    .response-step { background: rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 2%; text-align: center; position: relative; }
+    .response-step::after { content: '→'; position: absolute; right: -1.5%; top: 50%; transform: translateY(-50%); color: #ff6b6b; font-size: 20px; font-weight: bold; }
+    .response-step:last-child::after { display: none; }
+    .step-number { width: 35px; height: 35px; background: linear-gradient(135deg, #ff6b6b, #e53e3e); border-radius: 50%; margin: 0 auto 1%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px; }
+    .step-title { font-size: clamp(13px, 1.4vw, 15px); font-weight: 600; color: var(--text-primary); margin-bottom: 0.8%; }
+    .step-desc { font-size: clamp(11px, 1.2vw, 13px); color: var(--text-secondary); line-height: 1.4; }
+    
+    /* 故障预防策略 */
+    .prevention-strategies { background: linear-gradient(135deg, rgba(118, 185, 0, 0.15), rgba(118, 185, 0, 0.08)); border: 2px solid rgba(118, 185, 0, 0.4); border-radius: 12px; padding: 2%; margin-bottom: 2%; }
+    .prevention-header { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 1.5%; }
+    .prevention-icon { width: 40px; height: 40px; background: linear-gradient(135deg, var(--primary-green), #4caf50); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-size: 18px; font-weight: bold; }
+    .prevention-title { font-size: clamp(18px, 2vw, 22px); font-weight: 700; color: var(--text-primary); }
+    .prevention-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5%; }
+    .prevention-card { background: rgba(255, 255, 255, 0.05); border-radius: 8px; padding: 1.5%; }
+    .prevention-card-title { font-size: clamp(14px, 1.5vw, 16px); font-weight: 600; color: #76b900; margin-bottom: 0.8%; }
+    .prevention-desc { font-size: clamp(12px, 1.3vw, 14px); color: var(--text-secondary); line-height: 1.5; }
+    
+    .summary-note { background: linear-gradient(135deg, rgba(255, 165, 0, 0.2), rgba(255, 165, 0, 0.1)); border: 2px solid rgba(255, 165, 0, 0.4); border-radius: 12px; padding: 2%; text-align: center; box-shadow: 0 6px 15px rgba(255, 165, 0, 0.2); margin-top: 2%; }
+    .summary-text { font-size: clamp(15px, 1.6vw, 18px); color: rgba(255, 255, 255, 0.9); font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 12px; }
+    .highlight { color: #ffa500; font-weight: 700; }
+    
+    @media (max-width: 1200px) { .fault-content { grid-template-columns: 1fr; } .response-steps { grid-template-columns: repeat(2, 1fr); } .response-step::after { display: none; } .prevention-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <div class="bg-elements"><div class="brain-pattern"></div><div class="network-signals"><div class="signal-dot"></div><div class="signal-dot"></div><div class="signal-dot"></div><div class="signal-dot"></div><div class="signal-dot"></div></div></div>
+    <div class="content">
+      <div class="header" style="padding: 0.6% 2%;">
+        <div class="day-info"><div class="day-badge">4</div><div class="day-text">第四天：基础运维培训</div></div>
+        <div class="section-indicator">故障处理方法</div>
+      </div>
+      <div class="main-content">
+        <div class="page-title">
+          <div class="title-main">集群常见故障处理方法</div>
+          <div class="title-sub">故障识别 · 快速诊断 · 解决方案 · 应急响应流程</div>
+        </div>
+        
+        <div class="content-wrapper">
+          <!-- 应急响应流程 -->
+          <div class="emergency-response">
+            <div class="emergency-header">
+              <div class="emergency-icon">🚨</div>
+              <div class="emergency-title">标准应急响应流程</div>
+            </div>
+            <div class="response-steps">
+              <div class="response-step">
+                <div class="step-number">1</div>
+                <div class="step-title">故障发现</div>
+                <div class="step-desc">监控告警或用户报告发现故障</div>
+              </div>
+              <div class="response-step">
+                <div class="step-number">2</div>
+                <div class="step-title">影响评估</div>
+                <div class="step-desc">快速评估故障影响范围和严重程度</div>
+              </div>
+              <div class="response-step">
+                <div class="step-number">3</div>
+                <div class="step-title">应急处置</div>
+                <div class="step-desc">执行临时措施减少业务影响</div>
+              </div>
+              <div class="response-step">
+                <div class="step-number">4</div>
+                <div class="step-title">根因分析</div>
+                <div class="step-desc">深入分析故障原因并彻底修复</div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 硬件故障 -->
+          <div class="fault-categories">
+            <div class="fault-section hardware-fault">
+              <div class="fault-header">
+                <div class="fault-icon">🔧</div>
+                <div class="fault-title">硬件故障识别和处理</div>
+                <div class="fault-count">高优先级</div>
+              </div>
+              <div class="fault-cards">
+                <div class="fault-card">
+                  <div class="card-header">
+                    <div class="fault-name">服务器宕机或无法启动</div>
+                    <div class="severity-badge severity-critical">严重</div>
+                  </div>
+                  <div class="fault-content">
+                    <div class="content-section">
+                      <div class="section-title">🔍 故障现象</div>
+                      <ul class="section-list">
+                        <li>服务器完全无响应</li>
+                        <li>电源指示灯异常</li>
+                        <li>风扇转速异常或停转</li>
+                        <li>POST自检失败</li>
+                        <li>无法进入操作系统</li>
+                      </ul>
+                    </div>
+                    <div class="content-section">
+                      <div class="section-title">🛠️ 诊断步骤</div>
+                      <ul class="section-list">
+                        <li class="solution-step">检查电源连接和电源状态</li>
+                        <li class="solution-step">查看BMC/IPMI硬件日志</li>
+                        <li class="solution-step">检查内存条和CPU状态</li>
+                        <li class="solution-step">验证存储设备连接</li>
+                        <li class="solution-step">测试网络连通性</li>
+                      </ul>
+                    </div>
+                    <div class="content-section">
+                      <div class="section-title">✅ 解决方案</div>
+                      <ul class="section-list">
+                        <li>重启服务器和电源模块</li>
+                        <li>重新插拔内存和扩展卡</li>
+                        <li>更换故障硬件组件</li>
+                        <li>恢复BIOS/UEFI设置</li>
+                        <li>联系硬件厂商技术支持</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="fault-card">
+                  <div class="card-header">
+                    <div class="fault-name">过热和散热问题</div>
+                    <div class="severity-badge severity-high">高级</div>
+                  </div>
+                  <div class="fault-content">
+                    <div class="content-section">
+                      <div class="section-title">🔍 故障现象</div>
+                      <ul class="section-list">
+                        <li>CPU/GPU温度过高告警</li>
+                        <li>系统频繁热重启</li>
+                        <li>性能自动降频</li>
+                        <li>风扇满转高噪音</li>
+                        <li>机房环境温度异常</li>
+                      </ul>
+                    </div>
+                    <div class="content-section">
+                      <div class="section-title">🛠️ 诊断步骤</div>
+                      <ul class="section-list">
+                        <li class="solution-step">监控各组件温度传感器</li>
+                        <li class="solution-step">检查散热器和风扇状态</li>
+                        <li class="solution-step">验证机房空调系统</li>
+                        <li class="solution-step">检查进风口是否堵塞</li>
+                        <li class="solution-step">分析热成像和气流分布</li>
+                      </ul>
+                    </div>
+                    <div class="content-section">
+                      <div class="section-title">✅ 解决方案</div>
+                      <ul class="section-list">
+                        <li>清理散热器和风扇灰尘</li>
+                        <li>更换热失效的散热硅脂</li>
+                        <li>调整机房空调温度设置</li>
+                        <li>优化服务器摆放位置</li>
+                        <li>升级散热系统配置</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- GPU设备故障 -->
+            <div class="fault-section gpu-fault">
+              <div class="fault-header">
+                <div class="fault-icon">🎯</div>
+                <div class="fault-title">GPU设备异常处理</div>
+                <div class="fault-count">核心组件</div>
+              </div>
+              <div class="fault-cards">
+                <div class="fault-card">
+                  <div class="card-header">
+                    <div class="fault-name">GPU卡识别失败或离线</div>
+                    <div class="severity-badge severity-critical">严重</div>
+                  </div>
+                  <div class="fault-content">
+                    <div class="content-section">
+                      <div class="section-title">🔍 故障现象</div>
+                      <ul class="section-list">
+                        <li>nvidia-smi无法检测GPU</li>
+                        <li>GPU状态显示为离线</li>
+                        <li>驱动加载失败</li>
+                        <li>PCIe链路错误</li>
+                        <li>CUDA运行时错误</li>
+                      </ul>
+                    </div>
+                    <div class="content-section">
+                      <div class="section-title">🛠️ 诊断步骤</div>
+                      <ul class="section-list">
+                        <li class="solution-step">lspci | grep NVIDIA</li>
+                        <li class="solution-step">dmesg | grep -i nvidia</li>
+                        <li class="solution-step">nvidia-smi -q -d SUPPORTED_CLOCKS</li>
+                        <li class="solution-step">cat /proc/driver/nvidia/version</li>
+                        <li class="solution-step">nvidia-ml-py3健康检查</li>
+                      </ul>
+                    </div>
+                    <div class="content-section">
+                      <div class="section-title">✅ 解决方案</div>
+                      <ul class="section-list">
+                        <li>重新安装NVIDIA驱动</li>
+                        <li>重新插拔GPU卡</li>
+                        <li>重置PCIe总线</li>
+                        <li>更新BIOS/UEFI固件</li>
+                        <li>RMA硬件更换</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="fault-card">
+                  <div class="card-header">
+                    <div class="fault-name">GPU内存错误和性能下降</div>
+                    <div class="severity-badge severity-high">高级</div>
+                  </div>
+                  <div class="fault-content">
+                    <div class="content-section">
+                      <div class="section-title">🔍 故障现象</div>
+                      <ul class="section-list">
+                        <li>ECC内存错误增多</li>
+                        <li>计算性能显著下降</li>
+                        <li>GPU利用率异常</li>
+                        <li>CUDA应用崩溃</li>
+                        <li>内存泄漏问题</li>
+                      </ul>
+                    </div>
+                    <div class="content-section">
+                      <div class="section-title">🛠️ 诊断步骤</div>
+                      <ul class="section-list">
+                        <li class="solution-step">nvidia-smi -q -d MEMORY</li>
+                        <li class="solution-step">nvidia-smi -q -d ECC</li>
+                        <li class="solution-step">dcgmi diag -r 1</li>
+                        <li class="solution-step">gpu-burn压力测试</li>
+                        <li class="solution-step">内存带宽基准测试</li>
+                      </ul>
+                    </div>
+                    <div class="content-section">
+                      <div class="section-title">✅ 解决方案</div>
+                      <ul class="section-list">
+                        <li>清除ECC错误计数器</li>
+                        <li>调整GPU功耗和频率</li>
+                        <li>重启nvidia-persistenced</li>
+                        <li>更新GPU固件版本</li>
+                        <li>隔离故障GPU</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 网络连接问题 -->
+            <div class="fault-section network-fault">
+              <div class="fault-header">
+                <div class="fault-icon">🌐</div>
+                <div class="fault-title">网络连接问题排查</div>
+                <div class="fault-count">通信故障</div>
+              </div>
+              <div class="fault-cards">
+                <div class="fault-card">
+                  <div class="card-header">
+                    <div class="fault-name">InfiniBand网络中断</div>
+                    <div class="severity-badge severity-critical">严重</div>
+                  </div>
+                  <div class="fault-content">
+                    <div class="content-section">
+                      <div class="section-title">🔍 故障现象</div>
+                      <ul class="section-list">
+                        <li>NCCL通信失败</li>
+                        <li>分布式训练中断</li>
+                        <li>IB端口状态异常</li>
+                        <li>网络延迟激增</li>
+                        <li>数据传输错误</li>
+                      </ul>
+                    </div>
+                    <div class="content-section">
+                      <div class="section-title">🛠️ 诊断步骤</div>
+                      <ul class="section-list">
+                        <li class="solution-step">ibstat && ibdev2netdev</li>
+			<li class="solution-step">ibping -S, ibping -L &lt;server_lid&gt;</li>
+                        <li class="solution-step">ib_write_bw -d mlx5_0 --report_gbits</li>
+                        <li class="solution-step">ibdiagnet 诊断并分析日志</li>
+                        <li class="solution-step">mlxlink查询异常端口误码率</li>
+                      </ul>
+                    </div>
+                    <div class="content-section">
+                      <div class="section-title">✅ 解决方案</div>
+                      <ul class="section-list">
+                        <li>重启IB服务和驱动</li>
+                        <li>重新插拔光纤连接</li>
+                        <li>更换故障光纤/光模块</li>
+                        <li>断电重启IB交换机</li>
+                        <li>更新固件和驱动</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 存储访问故障 -->
+            <div class="fault-section storage-fault">
+              <div class="fault-header">
+                <div class="fault-icon">💾</div>
+                <div class="fault-title">存储访问故障恢复</div>
+                <div class="fault-count">数据安全</div>
+              </div>
+              <div class="fault-cards">
+                <div class="fault-card">
+                  <div class="card-header">
+                    <div class="fault-name">文件系统挂载失败</div>
+                    <div class="severity-badge severity-high">高级</div>
+                  </div>
+                  <div class="fault-content">
+                    <div class="content-section">
+                      <div class="section-title">🔍 故障现象</div>
+                      <ul class="section-list">
+                        <li>共享存储无法访问</li>
+                        <li>挂载点不可用</li>
+                        <li>文件系统只读模式</li>
+                        <li>I/O错误频发</li>
+                        <li>数据读写超时</li>
+                      </ul>
+                    </div>
+                    <div class="content-section">
+                      <div class="section-title">🛠️ 诊断步骤</div>
+                      <ul class="section-list">
+                        <li class="solution-step">mount | grep target_path</li>
+                        <li class="solution-step">df -h && lsblk</li>
+                        <li class="solution-step">dmesg | grep -i error</li>
+                        <li class="solution-step">检查NFS/Lustre服务状态</li>
+                        <li class="solution-step">网络存储连通性测试</li>
+                      </ul>
+                    </div>
+                    <div class="content-section">
+                      <div class="section-title">✅ 解决方案</div>
+                      <ul class="section-list">
+                        <li>重新挂载文件系统</li>
+                        <li>修复文件系统错误</li>
+                        <li>重启存储服务</li>
+                        <li>恢复网络连接</li>
+                        <li>切换到备用存储</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 故障预防策略 -->
+          <div class="prevention-strategies">
+            <div class="prevention-header">
+              <div class="prevention-icon">🛡️</div>
+              <div class="prevention-title">故障预防策略</div>
+            </div>
+            <div class="prevention-grid">
+              <div class="prevention-card">
+                <div class="prevention-card-title">预防性维护</div>
+                <div class="prevention-desc">定期进行硬件健康检查、清洁散热系统、更新固件驱动，预防故障发生</div>
+              </div>
+              <div class="prevention-card">
+                <div class="prevention-card-title">监控告警</div>
+                <div class="prevention-desc">建立完善的监控体系，及时发现异常指标，实现故障早发现早处理</div>
+              </div>
+              <div class="prevention-card">
+                <div class="prevention-card-title">备份冗余</div>
+                <div class="prevention-desc">实施多重备份策略，配置冗余系统，确保关键服务的高可用性</div>
+              </div>
+              <div class="prevention-card">
+                <div class="prevention-card-title">文档管理</div>
+                <div class="prevention-desc">维护详细的故障处理文档，建立知识库，提升团队响应效率</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="summary-note">
+          <div class="summary-text"><div>🎯</div><span><span class="highlight">关键原则：</span>快速响应、准确诊断、科学处置，建立完善的故障处理流程确保集群稳定运行</span></div>
+        </div>
+      </div>
+      <div class="footer" style="padding: 0.6% 2%;">
+        <div class="footer-left"><div class="status-dot"></div><span>第四天 - 基础运维培训</span></div>
+        <div class="footer-badges"><div class="footer-badge badge-install">故障处理</div><div class="footer-badge badge-config">应急响应</div><div class="footer-badge badge-command">预防策略</div></div>
+      </div>
+    </div>
+  </div>
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+    <a href="index28.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+    <a href="index30.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+  </div>
+</body>
+</html>

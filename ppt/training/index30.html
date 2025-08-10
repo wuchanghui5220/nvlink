@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>第四天基础运维培训总结</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    :root { --primary-green: #76b900; --primary-orange: #ffa500; --primary-blue: #00a2ff; --primary-red: #ff6b6b; --primary-purple: #4834d4; --text-primary: #ffffff; --text-secondary: rgba(255, 255, 255, 0.87); --glass-light: rgba(255, 255, 255, 0.08); --glass-border: rgba(255, 255, 255, 0.2); --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .main-content { padding: 1% 2%; flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden; max-width: 1400px; margin: 0 auto; width: 100%; }
+    .page-title { text-align: center; margin-bottom: 2%; flex-shrink: 0; }
+    .title-main { font-size: clamp(26px, 3vw, 34px); font-weight: 800; background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-orange) 50%, var(--primary-blue) 100%); -webkit-background-clip: text; background-clip: text; color: transparent; margin-bottom: 0.8%; }
+    .title-sub { font-size: clamp(15px, 1.7vw, 19px); color: rgba(255, 255, 255, 0.85); font-weight: 500; margin-bottom: 1%; }
+    .content-wrapper { flex: 1; display: flex; flex-direction: column; gap: 2.5%; min-height: 0; overflow-y: auto; }
+    
+    /* 培训成果总结样式 */
+    .training-summary { background: linear-gradient(135deg, rgba(118, 185, 0, 0.15), rgba(118, 185, 0, 0.08)); border: 2px solid rgba(118, 185, 0, 0.4); border-radius: 15px; padding: 2.5%; margin-bottom: 2.5%; box-shadow: 0 8px 20px rgba(118, 185, 0, 0.15); }
+    .summary-header { display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 2%; }
+    .summary-icon { width: 55px; height: 55px; background: linear-gradient(135deg, var(--primary-green), #4caf50); border-radius: 15px; display: flex; align-items: center; justify-content: center; color: white; font-size: 26px; font-weight: bold; }
+    .summary-title { font-size: clamp(22px, 2.4vw, 28px); font-weight: 700; color: var(--text-primary); }
+    .achievements-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2%; }
+    .achievement-card { background: rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 2%; text-align: center; border: 1px solid rgba(255, 255, 255, 0.2); }
+    .achievement-number { font-size: clamp(24px, 2.6vw, 30px); font-weight: 700; color: #76b900; margin-bottom: 0.5%; }
+    .achievement-label { font-size: clamp(13px, 1.4vw, 15px); color: var(--text-secondary); font-weight: 500; }
+    
+    /* 知识要点回顾 */
+    .knowledge-review { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5%; margin-bottom: 2.5%; }
+    .review-section { background: linear-gradient(135deg, var(--glass-light), rgba(255, 255, 255, 0.04)); border: 1px solid var(--glass-border); border-radius: 15px; padding: 2.5%; box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15); }
+    .section-header { display: flex; align-items: center; gap: 15px; margin-bottom: 2%; }
+    .section-icon { width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px; font-weight: 700; }
+    .left-section .section-icon { background: linear-gradient(135deg, var(--primary-blue), #0078d4); }
+    .right-section .section-icon { background: linear-gradient(135deg, var(--primary-orange), #ff8c00); }
+    .section-title { font-size: clamp(18px, 2vw, 22px); font-weight: 700; color: var(--text-primary); }
+    .key-points { list-style: none; padding: 0; margin: 0; }
+    .key-points li { padding: 0.8% 0; position: relative; padding-left: 25px; font-size: clamp(13.5px, 1.45vw, 15.5px); color: var(--text-secondary); line-height: 1.6; }
+    .key-points li::before { content: '✓'; position: absolute; left: 0; color: var(--primary-green); font-weight: bold; }
+    
+    /* 技能掌握评估 */
+    .skills-assessment { background: linear-gradient(135deg, rgba(0, 162, 255, 0.15), rgba(0, 162, 255, 0.08)); border: 2px solid rgba(0, 162, 255, 0.4); border-radius: 15px; padding: 2.5%; margin-bottom: 2.5%; box-shadow: 0 8px 20px rgba(0, 162, 255, 0.15); }
+    .assessment-header { display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 2%; }
+    .assessment-icon { width: 50px; height: 50px; background: linear-gradient(135deg, var(--primary-blue), #0078d4); border-radius: 15px; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; font-weight: bold; }
+    .assessment-title { font-size: clamp(20px, 2.2vw, 26px); font-weight: 700; color: var(--text-primary); }
+    .skills-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2%; }
+    .skill-category { background: rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 2%; }
+    .category-title { font-size: clamp(15px, 1.6vw, 18px); font-weight: 600; color: #00a2ff; margin-bottom: 1.2%; }
+    .skill-items { list-style: none; padding: 0; margin: 0; }
+    .skill-items li { padding: 0.5% 0; position: relative; padding-left: 20px; font-size: clamp(12.5px, 1.35vw, 14.5px); color: var(--text-secondary); }
+    .skill-items li::before { content: '▪'; position: absolute; left: 0; color: rgba(255, 255, 255, 0.6); }
+    
+    /* 后续发展路径 */
+    .development-path { background: linear-gradient(135deg, rgba(255, 165, 0, 0.15), rgba(255, 165, 0, 0.08)); border: 2px solid rgba(255, 165, 0, 0.4); border-radius: 15px; padding: 2.5%; margin-bottom: 2.5%; box-shadow: 0 8px 20px rgba(255, 165, 0, 0.15); }
+    .path-header { display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 2%; }
+    .path-icon { width: 50px; height: 50px; background: linear-gradient(135deg, var(--primary-orange), #ff8c00); border-radius: 15px; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; font-weight: bold; }
+    .path-title { font-size: clamp(20px, 2.2vw, 26px); font-weight: 700; color: var(--text-primary); }
+    .path-timeline { display: flex; justify-content: space-between; align-items: center; gap: 1.5%; }
+    .timeline-stage { flex: 1; background: rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 2%; text-align: center; position: relative; }
+    .timeline-stage::after { content: '→'; position: absolute; right: -1.5%; top: 50%; transform: translateY(-50%); color: #ffa500; font-size: 20px; font-weight: bold; }
+    .timeline-stage:last-child::after { display: none; }
+    .stage-number { width: 35px; height: 35px; background: linear-gradient(135deg, #ffa500, #ff8c00); border-radius: 50%; margin: 0 auto 1%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 16px; }
+    .stage-title { font-size: clamp(14px, 1.5vw, 16px); font-weight: 600; color: var(--text-primary); margin-bottom: 0.8%; }
+    .stage-desc { font-size: clamp(11.5px, 1.25vw, 13.5px); color: var(--text-secondary); line-height: 1.4; }
+    
+    /* 资源推荐 */
+    .resource-recommendations { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5%; margin-bottom: 2.5%; }
+    .resource-section { background: linear-gradient(135deg, var(--glass-light), rgba(255, 255, 255, 0.04)); border: 1px solid var(--glass-border); border-radius: 15px; padding: 2.5%; box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15); }
+    .resource-header { display: flex; align-items: center; gap: 15px; margin-bottom: 1.5%; }
+    .resource-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-size: 18px; font-weight: 700; }
+    .books-section .resource-icon { background: linear-gradient(135deg, #4834d4, #6b46c1); }
+    .tools-section .resource-icon { background: linear-gradient(135deg, #ff6b6b, #e53e3e); }
+    .resource-title { font-size: clamp(16px, 1.7vw, 19px); font-weight: 700; color: var(--text-primary); }
+    .resource-list { list-style: none; padding: 0; margin: 0; }
+    .resource-list li { padding: 0.6% 0; position: relative; padding-left: 20px; font-size: clamp(12.5px, 1.35vw, 14.5px); color: var(--text-secondary); }
+    .resource-list li::before { content: '📖'; position: absolute; left: 0; }
+    .tools-section .resource-list li::before { content: '🔧'; }
+    
+    .final-message { background: linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(76, 175, 80, 0.1)); border: 2px solid rgba(76, 175, 80, 0.4); border-radius: 15px; padding: 2.5%; text-align: center; box-shadow: 0 8px 20px rgba(76, 175, 80, 0.2); margin-top: 2.5%; }
+    .final-text { font-size: clamp(16px, 1.7vw, 19px); color: rgba(255, 255, 255, 0.9); font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 15px; }
+    .highlight { color: #4caf50; font-weight: 700; }
+    
+    @media (max-width: 1200px) { .achievements-grid { grid-template-columns: repeat(2, 1fr); } .knowledge-review { grid-template-columns: 1fr; } .skills-grid { grid-template-columns: 1fr; } .resource-recommendations { grid-template-columns: 1fr; } .path-timeline { flex-direction: column; } .timeline-stage::after { display: none; } }
+    @media (max-width: 768px) { .achievements-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <div class="bg-elements"><div class="brain-pattern"></div><div class="network-signals"><div class="signal-dot"></div><div class="signal-dot"></div><div class="signal-dot"></div><div class="signal-dot"></div><div class="signal-dot"></div></div></div>
+    <div class="content">
+      <div class="header" style="padding: 0.6% 2%;">
+        <div class="day-info"><div class="day-badge">4</div><div class="day-text">第四天：基础运维培训</div></div>
+        <div class="section-indicator">培训总结</div>
+      </div>
+      <div class="main-content">
+        <div class="page-title">
+          <div class="title-main">基础运维培训完成总结</div>
+          <div class="title-sub">知识掌握情况 · 技能评估 · 后续发展规划 · 持续学习建议</div>
+        </div>
+        
+        <div class="content-wrapper">
+          <!-- 培训成果总结 -->
+          <div class="training-summary">
+            <div class="summary-header">
+              <div class="summary-icon">🎯</div>
+              <div class="summary-title">第四天培训成果汇总</div>
+            </div>
+            <div class="achievements-grid">
+              <div class="achievement-card">
+                <div class="achievement-number">4</div>
+                <div class="achievement-label">个核心模块</div>
+              </div>
+              <div class="achievement-card">
+                <div class="achievement-number">128</div>
+                <div class="achievement-label">台H200服务器</div>
+              </div>
+              <div class="achievement-card">
+                <div class="achievement-number">50+</div>
+                <div class="achievement-label">运维命令</div>
+              </div>
+              <div class="achievement-card">
+                <div class="achievement-number">20+</div>
+                <div class="achievement-label">故障场景</div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 知识要点回顾 -->
+          <div class="knowledge-review">
+            <div class="review-section left-section">
+              <div class="section-header">
+                <div class="section-icon">📚</div>
+                <div class="section-title">核心知识要点</div>
+              </div>
+              <ul class="key-points">
+                <li><strong>产品架构认知：</strong>全面了解H200集群硬件组成和软件栈</li>
+                <li><strong>运维管理体系：</strong>掌握现代化运维理念和标准流程</li>
+                <li><strong>多层网络架构：</strong>理解4层网络设计和各自功能定位</li>
+                <li><strong>监控观测体系：</strong>建立全方位系统健康监控机制</li>
+                <li><strong>变更管理流程：</strong>规范化的变更实施和风险控制</li>
+                <li><strong>应急响应机制：</strong>快速故障发现和应急处置能力</li>
+                <li><strong>预防性维护：</strong>主动维护减少故障发生概率</li>
+                <li><strong>文档化管理：</strong>建立完善的知识库和操作手册</li>
+              </ul>
+            </div>
+            
+            <div class="review-section right-section">
+              <div class="section-header">
+                <div class="section-icon">⚡</div>
+                <div class="section-title">实操技能掌握</div>
+              </div>
+              <ul class="key-points">
+                <li><strong>系统状态监控：</strong>熟练使用htop、free、df等基础命令</li>
+                <li><strong>GPU设备管理：</strong>掌握nvidia-smi和dcgmi高级诊断</li>
+                <li><strong>网络故障排查：</strong>运用iperf3、ibstat等网络诊断工具</li>
+                <li><strong>作业调度管理：</strong>熟悉Slurm作业管理和资源分配</li>
+                <li><strong>存储系统运维：</strong>处理文件系统和存储访问问题</li>
+                <li><strong>故障诊断分析：</strong>系统化的故障识别和根因分析</li>
+                <li><strong>应急处置执行：</strong>按标准流程快速响应突发问题</li>
+                <li><strong>日志分析能力：</strong>从系统日志中提取关键问题信息</li>
+              </ul>
+            </div>
+          </div>
+          
+          <!-- 技能掌握评估 -->
+          <div class="skills-assessment">
+            <div class="assessment-header">
+              <div class="assessment-icon">📊</div>
+              <div class="assessment-title">技能掌握情况评估</div>
+            </div>
+            <div class="skills-grid">
+              <div class="skill-category">
+                <div class="category-title">基础运维技能 (Level 2)</div>
+                <ul class="skill-items">
+                  <li>系统监控和性能分析</li>
+                  <li>基础故障诊断和处理</li>
+                  <li>日常维护和巡检操作</li>
+                  <li>简单配置修改和优化</li>
+                  <li>监控告警响应和处置</li>
+                  <li>文档记录和知识传承</li>
+                </ul>
+              </div>
+              
+              <div class="skill-category">
+                <div class="category-title">专业运维技能 (Level 1)</div>
+                <ul class="skill-items">
+                  <li>GPU集群专项运维管理</li>
+                  <li>InfiniBand网络高级调优</li>
+                  <li>分布式存储系统优化</li>
+                  <li>复杂故障深度分析</li>
+                  <li>自动化运维脚本开发</li>
+                  <li>容量规划和架构设计</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 后续发展路径 -->
+          <div class="development-path">
+            <div class="path-header">
+              <div class="path-icon">🚀</div>
+              <div class="path-title">职业发展路径规划</div>
+            </div>
+            <div class="path-timeline">
+              <div class="timeline-stage">
+                <div class="stage-number">1</div>
+                <div class="stage-title">运维工程师</div>
+                <div class="stage-desc">掌握日常运维技能，独立完成基础运维工作</div>
+              </div>
+              <div class="timeline-stage">
+                <div class="stage-number">2</div>
+                <div class="stage-title">高级运维工程师</div>
+                <div class="stage-desc">具备复杂故障处理能力，承担关键系统运维</div>
+              </div>
+              <div class="timeline-stage">
+                <div class="stage-number">3</div>
+                <div class="stage-title">运维专家</div>
+                <div class="stage-desc">系统架构设计，运维体系建设和团队技术指导</div>
+              </div>
+              <div class="timeline-stage">
+                <div class="stage-number">4</div>
+                <div class="stage-title">运维架构师</div>
+                <div class="stage-desc">企业级运维架构设计，技术战略规划和创新</div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 学习资源推荐 -->
+          <div class="resource-recommendations">
+            <div class="resource-section books-section">
+              <div class="resource-header">
+                <div class="resource-icon">📚</div>
+                <div class="resource-title">推荐学习资料</div>
+              </div>
+              <ul class="resource-list">
+                <li>《NVIDIA CUDA编程指南》</li>
+                <li>《InfiniBand网络架构与应用》</li>
+                <li>《Linux系统运维实战指南》</li>
+                <li>《Slurm作业调度系统手册》</li>
+                <li>《GPU集群运维最佳实践》</li>
+                <li>《现代化运维监控体系》</li>
+                <li>《高性能计算系统管理》</li>
+                <li>《容器化运维技术实践》</li>
+              </ul>
+            </div>
+            
+            <div class="resource-section tools-section">
+              <div class="resource-header">
+                <div class="resource-icon">🔧</div>
+                <div class="resource-title">实用工具平台</div>
+              </div>
+              <ul class="resource-list">
+                <li>Prometheus + Grafana监控栈</li>
+                <li>ELK日志分析平台</li>
+                <li>Ansible自动化运维工具</li>
+                <li>Docker容器化平台</li>
+                <li>Kubernetes容器编排</li>
+                <li>GitLab CI/CD流水线</li>
+                <li>NVIDIA DCGM监控工具</li>
+                <li>Slurm作业调度系统</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        
+        <div class="final-message">
+          <div class="final-text"><div>🎉</div><span><span class="highlight">祝贺完成培训：</span>您已具备128台H200集群基础运维能力，继续实践提升，成为GPU运维专家！</span></div>
+        </div>
+      </div>
+      <div class="footer" style="padding: 0.6% 2%;">
+        <div class="footer-left"><div class="status-dot"></div><span>第四天 - 基础运维培训完成</span></div>
+        <div class="footer-badges"><div class="footer-badge badge-install">培训完成</div><div class="footer-badge badge-config">技能掌握</div><div class="footer-badge badge-command">持续发展</div></div>
+      </div>
+    </div>
+  </div>
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+    <a href="index29.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+    <a href="index31.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+  </div>
+</body>
+</html>

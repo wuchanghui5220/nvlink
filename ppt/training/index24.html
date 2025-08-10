@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>第三天实操任务列表</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    :root { --primary-green: #76b900; --primary-orange: #ffa500; --primary-blue: #00a2ff; --primary-red: #ff6b6b; --primary-purple: #4834d4; --text-primary: #ffffff; --text-secondary: rgba(255, 255, 255, 0.87); --glass-light: rgba(255, 255, 255, 0.08); --glass-border: rgba(255, 255, 255, 0.2); --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .main-content { padding: 1% 2%; flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden; max-width: 1400px; margin: 0 auto; width: 100%; }
+    .page-title { text-align: center; margin-bottom: 2%; flex-shrink: 0; }
+    .title-main { font-size: clamp(26px, 3vw, 34px); font-weight: 800; background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-orange) 50%, var(--primary-blue) 100%); -webkit-background-clip: text; background-clip: text; color: transparent; margin-bottom: 0.8%; }
+    .title-sub { font-size: clamp(15px, 1.7vw, 19px); color: rgba(255, 255, 255, 0.85); font-weight: 500; margin-bottom: 1%; }
+    .content-wrapper { flex: 1; display: flex; flex-direction: column; gap: 2.5%; min-height: 0; overflow-y: auto; }
+    
+    /* 任务列表样式 */
+    .tasks-grid { display: flex; flex-direction: column; gap: 2%; }
+    .task-card { background: linear-gradient(135deg, var(--glass-light), rgba(255, 255, 255, 0.04)); border: 1px solid var(--glass-border); border-radius: 15px; padding: 2.5%; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); transition: var(--transition-smooth); position: relative; overflow: hidden; }
+    .task-card:hover { transform: translateY(-3px); box-shadow: 0 12px 25px rgba(0, 0, 0, 0.3); border-color: rgba(255, 255, 255, 0.3); }
+    .task-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; border-radius: 15px 15px 0 0; }
+    .task-1::before { background: linear-gradient(90deg, var(--primary-green), #4caf50); }
+    .task-2::before { background: linear-gradient(90deg, var(--primary-red), #e53e3e); }
+    .task-3::before { background: linear-gradient(90deg, var(--primary-blue), #0078d4); }
+    .task-4::before { background: linear-gradient(90deg, var(--primary-orange), #ff8c00); }
+    .task-5::before { background: linear-gradient(90deg, var(--primary-purple), #805ad5); }
+    
+    .task-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5%; }
+    .task-title-section { display: flex; align-items: center; gap: 15px; }
+    .task-number { width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 18px; font-weight: 700; }
+    .task-1 .task-number { background: linear-gradient(135deg, var(--primary-green), #4caf50); }
+    .task-2 .task-number { background: linear-gradient(135deg, var(--primary-red), #e53e3e); }
+    .task-3 .task-number { background: linear-gradient(135deg, var(--primary-blue), #0078d4); }
+    .task-4 .task-number { background: linear-gradient(135deg, var(--primary-orange), #ff8c00); }
+    .task-5 .task-number { background: linear-gradient(135deg, var(--primary-purple), #805ad5); }
+    .task-title { font-size: clamp(16px, 1.8vw, 20px); font-weight: 700; color: var(--text-primary); }
+    .task-priority { padding: 6px 12px; border-radius: 20px; font-size: clamp(11px, 1.2vw, 13px); font-weight: 600; }
+    .priority-high { background: rgba(255, 107, 107, 0.2); color: #ff6b6b; border: 1px solid rgba(255, 107, 107, 0.3); }
+    .priority-critical { background: rgba(229, 62, 62, 0.2); color: #e53e3e; border: 1px solid rgba(229, 62, 62, 0.3); }
+    .priority-normal { background: rgba(0, 162, 255, 0.2); color: #00a2ff; border: 1px solid rgba(0, 162, 255, 0.3); }
+    
+    .task-description { font-size: clamp(14px, 1.5vw, 16px); color: var(--text-secondary); line-height: 1.6; margin-bottom: 2%; }
+    
+    .task-details { display: grid; grid-template-columns: 1fr 1fr; gap: 2%; margin-bottom: 2%; }
+    .detail-section { }
+    .detail-title { font-size: clamp(13px, 1.4vw, 15px); font-weight: 600; color: var(--text-primary); margin-bottom: 0.8%; display: flex; align-items: center; gap: 8px; }
+    .detail-content { font-size: clamp(12px, 1.3vw, 14px); color: var(--text-secondary); line-height: 1.5; }
+    .detail-list { list-style: none; padding: 0; margin: 0; }
+    .detail-list li { padding: 4px 0; position: relative; padding-left: 20px; }
+    .detail-list li::before { content: '▪'; position: absolute; left: 0; color: rgba(255, 255, 255, 0.6); }
+    
+    .task-metrics { background: rgba(255, 255, 255, 0.05); border-radius: 10px; padding: 1.5%; margin-top: 1.5%; }
+    .metrics-title { font-size: clamp(13px, 1.4vw, 15px); font-weight: 600; color: var(--text-primary); margin-bottom: 1%; display: flex; align-items: center; gap: 8px; }
+    .metrics-content { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1%; }
+    .metric-item { text-align: center; padding: 1%; background: rgba(255, 255, 255, 0.03); border-radius: 8px; }
+    .metric-label { font-size: clamp(11px, 1.2vw, 13px); color: rgba(255, 255, 255, 0.7); margin-bottom: 0.5%; }
+    .metric-value { font-size: clamp(12px, 1.3vw, 14px); font-weight: 600; }
+    .metric-time { color: #ffa500; }
+    .metric-difficulty { color: #00a2ff; }
+    .metric-resources { color: #76b900; }
+    
+    .task-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 1.5%; border-top: 1px solid rgba(255, 255, 255, 0.1); margin-top: 1.5%; }
+    .task-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+    .task-tag { padding: 4px 10px; background: rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.8); border-radius: 15px; font-size: clamp(10px, 1.1vw, 12px); font-weight: 500; }
+    .task-status { display: flex; align-items: center; gap: 8px; }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #ffa500; }
+    .status-text { font-size: clamp(12px, 1.3vw, 14px); color: var(--text-secondary); font-weight: 500; }
+    
+    .summary-section { background: linear-gradient(135deg, rgba(118, 185, 0, 0.15), rgba(118, 185, 0, 0.08)); border: 2px solid rgba(118, 185, 0, 0.4); border-radius: 15px; padding: 2.5%; text-align: center; box-shadow: 0 8px 20px rgba(118, 185, 0, 0.15); margin-top: 2%; }
+    .summary-header { display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 1.5%; }
+    .summary-icon { width: 40px; height: 40px; background: linear-gradient(135deg, var(--primary-green), #4caf50); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px; font-weight: bold; }
+    .summary-title { font-size: clamp(17px, 1.9vw, 21px); font-weight: 700; color: var(--text-primary); }
+    .summary-content { font-size: clamp(14px, 1.5vw, 16px); color: var(--text-secondary); line-height: 1.6; }
+    .highlight { color: #76b900; font-weight: 700; }
+    
+    @media (max-width: 768px) { .task-details { grid-template-columns: 1fr; } .metrics-content { grid-template-columns: 1fr; } .task-footer { flex-direction: column; gap: 1%; align-items: flex-start; } }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <div class="bg-elements"><div class="brain-pattern"></div><div class="network-signals"><div class="signal-dot"></div><div class="signal-dot"></div><div class="signal-dot"></div><div class="signal-dot"></div><div class="signal-dot"></div></div></div>
+    <div class="content">
+      <div class="header" style="padding: 0.6% 2%;">
+        <div class="day-info"><div class="day-badge">3</div><div class="day-text">第三天：GPU服务器基础测试</div></div>
+        <div class="section-indicator">实操任务列表</div>
+      </div>
+      <div class="main-content">
+        <div class="page-title">
+          <div class="title-main">第三天实操任务清单</div>
+          <div class="title-sub">GPU服务器协同测试 · 故障恢复验证 · 稳定性与性能监控</div>
+        </div>
+        
+        <div class="content-wrapper">
+          <div class="tasks-grid">
+            <!-- 任务1：多节点协同验证 -->
+            <div class="task-card task-1">
+              <div class="task-header">
+                <div class="task-title-section">
+                  <div class="task-number">1</div>
+                  <div class="task-title">验证多节点协同</div>
+                </div>
+                <div class="task-priority priority-high">高优先级</div>
+              </div>
+              <div class="task-description">
+                确保GPU服务器间的协作顺畅，验证集群在分布式计算环境下的通信能力和协调机制
+              </div>
+              <div class="task-details">
+                <div class="detail-section">
+                  <div class="detail-title">🎯 核心目标</div>
+                  <div class="detail-content">
+                    <ul class="detail-list">
+                      <li>验证NCCL集群通信</li>
+                      <li>测试跨节点数据同步</li>
+                      <li>检查网络延迟指标</li>
+                      <li>确认负载均衡机制</li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="detail-section">
+                  <div class="detail-title">🔧 执行步骤</div>
+                  <div class="detail-content">
+                    <ul class="detail-list">
+                      <li>运行all_reduce_perf多机测试</li>
+                      <li>监控InfiniBand带宽利用率</li>
+                      <li>记录节点间通信延迟</li>
+                      <li>分析通信效率指标</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <div class="task-metrics">
+                <div class="metrics-title">📊 关键指标</div>
+                <div class="metrics-content">
+                  <div class="metric-item">
+                    <div class="metric-label">预计耗时</div>
+                    <div class="metric-value metric-time">45分钟</div>
+                  </div>
+                  <div class="metric-item">
+                    <div class="metric-label">难度等级</div>
+                    <div class="metric-value metric-difficulty">中等</div>
+                  </div>
+                  <div class="metric-item">
+                    <div class="metric-label">涉及资源</div>
+                    <div class="metric-value metric-resources">全集群</div>
+                  </div>
+                </div>
+              </div>
+              <div class="task-footer">
+                <div class="task-tags">
+                  <div class="task-tag">NCCL</div>
+                  <div class="task-tag">多节点</div>
+                  <div class="task-tag">通信测试</div>
+                </div>
+                <div class="task-status">
+                  <div class="status-dot"></div>
+                  <div class="status-text">待执行</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 任务2：故障恢复测试 -->
+            <div class="task-card task-2">
+              <div class="task-header">
+                <div class="task-title-section">
+                  <div class="task-number">2</div>
+                  <div class="task-title">测试故障恢复</div>
+                </div>
+                <div class="task-priority priority-critical">关键任务</div>
+              </div>
+              <div class="task-description">
+                模拟硬件故障并验证恢复过程，确保集群在异常情况下的自愈能力和业务连续性
+              </div>
+              <div class="task-details">
+                <div class="detail-section">
+                  <div class="detail-title">⚠️ 故障场景</div>
+                  <div class="detail-content">
+                    <ul class="detail-list">
+                      <li>单GPU设备故障模拟</li>
+                      <li>网络连接中断测试</li>
+                      <li>电源故障恢复验证</li>
+                      <li>存储访问异常处理</li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="detail-section">
+                  <div class="detail-title">🔄 恢复验证</div>
+                  <div class="detail-content">
+                    <ul class="detail-list">
+                      <li>自动故障检测机制</li>
+                      <li>任务重新调度能力</li>
+                      <li>数据完整性保护</li>
+                      <li>服务恢复时间测量</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <div class="task-metrics">
+                <div class="metrics-title">📊 关键指标</div>
+                <div class="metrics-content">
+                  <div class="metric-item">
+                    <div class="metric-label">预计耗时</div>
+                    <div class="metric-value metric-time">60分钟</div>
+                  </div>
+                  <div class="metric-item">
+                    <div class="metric-label">难度等级</div>
+                    <div class="metric-value metric-difficulty">高级</div>
+                  </div>
+                  <div class="metric-item">
+                    <div class="metric-label">涉及资源</div>
+                    <div class="metric-value metric-resources">部分节点</div>
+                  </div>
+                </div>
+              </div>
+              <div class="task-footer">
+                <div class="task-tags">
+                  <div class="task-tag">故障模拟</div>
+                  <div class="task-tag">恢复测试</div>
+                  <div class="task-tag">高可用</div>
+                </div>
+                <div class="task-status">
+                  <div class="status-dot"></div>
+                  <div class="status-text">待执行</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 任务3：稳定性测试 -->
+            <div class="task-card task-3">
+              <div class="task-header">
+                <div class="task-title-section">
+                  <div class="task-number">3</div>
+                  <div class="task-title">执行稳定性测试</div>
+                </div>
+                <div class="task-priority priority-high">高优先级</div>
+              </div>
+              <div class="task-description">
+                确保GPU服务器在持续高负载情况下稳定运行，验证系统的长期可靠性和性能一致性
+              </div>
+              <div class="task-details">
+                <div class="detail-section">
+                  <div class="detail-title">📈 负载测试</div>
+                  <div class="detail-content">
+                    <ul class="detail-list">
+                      <li>100%GPU利用率压测</li>
+                      <li>内存使用峰值测试</li>
+                      <li>网络带宽饱和测试</li>
+                      <li>磁盘I/O极限测试</li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="detail-section">
+                  <div class="detail-title">⏱️ 持续监控</div>
+                  <div class="detail-content">
+                    <ul class="detail-list">
+                      <li>性能指标连续采集</li>
+                      <li>异常事件实时报警</li>
+                      <li>资源使用趋势分析</li>
+                      <li>系统日志异常检测</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <div class="task-metrics">
+                <div class="metrics-title">📊 关键指标</div>
+                <div class="metrics-content">
+                  <div class="metric-item">
+                    <div class="metric-label">预计耗时</div>
+                    <div class="metric-value metric-time">90分钟</div>
+                  </div>
+                  <div class="metric-item">
+                    <div class="metric-label">难度等级</div>
+                    <div class="metric-value metric-difficulty">中等</div>
+                  </div>
+                  <div class="metric-item">
+                    <div class="metric-label">涉及资源</div>
+                    <div class="metric-value metric-resources">全集群</div>
+                  </div>
+                </div>
+              </div>
+              <div class="task-footer">
+                <div class="task-tags">
+                  <div class="task-tag">压力测试</div>
+                  <div class="task-tag">稳定性</div>
+                  <div class="task-tag">持续监控</div>
+                </div>
+                <div class="task-status">
+                  <div class="status-dot"></div>
+                  <div class="status-text">待执行</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 任务4：温度功耗监控 -->
+            <div class="task-card task-4">
+              <div class="task-header">
+                <div class="task-title-section">
+                  <div class="task-number">4</div>
+                  <div class="task-title">监控温度和功耗</div>
+                </div>
+                <div class="task-priority priority-normal">标准任务</div>
+              </div>
+              <div class="task-description">
+                监控GPU服务器的温度和功耗，确保系统没有过热或功耗异常，维护硬件健康状态
+              </div>
+              <div class="task-details">
+                <div class="detail-section">
+                  <div class="detail-title">🌡️ 温度监控</div>
+                  <div class="detail-content">
+                    <ul class="detail-list">
+                      <li>GPU核心温度采集</li>
+                      <li>内存温度监测</li>
+                      <li>机箱环境温度</li>
+                      <li>散热系统效率评估</li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="detail-section">
+                  <div class="detail-title">⚡ 功耗监控</div>
+                  <div class="detail-content">
+                    <ul class="detail-list">
+                      <li>GPU功耗实时监测</li>
+                      <li>整机功耗统计</li>
+                      <li>功耗效率分析</li>
+                      <li>节能模式验证</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <div class="task-metrics">
+                <div class="metrics-title">📊 关键指标</div>
+                <div class="metrics-content">
+                  <div class="metric-item">
+                    <div class="metric-label">预计耗时</div>
+                    <div class="metric-value metric-time">30分钟</div>
+                  </div>
+                  <div class="metric-item">
+                    <div class="metric-label">难度等级</div>
+                    <div class="metric-value metric-difficulty">初级</div>
+                  </div>
+                  <div class="metric-item">
+                    <div class="metric-label">涉及资源</div>
+                    <div class="metric-value metric-resources">全集群</div>
+                  </div>
+                </div>
+              </div>
+              <div class="task-footer">
+                <div class="task-tags">
+                  <div class="task-tag">温度监控</div>
+                  <div class="task-tag">功耗管理</div>
+                  <div class="task-tag">硬件健康</div>
+                </div>
+                <div class="task-status">
+                  <div class="status-dot"></div>
+                  <div class="status-text">待执行</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 任务5：性能报告分析 -->
+            <div class="task-card task-5">
+              <div class="task-header">
+                <div class="task-title-section">
+                  <div class="task-number">5</div>
+                  <div class="task-title">创建并分析性能报告</div>
+                </div>
+                <div class="task-priority priority-normal">标准任务</div>
+              </div>
+              <div class="task-description">
+                记录GPU服务器的基准性能数据，生成详细的性能分析报告，为后续优化提供数据支持
+              </div>
+              <div class="task-details">
+                <div class="detail-section">
+                  <div class="detail-title">📋 数据采集</div>
+                  <div class="detail-content">
+                    <ul class="detail-list">
+                      <li>计算性能基准测试</li>
+                      <li>内存带宽测量</li>
+                      <li>网络通信延迟统计</li>
+                      <li>存储I/O性能评估</li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="detail-section">
+                  <div class="detail-title">📊 报告生成</div>
+                  <div class="detail-content">
+                    <ul class="detail-list">
+                      <li>性能指标汇总分析</li>
+                      <li>历史数据对比</li>
+                      <li>瓶颈识别与建议</li>
+                      <li>优化方案制定</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <div class="task-metrics">
+                <div class="metrics-title">📊 关键指标</div>
+                <div class="metrics-content">
+                  <div class="metric-item">
+                    <div class="metric-label">预计耗时</div>
+                    <div class="metric-value metric-time">40分钟</div>
+                  </div>
+                  <div class="metric-item">
+                    <div class="metric-label">难度等级</div>
+                    <div class="metric-value metric-difficulty">中等</div>
+                  </div>
+                  <div class="metric-item">
+                    <div class="metric-label">涉及资源</div>
+                    <div class="metric-value metric-resources">数据分析</div>
+                  </div>
+                </div>
+              </div>
+              <div class="task-footer">
+                <div class="task-tags">
+                  <div class="task-tag">性能基准</div>
+                  <div class="task-tag">数据分析</div>
+                  <div class="task-tag">报告生成</div>
+                </div>
+                <div class="task-status">
+                  <div class="status-dot"></div>
+                  <div class="status-text">待执行</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 任务总结 -->
+          <div class="summary-section">
+            <div class="summary-header">
+              <div class="summary-icon">🎯</div>
+              <div class="summary-title">第三天实操任务概览</div>
+            </div>
+            <div class="summary-content">
+              本日共计 <span class="highlight">5项核心任务</span>，预计总耗时 <span class="highlight">265分钟</span>，涵盖多节点协同、故障恢复、稳定性测试、硬件监控和性能分析等GPU集群运维的关键环节，确保系统在生产环境下的可靠性和高性能表现
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="footer" style="padding: 0.6% 2%;">
+        <div class="footer-left"><div class="status-dot"></div><span>第三天 - GPU服务器基础测试与实操</span></div>
+        <div class="footer-badges"><div class="footer-badge badge-install">实操任务</div><div class="footer-badge badge-config">测试验证</div><div class="footer-badge badge-command">H200集群</div></div>
+      </div>
+    </div>
+  </div>
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+    <a href="index23.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+    <a href="index25.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+  </div>
+</body>
+</html>

@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>集群基础运维知识</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    :root { --primary-green: #76b900; --primary-orange: #ffa500; --primary-blue: #00a2ff; --primary-red: #ff6b6b; --primary-purple: #4834d4; --text-primary: #ffffff; --text-secondary: rgba(255, 255, 255, 0.87); --glass-light: rgba(255, 255, 255, 0.08); --glass-border: rgba(255, 255, 255, 0.2); --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .main-content { padding: 1% 2%; flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden; max-width: 1400px; margin: 0 auto; width: 100%; }
+    .page-title { text-align: center; margin-bottom: 1.5%; flex-shrink: 0; }
+    .title-main { font-size: clamp(24px, 2.8vw, 32px); font-weight: 800; background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-orange) 50%, var(--primary-blue) 100%); -webkit-background-clip: text; background-clip: text; color: transparent; margin-bottom: 0.8%; }
+    .title-sub { font-size: clamp(14px, 1.6vw, 18px); color: rgba(255, 255, 255, 0.8); font-weight: 400; margin-bottom: 0.8%; }
+    .content-wrapper { flex: 1; display: flex; flex-direction: column; gap: 1.5%; min-height: 0; overflow-y: auto; }
+    
+    /* 运维体系样式 */
+    .ops-framework { background: linear-gradient(135deg, rgba(118, 185, 0, 0.15), rgba(118, 185, 0, 0.08)); border: 2px solid rgba(118, 185, 0, 0.4); border-radius: 15px; padding: 2%; margin-bottom: 2%; box-shadow: 0 8px 20px rgba(118, 185, 0, 0.15); }
+    .framework-header { display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 2%; }
+    .framework-icon { width: 50px; height: 50px; background: linear-gradient(135deg, var(--primary-green), #4caf50); border-radius: 15px; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; font-weight: bold; }
+    .framework-title { font-size: clamp(20px, 2.2vw, 26px); font-weight: 700; color: var(--text-primary); }
+    .ops-pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2%; }
+    .pillar-card { background: rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 2%; text-align: center; border: 1px solid rgba(255, 255, 255, 0.2); }
+    .pillar-icon { width: 40px; height: 40px; margin: 0 auto 1%; background: linear-gradient(135deg, #76b900, #4caf50); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-size: 18px; font-weight: bold; }
+    .pillar-title { font-size: clamp(15px, 1.6vw, 18px); font-weight: 600; color: var(--text-primary); margin-bottom: 1%; }
+    .pillar-desc { font-size: clamp(12px, 1.3vw, 14px); color: var(--text-secondary); line-height: 1.4; }
+    
+    /* 知识模块样式 */
+    .knowledge-modules { display: flex; flex-direction: column; gap: 2%; }
+    .module-section { background: linear-gradient(135deg, var(--glass-light), rgba(255, 255, 255, 0.04)); border: 1px solid var(--glass-border); border-radius: 15px; padding: 2%; box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15); }
+    .module-header { display: flex; align-items: center; gap: 15px; margin-bottom: 1.5%; padding-bottom: 1%; border-bottom: 1px solid rgba(255, 255, 255, 0.15); }
+    .module-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-size: 18px; font-weight: 700; }
+    .monitor-mod .module-icon { background: linear-gradient(135deg, #00a2ff, #0078d4); }
+    .process-mod .module-icon { background: linear-gradient(135deg, #76b900, #4caf50); }
+    .backup-mod .module-icon { background: linear-gradient(135deg, #4834d4, #6b46c1); }
+    .security-mod .module-icon { background: linear-gradient(135deg, #ff6b6b, #e53e3e); }
+    .performance-mod .module-icon { background: linear-gradient(135deg, #ffa500, #ff8c00); }
+    .capacity-mod .module-icon { background: linear-gradient(135deg, #9c88ff, #805ad5); }
+    .module-title { font-size: clamp(17px, 1.8vw, 21px); font-weight: 700; color: var(--text-primary); }
+    
+    /* 知识点网格 */
+    .knowledge-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5%; }
+    .knowledge-card { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 10px; padding: 1.5%; }
+    .knowledge-card h4 { font-size: clamp(14px, 1.5vw, 16px); font-weight: 600; color: var(--text-primary); margin-bottom: 1%; }
+    .knowledge-list { list-style: none; padding: 0; margin: 0; }
+    .knowledge-list li { padding: 3px 0; position: relative; padding-left: 15px; font-size: clamp(12px, 1.3vw, 14px); color: var(--text-secondary); }
+    .knowledge-list li::before { content: '•'; position: absolute; left: 0; color: rgba(255, 255, 255, 0.6); }
+    
+    /* 最佳实践样式 */
+    .best-practices { background: linear-gradient(135deg, rgba(255, 165, 0, 0.15), rgba(255, 165, 0, 0.08)); border: 2px solid rgba(255, 165, 0, 0.4); border-radius: 12px; padding: 2%; margin-bottom: 2%; }
+    .practices-header { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 1.5%; }
+    .practices-icon { width: 40px; height: 40px; background: linear-gradient(135deg, #ffa500, #ff8c00); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-size: 18px; font-weight: bold; }
+    .practices-title { font-size: clamp(18px, 2vw, 22px); font-weight: 700; color: var(--text-primary); }
+    .practices-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5%; }
+    .practice-item { background: rgba(255, 255, 255, 0.05); border-radius: 8px; padding: 1.5%; }
+    .practice-title { font-size: clamp(14px, 1.5vw, 16px); font-weight: 600; color: #ffa500; margin-bottom: 0.8%; }
+    .practice-desc { font-size: clamp(12px, 1.3vw, 14px); color: var(--text-secondary); line-height: 1.5; }
+    
+    /* 流程图样式 */
+    .process-flow { background: linear-gradient(135deg, rgba(0, 162, 255, 0.1), rgba(0, 162, 255, 0.05)); border: 1px solid rgba(0, 162, 255, 0.3); border-radius: 12px; padding: 2%; margin-bottom: 2%; }
+    .flow-header { text-align: center; margin-bottom: 1.5%; }
+    .flow-title { font-size: clamp(17px, 1.8vw, 20px); font-weight: 700; color: var(--text-primary); margin-bottom: 0.5%; }
+    .flow-subtitle { font-size: clamp(13px, 1.4vw, 15px); color: rgba(255, 255, 255, 0.8); }
+    .flow-steps { display: flex; justify-content: space-between; align-items: center; gap: 1%; }
+    .flow-step { flex: 1; background: rgba(255, 255, 255, 0.08); border-radius: 10px; padding: 1.5%; text-align: center; position: relative; }
+    .flow-step::after { content: '→'; position: absolute; right: -2%; top: 50%; transform: translateY(-50%); color: #00a2ff; font-size: 20px; font-weight: bold; }
+    .flow-step:last-child::after { display: none; }
+    .step-number { width: 30px; height: 30px; background: linear-gradient(135deg, #00a2ff, #0078d4); border-radius: 50%; margin: 0 auto 0.8%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 14px; }
+    .step-title { font-size: clamp(13px, 1.4vw, 15px); font-weight: 600; color: var(--text-primary); margin-bottom: 0.5%; }
+    .step-desc { font-size: clamp(11px, 1.2vw, 13px); color: var(--text-secondary); }
+    
+    .summary-note { background: linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(76, 175, 80, 0.1)); border: 2px solid rgba(76, 175, 80, 0.4); border-radius: 12px; padding: 2%; text-align: center; box-shadow: 0 6px 15px rgba(76, 175, 80, 0.2); margin-top: 2%; }
+    .summary-text { font-size: clamp(15px, 1.6vw, 18px); color: rgba(255, 255, 255, 0.9); font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 12px; }
+    .highlight { color: #4caf50; font-weight: 700; }
+    
+    @media (max-width: 1200px) { .ops-pillars { grid-template-columns: 1fr; } .knowledge-grid { grid-template-columns: 1fr; } .practices-grid { grid-template-columns: 1fr; } .flow-steps { flex-direction: column; } .flow-step::after { display: none; } }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <div class="bg-elements"><div class="brain-pattern"></div><div class="network-signals"><div class="signal-dot"></div><div class="signal-dot"></div><div class="signal-dot"></div><div class="signal-dot"></div><div class="signal-dot"></div></div></div>
+    <div class="content">
+      <div class="header" style="padding: 0.6% 2%;">
+        <div class="day-info"><div class="day-badge">4</div><div class="day-text">第四天：基础运维培训</div></div>
+        <div class="section-indicator">基础运维知识</div>
+      </div>
+      <div class="main-content">
+        <div class="page-title">
+          <div class="title-main">集群基础运维知识体系</div>
+          <div class="title-sub">运维管理理念 · 标准流程 · 最佳实践 · 专业技能培养</div>
+        </div>
+        
+        <div class="content-wrapper">
+          <!-- 运维体系三大支柱 -->
+          <div class="ops-framework">
+            <div class="framework-header">
+              <div class="framework-icon">🏛️</div>
+              <div class="framework-title">现代化运维管理体系</div>
+            </div>
+            <div class="ops-pillars">
+              <div class="pillar-card">
+                <div class="pillar-icon">📊</div>
+                <div class="pillar-title">监控观测</div>
+                <div class="pillar-desc">全方位监控系统状态，及时发现并预警潜在问题</div>
+              </div>
+              <div class="pillar-card">
+                <div class="pillar-icon">🔄</div>
+                <div class="pillar-title">自动化运维</div>
+                <div class="pillar-desc">标准化流程执行，减少人为错误，提升运维效率</div>
+              </div>
+              <div class="pillar-card">
+                <div class="pillar-icon">🛡️</div>
+                <div class="pillar-title">风险管控</div>
+                <div class="pillar-desc">建立完善的备份恢复和应急响应机制</div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 运维流程 -->
+          <div class="process-flow">
+            <div class="flow-header">
+              <div class="flow-title">🔄 标准运维流程</div>
+              <div class="flow-subtitle">规范化的变更管理和发布流程确保系统稳定性</div>
+            </div>
+            <div class="flow-steps">
+              <div class="flow-step">
+                <div class="step-number">1</div>
+                <div class="step-title">需求分析</div>
+                <div class="step-desc">评估变更需求和影响范围</div>
+              </div>
+              <div class="flow-step">
+                <div class="step-number">2</div>
+                <div class="step-title">方案设计</div>
+                <div class="step-desc">制定详细实施方案和回滚计划</div>
+              </div>
+              <div class="flow-step">
+                <div class="step-number">3</div>
+                <div class="step-title">测试验证</div>
+                <div class="step-desc">在测试环境验证方案可行性</div>
+              </div>
+              <div class="flow-step">
+                <div class="step-number">4</div>
+                <div class="step-title">生产实施</div>
+                <div class="step-desc">按计划在生产环境执行变更</div>
+              </div>
+              <div class="flow-step">
+                <div class="step-number">5</div>
+                <div class="step-title">监控验证</div>
+                <div class="step-desc">监控系统状态确认变更成功</div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 核心知识模块 -->
+          <div class="knowledge-modules">
+            <!-- 监控和健康检查 -->
+            <div class="module-section monitor-mod">
+              <div class="module-header">
+                <div class="module-icon">📊</div>
+                <div class="module-title">日常监控和健康检查</div>
+              </div>
+              <div class="knowledge-grid">
+                <div class="knowledge-card">
+                  <h4>系统监控指标</h4>
+                  <ul class="knowledge-list">
+                    <li>GPU利用率和温度监控</li>
+                    <li>CPU和内存使用率</li>
+                    <li>网络带宽和延迟监控</li>
+                    <li>存储I/O性能指标</li>
+                    <li>作业队列和资源分配状态</li>
+                  </ul>
+                </div>
+                <div class="knowledge-card">
+                  <h4>健康检查机制</h4>
+                  <ul class="knowledge-list">
+                    <li>定期硬件健康扫描</li>
+                    <li>网络连通性测试</li>
+                    <li>存储系统完整性检查</li>
+                    <li>服务可用性探测</li>
+                    <li>性能基线对比分析</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 备份恢复策略 -->
+            <div class="module-section backup-mod">
+              <div class="module-header">
+                <div class="module-icon">💾</div>
+                <div class="module-title">备份和恢复策略</div>
+              </div>
+              <div class="knowledge-grid">
+                <div class="knowledge-card">
+                  <h4>数据备份策略</h4>
+                  <ul class="knowledge-list">
+                    <li>系统配置和元数据备份</li>
+                    <li>用户数据定期快照</li>
+                    <li>容器镜像仓库备份</li>
+                    <li>数据库备份和归档</li>
+                    <li>异地备份和多副本存储</li>
+                  </ul>
+                </div>
+                <div class="knowledge-card">
+                  <h4>灾难恢复计划</h4>
+                  <ul class="knowledge-list">
+                    <li>RTO/RPO指标定义</li>
+                    <li>快速恢复流程</li>
+                    <li>数据一致性验证</li>
+                    <li>业务连续性测试</li>
+                    <li>应急响应预案</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 安全管理 -->
+            <div class="module-section security-mod">
+              <div class="module-header">
+                <div class="module-icon">🔒</div>
+                <div class="module-title">安全管理和权限控制</div>
+              </div>
+              <div class="knowledge-grid">
+                <div class="knowledge-card">
+                  <h4>访问控制</h4>
+                  <ul class="knowledge-list">
+                    <li>用户身份认证和授权</li>
+                    <li>基于角色的权限管理</li>
+                    <li>网络安全策略配置</li>
+                    <li>防火墙和安全组设置</li>
+                    <li>审计日志和合规检查</li>
+                  </ul>
+                </div>
+                <div class="knowledge-card">
+                  <h4>安全加固</h4>
+                  <ul class="knowledge-list">
+                    <li>系统漏洞扫描和修复</li>
+                    <li>密码策略和密钥管理</li>
+                    <li>数据加密和传输安全</li>
+                    <li>入侵检测和防护</li>
+                    <li>安全事件响应流程</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 性能优化 -->
+            <div class="module-section performance-mod">
+              <div class="module-header">
+                <div class="module-icon">⚡</div>
+                <div class="module-title">性能优化和调优</div>
+              </div>
+              <div class="knowledge-grid">
+                <div class="knowledge-card">
+                  <h4>系统调优</h4>
+                  <ul class="knowledge-list">
+                    <li>GPU调度策略优化</li>
+                    <li>网络参数调优</li>
+                    <li>存储性能优化</li>
+                    <li>内核参数调整</li>
+                    <li>作业调度算法优化</li>
+                  </ul>
+                </div>
+                <div class="knowledge-card">
+                  <h4>性能分析</h4>
+                  <ul class="knowledge-list">
+                    <li>性能瓶颈识别</li>
+                    <li>资源使用模式分析</li>
+                    <li>负载均衡效果评估</li>
+                    <li>成本效益优化</li>
+                    <li>扩容缩容策略</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 最佳实践 -->
+          <div class="best-practices">
+            <div class="practices-header">
+              <div class="practices-icon">⭐</div>
+              <div class="practices-title">运维最佳实践</div>
+            </div>
+            <div class="practices-grid">
+              <div class="practice-item">
+                <div class="practice-title">预防性维护</div>
+                <div class="practice-desc">定期执行硬件检查、系统更新和性能调优，预防故障发生</div>
+              </div>
+              <div class="practice-item">
+                <div class="practice-title">标准化操作</div>
+                <div class="practice-desc">建立标准作业程序(SOP)，确保操作一致性和可重复性</div>
+              </div>
+              <div class="practice-item">
+                <div class="practice-title">文档管理</div>
+                <div class="practice-desc">维护详细的配置文档、操作手册和故障处理记录</div>
+              </div>
+              <div class="practice-item">
+                <div class="practice-title">持续改进</div>
+                <div class="practice-desc">定期评估运维效果，不断优化流程和提升服务质量</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="summary-note">
+          <div class="summary-text"><div>🎯</div><span><span class="highlight">核心理念：</span>建立系统化运维管理体系，通过标准化流程和最佳实践，确保GPU集群的高可用性和最优性能</span></div>
+        </div>
+      </div>
+      <div class="footer" style="padding: 0.6% 2%;">
+        <div class="footer-left"><div class="status-dot"></div><span>第四天 - 基础运维培训</span></div>
+        <div class="footer-badges"><div class="footer-badge badge-install">运维知识</div><div class="footer-badge badge-config">流程</div><div class="footer-badge badge-command">实践</div></div>
+      </div>
+    </div>
+  </div>
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+    <a href="index26.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+    <a href="index28.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+  </div>
+</body>
+</html>

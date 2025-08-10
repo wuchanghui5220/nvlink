@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>集群涉及产品介绍</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    :root { --primary-green: #76b900; --primary-orange: #ffa500; --primary-blue: #00a2ff; --primary-red: #ff6b6b; --primary-purple: #4834d4; --text-primary: #ffffff; --text-secondary: rgba(255, 255, 255, 0.87); --glass-light: rgba(255, 255, 255, 0.08); --glass-border: rgba(255, 255, 255, 0.2); --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .main-content { padding: 1% 2%; flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden; max-width: 1400px; margin: 0 auto; width: 100%; }
+    .page-title { text-align: center; margin-bottom: 1.5%; flex-shrink: 0; }
+    .title-main { font-size: clamp(24px, 2.8vw, 32px); font-weight: 800; background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-orange) 50%, var(--primary-blue) 100%); -webkit-background-clip: text; background-clip: text; color: transparent; margin-bottom: 0.8%; }
+    .title-sub { font-size: clamp(14px, 1.6vw, 18px); color: rgba(255, 255, 255, 0.8); font-weight: 400; margin-bottom: 0.8%; }
+    .content-wrapper { flex: 1; display: flex; flex-direction: column; gap: 1.5%; min-height: 0; overflow-y: auto; }
+    
+    /* 产品类别样式 */
+    .product-categories { display: flex; flex-direction: column; gap: 2%; }
+    .category-section { background: linear-gradient(135deg, var(--glass-light), rgba(255, 255, 255, 0.04)); border: 1px solid var(--glass-border); border-radius: 15px; padding: 2%; box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15); }
+    .category-header { display: flex; align-items: center; gap: 15px; margin-bottom: 1.5%; padding-bottom: 1%; border-bottom: 1px solid rgba(255, 255, 255, 0.15); }
+    .category-icon { width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px; font-weight: 700; }
+    .compute-cat .category-icon { background: linear-gradient(135deg, #ff6b6b, #e53e3e); }
+    .network-cat .category-icon { background: linear-gradient(135deg, #00a2ff, #0078d4); }
+    .storage-cat .category-icon { background: linear-gradient(135deg, #4834d4, #6b46c1); }
+    .mgmt-cat .category-icon { background: linear-gradient(135deg, #76b900, #4caf50); }
+    .category-title { font-size: clamp(18px, 2vw, 22px); font-weight: 700; color: var(--text-primary); }
+    .category-count { background: rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.8); padding: 4px 10px; border-radius: 15px; font-size: clamp(12px, 1.3vw, 14px); font-weight: 600; }
+    
+    /* 产品网格样式 */
+    .products-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5%; }
+    .product-card { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 1.8%; transition: var(--transition-smooth); }
+    .product-card:hover { background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.2); transform: translateY(-2px); }
+    .product-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.2%; }
+    .product-name { font-size: clamp(15px, 1.6vw, 18px); font-weight: 700; color: var(--text-primary); }
+    .product-badge { padding: 3px 8px; background: rgba(255, 165, 0, 0.2); color: #ffa500; border-radius: 10px; font-size: clamp(10px, 1.1vw, 12px); font-weight: 600; }
+    .product-specs { font-size: clamp(12px, 1.3vw, 14px); color: var(--text-secondary); line-height: 1.5; margin-bottom: 1%; }
+    .spec-line { margin-bottom: 0.3%; }
+    .spec-key { color: rgba(255, 255, 255, 0.7); }
+    .spec-value { color: #ffa500; font-weight: 600; }
+    .product-description { font-size: clamp(11px, 1.2vw, 13px); color: rgba(255, 255, 255, 0.6); line-height: 1.4; }
+    
+    /* H200特别样式 */
+    .h200-highlight { position: relative; background: linear-gradient(135deg, rgba(255, 107, 107, 0.15), rgba(255, 107, 107, 0.08)); border: 2px solid rgba(255, 107, 107, 0.4); }
+    .h200-highlight::before { content: '⭐ 核心产品'; position: absolute; top: -8px; left: 15px; background: linear-gradient(135deg, #ff6b6b, #e53e3e); color: white; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 600; }
+    
+    /* 架构图样式 */
+    .architecture-section { margin-bottom: 2%; }
+    .section-title { text-align: center; margin-bottom: 1.5%; }
+    .section-title-text { font-size: clamp(18px, 2vw, 24px); font-weight: 800; color: var(--text-primary); margin-bottom: 0.5%; }
+    .section-subtitle { font-size: clamp(13px, 1.4vw, 16px); color: rgba(255, 255, 255, 0.8); }
+    .architecture-diagram { background: linear-gradient(135deg, rgba(118, 185, 0, 0.1), rgba(118, 185, 0, 0.05)); border: 1px solid rgba(118, 185, 0, 0.3); border-radius: 12px; padding: 2%; text-align: center; }
+    .diagram-layers { display: flex; flex-direction: column; gap: 1%; }
+    .diagram-layer { background: rgba(255, 255, 255, 0.05); border-radius: 8px; padding: 1.5%; display: flex; align-items: center; justify-content: space-between; }
+    .layer-name { font-size: clamp(14px, 1.5vw, 16px); font-weight: 600; color: var(--text-primary); }
+    .layer-components { display: flex; gap: 1%; flex-wrap: wrap; }
+    .component-tag { padding: 4px 8px; background: rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.8); border-radius: 12px; font-size: clamp(11px, 1.2vw, 13px); }
+    
+    .summary-stats { background: linear-gradient(135deg, rgba(0, 162, 255, 0.15), rgba(0, 162, 255, 0.08)); border: 2px solid rgba(0, 162, 255, 0.4); border-radius: 12px; padding: 2%; margin-top: 2%; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1.5%; }
+    .stat-item { text-align: center; }
+    .stat-number { font-size: clamp(20px, 2.2vw, 26px); font-weight: 700; color: #00a2ff; margin-bottom: 0.3%; }
+    .stat-label { font-size: clamp(12px, 1.3vw, 14px); color: var(--text-secondary); }
+    
+    @media (max-width: 1200px) { .products-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 768px) { .products-grid { grid-template-columns: 1fr; } .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <div class="bg-elements"><div class="brain-pattern"></div><div class="network-signals"><div class="signal-dot"></div><div class="signal-dot"></div><div class="signal-dot"></div><div class="signal-dot"></div><div class="signal-dot"></div></div></div>
+    <div class="content">
+      <div class="header" style="padding: 0.6% 2%;">
+        <div class="day-info"><div class="day-badge">4</div><div class="day-text">第四天：基础运维培训</div></div>
+        <div class="section-indicator">集群产品介绍</div>
+      </div>
+      <div class="main-content">
+        <div class="page-title">
+          <div class="title-main">集群涉及产品全览</div>
+          <div class="title-sub">128台H200超算集群 · 硬件组件详解 · 架构设计解析</div>
+        </div>
+        
+        <div class="content-wrapper">
+          <!-- 计算资源 -->
+          <div class="product-categories">
+            <div class="category-section compute-cat">
+              <div class="category-header">
+                <div class="category-icon">🚀</div>
+                <div class="category-title">计算资源</div>
+                <div class="category-count">128台服务器</div>
+              </div>
+              <div class="products-grid">
+                <div class="product-card h200-highlight">
+                  <div class="product-header">
+                    <div class="product-name">NVIDIA H200服务器</div>
+                    <div class="product-badge">主力</div>
+                  </div>
+                  <div class="product-specs">
+                    <div class="spec-line"><span class="spec-key">数量:</span> <span class="spec-value">128台</span></div>
+                    <div class="spec-line"><span class="spec-key">单机GPU:</span> <span class="spec-value">8×H200 SXM</span></div>
+                    <div class="spec-line"><span class="spec-key">显存:</span> <span class="spec-value">141GB HBM3e/卡</span></div>
+                    <div class="spec-line"><span class="spec-key">算力:</span> <span class="spec-value">2.0 EFLOPS FP16</span></div>
+                    <div class="spec-line"><span class="spec-key">互联:</span> <span class="spec-value">NVLink 4.0</span></div>
+                  </div>
+                  <div class="product-description">
+                    业界顶级AI训练加速卡，专为大模型训练和推理设计，提供卓越的计算性能和内存带宽
+                  </div>
+                </div>
+                
+                <div class="product-card">
+                  <div class="product-header">
+                    <div class="product-name">CPU处理器</div>
+                    <div class="product-badge">辅助</div>
+                  </div>
+                  <div class="product-specs">
+                    <div class="spec-line"><span class="spec-key">型号:</span> <span class="spec-value">Intel Xeon或AMD EPYC</span></div>
+                    <div class="spec-line"><span class="spec-key">核心数:</span> <span class="spec-value">64-128核心/台</span></div>
+                    <div class="spec-line"><span class="spec-key">内存:</span> <span class="spec-value">512GB-2TB DDR5</span></div>
+                    <div class="spec-line"><span class="spec-key">PCIe:</span> <span class="spec-value">PCIe 5.0 x16</span></div>
+                  </div>
+                  <div class="product-description">
+                    高性能CPU平台，负责系统控制、数据预处理和GPU调度管理
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 网络设备 -->
+            <div class="category-section network-cat">
+              <div class="category-header">
+                <div class="category-icon">🌐</div>
+                <div class="category-title">网络设备</div>
+                <div class="category-count">多层网络</div>
+              </div>
+              <div class="products-grid">
+                <div class="product-card">
+                  <div class="product-header">
+                    <div class="product-name">400G IB交换机</div>
+                    <div class="product-badge">核心</div>
+                  </div>
+                  <div class="product-specs">
+                    <div class="spec-line"><span class="spec-key">规格:</span> <span class="spec-value">NDR 400G InfiniBand</span></div>
+                    <div class="spec-line"><span class="spec-key">端口:</span> <span class="spec-value">64 端口/台</span></div>
+                    <div class="spec-line"><span class="spec-key">延迟:</span> <span class="spec-value">&lt;100ns</span></div>
+                    <div class="spec-line"><span class="spec-key">拓扑:</span> <span class="spec-value">Fat-tree/DragonFly</span></div>
+                  </div>
+                  <div class="product-description">
+                    超高速计算网络核心，支持RDMA通信，为分布式训练提供极致性能
+                  </div>
+                </div>
+                
+                <div class="product-card">
+                  <div class="product-header">
+                    <div class="product-name">200G存储交换机</div>
+                    <div class="product-badge">存储</div>
+                  </div>
+                  <div class="product-specs">
+                    <div class="spec-line"><span class="spec-key">规格:</span> <span class="spec-value">HDR 200G InfiniBand</span></div>
+                    <div class="spec-line"><span class="spec-key">用途:</span> <span class="spec-value">专用存储网络</span></div>
+                    <div class="spec-line"><span class="spec-key">协议:</span> <span class="spec-value">NFS/Lustre/GPFS</span></div>
+                  </div>
+                  <div class="product-description">
+                    高性能并行存储网络，确保大数据集的高效访问和传输
+                  </div>
+                </div>
+                
+                <div class="product-card">
+                  <div class="product-header">
+                    <div class="product-name">25G以太网交换机</div>
+                    <div class="product-badge">通用</div>
+                  </div>
+                  <div class="product-specs">
+                    <div class="spec-line"><span class="spec-key">规格:</span> <span class="spec-value">25GbE</span></div>
+                    <div class="spec-line"><span class="spec-key">用途:</span> <span class="spec-value">IN-BAND通信</span></div>
+                    <div class="spec-line"><span class="spec-key">功能:</span> <span class="spec-value">负载均衡/监控</span></div>
+                  </div>
+                  <div class="product-description">
+                    集群内部通用网络，承载管理流量和应用通信
+                  </div>
+                </div>
+                
+                <div class="product-card">
+                  <div class="product-header">
+                    <div class="product-name">1G管理交换机</div>
+                    <div class="product-badge">管理</div>
+                  </div>
+                  <div class="product-specs">
+                    <div class="spec-line"><span class="spec-key">规格:</span> <span class="spec-value">1GbE</span></div>
+                    <div class="spec-line"><span class="spec-key">用途:</span> <span class="spec-value">带外管理</span></div>
+                    <div class="spec-line"><span class="spec-key">协议:</span> <span class="spec-value">IPMI/BMC</span></div>
+                  </div>
+                  <div class="product-description">
+                    独立管理网络，提供远程控制和故障诊断能力
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 存储系统 -->
+            <div class="category-section storage-cat">
+              <div class="category-header">
+                <div class="category-icon">💾</div>
+                <div class="category-title">存储系统</div>
+                <div class="category-count">分布式架构</div>
+              </div>
+              <div class="products-grid">
+                <div class="product-card">
+                  <div class="product-header">
+                    <div class="product-name">并行文件系统</div>
+                    <div class="product-badge">主存储</div>
+                  </div>
+                  <div class="product-specs">
+                    <div class="spec-line"><span class="spec-key">类型:</span> <span class="spec-value">Lustre/GPFS/BeeGFS</span></div>
+                    <div class="spec-line"><span class="spec-key">容量:</span> <span class="spec-value">PB级别</span></div>
+                    <div class="spec-line"><span class="spec-key">带宽:</span> <span class="spec-value">&gt;100GB/s聚合</span></div>
+                    <div class="spec-line"><span class="spec-key">IOPS:</span> <span class="spec-value">百万级</span></div>
+                  </div>
+                  <div class="product-description">
+                    高性能并行存储，支持大规模并发访问，为AI训练提供数据支撑
+                  </div>
+                </div>
+                
+                <div class="product-card">
+                  <div class="product-header">
+                    <div class="product-name">NVMe SSD存储</div>
+                    <div class="product-badge">缓存</div>
+                  </div>
+                  <div class="product-specs">
+                    <div class="spec-line"><span class="spec-key">类型:</span> <span class="spec-value">NVMe SSD</span></div>
+                    <div class="spec-line"><span class="spec-key">容量:</span> <span class="spec-value">TB级/节点</span></div>
+                    <div class="spec-line"><span class="spec-key">性能:</span> <span class="spec-value">超低延迟访问</span></div>
+                  </div>
+                  <div class="product-description">
+                    本地高速缓存，加速数据访问和临时存储
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 管理软件 -->
+            <div class="category-section mgmt-cat">
+              <div class="category-header">
+                <div class="category-icon">⚙️</div>
+                <div class="category-title">管理软件</div>
+                <div class="category-count">软件平台</div>
+              </div>
+              <div class="products-grid">
+                <div class="product-card">
+                  <div class="product-header">
+                    <div class="product-name">作业调度系统</div>
+                    <div class="product-badge">核心</div>
+                  </div>
+                  <div class="product-specs">
+                    <div class="spec-line"><span class="spec-key">平台:</span> <span class="spec-value">Slurm/PBS/LSF</span></div>
+                    <div class="spec-line"><span class="spec-key">功能:</span> <span class="spec-value">资源分配/调度</span></div>
+                    <div class="spec-line"><span class="spec-key">支持:</span> <span class="spec-value">GPU感知调度</span></div>
+                  </div>
+                  <div class="product-description">
+                    集群资源管理核心，智能分配GPU资源，优化作业执行效率
+                  </div>
+                </div>
+                
+                <div class="product-card">
+                  <div class="product-header">
+                    <div class="product-name">监控管理平台</div>
+                    <div class="product-badge">监控</div>
+                  </div>
+                  <div class="product-specs">
+                    <div class="spec-line"><span class="spec-key">组件:</span> <span class="spec-value">Prometheus/Grafana</span></div>
+                    <div class="spec-line"><span class="spec-key">监控:</span> <span class="spec-value">GPU/CPU/网络</span></div>
+                    <div class="spec-line"><span class="spec-key">告警:</span> <span class="spec-value">实时故障通知</span></div>
+                  </div>
+                  <div class="product-description">
+                    全方位系统监控，实时掌握集群健康状态和性能指标
+                  </div>
+                </div>
+                
+                <div class="product-card">
+                  <div class="product-header">
+                    <div class="product-name">容器编排平台</div>
+                    <div class="product-badge">容器</div>
+                  </div>
+                  <div class="product-specs">
+                    <div class="spec-line"><span class="spec-key">平台:</span> <span class="spec-value">Kubernetes</span></div>
+                    <div class="spec-key">GPU支持:</span> <span class="spec-value">NVIDIA GPU Operator</span></div>
+                    <div class="spec-line"><span class="spec-key">存储:</span> <span class="spec-value">CSI驱动</span></div>
+                  </div>
+                  <div class="product-description">
+                    现代化容器管理，支持GPU资源池化和弹性扩缩容
+                  </div>
+                </div>
+                
+                <div class="product-card">
+                  <div class="product-header">
+                    <div class="product-name">系统管理工具</div>
+                    <div class="product-badge">运维</div>
+                  </div>
+                  <div class="product-specs">
+                    <div class="spec-line"><span class="spec-key">配置:</span> <span class="spec-value">Ansible/Puppet</span></div>
+                    <div class="spec-line"><span class="spec-key">镜像:</span> <span class="spec-value">Docker/Singularity</span></div>
+                    <div class="spec-line"><span class="spec-key">日志:</span> <span class="spec-value">ELK Stack</span></div>
+                  </div>
+                  <div class="product-description">
+                    自动化运维工具链，简化集群部署和日常管理工作
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 集群统计 -->
+          <div class="summary-stats">
+            <div class="section-title">
+              <div class="section-title-text">📊 集群规模统计</div>
+            </div>
+            <div class="stats-grid">
+              <div class="stat-item">
+                <div class="stat-number">128</div>
+                <div class="stat-label">H200服务器</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-number">1024</div>
+                <div class="stat-label">GPU总数</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-number">144TB</div>
+                <div class="stat-label">GPU显存总量</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-number">2.0</div>
+                <div class="stat-label">EFLOPS算力</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-number">4</div>
+                <div class="stat-label">网络层级</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-number">PB+</div>
+                <div class="stat-label">存储容量</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="footer" style="padding: 0.6% 2%;">
+        <div class="footer-left"><div class="status-dot"></div><span>第四天 - 基础运维培训</span></div>
+        <div class="footer-badges"><div class="footer-badge badge-install">产品介绍</div><div class="footer-badge badge-config">硬件</div><div class="footer-badge badge-command">架构</div></div>
+      </div>
+    </div>
+  </div>
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+    <a href="index25.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+    <a href="index27.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+  </div>
+</body>
+</html>

@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GPU服务器BIOS与BMC配置</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    :root {
+      --primary-blue: #00a2ff;
+      --primary-purple: #4834d4;
+      --primary-red: #ff6b6b;
+      --primary-green: #76b900;
+      --primary-orange: #ffa500;
+      --primary-teal: #17a2b8;
+      --text-primary: #ffffff;
+      --text-secondary: rgba(255, 255, 255, 0.87);
+      --glass-light: rgba(255, 255, 255, 0.08);
+      --glass-border: rgba(255, 255, 255, 0.2);
+      --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .main-content {
+      padding: 1% 2%;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .page-title {
+      text-align: center;
+      margin-bottom: 1.2%;
+      flex-shrink: 0;
+    }
+
+    .title-main {
+      font-size: clamp(24px, 2.8vw, 30px);
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary-purple) 0%, var(--primary-blue) 50%, var(--primary-teal) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 0.6%;
+    }
+
+    .title-sub {
+      font-size: clamp(14px, 1.6vw, 18px);
+      color: rgba(255, 255, 255, 0.8);
+      font-weight: 400;
+      margin-bottom: 0.6%;
+    }
+
+    .content-grid {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2%;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .content-section {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5%;
+      min-height: 0;
+      overflow-y: auto;
+    }
+
+    .section-title {
+      font-size: clamp(16px, 1.8vw, 20px);
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 1%;
+      padding: 1.5%;
+      border-radius: 8px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .section-title.bios {
+      background: linear-gradient(135deg, rgba(72, 52, 212, 0.25), rgba(72, 52, 212, 0.15));
+      border: 2px solid rgba(72, 52, 212, 0.4);
+    }
+
+    .section-title.bmc {
+      background: linear-gradient(135deg, rgba(23, 162, 184, 0.25), rgba(23, 162, 184, 0.15));
+      border: 2px solid rgba(23, 162, 184, 0.4);
+    }
+
+    .content-item {
+      background: linear-gradient(135deg, var(--glass-light), rgba(255, 255, 255, 0.04));
+      border: 1px solid var(--glass-border);
+      border-radius: 10px;
+      padding: 2%;
+      transition: var(--transition-smooth);
+      position: relative;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .content-item:hover {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06));
+      border-color: rgba(255, 255, 255, 0.35);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    .item-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 1%;
+    }
+
+    .item-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(14px, 1.4vw, 16px);
+      color: white;
+      flex-shrink: 0;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .boot .item-icon { background: linear-gradient(135deg, var(--primary-purple), #686de0); }
+    .pcie .item-icon { background: linear-gradient(135deg, var(--primary-blue), #0078d4); }
+    .power .item-icon { background: linear-gradient(135deg, var(--primary-red), #ee5a24); }
+    .remote .item-icon { background: linear-gradient(135deg, var(--primary-teal), #138496); }
+    .monitor .item-icon { background: linear-gradient(135deg, var(--primary-green), #3e703e); }
+    .firmware .item-icon { background: linear-gradient(135deg, var(--primary-orange), #ff8c00); }
+
+    .item-title {
+      font-size: clamp(15px, 1.7vw, 18px);
+      font-weight: 700;
+      color: var(--text-primary);
+      flex: 1;
+      line-height: 1.3;
+    }
+
+    .item-content {
+      font-size: clamp(12px, 1.4vw, 15px);
+      color: var(--text-secondary);
+      line-height: 1.5;
+      margin-bottom: 1%;
+      font-weight: 400;
+    }
+
+    .config-example {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-left: 3px solid;
+      padding: 1.5%;
+      border-radius: 0 6px 6px 0;
+      font-family: 'Courier New', monospace;
+      font-size: clamp(11px, 1.2vw, 13px);
+      color: #e8f4fd;
+      line-height: 1.4;
+      margin-bottom: 0.5%;
+    }
+
+    .boot .config-example { border-left-color: var(--primary-purple); }
+    .pcie .config-example { border-left-color: var(--primary-blue); }
+    .power .config-example { border-left-color: var(--primary-red); }
+    .remote .config-example { border-left-color: var(--primary-teal); }
+    .monitor .config-example { border-left-color: var(--primary-green); }
+    .firmware .config-example { border-left-color: var(--primary-orange); }
+
+    .summary-note {
+      background: linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(76, 175, 80, 0.1));
+      border: 2px solid rgba(76, 175, 80, 0.4);
+      border-radius: 8px;
+      padding: 2%;
+      margin-top: 1.5%;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
+    }
+
+    .summary-text {
+      font-size: clamp(14px, 1.6vw, 17px);
+      color: rgba(255, 255, 255, 0.9);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .highlight {
+      color: #4caf50;
+      font-weight: 700;
+    }
+
+    @media (max-width: 1200px) {
+      .content-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <div class="bg-elements">
+      <div class="brain-pattern"></div>
+      <div class="network-signals">
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="header" style="padding: 0.6% 2%;">
+        <div class="day-info">
+          <div class="day-badge">3</div>
+          <div class="day-text">第三天：GPU服务器基础测试</div>
+        </div>
+        <div class="section-indicator">BIOS与BMC配置</div>
+      </div>
+
+      <div class="main-content">
+        <div class="page-title">
+          <div class="title-main">BIOS与BMC配置</div>
+          <div class="title-sub">服务器底层固件配置和远程管理设置</div>
+        </div>
+
+        <div class="content-grid">
+          <div class="content-section">
+            <div class="section-title bios">BIOS关键配置</div>
+            
+            <div class="content-item boot">
+              <div class="item-header">
+                <div class="item-icon">🔌</div>
+                <div class="item-title">Above 4G Decoding / Large BAR Support</div>
+              </div>
+              <div class="item-content">
+                **必须启用**。该选项允许操作系统访问大于4GB的PCIe设备地址空间。<br>
+                对于拥有大显存的GPU至关重要，否则无法识别全部显存容量。<br>
+                Large BAR Support进一步优化GPU内存访问性能，提高数据传输效率。
+              </div>
+              <div class="config-example">Above 4G Decoding: Enabled (必选)</div>
+              <div class="config-example">Large BAR Support: Enabled (推荐)</div>
+            </div>
+
+            <div class="content-item pcie">
+              <div class="item-header">
+                <div class="item-icon">⚡</div>
+                <div class="item-title">PCIe Link Speed配置</div>
+              </div>
+              <div class="item-content">
+                设置为支持的最高版本（如Gen4或Gen5），以确保最大带宽。<br>
+                避免PCIe带宽成为GPU性能瓶颈，特别是在多GPU配置中。<br>
+                需要检查所有PCIe插槽都运行在最高速度模式下。
+              </div>
+              <div class="config-example">PCIe Link Speed: 设为“Auto”或最高支持速度</div>
+              <div class="config-example">检查: 所有插槽 x16 full bandwidth</div>
+            </div>
+
+            <div class="content-item power">
+              <div class="item-header">
+                <div class="item-icon">🏁</div>
+                <div class="item-title">CPU功耗管理</div>
+              </div>
+              <div class="item-content">
+                对于需要极致性能的训练任务，可将电源模式设置为“Maximum Performance”。<br>
+                以确保CPU始终运行在最高频率，避免动态调频造成的延迟。<br>
+                在生产环境中可根据功耗预算需求调整为平衡模式。
+              </div>
+              <div class="config-example">CPU Power Management: Maximum Performance</div>
+              <div class="config-example">Intel Turbo Boost / AMD Boost: Enabled</div>
+            </div>
+          </div>
+
+          <div class="content-section">
+            <div class="section-title bmc">BMC远程管理</div>
+            
+            <div class="content-item remote">
+              <div class="item-header">
+                <div class="item-icon">🌐</div>
+                <div class="item-title">远程管理</div>
+              </div>
+              <div class="item-content">
+                与传统服务器类似，通过IPMI (Intelligent Platform Management Interface)或Redfish API进行远程电源控制。<br>
+                监控传感器（温度、功耗、风扇转速）和日志访问。<br>
+                实现带外管理，无需操作系统即可管理服务器硬件状态。
+              </div>
+              <div class="config-example">IPMI over LAN: Enabled</div>
+              <div class="config-example">BMC网络配置: 静态IP地址</div>
+            </div>
+
+            <div class="content-item monitor">
+              <div class="item-header">
+                <div class="item-icon">🌡️</div>
+                <div class="item-title">运维要点</div>
+              </div>
+              <div class="item-content">
+                GPU是高功耗设备，需要重点监控其温度和功耗。通过BMC可以设置告警阈值，防止因过热导致降频或损坏。<br>
+                监控传感器包括温度、功耗、风扇转速和电压等关键指标。<br>
+                建立主动式的硬件健康管理机制，提高系统可靠性。
+              </div>
+              <div class="config-example">GPU温度阈值: 85°C告警，95°C严重</div>
+              <div class="config-example">功耗监控: 实时跟踪记录</div>
+            </div>
+
+            <div class="content-item firmware">
+              <div class="item-header">
+                <div class="item-icon">🔧</div>
+                <div class="item-title">常用IPMI命令</div>
+              </div>
+              <div class="item-content">
+                掌握基本的IPMI命令进行日常运维管理和故障排查。<br>
+                实现远程电源控制、传感器监控和系统事件日志查看。<br>
+                建立标准化的运维操作流程和故障响应机制。
+              </div>
+              <div class="config-example"># 检查服务器健康状态</div>
+              <div class="config-example">ipmitool -I lanplus -H <BMC_IP> -U <user> -P <pass> sensor list</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="summary-note">
+          <div class="summary-text">
+            <div>⚙️</div>
+            <span><span class="highlight">关键配置：</span>正确的BIOS和BMC配置是发挥GPU服务器性能和实现高效管理的基础</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer" style="padding: 0.6% 2%;">
+        <div class="footer-left">
+          <div class="status-dot"></div>
+          <span>第三天 - BIOS与BMC配置</span>
+        </div>
+        <div class="footer-badges">
+          <div class="footer-badge badge-install">BIOS</div>
+          <div class="footer-badge badge-config">BMC</div>
+          <div class="footer-badge badge-command">CONFIG</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+    <a href="index17.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+    <a href="index19.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+  </div>
+</body>
+</html>

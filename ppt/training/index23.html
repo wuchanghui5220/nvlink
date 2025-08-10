@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NCCL性能测试基准与结果分析</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    :root { --primary-green: #76b900; --primary-orange: #ffa500; --primary-blue: #00a2ff; --primary-red: #ff6b6b; --primary-purple: #4834d4; --text-primary: #ffffff; --text-secondary: rgba(255, 255, 255, 0.87); --glass-light: rgba(255, 255, 255, 0.08); --glass-border: rgba(255, 255, 255, 0.2); --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .main-content { padding: 1% 2%; flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden; max-width: 1400px; margin: 0 auto; width: 100%; }
+    .page-title { text-align: center; margin-bottom: 1.5%; flex-shrink: 0; }
+    .title-main { font-size: clamp(24px, 2.8vw, 32px); font-weight: 800; background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-orange) 50%, var(--primary-blue) 100%); -webkit-background-clip: text; background-clip: text; color: transparent; margin-bottom: 0.8%; }
+    .title-sub { font-size: clamp(14px, 1.6vw, 18px); color: rgba(255, 255, 255, 0.8); font-weight: 400; margin-bottom: 0.8%; }
+    .content-wrapper { flex: 1; display: flex; flex-direction: column; gap: 2%; min-height: 0; overflow-y: auto; }
+    
+    /* 测试基准表格样式 */
+    .benchmark-section { margin-bottom: 2%; }
+    .section-title { text-align: center; margin-bottom: 1.5%; }
+    .section-title-text { font-size: clamp(18px, 2vw, 24px); font-weight: 800; color: var(--text-primary); margin-bottom: 0.5%; }
+    .section-subtitle { font-size: clamp(13px, 1.4vw, 16px); color: rgba(255, 255, 255, 0.8); }
+    .table-container { background: linear-gradient(135deg, var(--glass-light), rgba(255, 255, 255, 0.04)); border: 1px solid var(--glass-border); border-radius: 12px; padding: 2%; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); overflow-x: auto; }
+    .benchmark-table { width: 100%; border-collapse: collapse; font-size: clamp(11px, 1.3vw, 14px); }
+    .benchmark-table thead tr { background: linear-gradient(135deg, rgba(118, 185, 0, 0.3), rgba(118, 185, 0, 0.2)); border-bottom: 2px solid rgba(118, 185, 0, 0.5); }
+    .benchmark-table th { padding: 1.5%; text-align: center; color: var(--text-primary); font-weight: 700; border-right: 1px solid rgba(255, 255, 255, 0.2); }
+    .benchmark-table th:last-child { border-right: none; }
+    .benchmark-table tbody tr { border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+    .benchmark-table td { padding: 1.5%; border-right: 1px solid rgba(255, 255, 255, 0.1); }
+    .benchmark-table td:last-child { border-right: none; }
+    .scenario-multi { color: #4caf50; font-weight: 700; text-align: center; }
+    .scenario-single { color: #00a2ff; font-weight: 700; text-align: center; }
+    .config-detail { color: var(--text-secondary); font-size: clamp(10px, 1.2vw, 13px); }
+    .test-command { color: #e8f4fd; font-family: 'Courier New', monospace; font-size: clamp(10px, 1.1vw, 12px); }
+    .metric-text { color: var(--text-secondary); text-align: center; }
+    .metric-highlight { color: #ffa500; font-weight: 600; }
+    .perf-good { color: #76b900; text-align: center; font-weight: 600; }
+    .perf-excellent { color: #4caf50; text-align: center; font-weight: 700; }
+    
+    /* 核心要点解读样式 */
+    .insights-section { margin-bottom: 2%; }
+    .insights-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2%; margin-bottom: 1.5%; }
+    .insight-card { border-radius: 10px; padding: 2%; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); }
+    .insight-multi { background: linear-gradient(135deg, rgba(76, 175, 80, 0.15), rgba(76, 175, 80, 0.08)); border: 1px solid rgba(76, 175, 80, 0.3); }
+    .insight-single { background: linear-gradient(135deg, rgba(0, 162, 255, 0.15), rgba(0, 162, 255, 0.08)); border: 1px solid rgba(0, 162, 255, 0.3); }
+    .insight-header { display: flex; align-items: center; gap: 10px; margin-bottom: 1.5%; padding-bottom: 1%; }
+    .insight-multi .insight-header { border-bottom: 1px solid rgba(76, 175, 80, 0.3); }
+    .insight-single .insight-header { border-bottom: 1px solid rgba(0, 162, 255, 0.3); }
+    .insight-icon { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 16px; font-weight: bold; }
+    .insight-multi .insight-icon { background: linear-gradient(135deg, #4caf50, #2e7d32); }
+    .insight-single .insight-icon { background: linear-gradient(135deg, #00a2ff, #0078d4); }
+    .insight-title { font-size: clamp(15px, 1.7vw, 18px); font-weight: 700; color: var(--text-primary); }
+    .insight-content { font-size: clamp(13px, 1.4vw, 15px); color: var(--text-secondary); line-height: 1.6; }
+    .highlight-green { color: #4caf50; font-weight: 600; }
+    .highlight-blue { color: #00a2ff; font-weight: 600; }
+    
+    /* 综合评估样式 */
+    .evaluation-card { background: linear-gradient(135deg, rgba(255, 165, 0, 0.15), rgba(255, 165, 0, 0.08)); border: 2px solid rgba(255, 165, 0, 0.4); border-radius: 10px; padding: 2%; text-align: center; box-shadow: 0 4px 12px rgba(255, 165, 0, 0.15); }
+    .evaluation-header { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 1%; }
+    .evaluation-icon { width: 32px; height: 32px; background: linear-gradient(135deg, #ffa500, #ff8c00); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-size: 18px; font-weight: bold; }
+    .evaluation-title { font-size: clamp(16px, 1.8vw, 20px); font-weight: 700; color: var(--text-primary); }
+    .evaluation-content { font-size: clamp(14px, 1.5vw, 16px); color: var(--text-secondary); line-height: 1.6; }
+    .highlight-orange { color: #ffa500; font-weight: 600; }
+    
+    .summary-note { background: linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(76, 175, 80, 0.1)); border: 2px solid rgba(76, 175, 80, 0.4); border-radius: 8px; padding: 2%; margin-top: 1.5%; text-align: center; box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2); }
+    .summary-text { font-size: clamp(14px, 1.6vw, 17px); color: rgba(255, 255, 255, 0.9); font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px; }
+    .highlight { color: #4caf50; font-weight: 700; }
+    
+    @media (max-width: 1200px) { .insights-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <div class="bg-elements"><div class="brain-pattern"></div><div class="network-signals"><div class="signal-dot"></div><div class="signal-dot"></div><div class="signal-dot"></div><div class="signal-dot"></div><div class="signal-dot"></div></div></div>
+    <div class="content">
+      <div class="header" style="padding: 0.6% 2%;">
+        <div class="day-info"><div class="day-badge">3</div><div class="day-text">第三天：GPU服务器基础测试</div></div>
+        <div class="section-indicator">NCCL性能测试基准</div>
+      </div>
+      <div class="main-content">
+        <div class="page-title">
+          <div class="title-main">NCCL性能测试基准与结果分析</div>
+          <div class="title-sub">all_reduce_perf测试标准 · 性能指标解读 · 集群健康状况评估</div>
+        </div>
+        
+        <div class="content-wrapper">
+          <!-- 性能测试基准表格 -->
+          <div class="benchmark-section">
+            <div class="section-title">
+              <div class="section-title-text">📊 NCCL all_reduce_perf 性能测试参考基准</div>
+              <div class="section-subtitle">下表总结了不同配置下运行all_reduce_perf测试时预期的总线带宽(Bus Bandwidth)结果</div>
+            </div>
+            
+            <div class="table-container">
+              <table class="benchmark-table">
+                <thead>
+                  <tr>
+                    <th>测试场景</th>
+                    <th>配置详情</th>
+                    <th>测试命令</th>
+                    <th>核心衡量指标</th>
+                    <th>合格性能范围</th>
+                    <th>优秀性能指标</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="scenario-multi">多机集群</td>
+                    <td class="config-detail">
+                      8台 H200 服务器 (共64 GPU)<br>
+                      8 x 400G NDR IB 网卡/每台<br>
+                      Spine-Leaf 无阻塞组网
+                    </td>
+                    <td class="test-command">
+                      mpirun -np 64 -N 8 ...<br>
+                      ./all_reduce_perf -b 8 -e 8G ...
+                    </td>
+                    <td class="metric-text">
+                      节点间网络带宽<br>
+                      <span class="metric-highlight">(Network-Bound)</span>
+                    </td>
+                    <td class="perf-good">37.5 - 42.5 GB/s</td>
+                    <td class="perf-excellent">&gt; 42.5 GB/s</td>
+                  </tr>
+                  <tr>
+                    <td class="scenario-single">单机</td>
+                    <td class="config-detail">
+                      1台 H200 服务器 (共8 GPU)<br>
+                      NVLink 4.0 全互联
+                    </td>
+                    <td class="test-command">
+                      ./build/all_reduce_perf<br>
+                      -b 8 -e 128M -f 2 -g 8
+                    </td>
+                    <td class="metric-text">
+                      节点内NVLink带宽<br>
+                      <span class="metric-highlight">(NVLink-Bound)</span>
+                    </td>
+                    <td class="perf-good">750 - 800 GB/s</td>
+                    <td class="perf-excellent">&gt; 800 GB/s</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          
+          <!-- 核心要点解读 -->
+          <div class="insights-section">
+            <div class="section-title">
+              <div class="section-title-text">🎯 核心要点解读</div>
+            </div>
+            
+            <div class="insights-grid">
+              <!-- 多机测试解读 -->
+              <div class="insight-card insight-multi">
+                <div class="insight-header">
+                  <div class="insight-icon">🌐</div>
+                  <div class="insight-title">多机测试 (横向扩展能力)</div>
+                </div>
+                <div class="insight-content">
+                  • 该测试的瓶颈在于节点之间的 <span class="highlight-green">InfiniBand 网络</span><br>
+                  • 性能目标是接近单张网卡理论带宽（<span class="highlight-green">400Gbps ≈ 50GB/s</span>）<br>
+                  • <span class="highlight-green">&gt; 40 GB/s</span> 的结果表明IB网络拓扑、配置和布线都非常出色<br>
+                  • 能够支撑大规模分布式训练的严苛要求
+                </div>
+              </div>
+              
+              <!-- 单机测试解读 -->
+              <div class="insight-card insight-single">
+                <div class="insight-header">
+                  <div class="insight-icon">📡</div>
+                  <div class="insight-title">单机测试 (纵向扩展能力)</div>
+                </div>
+                <div class="insight-content">
+                  • 该测试的瓶颈在于单台服务器内部的 <span class="highlight-blue">NVLink 高速互联</span><br>
+                  • 性能目标是验证GPU间通信是否达到硬件设计极限<br>
+                  • H200 NVLink 理论带宽为 <span class="highlight-blue">900 GB/s</span><br>
+                  • 接近 <span class="highlight-blue">800 GB/s</span> 的结果证明服务器健康状况良好
+                </div>
+              </div>
+            </div>
+            
+            <!-- 综合评估说明 -->
+            <div class="evaluation-card">
+              <div class="evaluation-header">
+                <div class="evaluation-icon">✨</div>
+                <div class="evaluation-title">综合评估</div>
+              </div>
+              <div class="evaluation-content">
+                通过这两项测试，您可以全面地评估H200集群在 <span class="highlight-orange">内部通信</span> 和 <span class="highlight-orange">外部通信</span> 两个维度上的健康状况和性能水平
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="summary-note">
+          <div class="summary-text"><div>🎯</div><span><span class="highlight">测试要点：</span>NCCL性能基准测试是评估GPU集群通信能力的核心工具，为AI训练性能优化提供定量评估依据</span></div>
+        </div>
+      </div>
+      <div class="footer" style="padding: 0.6% 2%;">
+        <div class="footer-left"><div class="status-dot"></div><span>第三天 - 容器化和系统服务优化</span></div>
+        <div class="footer-badges"><div class="footer-badge badge-install">NCCL</div><div class="footer-badge badge-config">BENCHMARK</div><div class="footer-badge badge-command">H200</div></div>
+      </div>
+    </div>
+  </div>
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+    <a href="index22.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+    <a href="index24.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+  </div>
+</body>
+</html>

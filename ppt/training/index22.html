@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NCCL测试及性能优化介绍</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    :root { --primary-green: #76b900; --primary-orange: #ffa500; --primary-blue: #00a2ff; --primary-red: #ff6b6b; --primary-purple: #4834d4; --text-primary: #ffffff; --text-secondary: rgba(255, 255, 255, 0.87); --glass-light: rgba(255, 255, 255, 0.08); --glass-border: rgba(255, 255, 255, 0.2); --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .main-content { padding: 1% 2%; flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden; max-width: 1400px; margin: 0 auto; width: 100%; }
+    .page-title { text-align: center; margin-bottom: 1.2%; flex-shrink: 0; }
+    .title-main { font-size: clamp(24px, 2.8vw, 30px); font-weight: 800; background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-orange) 50%, var(--primary-blue) 100%); -webkit-background-clip: text; background-clip: text; color: transparent; margin-bottom: 0.6%; }
+    .title-sub { font-size: clamp(14px, 1.6vw, 18px); color: rgba(255, 255, 255, 0.8); font-weight: 400; margin-bottom: 0.6%; }
+    .content-grid { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 2%; min-height: 0; overflow: hidden; }
+    .content-section { display: flex; flex-direction: column; gap: 1.5%; min-height: 0; overflow-y: auto; }
+    .section-title { font-size: clamp(16px, 1.8vw, 20px); font-weight: 700; color: var(--text-primary); margin-bottom: 1%; padding: 1.5%; border-radius: 8px; text-align: center; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); }
+    .section-title.nccl { background: linear-gradient(135deg, rgba(118, 185, 0, 0.25), rgba(118, 185, 0, 0.15)); border: 2px solid rgba(118, 185, 0, 0.4); }
+    .section-title.optimize { background: linear-gradient(135deg, rgba(255, 165, 0, 0.25), rgba(255, 165, 0, 0.15)); border: 2px solid rgba(255, 165, 0, 0.4); }
+    .content-item { background: linear-gradient(135deg, var(--glass-light), rgba(255, 255, 255, 0.04)); border: 1px solid var(--glass-border); border-radius: 10px; padding: 2%; transition: var(--transition-smooth); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); }
+    .content-item:hover { background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06)); border-color: rgba(255, 255, 255, 0.35); transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25); }
+    .item-header { display: flex; align-items: center; gap: 12px; margin-bottom: 1%; }
+    .item-icon { width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: clamp(14px, 1.4vw, 16px); color: white; flex-shrink: 0; box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3); }
+    .nccl-intro .item-icon { background: linear-gradient(135deg, var(--primary-green), #3e703e); }
+    .build-tests .item-icon { background: linear-gradient(135deg, var(--primary-blue), #0078d4); }
+    .single-node .item-icon { background: linear-gradient(135deg, var(--primary-purple), #686de0); }
+    .multi-node .item-icon { background: linear-gradient(135deg, var(--primary-orange), #ff8c00); }
+    .result-analysis .item-icon { background: linear-gradient(135deg, var(--primary-red), #ee5a24); }
+    .env-tuning .item-icon { background: linear-gradient(135deg, var(--primary-blue), #0078d4); }
+    .ai-training .item-icon { background: linear-gradient(135deg, var(--primary-red), #ee5a24); }
+    .item-title { font-size: clamp(15px, 1.7vw, 18px); font-weight: 700; color: var(--text-primary); flex: 1; line-height: 1.3; }
+    .item-content { font-size: clamp(12px, 1.4vw, 15px); color: var(--text-secondary); line-height: 1.5; margin-bottom: 1%; font-weight: 400; }
+    .config-example { background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.2); border-left: 3px solid; padding: 1.5%; border-radius: 0 6px 6px 0; font-family: 'Courier New', monospace; font-size: clamp(11px, 1.2vw, 13px); color: #e8f4fd; line-height: 1.4; margin-bottom: 0.5%; }
+    .nccl-intro .config-example { border-left-color: var(--primary-green); }
+    .build-tests .config-example { border-left-color: var(--primary-blue); }
+    .single-node .config-example { border-left-color: var(--primary-purple); }
+    .multi-node .config-example { border-left-color: var(--primary-orange); }
+    .result-analysis .config-example { border-left-color: var(--primary-red); }
+    .env-tuning .config-example { border-left-color: var(--primary-blue); }
+    .ai-training .config-example { border-left-color: var(--primary-red); }
+    .summary-note { background: linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(76, 175, 80, 0.1)); border: 2px solid rgba(76, 175, 80, 0.4); border-radius: 8px; padding: 2%; margin-top: 1.5%; text-align: center; box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2); }
+    .summary-text { font-size: clamp(14px, 1.6vw, 17px); color: rgba(255, 255, 255, 0.9); font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px; }
+    .highlight { color: #4caf50; font-weight: 700; }
+    @media (max-width: 1200px) { .content-grid { grid-template-columns: 1fr; gap: 1.5%; } }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <div class="bg-elements"><div class="brain-pattern"></div><div class="network-signals"><div class="signal-dot"></div><div class="signal-dot"></div><div class="signal-dot"></div><div class="signal-dot"></div><div class="signal-dot"></div></div></div>
+    <div class="content">
+      <div class="header" style="padding: 0.6% 2%;">
+        <div class="day-info"><div class="day-badge">3</div><div class="day-text">第三天：GPU服务器基础测试</div></div>
+        <div class="section-indicator">NCCL测试及性能优化</div>
+      </div>
+      <div class="main-content">
+        <div class="page-title"><div class="title-main">NCCL测试及性能优化：全面指南</div><div class="title-sub">NVIDIA集合通信库深入解析 · GPU集群通信优化 · AI训练网络性能提升</div></div>
+        <div class="content-grid">
+          <div class="content-section">
+            <div class="section-title nccl">NCCL基准测试与硬件优化</div>
+            
+            <div class="content-item nccl-intro">
+              <div class="item-header"><div class="item-icon">📚</div><div class="item-title">认识NCCL</div></div>
+              <div class="item-content">
+                NVIDIA集合通信库(NCCL)针对多GPU和多节点环境中的集合通信提供高性能、可扩展的原语。<br>
+                核心原语包括`all-reduce`、`all-gather`、`reduce-scatter`、`broadcast`。<br>
+                NCCL利用GPUDirect RDMA和NVLink等硬件加速技术实现低延迟高带宽通信。
+              </div>
+              <div class="config-example"># NCCL自动检测系统拓扑并选择最优通信算法</div>
+              <div class="config-example"># 支持与PyTorch、TensorFlow等框架无缝集成</div>
+            </div>
+            
+            <div class="content-item build-tests">
+              <div class="item-header"><div class="item-icon">🔨</div><div class="item-title">构建nccl-tests</div></div>
+              <div class="item-content">
+                `nccl-tests`是NVIDIA提供的开源基准测试工具，用于验证GPU间通信性能。<br>
+                依赖MPI(Message Passing Interface)实现多节点通信，需预先安装OpenMPI。
+              </div>
+              <div class="config-example">git clone https://github.com/NVIDIA/nccl-tests.git</div>
+              <div class="config-example">make MPI=1 MPI_HOME=/usr/local/mpi CUDA_HOME=/usr/local/cuda NCCL_HOME=/usr/local/nccl</div>
+            </div>
+            
+            <div class="content-item single-node">
+              <div class="item-header"><div class="item-icon">📊</div><div class="item-title">单节点测试</div></div>
+              <div class="item-content">
+                在8-GPU节点上运行`all_reduce_perf`测试，数据范围8B-128MB。<br>
+                参数说明：-b(起始大小) -e(结束大小) -f(增长因子) -g(GPU数量)
+              </div>
+              <div class="config-example"># 单节点8GPU测试</div>
+              <div class="config-example">./build/all_reduce_perf -b 8 -e 128M -f 2 -g 8</div>
+              <div class="config-example"># 查看拓扑结构: nvidia-smi topo -m</div>
+            </div>
+            
+            <div class="content-item" style="border-left: 3px solid var(--primary-green);">
+              <div class="item-header"><div class="item-icon" style="background: linear-gradient(135deg, var(--primary-green), #3e703e);">🔧</div><div class="item-title">硬件层面优化</div></div>
+              <div class="item-content">
+                **高性能GPU**: 使用A100、H100或L40S等具有高内存带宽的GPU。<br>
+                **高速互连**: NVLink和NVSwitch实现节点内GPU间高速通信。<br>
+                **网络基础设施**: InfiniBand(200Gbps+)或高速以太网提供节点间通信。
+              </div>
+              <div class="config-example" style="border-left-color: var(--primary-green);"># 启用GPUDirect RDMA: GPU直接通过网络通信，绕过CPU</div>
+              <div class="config-example" style="border-left-color: var(--primary-green);"># 软件版本: 保持NVIDIA驱动、CUDA、NCCL为最新版本</div>
+            </div>
+          </div>
+          <div class="content-section">
+            <div class="section-title optimize">NCCL性能优化与AI训练加速</div>
+            
+            <div class="content-item multi-node">
+              <div class="item-header"><div class="item-icon">🌐</div><div class="item-title">多节点测试</div></div>
+              <div class="item-content">
+                8节点64GPU测试（每节点8GPU），需配置hostfile文件。<br>
+                hostfile格式：192.168.1.101 slots=8，支持IP或主机名。
+              </div>
+              <div class="config-example"># hostfile示例配置</div>
+              <div class="config-example">192.168.1.101 slots=8</div>
+              <div class="config-example"># 多节点测试命令</div>
+              <div class="config-example">mpirun -np 64 -N 8 --hostfile hostfile --allow-run-as-root -x LD_LIBRARY_PATH ./build/all_reduce_perf -b 8 -e 8G -f 2 -g 1</div>
+            </div>
+            
+            <div class="content-item result-analysis">
+              <div class="item-header"><div class="item-icon">📈</div><div class="item-title">解释测试结果</div></div>
+              <div class="item-content">
+                输出显示操作平均时间和两种带宽：算法带宽(algorithm)和总线带宽(bus)。<br>
+                **Bus Bandwidth**是关键指标，反映GPU间通信硬件使用效率。
+              </div>
+              <div class="config-example"># 单机内部: 接近NVLink理论带宽(600GB/s+)</div>
+              <div class="config-example"># 多节点: 接近网络带宽(InfiniBand 200Gbps+)</div>
+              <div class="config-example"># Bus Bandwidth通过公式转换，便于不同GPU数量性能比较</div>
+            </div>
+            
+            <div class="content-item env-tuning">
+              <div class="item-header"><div class="item-icon">⚙️</div><div class="item-title">环境变量调优</div></div>
+              <div class="item-content">
+                **NCCL_ALGO**: `Tree`(大规模)、`Ring`(小消息)或`CollNet`。<br>
+                **NCCL_PROTO**: `Simple`(高带宽)、`LL`(低延迟)或`LL128`。<br>
+                **NCCL_NTHREADS**: 每GPU线程数，**NCCL_BUFFSIZE**: 通信缓冲区大小。
+              </div>
+              <div class="config-example">export NCCL_DEBUG=INFO  # 启用调试日志</div>
+              <div class="config-example">export NCCL_TOPO_FILE=/path/to/topo.xml  # 拓扑感知</div>
+              <div class="config-example"># 通常无需手动设置，NCCL自动选择最优参数</div>
+            </div>
+            
+            <div class="content-item ai-training">
+              <div class="item-header"><div class="item-icon">🤖</div><div class="item-title">AI训练网络优化</div></div>
+              <div class="item-content">
+                **批量大小优化**: 增大batch size减少通信频率，提高NCCL效率。<br>
+                **梯度累积**: 使用gradient accumulation和all-reduce优化减少通信开销。<br>
+                **混合并行**: 数据并行+模型并行混合策略平衡计算和通信。
+              </div>
+              <div class="config-example"># 性能监控工具：NVIDIA Nsight Systems性能剖析</div>
+              <div class="config-example"># 带宽监控：确保无单一组件成为瓶颈</div>
+              <div class="config-example"># 异步CUDA流：重叠计算和通信，隐藏通信延迟</div>
+            </div>
+          </div>
+        </div>
+        <div class="summary-note">
+          <div class="summary-text"><div>🚀</div><span><span class="highlight">优化要点：</span>系统化NCCL测试和优化是提升GPU集群AI训练效率的关键，需结合硬件拓扑、软件配置和工作负载特性进行全面调优</span></div>
+        </div>
+      </div>
+      <div class="footer" style="padding: 0.6% 2%;">
+        <div class="footer-left"><div class="status-dot"></div><span>第三天 - 容器化和系统服务优化</span></div>
+        <div class="footer-badges"><div class="footer-badge badge-install">DOCKER</div><div class="footer-badge badge-config">NVIDIA</div><div class="footer-badge badge-command">SERVICE</div></div>
+      </div>
+    </div>
+  </div>
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+    <a href="index21.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+    <a href="index23.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+  </div>
+</body>
+</html>

@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GPU服务器硬件介绍</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    :root {
+      --primary-blue: #00a2ff;
+      --primary-blue-dark: #0078d4;
+      --primary-purple: #4834d4;
+      --primary-purple-light: #686de0;
+      --primary-red: #ff6b6b;
+      --primary-red-dark: #ee5a24;
+      --primary-green: #76b900;
+      --primary-green-dark: #3e703e;
+      --primary-orange: #ffa500;
+      --primary-orange-dark: #ff8c00;
+      --primary-teal: #17a2b8;
+      --primary-teal-dark: #138496;
+      --text-primary: #ffffff;
+      --text-secondary: rgba(255, 255, 255, 0.87);
+      --text-tertiary: rgba(255, 255, 255, 0.8);
+      --glass-light: rgba(255, 255, 255, 0.08);
+      --glass-lighter: rgba(255, 255, 255, 0.04);
+      --glass-border: rgba(255, 255, 255, 0.2);
+      --glass-border-hover: rgba(255, 255, 255, 0.35);
+      --shadow-base: rgba(0, 0, 0, 0.15);
+      --shadow-elevated: rgba(0, 0, 0, 0.25);
+      --border-radius-card: 10px;
+      --spacing-md: 1.2%;
+      --spacing-lg: 1.5%;
+      --spacing-xl: 2%;
+      --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .main-content {
+      padding: 1% 2%;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+      max-width: 1500px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .page-title {
+      text-align: center;
+      margin-bottom: var(--spacing-md);
+      flex-shrink: 0;
+    }
+
+    .title-main {
+      font-size: clamp(24px, 2.8vw, 30px);
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary-orange) 0%, var(--primary-teal) 50%, var(--primary-blue) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 0.6%;
+      text-shadow: none;
+    }
+
+    .title-sub {
+      font-size: clamp(14px, 1.6vw, 18px);
+      color: var(--text-tertiary);
+      font-weight: 400;
+      margin-bottom: 0.6%;
+    }
+
+    .content-grid {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2%;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .content-section {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-lg);
+      min-height: 0;
+      overflow-y: auto;
+      scroll-behavior: smooth;
+    }
+
+    .section-title {
+      font-size: clamp(16px, 1.8vw, 20px);
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 1%;
+      padding: 1.5%;
+      border-radius: 8px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .section-title.hardware {
+      background: linear-gradient(135deg, rgba(255, 165, 0, 0.25), rgba(255, 165, 0, 0.15));
+      border: 2px solid rgba(255, 165, 0, 0.4);
+      box-shadow: 0 4px 12px rgba(255, 165, 0, 0.2);
+    }
+
+    .section-title.specs {
+      background: linear-gradient(135deg, rgba(23, 162, 184, 0.25), rgba(23, 162, 184, 0.15));
+      border: 2px solid rgba(23, 162, 184, 0.4);
+      box-shadow: 0 4px 12px rgba(23, 162, 184, 0.2);
+    }
+
+    .content-item {
+      background: linear-gradient(135deg, var(--glass-light), var(--glass-lighter));
+      border: 1px solid var(--glass-border);
+      border-radius: var(--border-radius-card);
+      padding: var(--spacing-xl);
+      transition: var(--transition-smooth);
+      position: relative;
+      overflow: visible;
+      box-shadow: 0 4px 12px var(--shadow-base);
+      will-change: transform, box-shadow;
+    }
+
+    .content-item:hover {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06));
+      border-color: var(--glass-border-hover);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px var(--shadow-elevated);
+    }
+
+    .item-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 1%;
+    }
+
+    .item-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(14px, 1.4vw, 16px);
+      color: white;
+      flex-shrink: 0;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .gpu .item-icon { background: linear-gradient(135deg, var(--primary-orange), var(--primary-orange-dark)); }
+    .cpu .item-icon { background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-dark)); }
+    .memory .item-icon { background: linear-gradient(135deg, var(--primary-purple), var(--primary-purple-light)); }
+    .storage .item-icon { background: linear-gradient(135deg, var(--primary-red), var(--primary-red-dark)); }
+    .network .item-icon { background: linear-gradient(135deg, var(--primary-green), var(--primary-green-dark)); }
+    .power .item-icon { background: linear-gradient(135deg, var(--primary-teal), var(--primary-teal-dark)); }
+
+    .item-title {
+      font-size: clamp(15px, 1.7vw, 18px);
+      font-weight: 700;
+      color: var(--text-primary);
+      flex: 1;
+      line-height: 1.3;
+      transition: var(--transition-smooth);
+    }
+
+    .content-item:hover .item-title {
+      color: rgba(255, 255, 255, 0.95);
+      text-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+    }
+
+    .item-content {
+      font-size: clamp(12px, 1.4vw, 15px);
+      color: var(--text-secondary);
+      line-height: 1.5;
+      margin-bottom: 1%;
+      font-weight: 400;
+      transition: var(--transition-smooth);
+    }
+
+    .content-item:hover .item-content {
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .spec-example {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-left: 3px solid;
+      padding: 1.5%;
+      border-radius: 0 6px 6px 0;
+      font-family: 'Courier New', monospace;
+      font-size: clamp(11px, 1.2vw, 13px);
+      color: #e8f4fd;
+      line-height: 1.4;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+      margin-bottom: 0.5%;
+      box-shadow: inset 2px 0 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .gpu .spec-example { border-left-color: var(--primary-orange); }
+    .cpu .spec-example { border-left-color: var(--primary-blue); }
+    .memory .spec-example { border-left-color: var(--primary-purple); }
+    .storage .spec-example { border-left-color: var(--primary-red); }
+    .network .spec-example { border-left-color: var(--primary-green); }
+    .power .spec-example { border-left-color: var(--primary-teal); }
+
+    .spec-example::before {
+      content: '# ';
+      font-weight: bold;
+    }
+
+    .gpu .spec-example::before { color: var(--primary-orange); }
+    .cpu .spec-example::before { color: var(--primary-blue); }
+    .memory .spec-example::before { color: var(--primary-purple); }
+    .storage .spec-example::before { color: var(--primary-red); }
+    .network .spec-example::before { color: var(--primary-green); }
+    .power .spec-example::before { color: var(--primary-teal); }
+
+    .summary-note {
+      background: linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(76, 175, 80, 0.1));
+      border: 2px solid rgba(76, 175, 80, 0.4);
+      border-radius: 8px;
+      padding: 2%;
+      margin-top: 1.5%;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
+      transition: var(--transition-smooth);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .summary-note::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      transition: left 0.6s ease;
+    }
+
+    .summary-note:hover::before {
+      left: 100%;
+    }
+
+    .summary-note:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(76, 175, 80, 0.3);
+      border-color: rgba(76, 175, 80, 0.6);
+    }
+
+    .summary-text {
+      font-size: clamp(14px, 1.6vw, 17px);
+      color: rgba(255, 255, 255, 0.9);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .summary-icon {
+      font-size: 1.3em;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    .highlight {
+      color: #4caf50;
+      font-weight: 700;
+    }
+
+    /* 响应式设计 */
+    @media (max-width: 1200px) {
+      .content-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5%;
+      }
+    }
+
+    @media (max-height: 700px) {
+      .main-content {
+        padding: 0.8% 1.5%;
+      }
+      
+      .content-item {
+        padding: 1.8%;
+      }
+    }
+
+    @media (max-height: 600px) {
+      .main-content {
+        padding: 0.6% 1.2%;
+      }
+      
+      .page-title {
+        margin-bottom: 1%;
+      }
+      
+      .content-item {
+        padding: 1.5%;
+      }
+      
+      .item-header {
+        margin-bottom: 0.8%;
+        gap: 10px;
+      }
+      
+      .item-icon {
+        width: 22px;
+        height: 22px;
+        font-size: clamp(13px, 1.3vw, 15px);
+      }
+    }
+
+    /* 性能优化 */
+    @media (prefers-reduced-motion: reduce) {
+      :root {
+        --transition-smooth: none;
+      }
+      
+      .content-item, .summary-note, .item-title, .item-content {
+        animation: none;
+        transition: none;
+      }
+      
+      .summary-icon {
+        animation: none;
+      }
+    }
+
+    /* 高对比度模式支持 */
+    @media (prefers-contrast: high) {
+      :root {
+        --glass-border: rgba(255, 255, 255, 0.4);
+        --glass-border-hover: rgba(255, 255, 255, 0.6);
+        --text-secondary: rgba(255, 255, 255, 0.95);
+        --text-tertiary: rgba(255, 255, 255, 0.9);
+      }
+      
+      .content-item {
+        border-width: 2px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <!-- 背景元素 -->
+    <div class="bg-elements">
+      <div class="brain-pattern"></div>
+      <div class="network-signals">
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+      </div>
+    </div>
+
+    <!-- 主要内容 -->
+    <div class="content">
+      <!-- 顶部标识 -->
+      <div class="header" style="padding: 0.6% 2%;">
+        <div class="day-info">
+          <div class="day-badge">3</div>
+          <div class="day-text">第三天：GPU服务器基础测试</div>
+        </div>
+        <div class="section-indicator">硬件架构介绍</div>
+      </div>
+
+      <!-- 主体内容 -->
+      <div class="main-content">
+        <!-- 页面标题 -->
+        <div class="page-title">
+          <div class="title-main">GPU服务器硬件介绍</div>
+          <div class="title-sub">GPU服务器核心硬件组件和架构特点</div>
+        </div>
+
+        <!-- 内容网格 -->
+        <div class="content-grid">
+          <!-- 左侧：核心硬件组件 -->
+          <div class="content-section">
+            <div class="section-title hardware">核心硬件组件</div>
+            
+            <div class="content-item gpu">
+              <div class="item-header">
+                <div class="item-icon">🎮</div>
+                <div class="item-title">GPU (图形处理器)</div>
+              </div>
+              <div class="item-content">
+                核心计算单元，负责并行处理密集型计算任务。现代数据中心GPU（如NVIDIA A100, H100）区别于消费级显卡。<br>
+                拥有更高的双精度性能、更大的显存（VRAM）和专为AI、HPC设计的架构。<br>
+                配备Tensor Core等专用加速单元，大幅提升深度学习训练和推理性能。
+              </div>
+              <div class="spec-example">NVIDIA A100: 6912 CUDA Cores, 432 Tensor Cores</div>
+              <div class="spec-example">H100: 16896 CUDA Cores, 528 Tensor Cores</div>
+            </div>
+
+            <div class="content-item cpu">
+              <div class="item-header">
+                <div class="item-icon">🔧</div>
+                <div class="item-title">CPU (中央处理器)</div>
+              </div>
+              <div class="item-content">
+                负责处理操作系统、任务调度、数据预处理和串行计算部分，是GPU的"指挥官"。<br>
+                为避免数据传输瓶颈，GPU服务器通常配置高性能、多核心的CPU（如Intel Xeon或AMD EPYC系列）。<br>
+                建议每个GPU至少对应6个物理CPU核心，确保计算资源均衡配置。
+              </div>
+              <div class="spec-example">Intel Xeon Scalable: 64+ cores per socket</div>
+              <div class="spec-example">AMD EPYC: 128 cores per socket (9004 series)</div>
+            </div>
+
+            <div class="content-item memory">
+              <div class="item-header">
+                <div class="item-icon">💾</div>
+                <div class="item-title">内存 (RAM)</div>
+              </div>
+              <div class="item-content">
+                系统内存，用于存放待处理的数据集和模型的中间数据。<br>
+                深度学习任务通常需要大量内存，建议至少是所有GPU显存总和的两倍。<br>
+                例如，一个配备8张80GB显存GPU的服务器，建议配置1.2TB以上的系统内存。
+              </div>
+              <div class="spec-example">DDR5-4800: 512GB - 2TB per server</div>
+              <div class="spec-example">规划原则: 2x total GPU VRAM capacity</div>
+            </div>
+          </div>
+
+          <!-- 右侧：GPU互联技术 -->
+          <div class="content-section">
+            <div class="section-title specs">GPU互联技术</div>
+            
+            <div class="content-item storage">
+              <div class="item-header">
+                <div class="item-icon">💽</div>
+                <div class="item-title">存储 (Storage)</div>
+              </div>
+              <div class="item-content">
+                用于存放操作系统、训练数据集和模型。为满足大规模数据集的快速读取需求。<br>
+                强烈推荐使用高速NVMe SSD作为主存储，对于超大规模数据集。<br>
+                通常会搭配Lustre、BeeGFS等并行文件系统以提供更高的I/O性能。
+              </div>
+              <div class="spec-example">NVMe SSD: 7000MB/s+ sequential read</div>
+              <div class="spec-example">并行文件系统: Lustre, BeeGFS, GlusterFS</div>
+            </div>
+
+            <div class="content-item network">
+              <div class="item-header">
+                <div class="item-icon">🌐</div>
+                <div class="item-title">网络 (Networking)</div>
+              </div>
+              <div class="item-content">
+                多节点GPU集群的性能瓶颈往往在网络上。高速、低延迟的网络至关重要。<br>
+                通常使用InfiniBand或至少200Gbps的高速以太网来满足集群间通信需求。<br>
+                网络配置直接影响分布式训练的效率和扩展性。
+              </div>
+              <div class="spec-example">InfiniBand HDR: 200Gbps per port</div>
+              <div class="spec-example">InfiniBand NDR: 400Gbps per port</div>
+            </div>
+
+            <div class="content-item power">
+              <div class="item-header">
+                <div class="item-icon">⚡</div>
+                <div class="item-title">GPU互联技术</div>
+              </div>
+              <div class="item-content">
+                PCIe是GPU与CPU之间以及GPU与GPU之间的基础通信总线。<br>
+                NVLink提供点对点的GPU直接通信，类似于专为GPU打造的高速公路。<br>
+                NVSwitch类似于一个交换机，实现全连接的、非阻塞式的GPU间通信。
+              </div>
+              <div class="spec-example">PCIe Gen5 x16: 64GB/s bandwidth</div>
+              <div class="spec-example">NVLink 4.0: 900GB/s per GPU (H100)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 总结要点 -->
+        <div class="summary-note">
+          <div class="summary-text">
+            <div class="summary-icon">🖥️</div>
+            <span><span class="highlight">运维要点：</span>检查服务器拓扑结构，确保GPU均匀分布在不同的CPU Socket和PCIe Root Port下，避免资源争抢</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 底部信息 -->
+      <div class="footer" style="padding: 0.6% 2%;">
+        <div class="footer-left">
+          <div class="status-dot"></div>
+          <span>第三天 - 硬件架构介绍</span>
+        </div>
+        <div class="footer-badges">
+          <div class="footer-badge badge-install">HARDWARE</div>
+          <div class="footer-badge badge-config">ARCHITECTURE</div>
+          <div class="footer-badge badge-command">COMPONENTS</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 导航按钮 -->
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+    <a href="index16.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+    <a href="index18.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+  </div>
+</body>
+</html>

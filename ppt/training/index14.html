@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IB网络调优</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    /* 优化样式 */
+    .main-content {
+      padding: 1% 2%;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+      max-width: 1500px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .page-title {
+      text-align: center;
+      margin-bottom: 1.2%;
+      flex-shrink: 0;
+    }
+
+    .title-main {
+      font-size: clamp(24px, 2.8vw, 30px);
+      font-weight: 800;
+      background: linear-gradient(135deg, #76b900 0%, #8a2be2 50%, #00a2ff 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 0.6%;
+    }
+
+    .title-sub {
+      font-size: clamp(14px, 1.6vw, 18px);
+      color: rgba(255, 255, 255, 0.8);
+      font-weight: 400;
+      margin-bottom: 0.6%;
+    }
+
+    .content-grid {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2%;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .content-section {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5%;
+      min-height: 0;
+      overflow-y: auto;
+    }
+
+    .section-title {
+      font-size: clamp(16px, 1.8vw, 20px);
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 1%;
+      padding: 1.5%;
+      border-radius: 8px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .section-title.system {
+      background: linear-gradient(135deg, rgba(118, 185, 0, 0.25), rgba(118, 185, 0, 0.15));
+      border: 2px solid rgba(118, 185, 0, 0.4);
+      box-shadow: 0 4px 12px rgba(118, 185, 0, 0.2);
+    }
+
+    .section-title.network {
+      background: linear-gradient(135deg, rgba(138, 43, 226, 0.25), rgba(138, 43, 226, 0.15));
+      border: 2px solid rgba(138, 43, 226, 0.4);
+      box-shadow: 0 4px 12px rgba(138, 43, 226, 0.2);
+    }
+
+    .content-item {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04));
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      padding: 2%;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: visible;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .content-item:hover {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06));
+      border-color: rgba(255, 255, 255, 0.35);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    .item-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 1%;
+    }
+
+    .item-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(14px, 1.4vw, 16px);
+      color: white;
+      flex-shrink: 0;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .cpu .item-icon { background: linear-gradient(135deg, #76b900, #3e703e); }
+    .memory .item-icon { background: linear-gradient(135deg, #00a2ff, #0078d4); }
+    .interrupt .item-icon { background: linear-gradient(135deg, #ff6b6b, #ee5a24); }
+    .network .item-icon { background: linear-gradient(135deg, #8a2be2, #9370db); }
+    .routing .item-icon { background: linear-gradient(135deg, #4834d4, #686de0); }
+    .monitoring .item-icon { background: linear-gradient(135deg, #ffa500, #ff8c00); }
+
+    .item-title {
+      font-size: clamp(15px, 1.7vw, 18px);
+      font-weight: 700;
+      color: #ffffff;
+      flex: 1;
+      line-height: 1.3;
+    }
+
+    .item-content {
+      font-size: clamp(12px, 1.4vw, 15px);
+      color: rgba(255, 255, 255, 0.87);
+      line-height: 1.5;
+      margin-bottom: 1%;
+      font-weight: 400;
+    }
+
+    .config-example {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-left: 3px solid;
+      padding: 1.5%;
+      border-radius: 0 6px 6px 0;
+      font-family: 'Courier New', monospace;
+      font-size: clamp(11px, 1.2vw, 13px);
+      color: #e8f4fd;
+      line-height: 1.4;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+      margin-bottom: 0.5%;
+      box-shadow: inset 2px 0 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .cpu .config-example { border-left-color: #76b900; }
+    .memory .config-example { border-left-color: #00a2ff; }
+    .interrupt .config-example { border-left-color: #ff6b6b; }
+    .network .config-example { border-left-color: #8a2be2; }
+    .routing .config-example { border-left-color: #4834d4; }
+    .monitoring .config-example { border-left-color: #ffa500; }
+
+    .config-example::before {
+      content: '# ';
+      font-weight: bold;
+    }
+
+    .cpu .config-example::before { color: #76b900; }
+    .memory .config-example::before { color: #00a2ff; }
+    .interrupt .config-example::before { color: #ff6b6b; }
+    .network .config-example::before { color: #8a2be2; }
+    .routing .config-example::before { color: #4834d4; }
+    .monitoring .config-example::before { color: #ffa500; }
+
+    .optimization-note {
+      background: linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(76, 175, 80, 0.1));
+      border: 2px solid rgba(76, 175, 80, 0.4);
+      border-radius: 8px;
+      padding: 2%;
+      margin-top: 1.5%;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
+    }
+
+    .optimization-text {
+      font-size: clamp(14px, 1.6vw, 17px);
+      color: rgba(255, 255, 255, 0.9);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .highlight {
+      color: #4caf50;
+      font-weight: 600;
+    }
+
+    /* 响应式设计 */
+    @media (max-width: 1200px) {
+      .content-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5%;
+      }
+    }
+
+    @media (max-height: 700px) {
+      .main-content {
+        padding: 0.8% 1.5%;
+      }
+      
+      .content-item {
+        padding: 1.8%;
+      }
+      
+      .content-section {
+        gap: 1.2%;
+      }
+      
+      .optimization-note {
+        padding: 1.8%;
+        margin-top: 1.2%;
+      }
+    }
+
+    @media (max-height: 600px) {
+      .main-content {
+        padding: 0.6% 1.2%;
+      }
+      
+      .page-title {
+        margin-bottom: 1%;
+      }
+      
+      .content-item {
+        padding: 1.5%;
+      }
+      
+      .item-header {
+        margin-bottom: 0.8%;
+        gap: 10px;
+      }
+      
+      .item-icon {
+        width: 22px;
+        height: 22px;
+        font-size: clamp(13px, 1.3vw, 15px);
+      }
+      
+      .item-title {
+        font-size: clamp(14px, 1.6vw, 17px);
+      }
+      
+      .item-content {
+        font-size: clamp(11px, 1.3vw, 14px);
+      }
+      
+      .config-example {
+        font-size: clamp(10px, 1.1vw, 12px);
+        padding: 1.2%;
+      }
+      
+      .content-section {
+        gap: 1%;
+      }
+      
+      .optimization-note {
+        padding: 1.5%;
+        margin-top: 1%;
+      }
+      
+      .optimization-text {
+        font-size: clamp(13px, 1.5vw, 16px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <!-- 背景元素 -->
+    <div class="bg-elements">
+      <div class="brain-pattern"></div>
+      <div class="network-signals">
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+      </div>
+    </div>
+
+    <!-- 主要内容 -->
+    <div class="content">
+      <!-- 顶部标识 -->
+      <div class="header" style="padding: 0.6% 2%;">
+        <div class="day-info">
+          <div class="day-badge">2</div>
+          <div class="day-text">第二天：IB网络测试与优化</div>
+        </div>
+        <div class="section-indicator">网络调优技术</div>
+      </div>
+
+      <!-- 主体内容 -->
+      <div class="main-content">
+        <!-- 页面标题 -->
+        <div class="page-title">
+          <div class="title-main">IB网络调优</div>
+          <div class="title-sub">系统参数优化与网络性能调优最佳实践</div>
+        </div>
+
+        <!-- 内容网格 -->
+        <div class="content-grid">
+          <!-- 左侧：物理层和网络层调优 -->
+          <div class="content-section">
+            <div class="section-title system">物理层和网络层调优</div>
+            
+            <div class="content-item cpu">
+              <div class="item-header">
+                <div class="item-icon">🔍</div>
+                <div class="item-title">物理层诊断检查</div>
+              </div>
+              <div class="item-content">
+                使用专业工具检查IB链路状态、速度匹配和错误计数，确保物理层基础可靠。<br>
+                定期运行ibdiagnet全网诊断，主动发现CRC错误、链路不匹配等硬件问题。<br>
+                保持所有HCA和交换机固件版本一致，使用高质量线缆和光模块。
+              </div>
+              <div class="config-example">ibdiagnet --pc -P all=1 --pm_pause_time 600 -r --get_phy_info --extended_speeds all --get_cable_info --cable_info_disconnected --reset_phy_info  --congestion_control --sharp --rail_validation --phy_cable_disconnected</div>
+            </div>
+
+            <div class="content-item memory">
+              <div class="item-header">
+                <div class="item-icon">🌐</div>
+                <div class="item-title">OpenSM路由算法(opensm.conf)</div>
+              </div>
+              <div class="item-content">
+                选择适合网络拓扑的路由算法，实现负载均衡和最优路径分配。<br>
+                updn算法适用于标准Fat-Tree拓扑，显著提升整体性能。<br>
+		设置根节点（顶层交换机）guid配置文件。
+              </div>
+              <div class="config-example">routing_engine ar_updn</div>
+              <div class="config-example">root_guid_file root_guid.conf</div>
+            </div>
+
+            <div class="content-item interrupt">
+              <div class="item-header">
+                <div class="item-icon">🚦</div>
+                <div class="item-title">拥塞控制机制(opensm.conf)</div>
+              </div>
+              <div class="item-content">
+                启用硬件拥塞控制，在高负载下主动通知发送方减速，避免数据包丢失。<br>
+                特别适用于All-to-All通信模式，能有效提高网络整体吞吐量和稳定性。<br>
+              </div>
+              <div class="config-example">mlnx_congestion_control 2</div>
+            </div>
+
+            <div class="content-item monitoring">
+              <div class="item-header">
+                <div class="item-icon">⚡</div>
+                <div class="item-title">启用SHARP(opensm.conf)</div>
+              </div>
+              <div class="item-content">
+                启用NVIDIA SHARP技术，将All-Reduce等集合通信卸载到交换机网络中完成。<br>
+                极大降低集合通信延迟和GPU的计算负载，特别适用于AI训练场景。<br>
+              </div>
+              <div class="config-example">sharp_enabled 2</div>
+            </div>
+          </div>
+
+          <!-- 右侧：系统和应用层调优 -->
+          <div class="content-section">
+            <div class="section-title network">系统和应用层调优</div>
+            
+            <div class="content-item network">
+              <div class="item-header">
+                <div class="item-icon">🔧</div>
+                <div class="item-title">NUMA亲和性绑定</div>
+              </div>
+              <div class="item-content">
+                将应用进程绑定到与HCA同一NUMA节点的CPU核心，最小化内存访问延迟。<br>
+                避免跨NUMA节点的内存访问，确保最佳的缓存局部性和内存带宽。<br>
+                使用numactl工具实现CPU和内存的双重绑定，获得最低延迟性能。
+              </div>
+              <div class="config-example">cat /sys/class/infiniband/mlx5_0/device/numa_node</div>
+              <div class="config-example">numactl --cpunodebind=1 --membind=1 your_app</div>
+            </div>
+
+            <div class="content-item routing">
+              <div class="item-header">
+                <div class="item-icon">⚡</div>
+                <div class="item-title">OFED驱动优化</div>
+              </div>
+              <div class="item-content">
+                使用官方NVIDIA OFED驱动替代inbox驱动，获得最新优化和性能提升。<br>
+                运行mlnx_tune自动化工具完成系统级性能参数的一键优化配置。
+              </div>
+              <div class="config-example">mlnx_tune -p HIGH_THROUGHPUT</div>
+            </div>
+
+            <div class="content-item network">
+              <div class="item-header">
+                <div class="item-icon">🚀</div>
+                <div class="item-title">MPI通信库调优</div>
+              </div>
+              <div class="item-content">
+                使用基于UCX的现代MPI实现，自动选择最佳IB传输方式和协议。<br>
+                配置UCX使用DC（动态连接）传输服务，获得比传统RC更好的性能。<br>
+                对于AI训练，确保NCCL使用Simple协议和GPU RDMA实现最高效率。
+              </div>
+              <div class="config-example">mpirun -np 64 -x UCX_TLS=dc,ud,sm ./my_app</div>
+            </div>
+
+            <div class="content-item routing">
+              <div class="item-header">
+                <div class="item-icon">📊</div>
+                <div class="item-title">性能基准测试</div>
+              </div>
+              <div class="item-content">
+                使用perftest工具包测试RDMA带宽和延迟性能，建立性能基线。<br>
+                使用clusterkit工具进行集群级别的网络性能测试和诊断。
+              </div>
+              <div class="config-example">ib_write_bw </div>
+              <div class="config-example">clusterkit.sh --hostfile hostfile</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 优化要点 -->
+        <div class="optimization-note">
+          <div class="optimization-text">
+            <div>🎯</div>
+            <span><span class="highlight">调优最佳实践：</span>分层调优从物理层到应用层，使用科学基准测试验证效果，保持固件和驱动版本一致性</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 底部信息 -->
+      <div class="footer" style="padding: 0.6% 2%;">
+        <div class="footer-left">
+          <div class="status-dot"></div>
+          <span>第二天 - 网络调优技术</span>
+        </div>
+        <div class="footer-badges">
+          <div class="footer-badge badge-install">TUNING</div>
+          <div class="footer-badge badge-config">OPTIMIZATION</div>
+          <div class="footer-badge badge-command">PERFORMANCE</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 导航按钮 -->
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+    <a href="index13.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+    <a href="index15.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+  </div>
+</body>
+</html>

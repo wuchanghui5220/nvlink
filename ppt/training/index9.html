@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mellanox MFT工具和交换机CPLD固件更新</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    /* 页面特定样式 - 极度紧凑版本 */
+    .main-content {
+      padding: 0.8% 2%;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .page-title {
+      text-align: center;
+      margin-bottom: 1%;
+      flex-shrink: 0;
+    }
+
+    .title-main {
+      font-size: clamp(22px, 3vw, 28px);
+      font-weight: 800;
+      background: linear-gradient(135deg, #ffffff 0%, #00a2ff 50%, #4834d4 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 0.5%;
+    }
+
+    .title-sub {
+      font-size: clamp(12px, 1.3vw, 14px);
+      color: rgba(255, 255, 255, 0.75);
+      font-weight: 300;
+      margin-bottom: 0.5%;
+    }
+
+    .content-sections {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2%;
+      min-height: 0;
+    }
+
+    .mft-section {
+      background: linear-gradient(135deg, rgba(0, 162, 255, 0.15), rgba(0, 162, 255, 0.05));
+      border: 1px solid rgba(0, 162, 255, 0.4);
+      border-radius: 8px;
+      padding: 2%;
+      overflow-y: auto;
+    }
+
+    .cpld-section {
+      background: linear-gradient(135deg, rgba(138, 43, 226, 0.15), rgba(138, 43, 226, 0.05));
+      border: 1px solid rgba(138, 43, 226, 0.4);
+      border-radius: 8px;
+      padding: 2%;
+      overflow-y: auto;
+    }
+
+    .section-header {
+      font-size: clamp(16px, 1.8vw, 18px);
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 3%;
+      padding-bottom: 1%;
+      border-bottom: 2px solid currentColor;
+    }
+
+    .mft-section .section-header {
+      color: #00a2ff;
+    }
+
+    .cpld-section .section-header {
+      color: #8a2be2;
+    }
+
+    .subsection {
+      margin-bottom: 3%;
+    }
+
+    .subsection-title {
+      font-size: clamp(13px, 1.4vw, 15px);
+      font-weight: 600;
+      margin-bottom: 2%;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .subsection-title.download {
+      color: #87ceeb;
+    }
+
+    .subsection-title.install {
+      color: #90ee90;
+    }
+
+    .subsection-title.usage {
+      color: #dda0dd;
+    }
+
+    .subsection-title.download::before {
+      content: '📥';
+      font-size: 1em;
+    }
+
+    .subsection-title.install::before {
+      content: '⚙️';
+      font-size: 1em;
+    }
+
+    .subsection-title.usage::before {
+      content: '🔧';
+      font-size: 1em;
+    }
+
+    .link-group {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 6px;
+      padding: 2%;
+      margin-bottom: 2%;
+    }
+
+    .doc-link {
+      color: #87ceeb;
+      text-decoration: none;
+      font-family: 'Courier New', monospace;
+      font-size: clamp(9px, 1vw, 10px);
+      background: rgba(0, 162, 255, 0.1);
+      padding: 0.5% 1%;
+      border-radius: 3px;
+      border: 1px solid rgba(0, 162, 255, 0.2);
+      transition: all 0.3s ease;
+      word-break: break-all;
+      display: block;
+      margin: 1% 0;
+    }
+
+    .doc-link:hover {
+      background: rgba(0, 162, 255, 0.2);
+    }
+
+    .cmd {
+      background: rgba(0, 0, 0, 0.4);
+      border-left: 3px solid #00a2ff;
+      padding: 1.5%;
+      margin: 1% 0;
+      font-family: 'Courier New', monospace;
+      font-size: clamp(10px, 1.1vw, 11px);
+      color: #e2e8f0;
+      line-height: 1.3;
+      border-radius: 0 4px 4px 0;
+    }
+
+    .cpld-section .cmd {
+      border-left-color: #8a2be2;
+    }
+
+    .cmd::before {
+      content: '# ';
+      color: #00a2ff;
+      font-weight: bold;
+    }
+
+    .cpld-section .cmd::before {
+      color: #8a2be2;
+    }
+
+    .cmd-desc {
+      font-size: clamp(9px, 1vw, 10px);
+      color: rgba(255, 255, 255, 0.8);
+      margin: 0.5% 0;
+      font-style: italic;
+    }
+
+    .install-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5%;
+    }
+
+    .install-step {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(0, 162, 255, 0.3);
+      border-radius: 6px;
+      padding: 2%;
+    }
+
+    .cpld-section .install-step {
+      border-color: rgba(138, 43, 226, 0.3);
+    }
+
+    .step-title {
+      font-size: clamp(11px, 1.2vw, 12px);
+      font-weight: 600;
+      margin-bottom: 1%;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .mft-section .step-title {
+      color: #87ceeb;
+    }
+
+    .cpld-section .step-title {
+      color: #dda0dd;
+    }
+
+    .step-num {
+      width: 16px;
+      height: 16px;
+      background: linear-gradient(135deg, #00a2ff, #0078d4);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(8px, 0.9vw, 9px);
+      font-weight: 700;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .cpld-section .step-num {
+      background: linear-gradient(135deg, #8a2be2, #9370db);
+    }
+
+    .operation-modes {
+      display: flex;
+      flex-direction: column;
+      gap: 2%;
+    }
+
+    .mode-group {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(138, 43, 226, 0.3);
+      border-radius: 6px;
+      padding: 2%;
+    }
+
+    .mode-title {
+      font-size: clamp(12px, 1.3vw, 13px);
+      font-weight: 600;
+      color: #dda0dd;
+      margin-bottom: 1.5%;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .mode-title::before {
+      content: '🔸';
+      font-size: 1em;
+    }
+
+    .warning-note {
+      background: linear-gradient(135deg, rgba(255, 193, 7, 0.2), rgba(255, 193, 7, 0.1));
+      border: 1px solid rgba(255, 193, 7, 0.4);
+      border-radius: 6px;
+      padding: 2%;
+      margin: 2% 0;
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .warning-icon {
+      font-size: clamp(12px, 1.3vw, 14px);
+      flex-shrink: 0;
+    }
+
+    .warning-text {
+      font-size: clamp(10px, 1.1vw, 11px);
+      color: rgba(255, 255, 255, 0.9);
+      line-height: 1.4;
+    }
+
+    .highlight-warning {
+      color: #ffc107;
+      font-weight: 600;
+    }
+
+    .docs-footer {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 1%;
+      margin-top: 1%;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .docs-text {
+      font-size: clamp(10px, 1.1vw, 11px);
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 0.5%;
+    }
+
+    .docs-links {
+      display: flex;
+      justify-content: center;
+      gap: 2%;
+      flex-wrap: wrap;
+    }
+
+    .footer-link {
+      color: #87ceeb;
+      text-decoration: none;
+      font-family: 'Courier New', monospace;
+      font-size: clamp(8px, 0.9vw, 9px);
+      background: rgba(0, 162, 255, 0.1);
+      padding: 0.3% 1%;
+      border-radius: 3px;
+      border: 1px solid rgba(0, 162, 255, 0.2);
+      transition: all 0.3s ease;
+      white-space: nowrap;
+    }
+
+    .footer-link:hover {
+      background: rgba(0, 162, 255, 0.2);
+    }
+
+    /* 极度紧凑的响应式 */
+    @media (max-width: 1200px) {
+      .content-sections {
+        grid-template-columns: 1fr;
+        gap: 1.5%;
+      }
+    }
+
+    @media (max-height: 600px) {
+      .main-content {
+        padding: 0.5% 1.5%;
+      }
+      
+      .mft-section, .cpld-section {
+        padding: 1.5%;
+      }
+      
+      .install-step, .mode-group {
+        padding: 1.5%;
+      }
+      
+      .cmd {
+        padding: 1%;
+        margin: 0.5% 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <!-- 背景元素 -->
+    <div class="bg-elements">
+      <div class="brain-pattern"></div>
+      <div class="network-signals">
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+      </div>
+    </div>
+
+    <!-- 主要内容 -->
+    <div class="content">
+      <!-- 顶部标识 -->
+      <div class="header">
+        <div class="day-info">
+          <div class="day-badge">1</div>
+          <div class="day-text">第一天：智算网络组网设计与部署</div>
+        </div>
+        <div class="section-indicator">1.6 MFT工具和CPLD固件更新</div>
+      </div>
+
+      <!-- 主体内容 -->
+      <div class="main-content">
+        <!-- 页面标题 -->
+        <div class="page-title">
+          <div class="title-main">Mellanox MFT工具和交换机CPLD固件更新</div>
+          <div class="title-sub">固件管理工具安装使用与CPLD固件更新操作</div>
+        </div>
+
+        <!-- 主要内容区域 -->
+        <div class="content-sections">
+          <!-- MFT工具区域 -->
+          <div class="mft-section">
+            <div class="section-header">🔧 MFT工具</div>
+            
+            <!-- MFT下载链接 -->
+            <div class="subsection">
+              <div class="subsection-title download">工具下载</div>
+              <div class="link-group">
+                <a href="https://network.nvidia.com/products/adapter-software/firmware-tools/" 
+                   target="_blank" 
+                   class="doc-link">
+                  https://network.nvidia.com/products/adapter-software/firmware-tools/
+                </a>
+              </div>
+            </div>
+
+            <!-- MFT安装步骤 -->
+            <div class="subsection">
+              <div class="subsection-title install">安装步骤</div>
+              <div class="install-steps">
+                <div class="install-step">
+                  <div class="step-title">
+                    <div class="step-num">1</div>
+                    解压下载包
+                  </div>
+                  <div class="cmd">tar xzf mft-4.xx.x-xxx.tgz</div>
+                  <div class="cmd-desc">解压MFT工具包到当前目录</div>
+                </div>
+
+                <div class="install-step">
+                  <div class="step-title">
+                    <div class="step-num">2</div>
+                    允许打包bins到自执行文件
+                  </div>
+                  <div class="cmd">cd mft-4.xx.x-xxx</div>
+                </div>
+
+                <div class="install-step">
+                  <div class="step-title">
+                    <div class="step-num">3</div>
+                    执行OEM安装
+                  </div>
+                  <div class="cmd">./install.sh --oem</div>
+                  <div class="cmd-desc">使用OEM模式安装MFT工具</div>
+                </div>
+
+                <div class="install-step">
+                  <div class="step-title">
+                    <div class="step-num">4</div>
+                    启动MST驱动
+                  </div>
+                  <div class="cmd">mst start</div>
+                  <div class="cmd-desc">启动Mellanox Software Tools驱动服务</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- MFT使用 -->
+            <div class="subsection">
+              <div class="subsection-title usage">常用命令</div>
+              <div class="cmd">mst status</div>
+              <div class="cmd-desc">查看MST状态和可用设备</div>
+              <div class="cmd">flint -d /dev/mst/mt4123_pciconf0 q</div>
+              <div class="cmd-desc">使用flint查询设备固件信息</div>
+            </div>
+          </div>
+
+          <!-- CPLD固件更新区域 -->
+          <div class="cpld-section">
+            <div class="section-header">🔄 CPLD固件更新</div>
+            
+            <!-- CPLD工具包 -->
+            <div class="subsection">
+              <div class="subsection-title download">工具包获取</div>
+              <div class="warning-note">
+                <div class="warning-icon">📦</div>
+                <div class="warning-text">
+                  <span class="highlight-warning">注意：</span>CPLD工具包需要联系代理商获取
+                </div>
+              </div>
+              <div class="cmd">tar xzf updateswitchcpld_v2.9.tgz</div>
+              <div class="cmd">cd updateswitchcpld_v2.9</div>
+            </div>
+
+            <!-- CPLD操作模式 -->
+            <div class="subsection">
+              <div class="subsection-title usage">操作模式</div>
+              <div class="operation-modes">
+                <div class="mode-group">
+                  <div class="mode-title">非托管模式更新</div>
+                  <div class="cmd">./updateswitchcpld --unmanaged -d lid-&lt;lid of switch&gt;</div>
+                  <div class="cmd-desc">使用LID执行CPLD固件更新</div>
+                </div>
+
+                <div class="mode-group">
+                  <div class="mode-title">非托管模式检查</div>
+                  <div class="cmd">./updateswitchcpld --unmanaged -d &lt;device&gt; --check_cpld --verbose</div>
+                  <div class="cmd-desc">检查CPLD固件版本和状态</div>
+                </div>
+
+                <div class="mode-group">
+                  <div class="mode-title">托管模式更新</div>
+                  <div class="cmd">./updateswitchcpld --managed -t &lt;switch's IP&gt; -u &lt;username&gt; -p &lt;password&gt; --os mlnx-os</div>
+                  <div class="cmd-desc">通过网络管理接口更新CPLD</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 重要提醒 -->
+            <div class="warning-note">
+              <div class="warning-icon">⚠️</div>
+              <div class="warning-text">
+                <span class="highlight-warning">重要：</span>CPLD更新过程中不要断电或中断，更新后需要重启交换机使新固件生效。
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 文档参考链接 -->
+        <div class="docs-footer">
+          <div class="docs-text">官方文档参考</div>
+          <div class="docs-links">
+            <a href="https://docs.nvidia.com/networking/display/mftv4301508" 
+               target="_blank" 
+               class="footer-link">
+              MFT工具手册
+            </a>
+            <a href="https://docs.nvidia.com/networking/display/mftv4301508/cpldupdate+–+tool+for+programming+on-board+cplds+on+nvidia+devices" 
+               target="_blank" 
+               class="footer-link">
+              CPLD更新说明
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 底部信息 -->
+      <div class="footer">
+        <div class="footer-left">
+          <div class="status-dot"></div>
+          <span>第一天 - MFT工具和CPLD固件更新</span>
+        </div>
+        <div class="footer-badges">
+          <div class="footer-badge badge-install">MFT</div>
+          <div class="footer-badge badge-config">CPLD</div>
+          <div class="footer-badge badge-command">UPDATE</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 导航按钮 - 独立于主内容区 -->
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+    <a href="index8.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+    <a href="index10.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+  </div>
+</body>
+</html>
