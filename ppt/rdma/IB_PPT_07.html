@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>InfiniBand 协议栈、安全与高级特性</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    :root {
+      --primary-blue: #00a2ff;
+      --primary-green: #76b900;
+      --primary-orange: #ffa500;
+      --primary-purple: #4834d4;
+      --primary-red: #ff6b6b;
+      --text-primary: #ffffff;
+      --text-secondary: rgba(255, 255, 255, 0.87);
+    }
+
+    .main-content {
+      padding: 1% 2%;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .page-title {
+      text-align: center;
+      margin-bottom: 1.5%;
+      flex-shrink: 0;
+    }
+
+    .title-main {
+      font-size: clamp(26px, 3vw, 34px);
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-purple) 50%, var(--primary-orange) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 0.8%;
+    }
+
+    .title-sub {
+      font-size: clamp(14px, 1.6vw, 18px);
+      color: rgba(255, 255, 255, 0.85);
+      font-weight: 500;
+      margin-bottom: 1%;
+    }
+
+    .content-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2%;
+      min-height: 0;
+      overflow-y: auto;
+    }
+
+    /* 协议栈 */
+    .protocol-stack {
+      background: linear-gradient(135deg, rgba(118, 185, 0, 0.15), rgba(118, 185, 0, 0.08));
+      border: 2px solid rgba(118, 185, 0, 0.4);
+      border-radius: 15px;
+      padding: 2.5%;
+      text-align: center;
+    }
+
+    .stack-title {
+      font-size: clamp(20px, 2.2vw, 26px);
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 2%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    .stack-icon {
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, var(--primary-green), #4caf50);
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .stack-layers {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5%;
+    }
+
+    .layer-card {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      padding: 2%;
+      transition: all 0.3s ease;
+    }
+
+    .layer-card:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: translateY(-2px);
+    }
+
+    .layer-name {
+      font-size: clamp(13px, 1.4vw, 15px);
+      color: var(--primary-green);
+      font-weight: 700;
+      margin-bottom: 0.5%;
+    }
+
+    .layer-desc {
+      font-size: clamp(11px, 1.2vw, 13px);
+      color: var(--text-secondary);
+      line-height: 1.3;
+    }
+
+    /* 安全机制网格 */
+    .security-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2%;
+    }
+
+    .security-section {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04));
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 15px;
+      padding: 2.5%;
+      transition: all 0.3s ease;
+    }
+
+    .security-section:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .security-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 2%;
+      padding-bottom: 1.5%;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .security-icon {
+      width: 45px;
+      height: 45px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .memory-sec .security-icon {
+      background: linear-gradient(135deg, var(--primary-blue), #0078d4);
+    }
+
+    .network-sec .security-icon {
+      background: linear-gradient(135deg, var(--primary-orange), #ff8c00);
+    }
+
+    .access-sec .security-icon {
+      background: linear-gradient(135deg, var(--primary-purple), #6b46c1);
+    }
+
+    .security-title {
+      font-size: clamp(16px, 1.7vw, 19px);
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .security-subtitle {
+      font-size: clamp(12px, 1.2vw, 14px);
+      color: rgba(255, 255, 255, 0.6);
+      margin-top: 3px;
+    }
+
+    .security-items {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .security-items li {
+      padding: 0.8% 0;
+      position: relative;
+      padding-left: 20px;
+      font-size: clamp(12px, 1.3vw, 14px);
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .security-items li::before {
+      content: '🔒';
+      position: absolute;
+      left: 0;
+      font-size: 12px;
+    }
+
+    .security-highlight {
+      color: var(--primary-blue);
+      font-weight: 600;
+    }
+
+    /* 高级特性 */
+    .advanced-features {
+      background: linear-gradient(135deg, rgba(72, 52, 212, 0.15), rgba(72, 52, 212, 0.08));
+      border: 2px solid rgba(72, 52, 212, 0.4);
+      border-radius: 15px;
+      padding: 2.5%;
+    }
+
+    .features-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 2%;
+    }
+
+    .features-icon {
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, var(--primary-purple), #6b46c1);
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .features-title {
+      font-size: clamp(18px, 2vw, 22px);
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2%;
+    }
+
+    .feature-card {
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      padding: 2%;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .feature-name {
+      font-size: clamp(14px, 1.5vw, 16px);
+      font-weight: 600;
+      color: var(--primary-purple);
+      margin-bottom: 1%;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .feature-emoji {
+      font-size: 16px;
+    }
+
+    .feature-description {
+      font-size: clamp(12px, 1.3vw, 14px);
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    .feature-highlight {
+      color: var(--primary-purple);
+      font-weight: 600;
+    }
+
+    @media (max-width: 1200px) {
+      .stack-layers {
+        grid-template-columns: 1fr;
+        gap: 1.5%;
+      }
+      
+      .security-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5%;
+      }
+      
+      .features-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <div class="bg-elements">
+      <div class="brain-pattern"></div>
+      <div class="network-signals">
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+      </div>
+    </div>
+    
+    <div class="content">
+      <div class="header" style="padding: 0.6% 2%;">
+        <div class="day-info">
+          <div class="day-badge">7</div>
+          <div class="day-text">第七章：协议栈、安全与高级特性</div>
+        </div>
+        <div class="section-indicator">完整技术栈</div>
+      </div>
+      
+      <div class="main-content">
+        <div class="page-title">
+          <div class="title-main">协议栈、安全与高级特性</div>
+          <div class="title-sub">分层架构 · 安全机制 · 内存保护 · 网络内计算</div>
+        </div>
+        
+        <div class="content-wrapper">
+          <!-- 协议栈 -->
+          <div class="protocol-stack">
+            <div class="stack-title">
+              <div class="stack-icon">📚</div>
+              <span>InfiniBand 协议栈</span>
+            </div>
+            
+            <div class="stack-layers">
+              <div class="layer-card">
+                <div class="layer-name">上层协议</div>
+                <div class="layer-desc">MPI, NCCL, OpenSHMEM, 应用程序接口</div>
+              </div>
+              
+              <div class="layer-card">
+                <div class="layer-name">动词层 (Verbs)</div>
+                <div class="layer-desc">标准化API接口, 用户态库</div>
+              </div>
+              
+              <div class="layer-card">
+                <div class="layer-name">传输层</div>
+                <div class="layer-desc">QP管理, 可靠性保证, 流量控制</div>
+              </div>
+              
+              <div class="layer-card">
+                <div class="layer-name">网络层</div>
+                <div class="layer-desc">路由, GID寻址, 子网间通信</div>
+              </div>
+              
+              <div class="layer-card">
+                <div class="layer-name">链路层</div>
+                <div class="layer-desc">LID寻址, VL管理, 包转发</div>
+              </div>
+              
+              <div class="layer-card">
+                <div class="layer-name">物理层</div>
+                <div class="layer-desc">电气信号, 光纤/铜线, 编码调制</div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 安全与隔离机制 -->
+          <div class="security-grid">
+            <!-- 内存保护 -->
+            <div class="security-section memory-sec">
+              <div class="security-header">
+                <div class="security-icon">🛡️</div>
+                <div>
+                  <div class="security-title">内存保护</div>
+                  <div class="security-subtitle">Memory Protection</div>
+                </div>
+              </div>
+              <ul class="security-items">
+                <li><span class="security-highlight">内存区域 (MR)</span>：注册可访问内存区域</li>
+                <li><span class="security-highlight">L_Key/R_Key</span>：本地和远程内存访问密钥</li>
+                <li><span class="security-highlight">保护域 (PD)</span>：资源访问控制域</li>
+                <li>防止非授权内存访问</li>
+                <li>硬件级内存权限验证</li>
+              </ul>
+            </div>
+            
+            <!-- 网络隔离 -->
+            <div class="security-section network-sec">
+              <div class="security-header">
+                <div class="security-icon">🌐</div>
+                <div>
+                  <div class="security-title">网络隔离</div>
+                  <div class="security-subtitle">Network Isolation</div>
+                </div>
+              </div>
+              <ul class="security-items">
+                <li><span class="security-highlight">分区密钥 (P_Key)</span>：类似VLAN的网络分区</li>
+                <li>多租户环境隔离</li>
+                <li>网络流量分离</li>
+                <li>不同分区无法互相通信</li>
+                <li>硬件级分区验证</li>
+              </ul>
+            </div>
+            
+            <!-- 访问控制 -->
+            <div class="security-section access-sec">
+              <div class="security-header">
+                <div class="security-icon">🔑</div>
+                <div>
+                  <div class="security-title">访问控制</div>
+                  <div class="security-subtitle">Access Control</div>
+                </div>
+              </div>
+              <ul class="security-items">
+                <li><span class="security-highlight">队列密钥 (Q_Key)</span>：保护UD QP访问</li>
+                <li><span class="security-highlight">管理密钥 (M_Key)</span>：保护设备配置</li>
+                <li>防止未授权的管理操作</li>
+                <li>确保系统配置安全</li>
+                <li>分层权限管理体系</li>
+              </ul>
+            </div>
+          </div>
+          
+          <!-- 高级特性 -->
+          <div class="advanced-features">
+            <div class="features-header">
+              <div class="features-icon">🚀</div>
+              <div class="features-title">高级特性</div>
+            </div>
+            
+            <div class="features-grid">
+              <div class="feature-card">
+                <div class="feature-name">
+                  <span class="feature-emoji">⚡</span>
+                  网络内计算 (In-Network Computing)
+                </div>
+                <div class="feature-description">
+                  如 <span class="feature-highlight">SHARP 技术</span>，将集合通信操作卸载到交换机硬件执行，减少网络流量和延迟。支持 AllReduce、Broadcast 等操作。
+                </div>
+              </div>
+              
+              <div class="feature-card">
+                <div class="feature-name">
+                  <span class="feature-emoji">📊</span>
+                  高级QoS与流量工程
+                </div>
+                <div class="feature-description">
+                  支持多个 <span class="feature-highlight">虚拟通道 (VL)</span>，提供差异化服务质量。实现流量优先级管理和拥塞控制。
+                </div>
+              </div>
+              
+              <div class="feature-card">
+                <div class="feature-name">
+                  <span class="feature-emoji">🔄</span>
+                  自适应路由
+                </div>
+                <div class="feature-description">
+                  动态调整数据包路径以避免拥塞，提高网络整体性能。支持 <span class="feature-highlight">多路径负载均衡</span>。
+                </div>
+              </div>
+              
+              <div class="feature-card">
+                <div class="feature-name">
+                  <span class="feature-emoji">🎯</span>
+                  硬件加速引擎
+                </div>
+                <div class="feature-description">
+                  专用硬件加速器支持加密、压缩、模式匹配等操作，进一步提升性能并减少 <span class="feature-highlight">CPU 负载</span>。
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="footer" style="padding: 0.6% 2%;">
+        <div class="footer-left">
+          <div class="status-dot"></div>
+          <span>InfiniBand完整技术栈 - 协议架构与安全机制</span>
+        </div>
+        <div class="footer-badges">
+          <div class="footer-badge badge-install">协议栈</div>
+          <div class="footer-badge badge-config">安全机制</div>
+          <div class="footer-badge badge-command">高级特性</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+    <a href="IB_PPT_06.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+    <a href="IB_PPT_08.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+  </div>
+</body>
+</html>

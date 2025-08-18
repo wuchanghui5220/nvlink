@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>InfiniBand 消息传输核心机制</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    :root {
+      --primary-blue: #00a2ff;
+      --primary-green: #76b900;
+      --primary-orange: #ffa500;
+      --primary-purple: #4834d4;
+      --primary-red: #ff6b6b;
+      --text-primary: #ffffff;
+      --text-secondary: rgba(255, 255, 255, 0.87);
+    }
+
+    .main-content {
+      padding: 1% 2%;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .page-title {
+      text-align: center;
+      margin-bottom: 1.5%;
+      flex-shrink: 0;
+    }
+
+    .title-main {
+      font-size: clamp(26px, 3vw, 34px);
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary-orange) 0%, var(--primary-blue) 50%, var(--primary-green) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 0.8%;
+    }
+
+    .title-sub {
+      font-size: clamp(14px, 1.6vw, 18px);
+      color: rgba(255, 255, 255, 0.85);
+      font-weight: 500;
+      margin-bottom: 1%;
+    }
+
+    .content-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2%;
+      min-height: 0;
+      overflow-y: auto;
+    }
+
+    /* 队列对介绍 */
+    .qp-intro {
+      background: linear-gradient(135deg, rgba(255, 165, 0, 0.15), rgba(255, 165, 0, 0.08));
+      border: 2px solid rgba(255, 165, 0, 0.4);
+      border-radius: 15px;
+      padding: 2.5%;
+      text-align: center;
+    }
+
+    .qp-icon {
+      width: 70px;
+      height: 70px;
+      background: linear-gradient(135deg, var(--primary-orange), #ff8c00);
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 32px;
+      font-weight: bold;
+      margin: 0 auto 2%;
+    }
+
+    .qp-title {
+      font-size: clamp(22px, 2.4vw, 28px);
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 1.5%;
+    }
+
+    .qp-description {
+      font-size: clamp(14px, 1.5vw, 17px);
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 2%;
+    }
+
+    .qp-components {
+      display: flex;
+      justify-content: center;
+      gap: 3%;
+      margin-top: 2%;
+    }
+
+    .qp-component {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 2% 3%;
+      text-align: center;
+      flex: 1;
+      max-width: 150px;
+    }
+
+    .component-name {
+      font-size: clamp(14px, 1.5vw, 16px);
+      color: var(--primary-orange);
+      font-weight: 700;
+      margin-bottom: 1%;
+    }
+
+    .component-desc {
+      font-size: clamp(12px, 1.3vw, 14px);
+      color: var(--text-secondary);
+    }
+
+    /* 传输操作网格 */
+    .operations-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2%;
+    }
+
+    .operation-card {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04));
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 15px;
+      padding: 2.5%;
+      transition: all 0.3s ease;
+      height: fit-content;
+    }
+
+    .operation-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .operation-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 2%;
+      padding-bottom: 1.5%;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .operation-icon {
+      width: 45px;
+      height: 45px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .send-op .operation-icon {
+      background: linear-gradient(135deg, var(--primary-blue), #0078d4);
+    }
+
+    .write-op .operation-icon {
+      background: linear-gradient(135deg, var(--primary-green), #4caf50);
+    }
+
+    .read-op .operation-icon {
+      background: linear-gradient(135deg, var(--primary-orange), #ff8c00);
+    }
+
+    .atomic-op .operation-icon {
+      background: linear-gradient(135deg, var(--primary-purple), #6b46c1);
+    }
+
+    .operation-title {
+      font-size: clamp(16px, 1.7vw, 19px);
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .operation-subtitle {
+      font-size: clamp(12px, 1.2vw, 14px);
+      color: rgba(255, 255, 255, 0.6);
+      margin-top: 3px;
+    }
+
+    .operation-description {
+      font-size: clamp(13px, 1.4vw, 15px);
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .operation-highlight {
+      color: var(--primary-blue);
+      font-weight: 600;
+    }
+
+    /* 服务类型表格 */
+    .service-types {
+      background: linear-gradient(135deg, rgba(72, 52, 212, 0.15), rgba(72, 52, 212, 0.08));
+      border: 2px solid rgba(72, 52, 212, 0.4);
+      border-radius: 15px;
+      padding: 2.5%;
+    }
+
+    .service-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 2%;
+    }
+
+    .service-icon {
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, var(--primary-purple), #6b46c1);
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .service-title {
+      font-size: clamp(18px, 2vw, 22px);
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .service-table {
+      overflow-x: auto;
+    }
+
+    .service-table table {
+      width: 100%;
+      border-collapse: collapse;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .service-table th,
+    .service-table td {
+      padding: 1.5% 2%;
+      text-align: left;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .service-table th {
+      background: rgba(255, 255, 255, 0.1);
+      font-size: clamp(12px, 1.3vw, 14px);
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .service-table td {
+      font-size: clamp(11px, 1.2vw, 13px);
+      color: var(--text-secondary);
+    }
+
+    .service-name {
+      color: var(--primary-purple);
+      font-weight: 600;
+    }
+
+    .reliable {
+      color: var(--primary-green);
+      font-weight: 600;
+    }
+
+    .unreliable {
+      color: var(--primary-orange);
+      font-weight: 600;
+    }
+
+    @media (max-width: 1200px) {
+      .operations-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5%;
+      }
+      
+      .qp-components {
+        flex-direction: column;
+        gap: 1.5%;
+      }
+      
+      .qp-component {
+        max-width: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <div class="bg-elements">
+      <div class="brain-pattern"></div>
+      <div class="network-signals">
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+      </div>
+    </div>
+    
+    <div class="content">
+      <div class="header" style="padding: 0.6% 2%;">
+        <div class="day-info">
+          <div class="day-badge">4</div>
+          <div class="day-text">第四章：消息传输核心机制</div>
+        </div>
+        <div class="section-indicator">队列对与操作</div>
+      </div>
+      
+      <div class="main-content">
+        <div class="page-title">
+          <div class="title-main">消息传输核心机制</div>
+          <div class="title-sub">队列对 · 传输操作 · 服务类型 · Verbs API</div>
+        </div>
+        
+        <div class="content-wrapper">
+          <!-- 队列对介绍 -->
+          <div class="qp-intro">
+            <div class="qp-icon">⚡</div>
+            <div class="qp-title">队列对 (Queue Pair, QP)</div>
+            <div class="qp-description">
+              QP 是 InfiniBand 的<strong>消息传输引擎</strong>，软件通过调用"动词 (Verbs)" API 将工作请求提交到 QP，实现高效的<strong>内核旁路操作</strong>。
+            </div>
+            <div class="qp-components">
+              <div class="qp-component">
+                <div class="component-name">发送队列 (SQ)</div>
+                <div class="component-desc">Send Queue<br>发送工作请求</div>
+              </div>
+              <div class="qp-component">
+                <div class="component-name">接收队列 (RQ)</div>
+                <div class="component-desc">Receive Queue<br>接收工作请求</div>
+              </div>
+              <div class="qp-component">
+                <div class="component-name">门铃机制</div>
+                <div class="component-desc">Doorbell<br>通知硬件处理</div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 核心传输操作 -->
+          <div class="operations-grid">
+            <!-- 发送操作 -->
+            <div class="operation-card send-op">
+              <div class="operation-header">
+                <div class="operation-icon">📤</div>
+                <div>
+                  <div class="operation-title">发送 (Send)</div>
+                  <div class="operation-subtitle">Basic Data Transfer</div>
+                </div>
+              </div>
+              <div class="operation-description">
+                基本的数据传输操作。发送方将数据推送到接收方的<span class="operation-highlight">接收缓冲区</span>中。需要接收方预先发布接收请求（WQE）。
+              </div>
+            </div>
+            
+            <!-- RDMA写入 -->
+            <div class="operation-card write-op">
+              <div class="operation-header">
+                <div class="operation-icon">✍️</div>
+                <div>
+                  <div class="operation-title">RDMA 写入</div>
+                  <div class="operation-subtitle">RDMA Write</div>
+                </div>
+              </div>
+              <div class="operation-description">
+                将本地数据<span class="operation-highlight">直接写入</span>远程指定内存地址。无需接收方参与，实现真正的<span class="operation-highlight">单边操作</span>。
+              </div>
+            </div>
+            
+            <!-- RDMA读取 -->
+            <div class="operation-card read-op">
+              <div class="operation-header">
+                <div class="operation-icon">📖</div>
+                <div>
+                  <div class="operation-title">RDMA 读取</div>
+                  <div class="operation-subtitle">RDMA Read</div>
+                </div>
+              </div>
+              <div class="operation-description">
+                从远程指定内存地址<span class="operation-highlight">读取数据</span>到本地。同样是单边操作，远程节点无需感知此操作。
+              </div>
+            </div>
+            
+            <!-- 原子操作 -->
+            <div class="operation-card atomic-op">
+              <div class="operation-header">
+                <div class="operation-icon">⚛️</div>
+                <div>
+                  <div class="operation-title">原子操作</div>
+                  <div class="operation-subtitle">Atomic Operations</div>
+                </div>
+              </div>
+              <div class="operation-description">
+                在远程内存上执行<span class="operation-highlight">"读-修改-写"</span>操作。保证操作的原子性，支持比较交换、加法等操作。
+              </div>
+            </div>
+          </div>
+          
+          <!-- 传输服务类型 -->
+          <div class="service-types">
+            <div class="service-header">
+              <div class="service-icon">🔄</div>
+              <div class="service-title">传输服务类型 (Service Types)</div>
+            </div>
+            
+            <div class="service-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>服务类型</th>
+                    <th>连接性</th>
+                    <th>可靠性</th>
+                    <th>支持操作</th>
+                    <th>关键用途</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="service-name">可靠连接 (RC)</td>
+                    <td>需要建立连接，点对点</td>
+                    <td class="reliable">可靠 (Ack/Nak 确认)</td>
+                    <td>Send, RDMA Read/Write, Atomic</td>
+                    <td>主要的数据传输、MPI 通信</td>
+                  </tr>
+                  <tr>
+                    <td class="service-name">不可靠数据报 (UD)</td>
+                    <td>无连接</td>
+                    <td class="unreliable">不可靠 (无确认)</td>
+                    <td><strong>仅 Send</strong> (单包消息)</td>
+                    <td>管理消息 (SMP/GMP)、多播</td>
+                  </tr>
+                  <tr>
+                    <td style="font-size: 11px; color: #888;">(UC 和 RD 为 RC 和 UD 的变种，较少使用)</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="footer" style="padding: 0.6% 2%;">
+        <div class="footer-left">
+          <div class="status-dot"></div>
+          <span>消息传输机制 - 队列对与RDMA操作</span>
+        </div>
+        <div class="footer-badges">
+          <div class="footer-badge badge-install">队列对</div>
+          <div class="footer-badge badge-config">RDMA操作</div>
+          <div class="footer-badge badge-command">服务类型</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+    <a href="IB_PPT_03.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+    <a href="IB_PPT_05.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+  </div>
+</body>
+</html>

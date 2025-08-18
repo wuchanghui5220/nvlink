@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>InfiniBand 基础架构与关键术语</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    :root {
+      --primary-blue: #00a2ff;
+      --primary-green: #76b900;
+      --primary-orange: #ffa500;
+      --primary-purple: #4834d4;
+      --primary-red: #ff6b6b;
+      --text-primary: #ffffff;
+      --text-secondary: rgba(255, 255, 255, 0.87);
+    }
+
+    .main-content {
+      padding: 1% 2%;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .page-title {
+      text-align: center;
+      margin-bottom: 1.5%;
+      flex-shrink: 0;
+    }
+
+    .title-main {
+      font-size: clamp(26px, 3vw, 34px);
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary-purple) 0%, var(--primary-blue) 50%, var(--primary-orange) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 0.8%;
+    }
+
+    .title-sub {
+      font-size: clamp(14px, 1.6vw, 18px);
+      color: rgba(255, 255, 255, 0.85);
+      font-weight: 500;
+      margin-bottom: 1%;
+    }
+
+    .content-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2%;
+      min-height: 0;
+      overflow-y: auto;
+    }
+
+    /* 术语定义网格 */
+    .terms-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2%;
+    }
+
+    .term-card {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04));
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      padding: 2%;
+      transition: all 0.3s ease;
+      height: fit-content;
+    }
+
+    .term-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .term-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 1.5%;
+      padding-bottom: 1%;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .term-icon {
+      width: 35px;
+      height: 35px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .node-term .term-icon {
+      background: linear-gradient(135deg, var(--primary-blue), #0078d4);
+    }
+
+    .adapter-term .term-icon {
+      background: linear-gradient(135deg, var(--primary-green), #4caf50);
+    }
+
+    .switch-term .term-icon {
+      background: linear-gradient(135deg, var(--primary-orange), #ff8c00);
+    }
+
+    .router-term .term-icon {
+      background: linear-gradient(135deg, var(--primary-purple), #6b46c1);
+    }
+
+    .subnet-term .term-icon {
+      background: linear-gradient(135deg, var(--primary-red), #e53e3e);
+    }
+
+    .lid-term .term-icon {
+      background: linear-gradient(135deg, #ff9500, #ffb347);
+    }
+
+    .gid-term .term-icon {
+      background: linear-gradient(135deg, #20b2aa, #48d1cc);
+    }
+
+    .term-title {
+      flex: 1;
+    }
+
+    .term-name {
+      font-size: clamp(14px, 1.5vw, 17px);
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .term-english {
+      font-size: clamp(11px, 1.2vw, 13px);
+      color: rgba(255, 255, 255, 0.6);
+      margin-top: 2px;
+    }
+
+    .term-description {
+      font-size: clamp(12px, 1.3vw, 14px);
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .term-highlight {
+      color: var(--primary-blue);
+      font-weight: 600;
+    }
+
+    /* 架构概览 */
+    .architecture-section {
+      background: linear-gradient(135deg, rgba(0, 162, 255, 0.15), rgba(0, 162, 255, 0.08));
+      border: 2px solid rgba(0, 162, 255, 0.4);
+      border-radius: 15px;
+      padding: 2.5%;
+      text-align: center;
+    }
+
+    .arch-title {
+      font-size: clamp(20px, 2.2vw, 26px);
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 1.5%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    .arch-icon {
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, var(--primary-blue), #0078d4);
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .arch-description {
+      font-size: clamp(14px, 1.5vw, 17px);
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 2%;
+    }
+
+    .arch-components {
+      display: flex;
+      justify-content: center;
+      gap: 2%;
+      flex-wrap: wrap;
+      margin-top: 2%;
+    }
+
+    .component-badge {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 25px;
+      padding: 1% 2%;
+      font-size: clamp(12px, 1.3vw, 14px);
+      color: var(--text-primary);
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .component-badge:hover {
+      background: rgba(255, 255, 255, 0.15);
+      transform: scale(1.05);
+    }
+
+    /* 地址系统对比 */
+    .addressing-section {
+      background: linear-gradient(135deg, rgba(118, 185, 0, 0.15), rgba(118, 185, 0, 0.08));
+      border: 2px solid rgba(118, 185, 0, 0.4);
+      border-radius: 15px;
+      padding: 2.5%;
+    }
+
+    .addressing-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 2%;
+    }
+
+    .addressing-icon {
+      width: 45px;
+      height: 45px;
+      background: linear-gradient(135deg, var(--primary-green), #4caf50);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .addressing-title {
+      font-size: clamp(18px, 2vw, 22px);
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .address-comparison {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2%;
+    }
+
+    .address-card {
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      padding: 2%;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .address-type {
+      font-size: clamp(14px, 1.5vw, 16px);
+      font-weight: 600;
+      color: var(--primary-green);
+      margin-bottom: 1%;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .address-icon {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      background: var(--primary-green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 10px;
+      font-weight: bold;
+    }
+
+    .address-details {
+      font-size: clamp(12px, 1.3vw, 14px);
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    @media (max-width: 1200px) {
+      .terms-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5%;
+      }
+      
+      .address-comparison {
+        grid-template-columns: 1fr;
+        gap: 1.5%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <div class="bg-elements">
+      <div class="brain-pattern"></div>
+      <div class="network-signals">
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+      </div>
+    </div>
+    
+    <div class="content">
+      <div class="header" style="padding: 0.6% 2%;">
+        <div class="day-info">
+          <div class="day-badge">3</div>
+          <div class="day-text">第三章：基础架构与关键术语</div>
+        </div>
+        <div class="section-indicator">网络组件</div>
+      </div>
+      
+      <div class="main-content">
+        <div class="page-title">
+          <div class="title-main">基础架构与关键术语</div>
+          <div class="title-sub">网络组件 · 节点类型 · 地址体系 · 管理架构</div>
+        </div>
+        
+        <div class="content-wrapper">
+          <!-- 核心组件术语 -->
+          <div class="terms-grid">
+            <!-- 节点 -->
+            <div class="term-card node-term">
+              <div class="term-header">
+                <div class="term-icon">🖥️</div>
+                <div class="term-title">
+                  <div class="term-name">节点 (Node)</div>
+                  <div class="term-english">Processing Node / IO Unit</div>
+                </div>
+              </div>
+              <div class="term-description">
+                包括<span class="term-highlight">处理器节点 (HCA)</span> 和 <span class="term-highlight">IO 单元 (TCA)</span>。是网络中的计算或存储实体。
+              </div>
+            </div>
+            
+            <!-- 通道适配器 -->
+            <div class="term-card adapter-term">
+              <div class="term-header">
+                <div class="term-icon">🔌</div>
+                <div class="term-title">
+                  <div class="term-name">通道适配器 (CA)</div>
+                  <div class="term-english">Channel Adapter</div>
+                </div>
+              </div>
+              <div class="term-description">
+                节点与 InfiniBand 网络的<span class="term-highlight">接口硬件</span>，负责所有通信协议处理和RDMA操作。
+              </div>
+            </div>
+            
+            <!-- 交换机 -->
+            <div class="term-card switch-term">
+              <div class="term-header">
+                <div class="term-icon">🔀</div>
+                <div class="term-title">
+                  <div class="term-name">交换机 (Switch)</div>
+                  <div class="term-english">InfiniBand Switch</div>
+                </div>
+              </div>
+              <div class="term-description">
+                在子网内部根据 <span class="term-highlight">LID</span> 转发数据包，提供高速无阻塞交换能力。
+              </div>
+            </div>
+            
+            <!-- 路由器 -->
+            <div class="term-card router-term">
+              <div class="term-header">
+                <div class="term-icon">🌐</div>
+                <div class="term-title">
+                  <div class="term-name">路由器 (Router)</div>
+                  <div class="term-english">InfiniBand Router</div>
+                </div>
+              </div>
+              <div class="term-description">
+                根据 <span class="term-highlight">GID</span> 连接不同子网，实现跨子网通信。
+              </div>
+            </div>
+            
+            <!-- 子网 -->
+            <div class="term-card subnet-term">
+              <div class="term-header">
+                <div class="term-icon">🏠</div>
+                <div class="term-title">
+                  <div class="term-name">子网 (Subnet)</div>
+                  <div class="term-english">InfiniBand Subnet</div>
+                </div>
+              </div>
+              <div class="term-description">
+                由一个 <span class="term-highlight">SM (子网管理器)</span> 管理的设备集合，是IB网络的基本管理单元。
+              </div>
+            </div>
+            
+            <!-- 本地ID -->
+            <div class="term-card lid-term">
+              <div class="term-header">
+                <div class="term-icon">🏷️</div>
+                <div class="term-title">
+                  <div class="term-name">本地 ID (LID)</div>
+                  <div class="term-english">Local Identifier</div>
+                </div>
+              </div>
+              <div class="term-description">
+                <span class="term-highlight">16 位地址</span>，子网内唯一，用于高效路由转发。
+              </div>
+            </div>
+            
+            <!-- 全局ID -->
+            <div class="term-card gid-term">
+              <div class="term-header">
+                <div class="term-icon">🌍</div>
+                <div class="term-title">
+                  <div class="term-name">全局 ID (GID)</div>
+                  <div class="term-english">Global Identifier</div>
+                </div>
+              </div>
+              <div class="term-description">
+                <span class="term-highlight">128 位地址</span>，基于 IPv6 格式，用于跨子网通信。
+              </div>
+            </div>
+          </div>
+          
+          <!-- 架构概览 -->
+          <div class="architecture-section">
+            <div class="arch-title">
+              <div class="arch-icon">🏗️</div>
+              <span>InfiniBand 网络架构</span>
+            </div>
+            <div class="arch-description">
+              InfiniBand 采用<strong>交换网络架构</strong>，通过交换机互联各个节点，提供无阻塞的高性能通信能力。每个组件都有明确的职责和功能。
+            </div>
+            <div class="arch-components">
+              <div class="component-badge">HCA/TCA 节点</div>
+              <div class="component-badge">IB 交换机</div>
+              <div class="component-badge">子网管理器</div>
+              <div class="component-badge">RDMA 引擎</div>
+              <div class="component-badge">路由表</div>
+            </div>
+          </div>
+          
+          <!-- 地址系统对比 -->
+          <div class="addressing-section">
+            <div class="addressing-header">
+              <div class="addressing-icon">📍</div>
+              <div class="addressing-title">双重地址体系</div>
+            </div>
+            
+            <div class="address-comparison">
+              <div class="address-card">
+                <div class="address-type">
+                  <div class="address-icon">L</div>
+                  本地标识符 (LID)
+                </div>
+                <div class="address-details">
+                  • <strong>16位地址空间</strong><br>
+                  • <strong>子网内唯一</strong><br>
+                  • <strong>高效硬件路由</strong><br>
+                  • 支持65536个端口<br>
+                  • 由SM动态分配管理
+                </div>
+              </div>
+              
+              <div class="address-card">
+                <div class="address-type">
+                  <div class="address-icon">G</div>
+                  全局标识符 (GID)
+                </div>
+                <div class="address-details">
+                  • <strong>128位地址空间</strong><br>
+                  • <strong>全局唯一</strong><br>
+                  • <strong>IPv6格式兼容</strong><br>
+                  • 跨子网通信必需<br>
+                  • 支持路由器转发
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="footer" style="padding: 0.6% 2%;">
+        <div class="footer-left">
+          <div class="status-dot"></div>
+          <span>InfiniBand架构基础 - 组件术语与地址体系</span>
+        </div>
+        <div class="footer-badges">
+          <div class="footer-badge badge-install">网络组件</div>
+          <div class="footer-badge badge-config">地址体系</div>
+          <div class="footer-badge badge-command">术语定义</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+    <a href="IB_PPT_02.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+    <a href="IB_PPT_04.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+  </div>
+</body>
+</html>

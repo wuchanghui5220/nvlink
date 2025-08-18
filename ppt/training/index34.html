@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>运维IB常见故障列表</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { color: #333; text-align: center; margin-bottom: 30px; }
+        .fault-category { margin-bottom: 30px; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; }
+        .category-title { background: #4CAF50; color: white; padding: 15px; margin: 0; font-size: 18px; }
+        .fault-item { padding: 15px; border-bottom: 1px solid #eee; display: flex; }
+        .fault-item:last-child { border-bottom: none; }
+        .fault-code { background: #f44336; color: white; padding: 5px 10px; border-radius: 4px; min-width: 80px; text-align: center; margin-right: 15px; }
+        .fault-info { flex: 1; }
+        .fault-name { font-weight: bold; color: #333; margin-bottom: 5px; }
+        .fault-desc { color: #666; font-size: 14px; line-height: 1.4; }
+        .solution { background: #e8f5e8; padding: 10px; border-radius: 4px; margin-top: 8px; }
+        .solution-label { font-weight: bold; color: #2e7d32; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>运维IB常见故障列表</h1>
+        
+        <div class="fault-category">
+            <h2 class="category-title">网络连接故障</h2>
+            <div class="fault-item">
+                <div class="fault-code">IB001</div>
+                <div class="fault-info">
+                    <div class="fault-name">IB端口无法UP</div>
+                    <div class="fault-desc">端口状态显示Down，无法建立连接</div>
+                    <div class="solution">
+                        <span class="solution-label">解决方案：</span>
+                        检查线缆连接，重启端口，验证硬件状态
+                    </div>
+                </div>
+            </div>
+            <div class="fault-item">
+                <div class="fault-code">IB002</div>
+                <div class="fault-info">
+                    <div class="fault-name">链路速率协商失败</div>
+                    <div class="fault-desc">IB链路无法协商到预期速率，性能下降</div>
+                    <div class="solution">
+                        <span class="solution-label">解决方案：</span>
+                        检查双端设备配置，重新协商链路参数
+                    </div>
+                </div>
+            </div>
+            <div class="fault-item">
+                <div class="fault-code">IB003</div>
+                <div class="fault-info">
+                    <div class="fault-name">Subnet Manager连接失败</div>
+                    <div class="fault-desc">无法连接到子网管理器，网络拓扑异常</div>
+                    <div class="solution">
+                        <span class="solution-label">解决方案：</span>
+                        重启SM服务，检查主备SM状态，验证网络配置
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="fault-category">
+            <h2 class="category-title">性能相关故障</h2>
+            <div class="fault-item">
+                <div class="fault-code">IB101</div>
+                <div class="fault-info">
+                    <div class="fault-name">带宽利用率异常</div>
+                    <div class="fault-desc">IB链路带宽使用率过高或过低</div>
+                    <div class="solution">
+                        <span class="solution-label">解决方案：</span>
+                        分析流量模式，调整负载均衡策略，优化应用配置
+                    </div>
+                </div>
+            </div>
+            <div class="fault-item">
+                <div class="fault-code">IB102</div>
+                <div class="fault-info">
+                    <div class="fault-name">延迟过高</div>
+                    <div class="fault-desc">网络延迟超出正常范围，影响应用性能</div>
+                    <div class="solution">
+                        <span class="solution-label">解决方案：</span>
+                        检查网络拥塞，优化路由路径，调整QoS配置
+                    </div>
+                </div>
+            </div>
+            <div class="fault-item">
+                <div class="fault-code">IB103</div>
+                <div class="fault-info">
+                    <div class="fault-name">丢包率异常</div>
+                    <div class="fault-desc">数据包丢失率超出阈值</div>
+                    <div class="solution">
+                        <span class="solution-label">解决方案：</span>
+                        检查硬件故障，分析错误统计，更换问题组件
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="fault-category">
+            <h2 class="category-title">硬件故障</h2>
+            <div class="fault-item">
+                <div class="fault-code">IB201</div>
+                <div class="fault-info">
+                    <div class="fault-name">HCA卡故障</div>
+                    <div class="fault-desc">主机通道适配器工作异常或完全失效</div>
+                    <div class="solution">
+                        <span class="solution-label">解决方案：</span>
+                        诊断HCA状态，重新安装驱动，必要时更换硬件
+                    </div>
+                </div>
+            </div>
+            <div class="fault-item">
+                <div class="fault-code">IB202</div>
+                <div class="fault-info">
+                    <div class="fault-name">交换机端口故障</div>
+                    <div class="fault-desc">交换机特定端口工作异常</div>
+                    <div class="solution">
+                        <span class="solution-label">解决方案：</span>
+                        隔离故障端口，使用备用端口，联系厂商维修
+                    </div>
+                </div>
+            </div>
+            <div class="fault-item">
+                <div class="fault-code">IB203</div>
+                <div class="fault-info">
+                    <div class="fault-name">光纤线缆问题</div>
+                    <div class="fault-desc">光纤线缆损坏或连接不良</div>
+                    <div class="solution">
+                        <span class="solution-label">解决方案：</span>
+                        测试线缆完整性，清洁光纤接头，更换损坏线缆
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="fault-category">
+            <h2 class="category-title">驱动与软件故障</h2>
+            <div class="fault-item">
+                <div class="fault-code">IB301</div>
+                <div class="fault-info">
+                    <div class="fault-name">驱动版本不兼容</div>
+                    <div class="fault-desc">IB驱动与系统或硬件不匹配</div>
+                    <div class="solution">
+                        <span class="solution-label">解决方案：</span>
+                        升级或降级驱动版本，检查兼容性矩阵
+                    </div>
+                </div>
+            </div>
+            <div class="fault-item">
+                <div class="fault-code">IB302</div>
+                <div class="fault-info">
+                    <div class="fault-name">OpenSM配置错误</div>
+                    <div class="fault-desc">子网管理器配置参数不正确</div>
+                    <div class="solution">
+                        <span class="solution-label">解决方案：</span>
+                        检查opensm.conf配置，重置为默认配置后重新调整
+                    </div>
+                </div>
+            </div>
+            <div class="fault-item">
+                <div class="fault-code">IB303</div>
+                <div class="fault-info">
+                    <div class="fault-name">RDMA服务异常</div>
+                    <div class="fault-desc">RDMA相关服务无法正常启动或运行</div>
+                    <div class="solution">
+                        <span class="solution-label">解决方案：</span>
+                        重启RDMA服务，检查服务依赖关系，验证配置文件
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="fault-category">
+            <h2 class="category-title">应用层故障</h2>
+            <div class="fault-item">
+                <div class="fault-code">IB401</div>
+                <div class="fault-info">
+                    <div class="fault-name">MPI任务无法启动</div>
+                    <div class="fault-desc">基于IB的MPI作业启动失败</div>
+                    <div class="solution">
+                        <span class="solution-label">解决方案：</span>
+                        检查MPI环境配置，验证节点间连通性，调整UCX参数
+                    </div>
+                </div>
+            </div>
+            <div class="fault-item">
+                <div class="fault-code">IB402</div>
+                <div class="fault-info">
+                    <div class="fault-name">存储访问异常</div>
+                    <div class="fault-desc">通过IB访问存储系统出现错误</div>
+                    <div class="solution">
+                        <span class="solution-label">解决方案：</span>
+                        检查存储服务状态，验证RDMA存储协议配置
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

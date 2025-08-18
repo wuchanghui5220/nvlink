@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>宁夏培训实操总结 - 操作系统安装步骤</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700;800&display=swap');
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 30%, #16213e 70%, #0f3460 100%);
+      font-family: 'Noto Sans SC', sans-serif;
+      overflow: hidden;
+    }
+
+    .slide-container {
+      width: 100vw;
+      height: 56.25vw;
+      max-height: 100vh;
+      max-width: 177.78vh;
+      position: relative;
+      background: #111827;
+      color: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    .animated-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(0, 162, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 162, 255, 0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      animation: grid-move 20s linear infinite;
+      z-index: 1;
+    }
+
+    @keyframes grid-move {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(40px, 40px); }
+    }
+
+    .content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    .header {
+      padding: 2% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(10px);
+      flex-shrink: 0;
+    }
+
+    .logo-section {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .mobile-icon {
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(45deg, #00a2ff, #0078d4);
+      border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 700;
+      font-size: 18px;
+      transform: rotate(-5deg);
+    }
+
+    .company-text {
+      font-size: clamp(16px, 2vw, 20px);
+      font-weight: 600;
+      color: #00a2ff;
+    }
+
+    .project-badge {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 8px 20px;
+      border-radius: 25px;
+      font-size: clamp(12px, 1.4vw, 14px);
+      font-weight: 500;
+      backdrop-filter: blur(10px);
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      padding: 3% 4%;
+      overflow-y: auto;
+      min-height: 0;
+    }
+
+    .page-title {
+      font-size: clamp(24px, 3.5vw, 32px);
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 3%;
+      background: linear-gradient(135deg, #ffffff 0%, #00a2ff 50%, #4834d4 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .section {
+      margin-bottom: 4%;
+    }
+
+    .section-title {
+      font-size: clamp(18px, 2.2vw, 22px);
+      font-weight: 600;
+      color: #00a2ff;
+      margin-bottom: 2%;
+      border-left: 4px solid #00a2ff;
+      padding-left: 15px;
+    }
+
+    .subsection {
+      margin-bottom: 2.5%;
+      padding-left: 20px;
+    }
+
+    .subsection-title {
+      font-size: clamp(14px, 1.8vw, 16px);
+      font-weight: 500;
+      color: #ff6b6b;
+      margin-bottom: 1%;
+    }
+
+    .cmd-block {
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(0, 162, 255, 0.3);
+      border-radius: 8px;
+      padding: 15px;
+      margin: 10px 0;
+      font-family: 'Consolas', 'Monaco', monospace;
+      position: relative;
+    }
+
+    .cmd-title {
+      font-size: clamp(11px, 1.3vw, 13px);
+      color: #4834d4;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    .cmd-text {
+      font-size: clamp(10px, 1.2vw, 12px);
+      color: #00ff88;
+      line-height: 1.4;
+      word-break: break-all;
+    }
+
+    .step-list {
+      padding-left: 20px;
+    }
+
+    .step-item {
+      margin-bottom: 1.5%;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      border-left: 3px solid #4834d4;
+    }
+
+    .step-text {
+      font-size: clamp(12px, 1.4vw, 14px);
+      color: #ffffff;
+      line-height: 1.4;
+    }
+
+    .package-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .package-item {
+      background: rgba(0, 162, 255, 0.1);
+      color: #00a2ff;
+      padding: 4px 10px;
+      border-radius: 15px;
+      font-size: clamp(9px, 1.1vw, 11px);
+      font-weight: 500;
+      border: 1px solid rgba(0, 162, 255, 0.3);
+    }
+
+    .apt-sources {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 107, 107, 0.3);
+      border-radius: 8px;
+      padding: 12px;
+      margin: 10px 0;
+    }
+
+    .source-title {
+      font-size: clamp(12px, 1.4vw, 14px);
+      color: #ff6b6b;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    .source-line {
+      font-size: clamp(9px, 1.1vw, 11px);
+      color: #88ff88;
+      font-family: monospace;
+      line-height: 1.3;
+      margin-bottom: 3px;
+    }
+
+    .footer {
+      padding: 1.5% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+      flex-shrink: 0;
+    }
+
+    .page-info {
+      font-size: clamp(12px, 1.4vw, 14px);
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .nav-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .nav-btn {
+      padding: 8px 16px;
+      background: linear-gradient(135deg, #00a2ff, #0078d4);
+      color: white;
+      text-decoration: none;
+      border-radius: 20px;
+      font-size: clamp(10px, 1.2vw, 12px);
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .nav-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 162, 255, 0.4);
+    }
+
+    @media (max-height: 600px) {
+      .main-content {
+        padding: 2% 4%;
+      }
+      .section {
+        margin-bottom: 2%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <div class="animated-bg"></div>
+    
+    <div class="content">
+      <div class="header">
+        <div class="logo-section">
+          <div class="mobile-icon">移动</div>
+          <div class="company-text">中国移动宁夏公司</div>
+        </div>
+        <div class="project-badge">实操培训资料</div>
+      </div>
+
+      <div class="main-content">
+        <div class="page-title">操作系统安装步骤</div>
+        
+        <div class="section">
+          <div class="section-title">1. 基础软件安装</div>
+          
+          <div class="step-item">
+            <div class="step-text">安装基础工具包</div>
+            <div class="cmd-block">
+              <div class="cmd-title">安装命令</div>
+              <div class="cmd-text">apt install -y openssh-server curl wget vim htop tree ansible ipmitool lldpd net-tools unzip</div>
+            </div>
+            <div class="package-list">
+              <div class="package-item">openssh-server</div>
+              <div class="package-item">curl</div>
+              <div class="package-item">wget</div>
+              <div class="package-item">vim</div>
+              <div class="package-item">htop</div>
+              <div class="package-item">tree</div>
+              <div class="package-item">ansible</div>
+              <div class="package-item">ipmitool</div>
+              <div class="package-item">lldpd</div>
+              <div class="package-item">net-tools</div>
+              <div class="package-item">unzip</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">2. 内核管理（可选）</div>
+          
+          <div class="subsection">
+            <div class="subsection-title">查询当前内核版本</div>
+            <div class="cmd-block">
+              <div class="cmd-text">cat /proc/version<br>uname -r<br>uname -a</div>
+            </div>
+          </div>
+
+          <div class="subsection">
+            <div class="subsection-title">安装特定内核版本</div>
+            <div class="cmd-block">
+              <div class="cmd-text"># 查看可用内核版本<br>apt search linux-image<br><br># 安装特定版本<br>sudo apt install linux-image-[版本号]<br>sudo apt install linux-headers-[版本号]<br><br># 更新引导<br>sudo update-grub</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">3. 关闭系统自动更新</div>
+          
+          <div class="step-item">
+            <div class="step-text">修改自动更新配置</div>
+            <div class="cmd-block">
+              <div class="cmd-text">sed -i.bak 's/1/0/' /etc/apt/apt.conf.d/10periodic</div>
+            </div>
+          </div>
+
+          <div class="step-item">
+            <div class="step-text">禁用内核自动更新</div>
+            <div class="cmd-block">
+              <div class="cmd-text">vi /etc/apt/apt.conf.d/50unattended-upgrades</div>
+            </div>
+            <div class="cmd-block">
+              <div class="cmd-title">添加内容</div>
+              <div class="cmd-text">Unattended-Upgrade::Package-Blacklist {<br>&nbsp;&nbsp;"linux-image-*";<br>&nbsp;&nbsp;"linux-headers-*";<br>};</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">4. APT 源配置</div>
+          
+          <div class="subsection">
+            <div class="subsection-title">清华源配置示例</div>
+            <div class="apt-sources">
+              <div class="source-title">清华大学镜像源（适用于 Ubuntu 22.04 jammy）</div>
+              <div class="source-line">deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ jammy main restricted</div>
+              <div class="source-line">deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ jammy-updates main restricted</div>
+              <div class="source-line">deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ jammy universe</div>
+              <div class="source-line">deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ jammy-updates universe</div>
+              <div class="source-line">deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ jammy multiverse</div>
+              <div class="source-line">deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ jammy-updates multiverse</div>
+              <div class="source-line">deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ jammy-backports main restricted universe multiverse</div>
+              <div class="source-line">deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ jammy-security main restricted</div>
+              <div class="source-line">deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ jammy-security universe</div>
+              <div class="source-line">deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ jammy-security multiverse</div>
+            </div>
+          </div>
+
+          <div class="subsection">
+            <div class="subsection-title">阿里云源配置示例</div>
+            <div class="apt-sources">
+              <div class="source-title">阿里云镜像源（适用于 Ubuntu 22.04 jammy）</div>
+              <div class="source-line">deb https://mirrors.aliyun.com/ubuntu/ jammy main restricted universe multiverse</div>
+              <div class="source-line">deb-src https://mirrors.aliyun.com/ubuntu/ jammy main restricted universe multiverse</div>
+              <div class="source-line">deb https://mirrors.aliyun.com/ubuntu/ jammy-security main restricted universe multiverse</div>
+              <div class="source-line">deb-src https://mirrors.aliyun.com/ubuntu/ jammy-security main restricted universe multiverse</div>
+              <div class="source-line">deb https://mirrors.aliyun.com/ubuntu/ jammy-updates main restricted universe multiverse</div>
+              <div class="source-line">deb-src https://mirrors.aliyun.com/ubuntu/ jammy-updates main restricted universe multiverse</div>
+              <div class="source-line">deb-src https://mirrors.aliyun.com/ubuntu/ jammy-backports main restricted universe multiverse</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="page-info">第 2 页 / 共 12 页</div>
+        <div class="nav-buttons">
+          <a href="Practical_01.html" class="nav-btn">← 上一页</a>
+          <a href="Practical_03.html" class="nav-btn">下一页 →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

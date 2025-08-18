@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>宁夏培训实操总结 - NVSwitch驱动和Docker支持</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700;800&display=swap');
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 30%, #16213e 70%, #0f3460 100%);
+      font-family: 'Noto Sans SC', sans-serif;
+      overflow: hidden;
+    }
+
+    .slide-container {
+      width: 100vw;
+      height: 56.25vw;
+      max-height: 100vh;
+      max-width: 177.78vh;
+      position: relative;
+      background: #111827;
+      color: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    .animated-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(0, 162, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 162, 255, 0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      animation: grid-move 20s linear infinite;
+      z-index: 1;
+    }
+
+    @keyframes grid-move {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(40px, 40px); }
+    }
+
+    .content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    .header {
+      padding: 2% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(10px);
+      flex-shrink: 0;
+    }
+
+    .mobile-icon {
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(45deg, #00a2ff, #0078d4);
+      border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 700;
+      font-size: 18px;
+      transform: rotate(-5deg);
+    }
+
+    .company-text {
+      font-size: clamp(16px, 2vw, 20px);
+      font-weight: 600;
+      color: #00a2ff;
+    }
+
+    .project-badge {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 8px 20px;
+      border-radius: 25px;
+      font-size: clamp(12px, 1.4vw, 14px);
+      font-weight: 500;
+      backdrop-filter: blur(10px);
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      padding: 3% 4%;
+      overflow-y: auto;
+      min-height: 0;
+    }
+
+    .page-title {
+      font-size: clamp(24px, 3.5vw, 32px);
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 3%;
+      background: linear-gradient(135deg, #ffffff 0%, #00a2ff 50%, #4834d4 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .section {
+      margin-bottom: 4%;
+    }
+
+    .section-title {
+      font-size: clamp(18px, 2.2vw, 22px);
+      font-weight: 600;
+      color: #00a2ff;
+      margin-bottom: 2%;
+      border-left: 4px solid #00a2ff;
+      padding-left: 15px;
+    }
+
+    .step-item {
+      margin-bottom: 2%;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      border-left: 3px solid #ff6b6b;
+    }
+
+    .step-title {
+      font-size: clamp(14px, 1.6vw, 16px);
+      font-weight: 500;
+      color: #ff6b6b;
+      margin-bottom: 8px;
+    }
+
+    .step-desc {
+      font-size: clamp(12px, 1.4vw, 14px);
+      color: rgba(255, 255, 255, 0.8);
+      line-height: 1.4;
+      margin-bottom: 8px;
+    }
+
+    .cmd-block {
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(0, 162, 255, 0.3);
+      border-radius: 8px;
+      padding: 12px;
+      margin: 8px 0;
+      font-family: 'Consolas', 'Monaco', monospace;
+    }
+
+    .cmd-text {
+      font-size: clamp(10px, 1.2vw, 12px);
+      color: #00ff88;
+      line-height: 1.4;
+    }
+
+    .info-box {
+      background: rgba(0, 162, 255, 0.1);
+      border: 1px solid rgba(0, 162, 255, 0.3);
+      border-radius: 8px;
+      padding: 12px;
+      margin: 10px 0;
+    }
+
+    .info-text {
+      font-size: clamp(11px, 1.3vw, 13px);
+      color: #00a2ff;
+      line-height: 1.4;
+    }
+
+    .status-box {
+      background: rgba(46, 160, 67, 0.1);
+      border: 1px solid rgba(46, 160, 67, 0.3);
+      border-radius: 8px;
+      padding: 12px;
+      margin: 10px 0;
+    }
+
+    .status-text {
+      font-size: clamp(11px, 1.3vw, 13px);
+      color: #2ea043;
+      line-height: 1.4;
+    }
+
+    .footer {
+      padding: 1.5% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+      flex-shrink: 0;
+    }
+
+    .page-info {
+      font-size: clamp(12px, 1.4vw, 14px);
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .nav-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .nav-btn {
+      padding: 8px 16px;
+      background: linear-gradient(135deg, #00a2ff, #0078d4);
+      color: white;
+      text-decoration: none;
+      border-radius: 20px;
+      font-size: clamp(10px, 1.2vw, 12px);
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .nav-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 162, 255, 0.4);
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <div class="animated-bg"></div>
+    
+    <div class="content">
+      <div class="header">
+        <div style="display: flex; align-items: center; gap: 20px;">
+          <div class="mobile-icon">移动</div>
+          <div class="company-text">中国移动宁夏公司</div>
+        </div>
+        <div class="project-badge">实操培训资料</div>
+      </div>
+
+      <div class="main-content">
+        <div class="page-title">NVSwitch驱动和Docker支持</div>
+        
+        <div class="section">
+          <div class="section-title">1. 安装前检查GPU连接状态</div>
+          
+          <div class="step-item">
+            <div class="step-title">查看GPU拓扑结构</div>
+            <div class="cmd-block">
+              <div class="cmd-text">nvidia-smi topo -p2p a</div>
+            </div>
+            <div class="step-desc">安装前连接状态应显示为"NS"（不支持）</div>
+            <div class="info-box">
+              <div class="info-text">💡 安装NVSwitch驱动后，GPU间连接状态将变为"OK"</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">2. 安装Fabric Manager</div>
+          
+          <div class="step-item">
+            <div class="step-title">下载并安装Fabric Manager</div>
+            <div class="cmd-block">
+              <div class="cmd-text">wget https://developer.download.nvidia.cn/compute/cuda/repos/ubuntu2204/x86_64/nvidia-fabricmanager-560_560.28.03-1_amd64.deb<br>sudo dpkg -i nvidia-fabricmanager-560_560.28.03-1_amd64.deb</div>
+            </div>
+            <div class="step-desc">Fabric Manager负责管理NVSwitch和GPU之间的连接</div>
+          </div>
+
+          <div class="step-item">
+            <div class="step-title">启动服务</div>
+            <div class="cmd-block">
+              <div class="cmd-text">systemctl start nvidia-fabricmanager<br>systemctl enable nvidia-fabricmanager</div>
+            </div>
+          </div>
+
+          <div class="step-item">
+            <div class="step-title">检查服务状态</div>
+            <div class="cmd-block">
+              <div class="cmd-text">systemctl status nvidia-fabricmanager</div>
+            </div>
+            <div class="status-box">
+              <div class="status-text">✅ 服务正常运行后，GPU之间应能通过NVLink高速互联</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">3. 验证NVSwitch功能</div>
+          
+          <div class="step-item">
+            <div class="step-title">重新检查GPU连接状态</div>
+            <div class="cmd-block">
+              <div class="cmd-text">nvidia-smi topo -p2p a</div>
+            </div>
+            <div class="step-desc">安装完成后，连接状态应变为"OK"</div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">4. 安装Docker GPU支持（可选）</div>
+          
+          <div class="step-item">
+            <div class="step-title">添加NVIDIA Docker仓库</div>
+            <div class="cmd-block">
+              <div class="cmd-text">wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.1-1_all.deb<br>sudo dpkg -i cuda-keyring_1.1-1_all.deb<br>sudo apt-get update</div>
+            </div>
+          </div>
+
+          <div class="step-item">
+            <div class="step-title">安装NVIDIA Container Toolkit</div>
+            <div class="cmd-block">
+              <div class="cmd-text">apt install libnvidia-container-tools nvidia-container-toolkit</div>
+            </div>
+            <div class="info-box">
+              <div class="info-text">💡 这将允许Docker容器访问GPU资源</div>
+            </div>
+          </div>
+
+          <div class="step-item">
+            <div class="step-title">重启Docker服务</div>
+            <div class="cmd-block">
+              <div class="cmd-text">systemctl restart docker</div>
+            </div>
+          </div>
+
+          <div class="step-item">
+            <div class="step-title">测试GPU容器</div>
+            <div class="cmd-block">
+              <div class="cmd-text">docker run --rm --gpus all nvidia/cuda:11.0-base-ubuntu20.04 nvidia-smi</div>
+            </div>
+            <div class="status-box">
+              <div class="status-text">✅ 如果正常显示GPU信息，说明Docker GPU支持配置成功</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="page-info">第 7 页 / 共 12 页</div>
+        <div class="nav-buttons">
+          <a href="Practical_06.html" class="nav-btn">← 上一页</a>
+          <a href="Practical_08.html" class="nav-btn">下一页 →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

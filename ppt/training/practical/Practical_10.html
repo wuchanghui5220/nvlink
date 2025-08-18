@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>宁夏培训实操总结 - 网卡对应关系总结</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700;800&display=swap');
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 30%, #16213e 70%, #0f3460 100%);
+      font-family: 'Noto Sans SC', sans-serif;
+      overflow: hidden;
+    }
+
+    .slide-container {
+      width: 100vw;
+      height: 56.25vw;
+      max-height: 100vh;
+      max-width: 177.78vh;
+      position: relative;
+      background: #111827;
+      color: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    .animated-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(0, 162, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 162, 255, 0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      animation: grid-move 20s linear infinite;
+      z-index: 1;
+    }
+
+    @keyframes grid-move {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(40px, 40px); }
+    }
+
+    .content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    .header {
+      padding: 2% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(10px);
+      flex-shrink: 0;
+    }
+
+    .mobile-icon {
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(45deg, #00a2ff, #0078d4);
+      border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 700;
+      font-size: 18px;
+      transform: rotate(-5deg);
+    }
+
+    .company-text {
+      font-size: clamp(16px, 2vw, 20px);
+      font-weight: 600;
+      color: #00a2ff;
+    }
+
+    .project-badge {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 8px 20px;
+      border-radius: 25px;
+      font-size: clamp(12px, 1.4vw, 14px);
+      font-weight: 500;
+      backdrop-filter: blur(10px);
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      padding: 3% 4%;
+      overflow-y: auto;
+      min-height: 0;
+    }
+
+    .page-title {
+      font-size: clamp(24px, 3.5vw, 32px);
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 3%;
+      background: linear-gradient(135deg, #ffffff 0%, #00a2ff 50%, #4834d4 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .section {
+      margin-bottom: 4%;
+    }
+
+    .section-title {
+      font-size: clamp(18px, 2.2vw, 22px);
+      font-weight: 600;
+      color: #00a2ff;
+      margin-bottom: 2%;
+      border-left: 4px solid #00a2ff;
+      padding-left: 15px;
+    }
+
+    .concept-item {
+      margin-bottom: 2%;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      border-left: 3px solid #ff6b6b;
+    }
+
+    .concept-title {
+      font-size: clamp(14px, 1.6vw, 16px);
+      font-weight: 500;
+      color: #ff6b6b;
+      margin-bottom: 8px;
+    }
+
+    .concept-desc {
+      font-size: clamp(12px, 1.4vw, 14px);
+      color: rgba(255, 255, 255, 0.8);
+      line-height: 1.4;
+      margin-bottom: 8px;
+    }
+
+    .cmd-block {
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(0, 162, 255, 0.3);
+      border-radius: 8px;
+      padding: 12px;
+      margin: 8px 0;
+      font-family: 'Consolas', 'Monaco', monospace;
+    }
+
+    .cmd-text {
+      font-size: clamp(10px, 1.2vw, 12px);
+      color: #00ff88;
+      line-height: 1.4;
+    }
+
+    .result-block {
+      background: rgba(255, 107, 107, 0.1);
+      border: 1px solid rgba(255, 107, 107, 0.3);
+      border-radius: 8px;
+      padding: 10px;
+      margin: 8px 0;
+      font-family: 'Consolas', 'Monaco', monospace;
+    }
+
+    .result-text {
+      font-size: clamp(9px, 1.1vw, 11px);
+      color: #ffaa88;
+      line-height: 1.3;
+    }
+
+    .info-box {
+      background: rgba(0, 162, 255, 0.1);
+      border: 1px solid rgba(0, 162, 255, 0.3);
+      border-radius: 8px;
+      padding: 12px;
+      margin: 10px 0;
+    }
+
+    .info-text {
+      font-size: clamp(11px, 1.3vw, 13px);
+      color: #00a2ff;
+      line-height: 1.4;
+    }
+
+    .warning-box {
+      background: rgba(255, 193, 7, 0.1);
+      border: 1px solid rgba(255, 193, 7, 0.5);
+      border-radius: 8px;
+      padding: 12px;
+      margin: 10px 0;
+    }
+
+    .warning-text {
+      font-size: clamp(11px, 1.3vw, 13px);
+      color: #ffc107;
+      line-height: 1.4;
+    }
+
+    .footer {
+      padding: 1.5% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+      flex-shrink: 0;
+    }
+
+    .page-info {
+      font-size: clamp(12px, 1.4vw, 14px);
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .nav-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .nav-btn {
+      padding: 8px 16px;
+      background: linear-gradient(135deg, #00a2ff, #0078d4);
+      color: white;
+      text-decoration: none;
+      border-radius: 20px;
+      font-size: clamp(10px, 1.2vw, 12px);
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .nav-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 162, 255, 0.4);
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <div class="animated-bg"></div>
+    
+    <div class="content">
+      <div class="header">
+        <div style="display: flex; align-items: center; gap: 20px;">
+          <div class="mobile-icon">移动</div>
+          <div class="company-text">中国移动宁夏公司</div>
+        </div>
+        <div class="project-badge">实操培训资料</div>
+      </div>
+
+      <div class="main-content">
+        <div class="page-title">网卡对应关系总结</div>
+        
+        <div class="section">
+          <div class="section-title">1. PCI插槽与网卡对应关系</div>
+          
+          <div class="concept-item">
+            <div class="concept-title">查看Mellanox网卡PCI位置</div>
+            <div class="cmd-block">
+              <div class="cmd-text">lspci | grep -i mellanox</div>
+            </div>
+            <div class="result-block">
+              <div class="result-text">17:00.0 Infiniband controller: Mellanox Technologies MT28908 Family [ConnectX-6]<br>31:00.0 Infiniband controller: Mellanox Technologies MT28908 Family [ConnectX-6]<br>32:00.0 Ethernet controller: Mellanox Technologies MT27710 Family [ConnectX-4 Lx]<br>32:00.1 Ethernet controller: Mellanox Technologies MT27710 Family [ConnectX-4 Lx]</div>
+            </div>
+          </div>
+
+          <div class="concept-item">
+            <div class="concept-title">查看IB网卡设备名称</div>
+            <div class="cmd-block">
+              <div class="cmd-text">ibstat</div>
+            </div>
+            <div class="concept-desc">显示mlx5_0、mlx5_1等设备名称及其状态信息</div>
+          </div>
+
+          <div class="concept-item">
+            <div class="concept-title">查看网卡与PCI-e的对应关系</div>
+            <div class="cmd-block">
+              <div class="cmd-text">ls -l /sys/class/infiniband/mlx5_1/device<br>ls -l /sys/class/infiniband/mlx5_0/device</div>
+            </div>
+            <div class="result-block">
+              <div class="result-text">lrwxrwxrwx 1 root root 0 Aug 6 11:30 /sys/class/infiniband/mlx5_1/device -> ../../../0000:31:00.0<br>lrwxrwxrwx 1 root root 0 Aug 6 11:30 /sys/class/infiniband/mlx5_0/device -> ../../../0000:17:00.0</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">2. 网卡与以太网接口对应关系</div>
+          
+          <div class="concept-item">
+            <div class="concept-title">查看IB与以太网接口映射</div>
+            <div class="cmd-block">
+              <div class="cmd-text">ibdev2netdev</div>
+            </div>
+            <div class="result-block">
+              <div class="result-text">mlx5_0 port 1 ==> ibs5 (Down)<br>mlx5_1 port 1 ==> ibs3 (Down)<br>mlx5_bond_0 port 1 ==> bond0 (Up)</div>
+            </div>
+          </div>
+
+          <div class="concept-item">
+            <div class="concept-title">启用网络接口</div>
+            <div class="cmd-block">
+              <div class="cmd-text">ip link set dev ibs5 up</div>
+            </div>
+            <div class="concept-desc">将Down状态的接口设置为Up</div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">3. IP与IB网络工作模式</div>
+          
+          <div class="concept-item">
+            <div class="concept-title">IP模式下的网卡</div>
+            <div class="concept-desc">网卡工作在IP模式下，可以将IB网卡理解为正常的IP网卡</div>
+            <div class="info-box">
+              <div class="info-text">💡 在此模式下，IB网卡完全按照以太网方式工作</div>
+            </div>
+          </div>
+
+          <div class="concept-item">
+            <div class="concept-title">IB模式下的网络配置</div>
+            <div class="concept-desc">需要配置IP地址并启用接口</div>
+            <div class="cmd-block">
+              <div class="cmd-text">ip link set dev ibs5 up</div>
+            </div>
+            <div class="warning-box">
+              <div class="warning-text">⚠️ IP地址运行在IP over IB模式下，正常RDMA访问仍然使用IB数据包，IP仅用于ping、握手或心跳</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">4. 实际应用场景</div>
+          
+          <div class="concept-item">
+            <div class="concept-title">故障诊断</div>
+            <div class="concept-desc">通过这些对应关系，可以快速定位网卡硬件问题</div>
+          </div>
+
+          <div class="concept-item">
+            <div class="concept-title">性能优化</div>
+            <div class="concept-desc">了解网卡与PCI槽位的对应关系，有助于优化数据传输路径</div>
+          </div>
+
+          <div class="concept-item">
+            <div class="concept-title">网络配置</div>
+            <div class="concept-desc">正确配置IB网络和以太网络的映射关系</div>
+            <div class="info-box">
+              <div class="info-text">💡 在生产环境中，建议统一网络中的网卡固件版本</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="page-info">第 10 页 / 共 12 页</div>
+        <div class="nav-buttons">
+          <a href="Practical_09.html" class="nav-btn">← 上一页</a>
+          <a href="index.html" class="nav-btn">返回目录</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
