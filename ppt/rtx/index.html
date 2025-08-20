@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NVIDIA RTX 5000系列产品对比</title>
+  <title>GPU产品技术规格全面对比</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
 
@@ -291,6 +291,40 @@
       filter: blur(1px);
     }
 
+    /* 导航按钮 */
+    .navigation {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      display: flex;
+      gap: 10px;
+      z-index: 1000;
+    }
+
+    .nav-btn {
+      padding: 8px 16px;
+      background: linear-gradient(135deg, #76b900 0%, #10b981 100%);
+      color: #0c1015;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 12px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(118, 185, 0, 0.3);
+    }
+
+    .nav-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(118, 185, 0, 0.4);
+    }
+
+    .nav-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
     .footer {
       padding: 1% 3%;
       display: flex;
@@ -331,57 +365,6 @@
       animation-delay: 0.2s;
     }
 
-    /* 添加数据流动画 */
-    .data-pulse {
-      position: absolute;
-      top: 20%;
-      right: 10%;
-      width: 4px;
-      height: 40px;
-      background: linear-gradient(0deg, transparent, #76b900, transparent);
-      animation: pulse 3s ease-in-out infinite;
-      opacity: 0.6;
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 0.4; transform: scaleY(0.8); }
-      50% { opacity: 1; transform: scaleY(1.2); }
-    }
-
-    /* 导航按钮 */
-    .navigation {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      display: flex;
-      gap: 10px;
-      z-index: 1000;
-    }
-
-    .nav-btn {
-      padding: 8px 16px;
-      background: linear-gradient(135deg, #76b900 0%, #10b981 100%);
-      color: #0c1015;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 12px;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(118, 185, 0, 0.3);
-    }
-
-    .nav-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(118, 185, 0, 0.4);
-    }
-
-    .nav-btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      transform: none;
-    }
-
     /* 响应式调整 */
     @media (max-width: 1200px) {
       .comparison-table {
@@ -401,16 +384,15 @@
     <div class="bg-gradient"></div>
     <div class="bg-circle1"></div>
     <div class="bg-circle2"></div>
-    <div class="data-pulse"></div>
 
     <!-- 主要内容 -->
     <div class="content">
       <div class="header">
         <div class="nvidia-logo">
           <div class="logo-box">NVIDIA</div>
-          <div class="partner-text">RTX 5000 Series Professional GPU Lineup</div>
+          <div class="partner-text">GPU Technology Lineup Comprehensive Overview</div>
         </div>
-        <div class="slide-title">专业显卡5000系列全家族对比</div>
+        <div class="slide-title">GPU产品技术规格全面对比</div>
       </div>
 
       <div class="main-content">
@@ -420,131 +402,152 @@
             <thead>
               <tr>
                 <th>规格参数</th>
-                <th>RTX PRO 5000<br>(Blackwell)</th>
-                <th>RTX 5000<br>(Ada Gen)</th>
-                <th>RTX A5500<br>(Ampere)</th>
-                <th>RTX A5000<br>(Ampere)</th>
+                <th>GeForce RTX 4090<br>(Ada Lovelace)</th>
+                <th>GeForce RTX 5090<br>(Blackwell)</th>
+                <th>NVIDIA H20<br>(Hopper)</th>
+                <th>NVIDIA L20<br>(Ada Lovelace)</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td class="spec-name">架构</td>
-                <td class="highlight-best">Blackwell</td>
+                <td class="spec-name">GPU架构</td>
                 <td>Ada Lovelace</td>
-                <td>Ampere</td>
-                <td>Ampere</td>
+                <td class="highlight-best">Blackwell</td>
+                <td>Hopper</td>
+                <td>Ada Lovelace</td>
               </tr>
               <tr>
                 <td class="spec-name">CUDA核心数</td>
-                <td class="highlight-best">14,080</td>
-                <td>12,800</td>
-                <td>10,240</td>
-                <td>8,192</td>
-              </tr>
-              <tr>
-                <td class="spec-name">Tensor核心</td>
-                <td class="highlight-best">5th Gen</td>
-                <td>4th Gen (400)</td>
-                <td>3rd Gen (320)</td>
-                <td>3rd Gen (256)</td>
-              </tr>
-              <tr>
-                <td class="spec-name">RT核心</td>
-                <td class="highlight-best">4th Gen</td>
-                <td>3rd Gen (100)</td>
-                <td>2nd Gen (80)</td>
-                <td>2nd Gen (64)</td>
+                <td>16,384</td>
+                <td class="highlight-best">21,760</td>
+                <td>数据未公开</td>
+                <td>11,776</td>
               </tr>
               <tr>
                 <td class="spec-name">显存容量</td>
-                <td class="highlight-best">48 GB GDDR7</td>
-                <td>32 GB GDDR6</td>
-                <td>24 GB GDDR6</td>
-                <td>24 GB GDDR6</td>
+                <td>24 GB GDDR6X</td>
+                <td>32 GB GDDR7</td>
+                <td class="highlight-best">96 GB HBM3</td>
+                <td>48 GB GDDR6</td>
               </tr>
               <tr>
                 <td class="spec-name">显存带宽</td>
-                <td class="highlight-best">1344 GB/s</td>
-                <td>576 GB/s</td>
-                <td>768 GB/s</td>
-                <td>768 GB/s</td>
+                <td>1008 GB/s</td>
+                <td>1792 GB/s</td>
+                <td class="highlight-best">4000 GB/s</td>
+                <td>864 GB/s</td>
               </tr>
               <tr>
                 <td class="spec-name">内存接口</td>
                 <td>384-bit</td>
-                <td>256-bit</td>
-                <td class="highlight-best">384-bit</td>
-                <td class="highlight-best">384-bit</td>
+                <td class="highlight-best">512-bit</td>
+                <td>数据未公开</td>
+                <td>384-bit</td>
               </tr>
               <tr>
-                <td class="spec-name">单精度浮点性能</td>
-                <td class="highlight-best">未公布</td>
-                <td>65.3 TFLOPS</td>
-                <td>34.1 TFLOPS</td>
-                <td>27.8 TFLOPS</td>
+                <td class="spec-name">基础频率</td>
+                <td>2.23 GHz</td>
+                <td>2.01 GHz</td>
+                <td>数据未公开</td>
+                <td>1.44 GHz</td>
+              </tr>
+              <tr>
+                <td class="spec-name">加速频率</td>
+                <td>2.52 GHz</td>
+                <td>2.41 GHz</td>
+                <td>数据未公开</td>
+                <td>2.52 GHz</td>
+              </tr>
+              <tr>
+                <td class="spec-name">单精度性能</td>
+                <td>83 TFLOPS</td>
+                <td class="highlight-best">125+ TFLOPS</td>
+                <td>44 TFLOPS</td>
+                <td>59.35 TFLOPS</td>
               </tr>
               <tr>
                 <td class="spec-name">RT Core性能</td>
-                <td class="highlight-best">未公布</td>
-                <td>151.0 TFLOPS</td>
-                <td>66.6 TFLOPS</td>
-                <td>54.2 TFLOPS</td>
+                <td>191 TFLOPS</td>
+                <td class="highlight-best">318 TFLOPS</td>
+                <td>不支持</td>
+                <td>数据未公开</td>
               </tr>
               <tr>
                 <td class="spec-name">Tensor性能</td>
-                <td class="highlight-best">未公布</td>
-                <td>1044.4 TFLOPS</td>
-                <td>272.8 TFLOPS</td>
-                <td>222.2 TFLOPS</td>
+                <td>1321 AI TOPS</td>
+                <td class="highlight-best">3352 AI TOPS</td>
+                <td>296 TFLOPS (INT8)</td>
+                <td>239 TFLOPS (INT8)</td>
               </tr>
               <tr>
-                <td class="spec-name">显示输出</td>
-                <td class="highlight-best">4x DisplayPort 2.1b</td>
-                <td>4x DisplayPort 1.4a</td>
-                <td>4x DisplayPort 1.4a</td>
-                <td>4x DisplayPort 1.4a</td>
+                <td class="spec-name">视频编码</td>
+                <td>2x NVENC (8代)</td>
+                <td class="highlight-best">3x NVENC (9代)</td>
+                <td>7x NVDEC</td>
+                <td>3x NVENC (+AV1)</td>
               </tr>
               <tr>
-                <td class="spec-name">最大功耗</td>
-                <td>300 W</td>
-                <td>250 W</td>
-                <td class="highlight-best">230 W</td>
-                <td class="highlight-best">230 W</td>
+                <td class="spec-name">视频解码</td>
+                <td>NVDEC (5代)</td>
+                <td class="highlight-best">2x NVDEC (6代)</td>
+                <td>7x NVJPEG</td>
+                <td>3x NVDEC</td>
               </tr>
               <tr>
                 <td class="spec-name">PCIe接口</td>
+                <td>PCIe 4.0 x16</td>
                 <td class="highlight-best">PCIe 5.0 x16</td>
+                <td>PCIe 5.0 x16</td>
                 <td>PCIe 4.0 x16</td>
-                <td>PCIe 4.0 x16</td>
-                <td>PCIe 4.0 x16</td>
+              </tr>
+              <tr>
+                <td class="spec-name">功耗</td>
+                <td>450 W</td>
+                <td>575 W</td>
+                <td class="highlight-best">400 W</td>
+                <td>275 W</td>
+              </tr>
+              <tr>
+                <td class="spec-name">推荐电源</td>
+                <td>850 W</td>
+                <td>1000 W</td>
+                <td>数据未公开</td>
+                <td>数据未公开</td>
+              </tr>
+              <tr>
+                <td class="spec-name">散热设计</td>
+                <td>3槽</td>
+                <td>2槽</td>
+                <td class="highlight-best">8-way HGX</td>
+                <td>2槽 FHFL</td>
               </tr>
               <tr>
                 <td class="spec-name">MIG支持</td>
-                <td class="highlight-best">是 (2x24GB/1x48GB)</td>
                 <td>否</td>
                 <td>否</td>
+                <td class="highlight-best">最多7实例</td>
                 <td>否</td>
-              </tr>
-              <tr>
-                <td class="spec-name">视频编解码</td>
-                <td class="highlight-best">2x NVENC/2x NVDEC (9th/6th Gen)</td>
-                <td>2x NVENC/2x NVDEC (+AV1)</td>
-                <td>1x NVENC/2x NVDEC (+AV1)</td>
-                <td>1x NVENC/2x NVDEC (+AV1)</td>
               </tr>
               <tr>
                 <td class="spec-name">NVLink支持</td>
                 <td>否</td>
                 <td>否</td>
-                <td class="highlight-best">是</td>
-                <td class="highlight-best">是</td>
+                <td class="highlight-best">900 GB/s</td>
+                <td>否</td>
               </tr>
               <tr>
-                <td class="spec-name">上市时间</td>
-                <td class="highlight-best">2025年Q2</td>
-                <td>2023年8月</td>
-                <td>2022年3月</td>
-                <td>2021年4月</td>
+                <td class="spec-name">目标应用</td>
+                <td>游戏/创作</td>
+                <td>游戏/创作</td>
+                <td class="highlight-best">AI推理/训练</td>
+                <td>AI/HPC</td>
+              </tr>
+              <tr>
+                <td class="spec-name">发布时间</td>
+                <td>2022年10月</td>
+                <td class="highlight-best">2025年1月</td>
+                <td>2024年</td>
+                <td>2024年</td>
               </tr>
             </tbody>
           </table>
@@ -554,32 +557,32 @@
         <div class="analysis-container">
           
           <div class="analysis-box performance-box">
-            <div class="analysis-title">技术代际对比</div>
+            <div class="analysis-title">性能对比分析</div>
             <div class="analysis-desc">
-              • 架构演进: <span class="highlight-value">Blackwell > Ada > Ampere</span><br>
-              • 显存升级: <span class="highlight-value">PRO 5000领先50%容量</span><br>
-              • 接口升级: <span class="highlight-value">PRO 5000首发PCIe 5.0</span><br>
-              • AI性能跨代提升，Blackwell领先两代
+              • 计算性能: <span class="highlight-value">RTX 5090 > RTX 4090 > L20 > H20</span><br>
+              • 显存容量: <span class="highlight-value">H20 (96GB) 领先优势明显</span><br>
+              • 显存带宽: <span class="highlight-value">H20带宽达4TB/s，AI优化明显</span><br>
+              • RTX 5090在游戏性能方面全面升级
             </div>
           </div>
 
           <div class="analysis-box">
             <div class="analysis-title">应用场景定位</div>
             <div class="analysis-desc">
-              • <span class="highlight-value">RTX PRO 5000</span>: 顶级AI训练、大模型开发<br>
-              • <span class="highlight-value">RTX 5000 Ada</span>: 高端创作、生成式AI<br>
-              • <span class="highlight-value">RTX A5500</span>: 专业渲染、CAD设计<br>
-              • <span class="highlight-value">RTX A5000</span>: 均衡性能、多应用场景
+              • <span class="highlight-value">RTX 4090/5090</span>: 高端游戏、内容创作<br>
+              • <span class="highlight-value">NVIDIA H20</span>: 大规模AI训练与推理<br>
+              • <span class="highlight-value">NVIDIA L20</span>: 数据中心AI应用<br>
+              • 不同架构针对不同工作负载优化
             </div>
           </div>
 
           <div class="analysis-box">
             <div class="analysis-title">选择建议</div>
             <div class="analysis-desc">
-              • <span class="highlight-value">极致AI性能</span>: 首选RTX PRO 5000<br>
-              • <span class="highlight-value">创作与AI平衡</span>: 推荐RTX 5000 Ada<br>
-              • <span class="highlight-value">多GPU扩展</span>: 考虑A5500/A5000 NVLink<br>
-              • 功耗和散热需求依次递减
+              • <span class="highlight-value">极致游戏体验</span>: RTX 5090首选<br>
+              • <span class="highlight-value">大模型训练</span>: H20超大显存优势<br>
+              • <span class="highlight-value">AI推理部署</span>: L20功耗效率平衡<br>
+              • 根据具体应用需求和预算选择
             </div>
           </div>
 
@@ -587,8 +590,8 @@
       </div>
 
       <div class="footer">
-        <div class="company-name">NVIDIA RTX 5000 Series — 专业显卡产品线完整对比分析</div>
-        <div class="page-number">5000 Series / 2025</div>
+        <div class="company-name">NVIDIA GPU Technology — 全方位技术规格对比分析</div>
+        <div class="page-number">Overview / 2025</div>
       </div>
     </div>
 
@@ -633,27 +636,6 @@
       }
     }
 
-    // 键盘导航
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'ArrowLeft') {
-        previousPage();
-      } else if (e.key === 'ArrowRight') {
-        nextPage();
-      }
-    });
-
-    // 更新导航按钮状态
-    function updateNavigationButtons() {
-      const currentIndex = getCurrentPageIndex();
-      const prevBtn = document.querySelector('.navigation .nav-btn:first-child');
-      const nextBtn = document.querySelector('.navigation .nav-btn:last-child');
-      
-      prevBtn.disabled = currentIndex === 0;
-      nextBtn.disabled = currentIndex === pages.length - 1;
-    }
-
-    // 页面加载完成后更新按钮状态
-    window.addEventListener('load', updateNavigationButtons);
     // 添加表格行动画延迟
     const tableRows = document.querySelectorAll('.comparison-table tbody tr');
     tableRows.forEach((row, index) => {
@@ -680,13 +662,27 @@
       });
     });
 
-    // 性能数据高亮动画
-    const highlightCells = document.querySelectorAll('.highlight-best');
-    highlightCells.forEach((cell, index) => {
-      setTimeout(() => {
-        cell.style.animation = 'pulse 2s ease-in-out infinite';
-      }, 1000 + index * 100);
+    // 键盘导航
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'ArrowLeft') {
+        previousPage();
+      } else if (e.key === 'ArrowRight') {
+        nextPage();
+      }
     });
+
+    // 更新导航按钮状态
+    function updateNavigationButtons() {
+      const currentIndex = getCurrentPageIndex();
+      const prevBtn = document.querySelector('.navigation .nav-btn:first-child');
+      const nextBtn = document.querySelector('.navigation .nav-btn:last-child');
+      
+      prevBtn.disabled = currentIndex === 0;
+      nextBtn.disabled = currentIndex === pages.length - 1;
+    }
+
+    // 页面加载完成后更新按钮状态
+    window.addEventListener('load', updateNavigationButtons);
   </script>
 
 </body>
