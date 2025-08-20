@@ -109,34 +109,6 @@
             color: #333;
         }
 
-        .dropdown-menu {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: white;
-            border: 1px solid #ddd;
-            border-top: none;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            z-index: 1000;
-        }
-
-        .dropdown-item {
-            padding: 10px 16px;
-            cursor: pointer;
-            font-size: 14px;
-            color: #333;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        .dropdown-item:hover {
-            background: #f8f9fa;
-        }
-
-        .dropdown-item:last-child {
-            border-bottom: none;
-        }
-
         .add-comment-btn {
             background: white;
             color: #333;
@@ -204,7 +176,7 @@
 
         .timestamp {
             color: #666;
-            font-size: 16px;
+            font-size: 14px;
             display: block;
         }
 
@@ -333,15 +305,10 @@
                         <input type="text" class="search-input" placeholder="Search">
                     </div>
                     <div class="filter-dropdown">
-                        <button class="filter-button" onclick="toggleDropdown()">
-                            <span id="filter-text">Show All Comments</span>
+                        <button class="filter-button">
+                            Show All Comments
                             <span>▼</span>
                         </button>
-                        <div id="filter-dropdown-menu" class="dropdown-menu" style="display: none;">
-                            <div class="dropdown-item" onclick="filterComments('all')">Show All Comments</div>
-                            <div class="dropdown-item" onclick="filterComments('nvidia')">NVIDIA Agent</div>
-                            <div class="dropdown-item" onclick="filterComments('user')">My Comments</div>
-                        </div>
                     </div>
                     <button class="add-comment-btn" onclick="openModal()">Add Comment</button>
                 </div>
@@ -373,7 +340,7 @@
                     </div>
                     <div class="comment-content">
                         <div class="comment-header">
-				<span class="username nvidia-support">NVIDIA Support</span>
+                            <span class="username nvidia-support">NVIDIA Support</span>
                             <span class="timestamp">August 19, 2025, 01:26 PM</span>
                         </div>
                         <div class="comment-text" id="comment-1">尊敬的客户您好，
@@ -452,68 +419,6 @@
     </div>
 
     <script>
-        let currentFilter = 'all';
-
-        function toggleDropdown() {
-            const dropdown = document.getElementById('filter-dropdown-menu');
-            dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
-        }
-
-        function filterComments(filterType) {
-            currentFilter = filterType;
-            const comments = document.querySelectorAll('.comment');
-            const filterText = document.getElementById('filter-text');
-            
-            // Update button text
-            switch(filterType) {
-                case 'all':
-                    filterText.textContent = 'Show All Comments';
-                    break;
-                case 'nvidia':
-                    filterText.textContent = 'NVIDIA Agent';
-                    break;
-                case 'user':
-                    filterText.textContent = 'My Comments';
-                    break;
-            }
-            
-            // Filter comments
-            comments.forEach(comment => {
-                const username = comment.querySelector('.username').textContent.toLowerCase();
-                let shouldShow = false;
-                
-                switch(filterType) {
-                    case 'all':
-                        shouldShow = true;
-                        break;
-                    case 'nvidia':
-                        shouldShow = username.includes('nvidia') || username.includes('support');
-                        break;
-                    case 'user':
-                        shouldShow = !username.includes('nvidia') && !username.includes('support');
-                        break;
-                }
-                
-                comment.style.display = shouldShow ? 'flex' : 'none';
-            });
-            
-            // Update comment count
-            updateCommentCount();
-            
-            // Hide dropdown
-            document.getElementById('filter-dropdown-menu').style.display = 'none';
-        }
-
-        function updateCommentCount() {
-            const visibleComments = document.querySelectorAll('.comment[style*="flex"], .comment:not([style*="none"])');
-            const actualCount = Array.from(visibleComments).filter(comment => 
-                !comment.style.display || comment.style.display === 'flex'
-            ).length;
-            
-            const title = document.querySelector('.comments-title');
-            title.textContent = `Comments (${actualCount})`;
-        }
-
         function openModal() {
             document.getElementById('commentModal').style.display = 'block';
         }
@@ -621,8 +526,10 @@
             // Insert at the top of comments list
             commentsList.insertBefore(newComment, commentsList.firstChild);
             
-            // Apply current filter to the new comment
-            filterComments(currentFilter);
+            // Update comment count
+            const title = document.querySelector('.comments-title');
+            const currentCount = parseInt(title.textContent.match(/\d+/)[0]);
+            title.textContent = `Comments (${currentCount + 1})`;
             
             closeModal();
         });
@@ -630,15 +537,8 @@
         // Close modal when clicking outside
         window.onclick = function(event) {
             const modal = document.getElementById('commentModal');
-            const dropdown = document.getElementById('filter-dropdown-menu');
-            
             if (event.target === modal) {
                 closeModal();
-            }
-            
-            // Close dropdown if clicking outside
-            if (!event.target.closest('.filter-dropdown')) {
-                dropdown.style.display = 'none';
             }
         }
 
