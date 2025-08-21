@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>公司概况 - 北京正阳恒卓科技有限公司</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'WenQuanYi Micro Hei', sans-serif;
+            background: linear-gradient(135deg, #0c4a3e 0%, #134e4a 25%, #065f46 50%, #047857 75%, #059669 100%);
+            color: #fff;
+            overflow: hidden;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            background: linear-gradient(135deg, #0c4a3e 0%, #134e4a 25%, #065f46 50%, #047857 75%, #059669 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .slide-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(34, 197, 94, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.12) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(6, 95, 70, 0.2) 0%, transparent 50%);
+            animation: pulseLight 20s ease-in-out infinite;
+            z-index: 1;
+        }
+
+        @keyframes pulseLight {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.8; }
+        }
+
+        .decorative-elements {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .corner-decoration {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            border: 2px solid rgba(34, 197, 94, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .corner-decoration::before {
+            content: '';
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: rgba(34, 197, 94, 0.6);
+            border-radius: 50%;
+            animation: cornerPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes cornerPulse {
+            0%, 100% { 
+                transform: scale(0.8);
+                opacity: 0.6;
+            }
+            50% { 
+                transform: scale(1.2);
+                opacity: 1;
+            }
+        }
+
+        .corner-decoration.top-left {
+            top: 30px;
+            left: 30px;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .corner-decoration.top-left::before {
+            top: -6px;
+            left: -6px;
+        }
+
+        .corner-decoration.top-right {
+            top: 30px;
+            right: 30px;
+            border-left: none;
+            border-bottom: none;
+        }
+
+        .corner-decoration.top-right::before {
+            top: -6px;
+            right: -6px;
+            animation-delay: 0.5s;
+        }
+
+        .corner-decoration.bottom-left {
+            bottom: 30px;
+            left: 30px;
+            border-right: none;
+            border-top: none;
+        }
+
+        .corner-decoration.bottom-left::before {
+            bottom: -6px;
+            left: -6px;
+            animation-delay: 1s;
+        }
+
+        .corner-decoration.bottom-right {
+            bottom: 30px;
+            right: 30px;
+            border-left: none;
+            border-top: none;
+        }
+
+        .corner-decoration.bottom-right::before {
+            bottom: -6px;
+            right: -6px;
+            animation-delay: 1.5s;
+        }
+
+        .tech-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(34, 197, 94, 0.6);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { 
+                transform: translateY(0px) rotate(0deg);
+                opacity: 0;
+            }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            50% { 
+                transform: translateY(-80px) rotate(180deg);
+            }
+        }
+
+        .main-content {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            padding: 35px 50px;
+        }
+
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .page-title {
+            font-size: clamp(2.5rem, 4vw, 3.5rem);
+            font-weight: 700;
+            background: linear-gradient(135deg, #ffffff 0%, #22c55e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .brand-image {
+            max-height: 60px;
+            height: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 15px rgba(34, 197, 94, 0.3));
+        }
+
+        .content-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .top-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+        }
+
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .right-column {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .bottom-row {
+            display: flex;
+            width: 100%;
+        }
+
+        .info-card {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            backdrop-filter: blur(15px);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, #22c55e, #10b981, #0d9488);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .info-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .info-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(34, 197, 94, 0.4);
+            box-shadow: 0 15px 40px rgba(34, 197, 94, 0.2);
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #22c55e, #10b981);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        .card-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        .card-content {
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.6;
+            font-size: 15px;
+            flex: 1;
+        }
+
+        .timeline-card {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            backdrop-filter: blur(15px);
+            position: relative;
+            width: 100%;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .timeline-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, #22c55e, #10b981, #0d9488);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .timeline-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .timeline-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(34, 197, 94, 0.4);
+            box-shadow: 0 15px 40px rgba(34, 197, 94, 0.2);
+        }
+
+        .timeline-title {
+            font-size: 1.6rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+            color: #fff;
+            text-align: center;
+        }
+
+        .timeline-items {
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding: 20px 20px 40px;
+            overflow-x: auto;
+            overflow-y: visible;
+            gap: 20px;
+        }
+
+        /* 水平主时间线 */
+        .timeline-items::before {
+            content: '';
+            position: absolute;
+            left: 20px;
+            right: 20px;
+            bottom: 85px;
+            height: 4px;
+            background: linear-gradient(to right, #22c55e, #10b981, #0d9488, #10b981, #22c55e);
+            border-radius: 2px;
+            box-shadow: 0 0 15px rgba(34, 197, 94, 0.4);
+            z-index: 2;
+        }
+
+        .timeline-item {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            min-width: 180px;
+            flex-shrink: 0;
+            padding: 0;
+            transition: all 0.4s ease;
+        }
+
+        .timeline-item:hover {
+            transform: translateY(-8px);
+        }
+
+        /* 时间节点圆圈 */
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            bottom: 45px;
+            transform: translateX(-50%);
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, #22c55e, #10b981);
+            border-radius: 50%;
+            border: 5px solid rgba(255, 255, 255, 0.95);
+            box-shadow: 0 0 25px rgba(34, 197, 94, 0.7);
+            z-index: 3;
+            transition: all 0.3s ease;
+        }
+
+        .timeline-item:hover::before {
+            transform: translateX(-50%) scale(1.4);
+            box-shadow: 0 0 35px rgba(34, 197, 94, 0.9);
+        }
+
+        /* 上方连接线装饰 */
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            bottom: 35px;
+            transform: translateX(-50%);
+            width: 3px;
+            height: 30px;
+            background: linear-gradient(to top, #22c55e, transparent);
+            transition: all 0.3s ease;
+            z-index: 4;
+        }
+
+        .timeline-item:hover::after {
+            height: 40px;
+            background: linear-gradient(to top, #22c55e, #10b981);
+        }
+
+        .timeline-year {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #22c55e;
+            text-align: center;
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.25), rgba(16, 185, 129, 0.15));
+            border-radius: 10px;
+            padding: 6px 12px;
+            border: 2px solid rgba(34, 197, 94, 0.4);
+            backdrop-filter: blur(10px);
+            text-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            order: 2;
+            z-index: 1;
+            margin-top: 5px;
+        }
+
+        /* 年份发光效果 */
+        .timeline-year::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+            transform: rotate(45deg);
+            animation: yearShine 4s linear infinite;
+        }
+
+        @keyframes yearShine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .timeline-item:hover .timeline-year {
+            transform: scale(1.1);
+            border-color: rgba(34, 197, 94, 0.7);
+            box-shadow: 0 0 25px rgba(34, 197, 94, 0.5);
+        }
+
+        .timeline-content {
+            color: rgba(255, 255, 255, 0.92);
+            line-height: 1.5;
+            font-size: 13px;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 15px;
+            border-radius: 12px;
+            border-top: 3px solid #22c55e;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            position: relative;
+            order: 1;
+            text-align: center;
+            max-width: 180px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            z-index: 5;
+            margin-bottom: 15px;
+        }
+
+
+        .timeline-item:hover .timeline-content {
+            background: rgba(255, 255, 255, 0.12);
+            border-top-color: #10b981;
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(34, 197, 94, 0.2);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 18px 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+        }
+
+        .stat-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-3px);
+            border-color: rgba(34, 197, 94, 0.4);
+            box-shadow: 0 8px 25px rgba(34, 197, 94, 0.15);
+        }
+
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #22c55e;
+            margin-bottom: 8px;
+            line-height: 1.1;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.2;
+            font-weight: 500;
+        }
+
+
+        .page-indicator {
+            position: absolute;
+            bottom: 40px;
+            right: 40px;
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.6);
+            z-index: 10;
+        }
+
+        .slide-number {
+            font-weight: 600;
+            color: #22c55e;
+        }
+
+        .nav-controls {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+            font-size: 30px;
+            color: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            user-select: none;
+        }
+
+        .nav-controls:hover {
+            color: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(76, 166, 126, 0.3);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .nav-prev {
+            left: 30px;
+        }
+
+        .nav-next {
+            right: 30px;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .main-content > * {
+            animation: slideIn 0.8s ease-out forwards;
+        }
+
+        .main-content > *:nth-child(1) { animation-delay: 0.1s; }
+        .main-content > *:nth-child(2) { animation-delay: 0.2s; }
+
+        @media (max-width: 1200px) {
+            .top-row {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .left-column {
+                gap: 18px;
+            }
+            
+            .content-section {
+                gap: 25px;
+            }
+            
+            .main-content {
+                padding: 30px 40px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+            
+            .stat-item {
+                padding: 15px 8px;
+            }
+            
+            .stat-number {
+                font-size: 1.4rem;
+            }
+            
+            .stat-label {
+                font-size: 12px;
+            }
+            
+            .timeline-items {
+                gap: 15px;
+                padding: 15px 15px 35px;
+            }
+            
+            .timeline-items::before {
+                left: 15px;
+                right: 15px;
+                bottom: 35px;
+                height: 3px;
+            }
+            
+            .timeline-item {
+                min-width: 150px;
+                gap: 10px;
+            }
+            
+            .timeline-item::before {
+                bottom: 20px;
+                width: 22px;
+                height: 22px;
+            }
+            
+            .timeline-item::after {
+                bottom: 42px;
+                height: 18px;
+            }
+            
+            .timeline-year {
+                font-size: 1.1rem;
+                padding: 5px 10px;
+                margin-top: 12px;
+            }
+            
+            .timeline-content {
+                font-size: 12px;
+                padding: 12px;
+                max-width: 150px;
+                margin-bottom: 12px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 25px 15px;
+            }
+            
+            .header-section {
+                flex-direction: column;
+                gap: 15px;
+                margin-bottom: 20px;
+            }
+            
+            .top-row {
+                grid-template-columns: 1fr;
+                gap: 18px;
+            }
+            
+            .content-section {
+                gap: 20px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            
+            .stat-item {
+                padding: 12px 6px;
+            }
+            
+            .stat-number {
+                font-size: 1.2rem;
+            }
+            
+            .stat-label {
+                font-size: 11px;
+            }
+            
+            .timeline-items {
+                gap: 12px;
+                padding: 10px 10px 30px;
+                justify-content: flex-start;
+                overflow-x: auto;
+            }
+            
+            .timeline-items::before {
+                left: 10px;
+                right: 10px;
+                bottom: 30px;
+                height: 2px;
+            }
+            
+            .timeline-item {
+                min-width: 120px;
+                gap: 8px;
+            }
+            
+            .timeline-item::before {
+                bottom: 16px;
+                width: 16px;
+                height: 16px;
+                border: 3px solid rgba(255, 255, 255, 0.9);
+            }
+            
+            .timeline-item::after {
+                bottom: 32px;
+                height: 10px;
+                width: 2px;
+            }
+            
+            .timeline-year {
+                font-size: 0.9rem;
+                padding: 3px 6px;
+                margin-top: 10px;
+            }
+            
+            .timeline-content {
+                font-size: 11px;
+                padding: 10px;
+                max-width: 120px;
+                margin-bottom: 10px;
+            }
+            
+            .corner-decoration {
+                width: 80px;
+                height: 80px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="decorative-elements">
+            <div class="corner-decoration top-left"></div>
+            <div class="corner-decoration top-right"></div>
+            <div class="corner-decoration bottom-left"></div>
+            <div class="corner-decoration bottom-right"></div>
+        </div>
+
+        <div class="tech-particles" id="particles"></div>
+
+        <div class="main-content">
+            <div class="header-section">
+                <h1 class="page-title">公司概况</h1>
+                <div class="brand-logo">
+                    <img src="zy_elite.png" alt="正阳恒卓科技 NVIDIA Elite Partner" class="brand-image">
+                </div>
+            </div>
+
+            <div class="content-section">
+                <div class="top-row">
+                    <div class="left-column">
+                        <div class="info-card">
+                            <div class="card-icon">🏢</div>
+                            <h3 class="card-title">公司简介</h3>
+                            <div class="card-content">
+                                北京正阳恒卓科技有限公司成立于2015年04月，是NVIDIA网络产品精英级合作伙伴，在国内高性能计算和人工智能基础建设领域具有领军实力。公司深耕于算力集群建设，致力于深度理解客户需求，提供定制化的端到端算力中心解决方案。
+                            </div>
+                        </div>
+
+                        <div class="info-card">
+                            <div class="card-icon">🚀</div>
+                            <h3 class="card-title">业绩成长</h3>
+                            <div class="card-content">
+                                经过10年多运营，业绩快速上升。2023年成立上海分公司，总业绩突破5亿人民币，2024年截至目前已完成10亿的历史性业绩。此外，设立香港公司应对海外业务，成功服务日本、新加坡及欧美等市场超10个项目。
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="right-column">
+                        <div class="info-card">
+                            <div class="card-icon">📊</div>
+                            <h3 class="card-title">核心数据</h3>
+                            <div class="stats-grid">
+                                <div class="stat-item">
+                                    <div class="stat-number">10+</div>
+                                    <div class="stat-label">运营年数</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-number">10亿</div>
+                                    <div class="stat-label">2024业绩</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-number">500+</div>
+                                    <div class="stat-label">成功案例</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-number">10+</div>
+                                    <div class="stat-label">海外项目</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bottom-row">
+                    <div class="timeline-card">
+                        <h3 class="timeline-title">发展历程</h3>
+                        <div class="timeline-items">
+                            <div class="timeline-item">
+                                <div class="timeline-year">2025</div>
+                                <div class="timeline-content">
+                                    成为NVIDIA全栈产品代理商，提供超算中心软硬一体全栈解决方案，与NVIDIA一同加速拥抱人工智能时代
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-year">2023</div>
+                                <div class="timeline-content">
+                                    成立上海公司，公司业务南向拓展，覆盖全中国，总业绩突破5亿人民币
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-year">2020</div>
+                                <div class="timeline-content">
+                                    正阳恒卓成为NVIDIA精英级合作伙伴，业务进入快速发展期
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-year">2018</div>
+                                <div class="timeline-content">
+                                    公司服务客户超过300+，成功服务500+案例，业务规模快速扩大
+                                </div>
+                            </div>
+                            <div class="timeline-item">
+                                <div class="timeline-year">2015</div>
+                                <div class="timeline-content">
+                                    成为Mellanox高性能网络产品首批代理商，北京正阳恒卓科技有限公司正式成立
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="page-indicator">
+            <span class="slide-number">02</span> / 05
+        </div>
+
+        <div class="nav-controls nav-prev" onclick="window.location.href='index.html'">‹</div>
+        <div class="nav-controls nav-next" onclick="window.location.href='page3.html'">›</div>
+    </div>
+
+    <script>
+        // 创建科技粒子效果
+        function createTechParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 20;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                // 随机大小
+                const size = Math.random() * 3 + 1;
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                
+                // 随机位置
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                
+                // 随机动画延迟
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 4 + 4) + 's';
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            createTechParticles();
+            
+            // 添加页面加载动画
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.8s ease';
+            
+            setTimeout(() => {
+                document.body.style.opacity = '1';
+            }, 100);
+            
+            // 添加卡片交互效果
+            const cards = document.querySelectorAll('.info-card, .timeline-item, .stat-item');
+            cards.forEach((card, index) => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.transform = card.classList.contains('stat-item') ? 'translateY(-5px)' : 
+                                         card.classList.contains('timeline-item') ? 'translateX(15px)' : 'translateY(-8px)';
+                });
+                
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = card.classList.contains('timeline-item') ? 'translateX(10px)' : 'translateY(0)';
+                });
+            });
+        });
+        
+        // 添加键盘导航
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                window.location.href = 'page3.html';
+            }
+            if (e.key === 'ArrowLeft') {
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
+</body>
+</html>

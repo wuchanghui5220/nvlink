@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG Logo Test - 正阳恒卓科技</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 40px;
+        }
+
+        .logo-container {
+            background: white;
+            border-radius: 20px;
+            padding: 60px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .combined-logo {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .zhengyang-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .nvidia-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            padding: 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            background: #f8fafc;
+        }
+
+        .company-name {
+            font-size: 28px;
+            font-weight: 600;
+            color: #0ea5e9;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        .company-subtitle {
+            font-size: 16px;
+            color: #22c55e;
+            font-weight: 500;
+            text-transform: lowercase;
+        }
+
+        .elite-text {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1f2937;
+            margin-top: 8px;
+        }
+
+        .partner-text {
+            font-size: 18px;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        .logo-animations {
+            animation: logoGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes logoGlow {
+            0%, 100% { filter: drop-shadow(0 0 10px rgba(34, 197, 94, 0.3)); }
+            50% { filter: drop-shadow(0 0 20px rgba(34, 197, 94, 0.6)); }
+        }
+
+        .divider {
+            width: 2px;
+            height: 80px;
+            background: linear-gradient(to bottom, transparent, #e2e8f0, transparent);
+        }
+
+        @media (max-width: 768px) {
+            .combined-logo {
+                flex-direction: column;
+                gap: 30px;
+            }
+            
+            .divider {
+                width: 80px;
+                height: 2px;
+                background: linear-gradient(to right, transparent, #e2e8f0, transparent);
+            }
+            
+            .logo-container {
+                padding: 40px 30px;
+            }
+            
+            .company-name {
+                font-size: 24px;
+            }
+            
+            .elite-text {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="logo-container">
+        <div class="combined-logo">
+            <!-- 正阳恒卓 Logo Section -->
+            <div class="zhengyang-section">
+                <!-- 螺旋Logo SVG -->
+                <svg width="120" height="120" viewBox="0 0 120 120" class="logo-animations">
+                    <!-- 外圆背景 -->
+                    <circle cx="60" cy="60" r="58" fill="none" stroke="#e2e8f0" stroke-width="1"/>
+                    
+                    <!-- 螺旋设计 -->
+                    <defs>
+                        <linearGradient id="spiralGradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#22c55e;stop-opacity:1" />
+                            <stop offset="50%" style="stop-color:#0ea5e9;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:1" />
+                        </linearGradient>
+                        <linearGradient id="spiralGradient2" x1="100%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" style="stop-color:#0ea5e9;stop-opacity:1" />
+                            <stop offset="50%" style="stop-color:#22c55e;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#10b981;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    
+                    <!-- 螺旋路径 1 -->
+                    <path d="M 60 15 
+                             Q 85 30, 90 60 
+                             Q 85 90, 60 95 
+                             Q 35 90, 30 60 
+                             Q 35 40, 50 35" 
+                          fill="none" 
+                          stroke="url(#spiralGradient1)" 
+                          stroke-width="6" 
+                          stroke-linecap="round">
+                        <animateTransform
+                            attributeName="transform"
+                            attributeType="XML"
+                            type="rotate"
+                            from="0 60 60"
+                            to="360 60 60"
+                            dur="8s"
+                            repeatCount="indefinite"/>
+                    </path>
+                    
+                    <!-- 螺旋路径 2 -->
+                    <path d="M 60 25 
+                             Q 75 35, 80 60 
+                             Q 75 85, 60 85 
+                             Q 45 80, 40 60 
+                             Q 45 45, 55 42" 
+                          fill="none" 
+                          stroke="url(#spiralGradient2)" 
+                          stroke-width="4" 
+                          stroke-linecap="round"
+                          opacity="0.8">
+                        <animateTransform
+                            attributeName="transform"
+                            attributeType="XML"
+                            type="rotate"
+                            from="360 60 60"
+                            to="0 60 60"
+                            dur="6s"
+                            repeatCount="indefinite"/>
+                    </path>
+                    
+                    <!-- 中心点 -->
+                    <circle cx="60" cy="60" r="4" fill="#22c55e">
+                        <animate attributeName="r" values="4;6;4" dur="2s" repeatCount="indefinite"/>
+                        <animate attributeName="opacity" values="1;0.5;1" dur="2s" repeatCount="indefinite"/>
+                    </circle>
+                    
+                    <!-- 外围装饰点 -->
+                    <circle cx="60" cy="15" r="2" fill="#0ea5e9" opacity="0.7">
+                        <animate attributeName="opacity" values="0.7;1;0.7" dur="1.5s" repeatCount="indefinite"/>
+                    </circle>
+                    <circle cx="105" cy="60" r="2" fill="#22c55e" opacity="0.7">
+                        <animate attributeName="opacity" values="0.7;1;0.7" dur="1.5s" repeatCount="indefinite" begin="0.5s"/>
+                    </circle>
+                    <circle cx="60" cy="105" r="2" fill="#3b82f6" opacity="0.7">
+                        <animate attributeName="opacity" values="0.7;1;0.7" dur="1.5s" repeatCount="indefinite" begin="1s"/>
+                    </circle>
+                    <circle cx="15" cy="60" r="2" fill="#10b981" opacity="0.7">
+                        <animate attributeName="opacity" values="0.7;1;0.7" dur="1.5s" repeatCount="indefinite" begin="1.5s"/>
+                    </circle>
+                </svg>
+                
+                <!-- 公司名称 -->
+                <div>
+                    <div class="company-name">Zheng Yang</div>
+                    <div class="company-subtitle">technology</div>
+                </div>
+            </div>
+
+            <!-- 分隔线 -->
+            <div class="divider"></div>
+
+            <!-- NVIDIA Elite Partner Section -->
+            <div class="nvidia-section">
+                <!-- NVIDIA Logo SVG -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="120" height="80" viewBox="0 0 48 32" fill="none">
+                    <path d="M17.9101 9.54961V6.65962C18.1893 6.64003 18.4704 6.624 18.7567 6.6151C26.6044 6.36581 31.7531 13.4083 31.7531 13.4083C31.7531 13.4083 26.1926 21.1897 20.2308 21.1897C19.3718 21.1897 18.6029 21.0508 17.9101 20.8158V12.0496C20.9661 12.4218 21.5794 13.7804 23.4158 16.8645L27.5005 13.394C27.5005 13.394 24.5188 9.45345 19.492 9.45345C18.9458 9.45345 18.4227 9.49263 17.9083 9.54783L17.9101 9.54961ZM17.9083 0V4.31807C18.1893 4.29492 18.4721 4.27711 18.7549 4.26643C29.6675 3.89606 36.7781 13.2836 36.7781 13.2836C36.7781 13.2836 28.6123 23.2873 20.1035 23.2873C19.3241 23.2873 18.5941 23.2143 17.9083 23.0932V25.7624C18.4951 25.8372 19.1031 25.8817 19.7359 25.8817C27.6525 25.8817 33.3792 21.8094 38.9239 16.9874C39.843 17.7281 43.606 19.5319 44.3802 20.3225C39.1077 24.7688 26.8236 28.3515 19.8579 28.3515C19.1862 28.3515 18.5411 28.3105 17.9083 28.25V32H48V0.00178103H17.9101L17.9083 0ZM17.9083 20.814V23.0932C10.5856 21.7773 8.55293 14.1098 8.55293 14.1098C8.55293 14.1098 12.0685 10.1853 17.9083 9.54961V12.0496C17.9083 12.0496 17.9012 12.0496 17.8977 12.0496C14.8329 11.6793 12.4397 14.5639 12.4397 14.5639C12.4397 14.5639 13.7812 19.4197 17.9101 20.8175L17.9083 20.814ZM4.90481 13.7804C4.90481 13.7804 9.24403 7.32914 17.9101 6.6614V4.32163C8.31255 5.09799 0 13.2872 0 13.2872C0 13.2872 4.70685 26.9982 17.9101 28.2535V25.766C8.22064 24.5373 4.90481 13.7804 4.90481 13.7804Z" fill="#76B900"/>
+                </svg>
+                
+                <!-- Elite Partner 文字 -->
+                <div>
+                    <div class="elite-text">Elite</div>
+                    <div class="partner-text">Partner</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 可复用的纯SVG模板 -->
+    <div style="display: none;" id="svg-template">
+        <!-- 
+        ==========================================
+        纯SVG版本 - 可直接复制使用的模板代码
+        ==========================================
+        -->
+        <svg xmlns="http://www.w3.org/2000/svg" width="400" height="200" viewBox="0 0 400 200" style="background: white; border-radius: 10px;">
+            <!-- 背景 -->
+            <rect width="400" height="200" fill="white" rx="10"/>
+            
+            <!-- 正阳恒卓螺旋Logo -->
+            <g transform="translate(70, 100)">
+                <!-- 螺旋设计 -->
+                <defs>
+                    <linearGradient id="spiralGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#22c55e"/>
+                        <stop offset="50%" style="stop-color:#0ea5e9"/>
+                        <stop offset="100%" style="stop-color:#3b82f6"/>
+                    </linearGradient>
+                    <linearGradient id="spiralGrad2" x1="100%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#0ea5e9"/>
+                        <stop offset="50%" style="stop-color:#22c55e"/>
+                        <stop offset="100%" style="stop-color:#10b981"/>
+                    </linearGradient>
+                </defs>
+                
+                <!-- 外圆 -->
+                <circle cx="0" cy="0" r="40" fill="none" stroke="#e2e8f0" stroke-width="1"/>
+                
+                <!-- 螺旋路径 -->
+                <path d="M 0 -25 Q 20 -15, 25 0 Q 20 25, 0 30 Q -20 25, -25 0 Q -20 -10, -5 -8" 
+                      fill="none" stroke="url(#spiralGrad1)" stroke-width="4" stroke-linecap="round"/>
+                <path d="M 0 -15 Q 15 -8, 18 0 Q 15 18, 0 20 Q -15 18, -18 0 Q -15 -5, -8 -5" 
+                      fill="none" stroke="url(#spiralGrad2)" stroke-width="3" stroke-linecap="round" opacity="0.8"/>
+                
+                <!-- 中心点 -->
+                <circle cx="0" cy="0" r="3" fill="#22c55e"/>
+                
+                <!-- 装饰点 -->
+                <circle cx="0" cy="-25" r="1.5" fill="#0ea5e9"/>
+                <circle cx="25" cy="0" r="1.5" fill="#22c55e"/>
+                <circle cx="0" cy="25" r="1.5" fill="#3b82f6"/>
+                <circle cx="-25" cy="0" r="1.5" fill="#10b981"/>
+            </g>
+            
+            <!-- 公司名称 -->
+            <text x="130" y="85" font-family="Arial, sans-serif" font-size="18" font-weight="600" fill="#0ea5e9">Zheng Yang</text>
+            <text x="130" y="105" font-family="Arial, sans-serif" font-size="12" font-weight="500" fill="#22c55e">technology</text>
+            
+            <!-- 分隔线 -->
+            <line x1="240" y1="60" x2="240" y2="140" stroke="#e2e8f0" stroke-width="2"/>
+            
+            <!-- NVIDIA Logo -->
+            <g transform="translate(270, 84) scale(1.5)">
+                <path d="M17.9101 9.54961V6.65962C18.1893 6.64003 18.4704 6.624 18.7567 6.6151C26.6044 6.36581 31.7531 13.4083 31.7531 13.4083C31.7531 13.4083 26.1926 21.1897 20.2308 21.1897C19.3718 21.1897 18.6029 21.0508 17.9101 20.8158V12.0496C20.9661 12.4218 21.5794 13.7804 23.4158 16.8645L27.5005 13.394C27.5005 13.394 24.5188 9.45345 19.492 9.45345C18.9458 9.45345 18.4227 9.49263 17.9083 9.54783L17.9101 9.54961ZM17.9083 0V4.31807C18.1893 4.29492 18.4721 4.27711 18.7549 4.26643C29.6675 3.89606 36.7781 13.2836 36.7781 13.2836C36.7781 13.2836 28.6123 23.2873 20.1035 23.2873C19.3241 23.2873 18.5941 23.2143 17.9083 23.0932V25.7624C18.4951 25.8372 19.1031 25.8817 19.7359 25.8817C27.6525 25.8817 33.3792 21.8094 38.9239 16.9874C39.843 17.7281 43.606 19.5319 44.3802 20.3225C39.1077 24.7688 26.8236 28.3515 19.8579 28.3515C19.1862 28.3515 18.5411 28.3105 17.9083 28.25V32H48V0.00178103H17.9101L17.9083 0ZM17.9083 20.814V23.0932C10.5856 21.7773 8.55293 14.1098 8.55293 14.1098C8.55293 14.1098 12.0685 10.1853 17.9083 9.54961V12.0496C17.9083 12.0496 17.9012 12.0496 17.8977 12.0496C14.8329 11.6793 12.4397 14.5639 12.4397 14.5639C12.4397 14.5639 13.7812 19.4197 17.9101 20.8175L17.9083 20.814ZM4.90481 13.7804C4.90481 13.7804 9.24403 7.32914 17.9101 6.6614V4.32163C8.31255 5.09799 0 13.2872 0 13.2872C0 13.2872 4.70685 26.9982 17.9101 28.2535V25.766C8.22064 24.5373 4.90481 13.7804 4.90481 13.7804Z" fill="#76B900"/>
+            </g>
+            
+            <!-- Elite Partner 文字 -->
+            <text x="270" y="140" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#1f2937">Elite</text>
+            <text x="270" y="155" font-family="Arial, sans-serif" font-size="12" font-weight="500" fill="#6b7280">Partner</text>
+            
+            <!-- 边框 -->
+            <rect width="400" height="200" fill="none" stroke="#e2e8f0" stroke-width="1" rx="10"/>
+        </svg>
+    </div>
+
+    <script>
+        // 提供SVG代码复制功能
+        function getSVGTemplate() {
+            const template = document.getElementById('svg-template').innerHTML;
+            return template.trim();
+        }
+        
+        // 在控制台打印SVG模板代码
+        console.log('SVG模板代码：');
+        console.log(getSVGTemplate());
+        
+        // 提供复制到剪贴板功能
+        window.copySVGTemplate = function() {
+            const template = getSVGTemplate();
+            navigator.clipboard.writeText(template).then(() => {
+                alert('SVG模板代码已复制到剪贴板！');
+            });
+        };
+        
+        console.log('提示：可以调用 copySVGTemplate() 函数复制SVG代码到剪贴板');
+    </script>
+</body>
+</html>

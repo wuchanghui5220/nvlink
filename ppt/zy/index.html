@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>北京正阳恒卓科技有限公司</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'WenQuanYi Micro Hei', sans-serif;
+            background: linear-gradient(135deg, #0c4a3e 0%, #134e4a 25%, #065f46 50%, #047857 75%, #059669 100%);
+            color: #fff;
+            overflow: hidden;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            background: linear-gradient(135deg, #0c4a3e 0%, #134e4a 25%, #065f46 50%, #047857 75%, #059669 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .slide-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(34, 197, 94, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.12) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(6, 95, 70, 0.2) 0%, transparent 50%);
+            animation: pulseLight 20s ease-in-out infinite;
+            z-index: 1;
+        }
+
+        @keyframes pulseLight {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.8; }
+        }
+
+        .decorative-elements {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .corner-decoration {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            border: 2px solid rgba(34, 197, 94, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .corner-decoration::before {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: rgba(34, 197, 94, 0.6);
+            border-radius: 50%;
+            animation: cornerPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes cornerPulse {
+            0%, 100% { 
+                transform: scale(0.8);
+                opacity: 0.6;
+            }
+            50% { 
+                transform: scale(1.2);
+                opacity: 1;
+            }
+        }
+
+        .corner-decoration.top-left {
+            top: 40px;
+            left: 40px;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .corner-decoration.top-left::before {
+            top: -10px;
+            left: -10px;
+        }
+
+        .corner-decoration.top-right {
+            top: 40px;
+            right: 40px;
+            border-left: none;
+            border-bottom: none;
+        }
+
+        .corner-decoration.top-right::before {
+            top: -10px;
+            right: -10px;
+            animation-delay: 0.5s;
+        }
+
+        .corner-decoration.bottom-left {
+            bottom: 40px;
+            left: 40px;
+            border-right: none;
+            border-top: none;
+        }
+
+        .corner-decoration.bottom-left::before {
+            bottom: -10px;
+            left: -10px;
+            animation-delay: 1s;
+        }
+
+        .corner-decoration.bottom-right {
+            bottom: 40px;
+            right: 40px;
+            border-left: none;
+            border-top: none;
+        }
+
+        .corner-decoration.bottom-right::before {
+            bottom: -10px;
+            right: -10px;
+            animation-delay: 1.5s;
+        }
+
+        .tech-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(34, 197, 94, 0.6);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { 
+                transform: translateY(0px) rotate(0deg);
+                opacity: 0;
+            }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            50% { 
+                transform: translateY(-100px) rotate(180deg);
+            }
+        }
+
+        .circuit-lines {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+            height: 80%;
+            z-index: 4;
+            pointer-events: none;
+            opacity: 0.1;
+        }
+
+        .circuit-line {
+            position: absolute;
+            background: linear-gradient(90deg, transparent, #22c55e, transparent);
+            height: 2px;
+            animation: circuitFlow 4s linear infinite;
+        }
+
+        @keyframes circuitFlow {
+            0% { 
+                width: 0;
+                opacity: 0;
+            }
+            50% { 
+                opacity: 1;
+            }
+            100% { 
+                width: 100%;
+                opacity: 0;
+            }
+        }
+
+        .main-content {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+            padding: 60px;
+        }
+
+        .logo-section {
+            margin-bottom: 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .brand-container {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .brand-image {
+            max-height: 100px;
+            height: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 8px 25px rgba(34, 197, 94, 0.3));
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 2;
+        }
+
+        .brand-image:hover {
+            transform: scale(1.05);
+            filter: drop-shadow(0 12px 35px rgba(34, 197, 94, 0.4));
+        }
+
+        .brand-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 120%;
+            height: 120%;
+            background: radial-gradient(circle, rgba(34, 197, 94, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: brandPulse 4s ease-in-out infinite;
+            z-index: 1;
+        }
+
+        @keyframes brandPulse {
+            0%, 100% { 
+                transform: translate(-50%, -50%) scale(0.9);
+                opacity: 0.3;
+            }
+            50% { 
+                transform: translate(-50%, -50%) scale(1.1);
+                opacity: 0.7;
+            }
+        }
+
+        .title-section {
+            margin-bottom: 40px;
+        }
+
+        .main-title {
+            font-size: clamp(3rem, 6vw, 5rem);
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #ffffff 0%, #76a67e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .english-title {
+            font-size: clamp(1.5rem, 3vw, 2.5rem);
+            font-weight: 300;
+            color: rgba(255, 255, 255, 0.8);
+            font-family: 'Arial', sans-serif;
+            letter-spacing: 2px;
+            margin-bottom: 30px;
+        }
+
+        .subtitle {
+            font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.5;
+            max-width: 800px;
+            margin: 0 auto 40px;
+        }
+
+        .highlight-info {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            flex-wrap: wrap;
+            margin-top: 50px;
+        }
+
+        .info-item {
+            text-align: center;
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            border: 1px solid rgba(76, 166, 126, 0.3);
+            backdrop-filter: blur(10px);
+            min-width: 180px;
+            transition: all 0.3s ease;
+        }
+
+        .info-item:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(76, 166, 126, 0.5);
+            box-shadow: 0 10px 30px rgba(76, 166, 126, 0.2);
+        }
+
+        .info-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #76a67e;
+            margin-bottom: 8px;
+        }
+
+        .info-label {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .footer-info {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.7);
+            z-index: 10;
+        }
+
+        .page-indicator {
+            position: absolute;
+            bottom: 40px;
+            right: 40px;
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.6);
+            z-index: 10;
+        }
+
+        .slide-number {
+            font-weight: 600;
+            color: #76a67e;
+        }
+
+        .nav-controls {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+            font-size: 30px;
+            color: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            user-select: none;
+        }
+
+        .nav-controls:hover {
+            color: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(76, 166, 126, 0.3);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .nav-prev {
+            left: 30px;
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .nav-next {
+            right: 30px;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .main-content > * {
+            animation: slideIn 0.8s ease-out forwards;
+        }
+
+        .main-content > *:nth-child(1) { animation-delay: 0.1s; }
+        .main-content > *:nth-child(2) { animation-delay: 0.2s; }
+        .main-content > *:nth-child(3) { animation-delay: 0.3s; }
+        .main-content > *:nth-child(4) { animation-delay: 0.4s; }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 40px 20px;
+            }
+            
+            .logo-section {
+                margin-bottom: 30px;
+            }
+            
+            .brand-image {
+                max-height: 80px;
+            }
+            
+            .highlight-info {
+                gap: 30px;
+            }
+            
+            .info-item {
+                min-width: 140px;
+                padding: 20px;
+            }
+            
+            .corner-decoration {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .corner-decoration.top-left,
+            .corner-decoration.top-right {
+                top: 20px;
+            }
+            
+            .corner-decoration.top-left,
+            .corner-decoration.bottom-left {
+                left: 20px;
+            }
+            
+            .corner-decoration.top-right,
+            .corner-decoration.bottom-right {
+                right: 20px;
+            }
+            
+            .corner-decoration.bottom-left,
+            .corner-decoration.bottom-right {
+                bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="decorative-elements">
+            <div class="corner-decoration top-left"></div>
+            <div class="corner-decoration top-right"></div>
+            <div class="corner-decoration bottom-left"></div>
+            <div class="corner-decoration bottom-right"></div>
+        </div>
+
+        <div class="tech-particles" id="particles"></div>
+
+        <div class="circuit-lines">
+            <div class="circuit-line" style="top: 20%; left: 0; animation-delay: 0s;"></div>
+            <div class="circuit-line" style="top: 40%; left: 0; animation-delay: 1s;"></div>
+            <div class="circuit-line" style="top: 60%; left: 0; animation-delay: 2s;"></div>
+            <div class="circuit-line" style="top: 80%; left: 0; animation-delay: 3s;"></div>
+        </div>
+
+        <div class="main-content">
+            <div class="logo-section">
+                <div class="brand-container">
+                    <div class="brand-glow"></div>
+                    <img src="zy_elite.png" alt="正阳恒卓科技 NVIDIA Elite Partner" class="brand-image">
+                </div>
+            </div>
+
+            <div class="title-section">
+                <h1 class="main-title">北京正阳恒卓科技有限公司</h1>
+                <div class="english-title">Beijing Zhengyang Hengzhuo Technology Co., Ltd.</div>
+                <p class="subtitle">
+                    AI算力基础设施领导者 | 高性能计算解决方案专家<br>
+                    助力企业数字化转型，构建智能未来
+                </p>
+            </div>
+
+            <div class="highlight-info">
+                <div class="info-item">
+                    <div class="info-number">2015</div>
+                    <div class="info-label">成立年份</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-number">1000+</div>
+                    <div class="info-label">服务客户</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-number">50K+</div>
+                    <div class="info-label">GPU部署</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-number">99.9%</div>
+                    <div class="info-label">系统可靠性</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-info">
+            客户至上，技术为先 | 专注AI算力基础设施建设
+        </div>
+
+        <div class="page-indicator">
+            <span class="slide-number">01</span> / 05
+        </div>
+
+        <div class="nav-controls nav-prev">‹</div>
+        <div class="nav-controls nav-next" onclick="window.location.href='page2.html'">›</div>
+    </div>
+
+    <script>
+        // 创建科技粒子效果
+        function createTechParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 30;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                // 随机大小
+                const size = Math.random() * 4 + 2;
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                
+                // 随机位置
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                
+                // 随机动画延迟
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 4 + 4) + 's';
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            createTechParticles();
+            
+            // 添加页面加载动画
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.8s ease';
+            
+            setTimeout(() => {
+                document.body.style.opacity = '1';
+            }, 100);
+            
+            // 添加交互效果
+            const infoItems = document.querySelectorAll('.info-item');
+            infoItems.forEach((item, index) => {
+                item.addEventListener('mouseenter', () => {
+                    item.style.transform = 'translateY(-8px) scale(1.05)';
+                    item.style.boxShadow = '0 15px 40px rgba(34, 197, 94, 0.3)';
+                });
+                
+                item.addEventListener('mouseleave', () => {
+                    item.style.transform = 'translateY(-5px) scale(1)';
+                    item.style.boxShadow = '0 10px 30px rgba(76, 166, 126, 0.2)';
+                });
+            });
+        });
+        
+        // 添加键盘导航
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                window.location.href = 'page2.html';
+            }
+            if (e.key === 'ArrowLeft') {
+                // 首页，无上一页
+                console.log('First page - no previous slide');
+            }
+        });
+    </script>
+</body>
+</html>

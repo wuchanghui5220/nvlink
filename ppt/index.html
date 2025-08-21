@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>技术演示中心 - 导航门户</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Noto Sans SC', sans-serif;
+      background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 30%, #16213e 70%, #0f3460 100%);
+      min-height: 100vh;
+      color: white;
+      overflow-x: hidden;
+    }
+
+    /* 动态背景 */
+    .background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2;
+      background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 30%, #16213e 70%, #0f3460 100%);
+    }
+
+    .background::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        radial-gradient(circle at 20% 80%, rgba(76, 175, 80, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(33, 150, 243, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(255, 193, 7, 0.05) 0%, transparent 50%);
+      animation: backgroundPulse 20s ease-in-out infinite;
+    }
+
+    .grid-pattern {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      background-image:
+        linear-gradient(rgba(118, 185, 0, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(118, 185, 0, 0.03) 1px, transparent 1px);
+      background-size: 50px 50px;
+      animation: gridMove 30s linear infinite;
+    }
+
+    @keyframes backgroundPulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.8; }
+    }
+
+    @keyframes gridMove {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(50px, 50px); }
+    }
+
+    /* 主容器 */
+    .container {
+      position: relative;
+      z-index: 1;
+      padding: 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* 头部 */
+    .header {
+      text-align: center;
+      margin-bottom: 3rem;
+      position: relative;
+    }
+
+    .main-title {
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 800;
+      background: linear-gradient(135deg, #76b900 0%, #4CAF50 50%, #00BCD4 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 1rem;
+      text-shadow: 0 0 30px rgba(118, 185, 0, 0.3);
+      animation: titleGlow 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes titleGlow {
+      0% { filter: brightness(1); }
+      100% { filter: brightness(1.2); }
+    }
+
+    .subtitle {
+      font-size: clamp(1rem, 2vw, 1.5rem);
+      color: rgba(255, 255, 255, 0.8);
+      font-weight: 300;
+      margin-bottom: 2rem;
+    }
+
+    .status-bar {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .status-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(118, 185, 0, 0.3);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #4CAF50;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .status-text {
+      font-size: 0.9rem;
+      font-family: 'JetBrains Mono', monospace;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    /* 导航网格 */
+    .nav-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+
+    .nav-card {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+      padding: 2rem;
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+
+    .nav-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(118, 185, 0, 0.1), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .nav-card:hover::before {
+      left: 100%;
+    }
+
+    .nav-card:hover {
+      transform: translateY(-8px);
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(118, 185, 0, 0.5);
+      box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.3),
+        0 0 30px rgba(118, 185, 0, 0.2);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+    }
+
+    .card-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #0f0f23;
+    }
+
+    .card-status {
+      padding: 0.25rem 0.75rem;
+      border-radius: 10px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      background: rgba(76, 175, 80, 0.2);
+      color: #4CAF50;
+      border: 1px solid rgba(76, 175, 80, 0.3);
+    }
+
+    .card-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: white;
+    }
+
+    .card-description {
+      color: rgba(255, 255, 255, 0.7);
+      line-height: 1.6;
+      margin-bottom: 1rem;
+    }
+
+    .card-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      color: rgba(255, 255, 255, 0.6);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .card-pages {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* 特殊主题色彩 */
+    .rtx { background: linear-gradient(135deg, #76b900, #4CAF50); }
+    .training { background: linear-gradient(135deg, #2196F3, #00BCD4); }
+    .gb200 { background: linear-gradient(135deg, #FF9800, #FF5722); }
+    .rdma { background: linear-gradient(135deg, #9C27B0, #E91E63); }
+    .air { background: linear-gradient(135deg, #00BCD4, #4CAF50); }
+    .sp { background: linear-gradient(135deg, #FF5722, #795548); }
+    .dg { background: linear-gradient(135deg, #607D8B, #455A64); }
+    .projects { background: linear-gradient(135deg, #673AB7, #3F51B5); }
+    .templates { background: linear-gradient(135deg, #795548, #5D4037); }
+
+    /* 页脚 */
+    .footer {
+      margin-top: auto;
+      text-align: center;
+      padding: 2rem 0;
+      color: rgba(255, 255, 255, 0.6);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .footer-info {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+    }
+
+    .footer-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* 响应式设计 */
+    @media (max-width: 768px) {
+      .container {
+        padding: 1rem;
+      }
+      
+      .nav-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+      
+      .nav-card {
+        padding: 1.5rem;
+      }
+      
+      .status-bar {
+        gap: 1rem;
+      }
+      
+      .footer-info {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+    }
+
+    /* 加载动画 */
+    .nav-card {
+      animation: fadeInUp 0.6s ease-out forwards;
+      opacity: 0;
+      transform: translateY(30px);
+    }
+
+    .nav-card:nth-child(1) { animation-delay: 0.1s; }
+    .nav-card:nth-child(2) { animation-delay: 0.2s; }
+    .nav-card:nth-child(3) { animation-delay: 0.3s; }
+    .nav-card:nth-child(4) { animation-delay: 0.4s; }
+    .nav-card:nth-child(5) { animation-delay: 0.5s; }
+    .nav-card:nth-child(6) { animation-delay: 0.6s; }
+    .nav-card:nth-child(7) { animation-delay: 0.7s; }
+    .nav-card:nth-child(8) { animation-delay: 0.8s; }
+    .nav-card:nth-child(9) { animation-delay: 0.9s; }
+
+    @keyframes fadeInUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="background"></div>
+  <div class="grid-pattern"></div>
+  
+  <div class="container">
+    <header class="header">
+      <h1 class="main-title">技术演示中心</h1>
+      <p class="subtitle">Tech Demo Portal - 集成化技术展示平台</p>
+      
+      <div class="status-bar">
+        <div class="status-item">
+          <div class="status-dot"></div>
+          <span class="status-text">系统在线</span>
+        </div>
+        <div class="status-item">
+          <div class="status-dot"></div>
+          <span class="status-text">9个活跃项目</span>
+        </div>
+        <div class="status-item">
+          <div class="status-dot"></div>
+          <span class="status-text">实时更新</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="nav-grid">
+      <!-- RTX GPU 产品对比 -->
+      <a href="rtx/" class="nav-card">
+        <div class="card-header">
+          <div class="card-icon rtx">RTX</div>
+          <div class="card-status">热门</div>
+        </div>
+        <h3 class="card-title">RTX GPU 产品对比</h3>
+        <p class="card-description">
+          NVIDIA RTX系列显卡全面技术规格对比，包含GeForce RTX 4090/5090、H20、L20等最新产品的详细参数分析和性能评测。
+        </p>
+        <div class="card-meta">
+          <span class="card-pages">📊 6页演示</span>
+          <span>GPU技术</span>
+        </div>
+      </a>
+
+      <!-- 技术培训课程 -->
+      <a href="training/" class="nav-card">
+        <div class="card-header">
+          <div class="card-icon training">训练</div>
+          <div class="card-status">34节课</div>
+        </div>
+        <h3 class="card-title">GPU集群技术培训</h3>
+        <p class="card-description">
+          宁夏移动智算项目培训计划，涵盖GPU服务器配置、CUDA开发、集群部署、性能优化等核心技术栈的系统性培训课程。
+        </p>
+        <div class="card-meta">
+          <span class="card-pages">🎓 34章节</span>
+          <span>培训课程</span>
+        </div>
+      </a>
+
+      <!-- GB200 系统架构 -->
+      <a href="gb200/" class="nav-card">
+        <div class="card-header">
+          <div class="card-icon gb200">GB2</div>
+          <div class="card-status">最新</div>
+        </div>
+        <h3 class="card-title">GB200 NVL系统架构</h3>
+        <p class="card-description">
+          NVIDIA GB200 NVL72系统的详细架构解析，包括硬件拓扑、网络互联、存储系统和AI计算性能等关键技术要点。
+        </p>
+        <div class="card-meta">
+          <span class="card-pages">🏗️ 18页详解</span>
+          <span>系统架构</span>
+        </div>
+      </a>
+
+      <!-- RDMA 高性能网络 -->
+      <a href="rdma/" class="nav-card">
+        <div class="card-header">
+          <div class="card-icon rdma">IB</div>
+          <div class="card-status">专业</div>
+        </div>
+        <h3 class="card-title">RDMA & InfiniBand</h3>
+        <p class="card-description">
+          InfiniBand网络架构深度解析，RDMA技术原理、网络拓扑设计、性能优化策略和实际部署案例分享。
+        </p>
+        <div class="card-meta">
+          <span class="card-pages">🌐 8页技术</span>
+          <span>网络技术</span>
+        </div>
+      </a>
+
+      <!-- AI 云原生平台 -->
+      <a href="air/" class="nav-card">
+        <div class="card-header">
+          <div class="card-icon air">AIR</div>
+          <div class="card-status">云原生</div>
+        </div>
+        <h3 class="card-title">AIR 云原生平台</h3>
+        <p class="card-description">
+          EVPN-VXLAN分布式网络架构、Cumulus Linux配置、DHCP自动化部署等云原生基础设施的完整解决方案。
+        </p>
+        <div class="card-meta">
+          <span class="card-pages">☁️ 8页方案</span>
+          <span>云基础设施</span>
+        </div>
+      </a>
+
+      <!-- 存储解决方案 -->
+      <a href="sp/" class="nav-card">
+        <div class="card-header">
+          <div class="card-icon sp">SP</div>
+          <div class="card-status">存储</div>
+        </div>
+        <h3 class="card-title">存储解决方案</h3>
+        <p class="card-description">
+          高性能存储系统架构，DDN AI400系列、UFM管理平台、SN4600交换机等企业级存储和网络设备的技术方案。
+        </p>
+        <div class="card-meta">
+          <span class="card-pages">💾 5页方案</span>
+          <span>存储系统</span>
+        </div>
+      </a>
+
+      <!-- DGX 系统方案 -->
+      <a href="dg/" class="nav-card">
+        <div class="card-header">
+          <div class="card-icon dg">DGX</div>
+          <div class="card-status">AI超算</div>
+        </div>
+        <h3 class="card-title">DGX 系统方案</h3>
+        <p class="card-description">
+          NVIDIA DGX系列AI超算系统的配置方案，包括H100/H200集群架构、ConnectX网卡配置和性能基准测试。
+        </p>
+        <div class="card-meta">
+          <span class="card-pages">🔥 11页方案</span>
+          <span>AI超算</span>
+        </div>
+      </a>
+
+      <!-- 实践项目 -->
+      <a href="projects/training/" class="nav-card">
+        <div class="card-header">
+          <div class="card-icon projects">PRJ</div>
+          <div class="card-status">实践</div>
+        </div>
+        <h3 class="card-title">实践项目</h3>
+        <p class="card-description">
+          网络配置实验、防火墙部署、Ansible自动化等实际操作项目，提供完整的配置文件和部署脚本。
+        </p>
+        <div class="card-meta">
+          <span class="card-pages">⚡ 实验项目</span>
+          <span>动手实践</span>
+        </div>
+      </a>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-info">
+        <div class="footer-item">
+          <span>📅</span>
+          <span id="current-time"></span>
+        </div>
+        <div class="footer-item">
+          <span>🔧</span>
+          <span>技术演示平台 v2.0</span>
+        </div>
+        <div class="footer-item">
+          <span>👤</span>
+          <span>Vincent</span>
+        </div>
+      </div>
+      <p>&copy; 2025 技术演示中心 - 专业的技术展示平台</p>
+    </footer>
+  </div>
+
+  <script>
+    // 实时时间显示
+    function updateTime() {
+      const now = new Date();
+      const timeString = now.toLocaleString('zh-CN', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      });
+      document.getElementById('current-time').textContent = timeString;
+    }
+
+    updateTime();
+    setInterval(updateTime, 1000);
+
+    // 卡片悬停效果增强
+    document.querySelectorAll('.nav-card').forEach(card => {
+      card.addEventListener('mouseenter', function() {
+        this.style.transform = 'translateY(-8px) scale(1.02)';
+      });
+      
+      card.addEventListener('mouseleave', function() {
+        this.style.transform = 'translateY(0) scale(1)';
+      });
+    });
+
+    // 键盘导航支持
+    document.addEventListener('keydown', function(e) {
+      const cards = document.querySelectorAll('.nav-card');
+      const focusedIndex = Array.from(cards).findIndex(card => card === document.activeElement);
+      
+      switch(e.key) {
+        case 'ArrowDown':
+        case 'ArrowRight':
+          e.preventDefault();
+          if (focusedIndex < cards.length - 1) {
+            cards[focusedIndex + 1].focus();
+          } else {
+            cards[0].focus();
+          }
+          break;
+        case 'ArrowUp':
+        case 'ArrowLeft':
+          e.preventDefault();
+          if (focusedIndex > 0) {
+            cards[focusedIndex - 1].focus();
+          } else {
+            cards[cards.length - 1].focus();
+          }
+          break;
+        case 'Enter':
+          if (document.activeElement.classList.contains('nav-card')) {
+            window.location.href = document.activeElement.href;
+          }
+          break;
+      }
+    });
+
+    // 添加焦点样式
+    document.querySelectorAll('.nav-card').forEach(card => {
+      card.addEventListener('focus', function() {
+        this.style.outline = '2px solid rgba(118, 185, 0, 0.8)';
+        this.style.outlineOffset = '4px';
+      });
+      
+      card.addEventListener('blur', function() {
+        this.style.outline = 'none';
+      });
+    });
+
+    // 页面加载完成后的欢迎动画
+    window.addEventListener('load', function() {
+      const title = document.querySelector('.main-title');
+      title.style.animation = 'titleGlow 3s ease-in-out infinite alternate, fadeInUp 1s ease-out';
+    });
+
+    // 检测暗色模式偏好
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+      // 用户偏好亮色模式，可以在这里添加相应的样式调整
+      console.log('用户偏好亮色模式');
+    }
+  </script>
+</body>
+</html>
