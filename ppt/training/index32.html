@@ -311,7 +311,7 @@
                   <div class="step-number">1</div>
                   <div class="step-title">安装基础软件包</div>
                 </div>
-                <div class="step-description">在两台服务器上安装pacemaker、pcs和drbd-utils</div>
+                <div class="step-description">在两台服务器上安装pacemaker、pcs和drbd-utils，对于裸金属服务器需要安装 resource-agents-extra</div>
                 <div class="os-commands">
                   <div class="os-command">
                     <div class="os-label">
@@ -494,7 +494,7 @@ chmod 755 /opt/ufm/files/</div>
               <div>1. 安装前需关闭防火墙或开放必要端口</div>
               <div>2. 需要禁用SELinux</div>
               <div>3. 等待DRBD同步完成后再启动集群</div>
-              <div>4. 卸载时先停止集群再运行/opt/ufm/ufm_ha/uninstall_ha.sh</div>
+              <div>4. 卸载时先停止集群，再执行/opt/ufm/ufm_ha/uninstall_ha.sh</div>
             </div>
           </div>
         </div>
