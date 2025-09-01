@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NVIDIA DPU BlueField-3 技术分享</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Microsoft YaHei", sans-serif;
+            background: #000;
+            color: white;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 复杂的动态背景层次 */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                /* 主渐变 */
+                radial-gradient(ellipse at top left, rgba(118, 185, 0, 0.15) 0%, transparent 60%),
+                radial-gradient(ellipse at bottom right, rgba(118, 185, 0, 0.1) 0%, transparent 60%),
+                radial-gradient(ellipse at center, rgba(0, 100, 200, 0.05) 0%, transparent 70%),
+                linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 25%, #0f0f0f 50%, #1a1a1a 75%, #0a0a0a 100%);
+            animation: backgroundFlow 12s ease-in-out infinite;
+        }
+
+        /* 科技网格背景 */
+        body::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                /* 大网格 */
+                linear-gradient(rgba(118, 185, 0, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(118, 185, 0, 0.03) 1px, transparent 1px),
+                /* 小网格 */
+                linear-gradient(rgba(118, 185, 0, 0.01) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(118, 185, 0, 0.01) 1px, transparent 1px);
+            background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
+            animation: gridShift 25s linear infinite;
+        }
+
+        /* 浮动的数据粒子 */
+        .data-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #76B900;
+            border-radius: 50%;
+            opacity: 0;
+            animation: particleFloat 8s infinite;
+        }
+
+        .particle:nth-child(2n) {
+            width: 1px;
+            height: 1px;
+            background: rgba(118, 185, 0, 0.6);
+            animation-duration: 12s;
+        }
+
+        .particle:nth-child(3n) {
+            width: 3px;
+            height: 3px;
+            background: rgba(118, 185, 0, 0.4);
+            animation-duration: 15s;
+        }
+
+        /* 电路板风格的线条 */
+        .circuit-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(45deg, transparent 48%, rgba(118, 185, 0, 0.1) 49%, rgba(118, 185, 0, 0.1) 51%, transparent 52%),
+                linear-gradient(-45deg, transparent 48%, rgba(118, 185, 0, 0.08) 49%, rgba(118, 185, 0, 0.08) 51%, transparent 52%);
+            background-size: 300px 300px, 400px 400px;
+            animation: circuitPulse 20s ease-in-out infinite;
+            opacity: 0.3;
+        }
+
+
+        @keyframes backgroundFlow {
+            0%, 100% { 
+                filter: hue-rotate(0deg) brightness(1);
+                transform: scale(1);
+            }
+            25% {
+                filter: hue-rotate(5deg) brightness(1.1);
+                transform: scale(1.02);
+            }
+            50% { 
+                filter: hue-rotate(-3deg) brightness(0.95);
+                transform: scale(0.98);
+            }
+            75% {
+                filter: hue-rotate(8deg) brightness(1.05);
+                transform: scale(1.01);
+            }
+        }
+
+        @keyframes gridShift {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(100px, 100px); }
+        }
+
+        @keyframes particleFloat {
+            0% { 
+                opacity: 0;
+                transform: translateY(100vh) translateX(0px) scale(0);
+            }
+            10% {
+                opacity: 1;
+                transform: translateY(90vh) translateX(10px) scale(1);
+            }
+            90% {
+                opacity: 1;
+                transform: translateY(-10vh) translateX(-10px) scale(1);
+            }
+            100% { 
+                opacity: 0;
+                transform: translateY(-20vh) translateX(-20px) scale(0);
+            }
+        }
+
+        @keyframes circuitPulse {
+            0%, 100% { 
+                opacity: 0.2;
+                transform: scale(1) rotate(0deg);
+            }
+            50% { 
+                opacity: 0.4;
+                transform: scale(1.05) rotate(2deg);
+            }
+        }
+
+
+        .slide-container {
+            width: 100%;
+            max-width: 1200px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .nvidia-logo {
+            margin-bottom: 40px;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .main-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #76B900, #a4d633);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: fadeInUp 1.2s ease-out 0.3s both;
+            text-shadow: 0 0 30px rgba(118, 185, 0, 0.3);
+        }
+
+        .subtitle {
+            font-size: 2rem;
+            font-weight: 400;
+            color: #e0e0e0;
+            margin-bottom: 30px;
+            animation: fadeInUp 1.2s ease-out 0.6s both;
+        }
+
+        .highlight {
+            color: #76B900;
+            font-weight: 600;
+        }
+
+        .speaker-info {
+            margin-top: 60px;
+            padding: 30px;
+            border: 1px solid rgba(118, 185, 0, 0.3);
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            animation: fadeInUp 1.2s ease-out 0.9s both;
+        }
+
+        .speaker-title {
+            font-size: 1.2rem;
+            color: #76B900;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .speaker-name {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .speaker-details {
+            font-size: 1rem;
+            color: #b0b0b0;
+            line-height: 1.5;
+        }
+
+        .date-info {
+            position: absolute;
+            bottom: 50px;
+            right: 50px;
+            font-size: 0.9rem;
+            color: #888;
+            animation: fadeIn 1.5s ease-out 1.2s both;
+        }
+
+        /* DPU芯片风格装饰 */
+        .chip-decoration {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            border: 1px solid rgba(118, 185, 0, 0.2);
+            border-radius: 10px;
+            background: linear-gradient(45deg, transparent 30%, rgba(118, 185, 0, 0.03) 70%);
+            animation: chipGlow 6s ease-in-out infinite;
+        }
+
+        .chip-decoration::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            border: 1px solid rgba(118, 185, 0, 0.1);
+            border-radius: 5px;
+        }
+
+        .chip-top-left {
+            top: 10%;
+            left: 5%;
+            animation-delay: 0s;
+        }
+
+        .chip-top-right {
+            top: 15%;
+            right: 8%;
+            animation-delay: 2s;
+        }
+
+        .chip-bottom-left {
+            bottom: 20%;
+            left: 10%;
+            animation-delay: 4s;
+        }
+
+        .chip-bottom-right {
+            bottom: 10%;
+            right: 5%;
+            animation-delay: 1s;
+        }
+
+        @keyframes chipGlow {
+            0%, 100% { 
+                opacity: 0.3;
+                box-shadow: 0 0 20px rgba(118, 185, 0, 0.1);
+                transform: rotate(0deg);
+            }
+            50% { 
+                opacity: 0.6;
+                box-shadow: 0 0 40px rgba(118, 185, 0, 0.2);
+                transform: rotate(2deg);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 2.5rem;
+            }
+            
+            .subtitle {
+                font-size: 1.5rem;
+            }
+            
+            .slide-container {
+                padding: 0 20px;
+            }
+            
+            .date-info {
+                bottom: 20px;
+                right: 20px;
+            }
+        }
+
+        /* 添加一些微交互效果 */
+        .speaker-info:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(118, 185, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .nvidia-logo:hover {
+            transform: scale(1.05);
+            transition: transform 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <!-- 动态背景元素 -->
+    <div class="data-particles" id="particles"></div>
+    <div class="circuit-lines"></div>
+    
+    <!-- DPU芯片装饰元素 -->
+    <div class="chip-decoration chip-top-left"></div>
+    <div class="chip-decoration chip-top-right"></div>
+    <div class="chip-decoration chip-bottom-left"></div>
+    <div class="chip-decoration chip-bottom-right"></div>
+    
+    <div class="slide-container">
+        <div class="nvidia-logo">
+            <svg xmlns="http://www.w3.org/2000/svg" width="120" height="80" viewBox="0 0 48 32" fill="none">
+                <path d="M17.9101 9.54961V6.65962C18.1893 6.64003 18.4704 6.624 18.7567 6.6151C26.6044 6.36581 31.7531 13.4083 31.7531 13.4083C31.7531 13.4083 26.1926 21.1897 20.2308 21.1897C19.3718 21.1897 18.6029 21.0508 17.9101 20.8158V12.0496C20.9661 12.4218 21.5794 13.7804 23.4158 16.8645L27.5005 13.394C27.5005 13.394 24.5188 9.45345 19.492 9.45345C18.9458 9.45345 18.4227 9.49263 17.9083 9.54783L17.9101 9.54961ZM17.9083 0V4.31807C18.1893 4.29492 18.4721 4.27711 18.7549 4.26643C29.6675 3.89606 36.7781 13.2836 36.7781 13.2836C36.7781 13.2836 28.6123 23.2873 20.1035 23.2873C19.3241 23.2873 18.5941 23.2143 17.9083 23.0932V25.7624C18.4951 25.8372 19.1031 25.8817 19.7359 25.8817C27.6525 25.8817 33.3792 21.8094 38.9239 16.9874C39.843 17.7281 43.606 19.5319 44.3802 20.3225C39.1077 24.7688 26.8236 28.3515 19.8579 28.3515C19.1862 28.3515 18.5411 28.3105 17.9083 28.25V32H48V0.00178103H17.9101L17.9083 0ZM17.9083 20.814V23.0932C10.5856 21.7773 8.55293 14.1098 8.55293 14.1098C8.55293 14.1098 12.0685 10.1853 17.9083 9.54961V12.0496C17.9083 12.0496 17.9012 12.0496 17.8977 12.0496C14.8329 11.6793 12.4397 14.5639 12.4397 14.5639C12.4397 14.5639 13.7812 19.4197 17.9101 20.8175L17.9083 20.814ZM4.90481 13.7804C4.90481 13.7804 9.24403 7.32914 17.9101 6.6614V4.32163C8.31255 5.09799 0 13.2872 0 13.2872C0 13.2872 4.70685 26.9982 17.9101 28.2535V25.766C8.22064 24.5373 4.90481 13.7804 4.90481 13.7804Z" fill="#76B900"/>
+            </svg>
+        </div>
+        
+        <h1 class="main-title">NVIDIA DPU <span class="highlight">BlueField-3</span></h1>
+        <h2 class="subtitle">数据处理单元技术分享</h2>
+        <p class="subtitle" style="font-size: 1.4rem; margin-top: 20px;">
+            面向云计算与数据中心的<span class="highlight">基础设施芯片化</span>解决方案
+        </p>
+        
+        <div class="speaker-info">
+            <div class="speaker-title">特邀嘉宾分享</div>
+            <div class="speaker-name">Vincent Wu</div>
+            <div class="speaker-details">
+                NVIDIA技术专家<br>
+                专注于数据中心基础设施与网络加速技术
+            </div>
+        </div>
+    </div>
+    
+    <div class="date-info">
+        2025年10月 | 线上技术交流会
+    </div>
+
+    <script>
+        // 创建动态粒子效果
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 30;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 8 + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // 鼠标跟踪光效
+        function createMouseGlow() {
+            let mouseGlow = document.createElement('div');
+            mouseGlow.style.cssText = `
+                position: fixed;
+                width: 300px;
+                height: 300px;
+                background: radial-gradient(circle, rgba(118, 185, 0, 0.1) 0%, transparent 70%);
+                border-radius: 50%;
+                pointer-events: none;
+                z-index: 0;
+                transition: all 0.1s ease;
+                transform: translate(-50%, -50%);
+            `;
+            document.body.appendChild(mouseGlow);
+
+            document.addEventListener('mousemove', function(e) {
+                mouseGlow.style.left = e.clientX + 'px';
+                mouseGlow.style.top = e.clientY + 'px';
+            });
+        }
+
+        // 添加键盘控制和增强交互
+        document.addEventListener('DOMContentLoaded', function() {
+            createParticles();
+            createMouseGlow();
+            
+            // 添加页面脉冲效果
+            let pulseInterval = setInterval(function() {
+                document.body.style.filter = 'brightness(1.05) contrast(1.02)';
+                setTimeout(function() {
+                    document.body.style.filter = 'brightness(1) contrast(1)';
+                }, 200);
+            }, 5000);
+            
+            // 点击任意位置产生涟漪效果
+            document.addEventListener('click', function(e) {
+                const ripple = document.createElement('div');
+                ripple.style.cssText = `
+                    position: fixed;
+                    width: 100px;
+                    height: 100px;
+                    background: radial-gradient(circle, rgba(118, 185, 0, 0.3) 0%, transparent 70%);
+                    border-radius: 50%;
+                    pointer-events: none;
+                    z-index: 1000;
+                    left: ${e.clientX - 50}px;
+                    top: ${e.clientY - 50}px;
+                    transform: scale(0);
+                    animation: rippleEffect 1s ease-out;
+                `;
+                
+                document.body.appendChild(ripple);
+                
+                setTimeout(function() {
+                    ripple.remove();
+                }, 1000);
+            });
+            
+            // 键盘导航
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'ArrowRight' || e.key === ' ') {
+                    // 切换到下一页（目录页）
+                    window.location.href = 'contents.html';
+                } else if (e.key === 'ArrowLeft') {
+                    // 在封面页，左箭头无操作
+                    console.log('已经在第一页');
+                }
+            });
+        });
+        
+        // CSS动画定义
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes rippleEffect {
+                0% { transform: scale(0); opacity: 1; }
+                100% { transform: scale(3); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>感谢聆听 - NVIDIA DPU BlueField-3</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Microsoft YaHei", sans-serif;
+            background: #000;
+            color: white;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 复用背景效果 */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(ellipse at top left, rgba(118, 185, 0, 0.15) 0%, transparent 60%),
+                radial-gradient(ellipse at bottom right, rgba(0, 191, 255, 0.1) 0%, transparent 60%),
+                radial-gradient(ellipse at center, rgba(50, 205, 50, 0.05) 0%, transparent 70%),
+                linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 25%, #0f0f0f 50%, #1a1a1a 75%, #0a0a0a 100%);
+            animation: backgroundFlow 15s ease-in-out infinite;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(rgba(118, 185, 0, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(118, 185, 0, 0.02) 1px, transparent 1px);
+            background-size: 100px 100px;
+            animation: gridShift 40s linear infinite;
+        }
+
+        .data-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: linear-gradient(45deg, #76B900, #00BFFF);
+            border-radius: 50%;
+            opacity: 0;
+            animation: particleFloat 14s infinite;
+        }
+
+        .circuit-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(30deg, transparent 48%, rgba(50, 205, 50, 0.06) 49%, rgba(50, 205, 50, 0.06) 51%, transparent 52%);
+            background-size: 500px 500px;
+            animation: circuitPulse 30s ease-in-out infinite;
+            opacity: 0.4;
+        }
+
+        /* DPU芯片装饰 */
+        .chip-decoration {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            border: 2px solid rgba(118, 185, 0, 0.3);
+            border-radius: 12px;
+            background: radial-gradient(circle at 30% 30%, rgba(118, 185, 0, 0.1), transparent);
+            animation: chipPulse 4s ease-in-out infinite;
+        }
+
+        .chip-decoration:nth-child(1) {
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .chip-decoration:nth-child(2) {
+            top: 15%;
+            right: 15%;
+            animation-delay: 1s;
+        }
+
+        .chip-decoration:nth-child(3) {
+            bottom: 15%;
+            left: 12%;
+            animation-delay: 2s;
+        }
+
+        .chip-decoration:nth-child(4) {
+            bottom: 10%;
+            right: 10%;
+            animation-delay: 3s;
+        }
+
+        /* 主容器 */
+        .main-container {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            max-width: 1200px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-height: 80vh;
+        }
+
+        /* 主标题区域 */
+        .header-section {
+            margin-bottom: 40px;
+        }
+
+        .main-title {
+            font-size: 3.8rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #76B900, #00BFFF, #32CD32, #76B900);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradientShift 8s ease-in-out infinite, fadeInDown 1.5s ease-out;
+            text-shadow: 0 0 50px rgba(118, 185, 0, 0.3);
+        }
+
+        .subtitle {
+            font-size: 1.4rem;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 8px;
+            animation: fadeInUp 1.5s ease-out 0.3s both;
+        }
+
+        .thank-you-note {
+            font-size: 1.1rem;
+            color: #76B900;
+            font-weight: 600;
+            animation: fadeInUp 1.5s ease-out 0.6s both;
+        }
+
+        /* 关键数据展示 */
+        .key-metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin: 50px 0 40px 0;
+            animation: fadeInUp 1.5s ease-out 0.9s both;
+        }
+
+        .metric-card {
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid rgba(118, 185, 0, 0.3);
+            border-radius: 18px;
+            padding: 30px 25px;
+            backdrop-filter: blur(20px);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #76B900, #00BFFF, #32CD32, #76B900);
+            background-size: 400% 400%;
+            border-radius: 22px;
+            z-index: -1;
+            opacity: 0;
+            animation: gradientBorder 6s ease-in-out infinite;
+            transition: opacity 0.4s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(118, 185, 0, 0.6);
+            box-shadow: 0 20px 40px rgba(118, 185, 0, 0.2);
+        }
+
+        .metric-card:hover::before {
+            opacity: 1;
+        }
+
+        .metric-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .metric-number {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #76B900, #00BFFF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+        }
+
+        .metric-label {
+            font-size: 1.2rem;
+            color: #ffffff;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .metric-description {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.3;
+        }
+
+        /* 演讲者与问答组合区域 */
+        .closing-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 40px;
+            animation: fadeInUp 1.5s ease-out 1.2s both;
+        }
+
+        .speaker-card {
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid rgba(118, 185, 0, 0.3);
+            border-radius: 18px;
+            padding: 30px 25px;
+            backdrop-filter: blur(15px);
+            text-align: center;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .speaker-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(118, 185, 0, 0.1), transparent);
+            transition: left 0.8s ease;
+        }
+
+        .speaker-card:hover::before {
+            left: 100%;
+        }
+
+        .speaker-avatar {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #76B900, #00BFFF);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: white;
+            font-weight: 700;
+            margin: 0 auto 15px;
+            box-shadow: 0 0 25px rgba(118, 185, 0, 0.5);
+        }
+
+        .speaker-name {
+            font-size: 1.6rem;
+            color: #76B900;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .speaker-title {
+            font-size: 1.1rem;
+            color: #d0d0d0;
+            margin-bottom: 6px;
+        }
+
+        .speaker-company {
+            font-size: 1rem;
+            color: #00BFFF;
+            font-weight: 600;
+        }
+
+        /* 问答邀请 */
+        .qa-invitation {
+            background: linear-gradient(135deg, rgba(0, 191, 255, 0.15), rgba(50, 205, 50, 0.15));
+            border: 2px solid rgba(0, 191, 255, 0.4);
+            border-radius: 18px;
+            padding: 30px 25px;
+            backdrop-filter: blur(15px);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .qa-title {
+            font-size: 1.7rem;
+            font-weight: 700;
+            color: #00BFFF;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .qa-text {
+            font-size: 1.1rem;
+            color: #ffffff;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .qa-contact {
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.7);
+            font-style: italic;
+        }
+
+        /* 导航提示 */
+        .navigation-hint {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 40px;
+            font-size: 1rem;
+            color: #888;
+            animation: fadeIn 2s ease-out 2s both;
+            z-index: 10;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-item:hover {
+            color: #76B900;
+            transform: translateY(-2px);
+        }
+
+        .nav-key {
+            background: rgba(118, 185, 0, 0.2);
+            color: #76B900;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        /* 动画定义 */
+        @keyframes backgroundFlow {
+            0%, 100% { filter: hue-rotate(0deg) brightness(1); transform: scale(1); }
+            25% { filter: hue-rotate(15deg) brightness(1.1); transform: scale(1.02); }
+            50% { filter: hue-rotate(-8deg) brightness(0.95); transform: scale(0.98); }
+            75% { filter: hue-rotate(20deg) brightness(1.05); transform: scale(1.01); }
+        }
+
+        @keyframes gridShift {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(100px, 100px); }
+        }
+
+        @keyframes particleFloat {
+            0% { opacity: 0; transform: translateY(100vh) scale(0) rotate(0deg); }
+            15% { opacity: 1; transform: translateY(85vh) scale(1) rotate(120deg); }
+            85% { opacity: 1; transform: translateY(-15vh) scale(1) rotate(240deg); }
+            100% { opacity: 0; transform: translateY(-30vh) scale(0) rotate(360deg); }
+        }
+
+        @keyframes circuitPulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.6; }
+        }
+
+        @keyframes chipPulse {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.05); }
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        @keyframes gradientBorder {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .main-title {
+                font-size: 3.2rem;
+            }
+            
+            .key-metrics {
+                gap: 25px;
+                margin: 40px 0 35px 0;
+            }
+            
+            .closing-section {
+                gap: 30px;
+                margin-top: 35px;
+            }
+        }
+
+        @media (max-width: 968px) {
+            .key-metrics {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                margin: 35px 0 30px 0;
+            }
+            
+            .closing-section {
+                grid-template-columns: 1fr;
+                gap: 25px;
+                margin-top: 30px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            
+            .main-container {
+                min-height: auto;
+            }
+            
+            .header-section {
+                margin-bottom: 25px;
+            }
+            
+            .main-title {
+                font-size: 2.5rem;
+            }
+            
+            .subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .thank-you-note {
+                font-size: 0.95rem;
+            }
+            
+            .key-metrics {
+                margin: 25px 0 20px 0;
+                gap: 15px;
+            }
+            
+            .metric-card {
+                padding: 25px 20px;
+            }
+            
+            .metric-number {
+                font-size: 2.5rem;
+            }
+            
+            .metric-label {
+                font-size: 1rem;
+            }
+            
+            .closing-section {
+                margin-top: 20px;
+                gap: 20px;
+            }
+            
+            .speaker-card, .qa-invitation {
+                padding: 25px 20px;
+            }
+            
+            .speaker-name {
+                font-size: 1.4rem;
+            }
+            
+            .qa-title {
+                font-size: 1.5rem;
+            }
+            
+            .qa-text {
+                font-size: 1rem;
+            }
+            
+            .navigation-hint {
+                flex-direction: column;
+                gap: 12px;
+                bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 动态背景元素 -->
+    <div class="data-particles" id="particles"></div>
+    <div class="circuit-lines"></div>
+    
+    <!-- DPU芯片装饰 -->
+    <div class="chip-decoration"></div>
+    <div class="chip-decoration"></div>
+    <div class="chip-decoration"></div>
+    <div class="chip-decoration"></div>
+    
+    <div class="main-container">
+        <!-- 主标题区域 -->
+        <div class="header-section">
+            <h1 class="main-title">感谢聆听</h1>
+            <div class="subtitle">NVIDIA DPU BlueField-3 技术分享</div>
+            <div class="thank-you-note">30分钟技术之旅完毕，期待您的反馈与合作</div>
+        </div>
+        
+        <!-- 关键数据展示 -->
+        <div class="key-metrics">
+            <div class="metric-card">
+                <div class="metric-icon">⚡</div>
+                <div class="metric-number">400Gbps</div>
+                <div class="metric-label">网络性能突破</div>
+                <div class="metric-description">相比BlueField-2翻倍提升，业界领先的SuperNIC集成技术</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon">🌱</div>
+                <div class="metric-number">30%</div>
+                <div class="metric-label">能耗显著降低</div>
+                <div class="metric-description">基础设施芯片化带来的服务器功耗优化，绿色数据中心首选</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-icon">💰</div>
+                <div class="metric-number">18个月</div>
+                <div class="metric-label">快速投资回收</div>
+                <div class="metric-description">运营效率提升与成本控制双重收益，明确的商业价值体现</div>
+            </div>
+        </div>
+        
+        <!-- 演讲者与问答区域 -->
+        <div class="closing-section">
+            <div class="speaker-card">
+                <div class="speaker-avatar">V</div>
+                <div class="speaker-name">Vincent Wu</div>
+                <div class="speaker-title">DPU技术专家</div>
+                <div class="speaker-company">NVIDIA Corporation</div>
+            </div>
+            
+            <div class="qa-invitation">
+                <div class="qa-title">
+                    <span>🤝</span>
+                    <span>开放问答时间</span>
+                </div>
+                <div class="qa-text">
+                    欢迎提出您的问题和探讨具体应用场景<br>
+                    让我们一起深入了解DPU在您业务中的价值和潜力
+                </div>
+                <div class="qa-contact">期待与您的进一步交流与合作</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="navigation-hint">
+        <div class="nav-item">
+            <span class="nav-key">←</span>
+            <span>返回上一页</span>
+        </div>
+        <div class="nav-item">
+            <span class="nav-key">Home</span>
+            <span>回到封面</span>
+        </div>
+    </div>
+
+    <script>
+        // 创建动态粒子效果
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 30;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 14 + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            createParticles();
+            
+            // 数字滚动动画
+            const metricNumbers = document.querySelectorAll('.metric-number');
+            metricNumbers.forEach((number, index) => {
+                setTimeout(() => {
+                    const targetText = number.textContent;
+                    const numMatch = targetText.match(/[\d.]+/);
+                    
+                    if (numMatch) {
+                        const targetNum = parseFloat(numMatch[0]);
+                        let currentNum = 0;
+                        const steps = 60;
+                        const increment = targetNum / steps;
+                        
+                        const timer = setInterval(() => {
+                            currentNum += increment;
+                            if (currentNum >= targetNum) {
+                                number.textContent = targetText;
+                                clearInterval(timer);
+                            } else {
+                                const displayNum = targetNum < 10 ? 
+                                    currentNum.toFixed(1) : 
+                                    Math.floor(currentNum);
+                                number.textContent = targetText.replace(/[\d.]+/, displayNum);
+                            }
+                        }, 50);
+                    }
+                }, 2500 + index * 500);
+            });
+            
+            // 键盘导航
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Home') {
+                    // 返回封面页
+                    window.location.href = 'index.html';
+                } else if (e.key === 'ArrowLeft') {
+                    // 返回行业价值页
+                    window.location.href = 'industry-value.html';
+                } else if (e.key === 'ArrowRight' || e.key === ' ') {
+                    // 结束演示，返回封面
+                    window.location.href = 'index.html';
+                }
+            });
+
+            // 增强鼠标跟踪效果
+            let mouseTracker = null;
+            document.addEventListener('mousemove', function(e) {
+                if (mouseTracker) {
+                    clearTimeout(mouseTracker);
+                }
+                
+                const light = document.createElement('div');
+                light.style.position = 'fixed';
+                light.style.left = e.clientX + 'px';
+                light.style.top = e.clientY + 'px';
+                light.style.width = '10px';
+                light.style.height = '10px';
+                light.style.background = 'radial-gradient(circle, #76B900 0%, #00BFFF 30%, #32CD32 60%, transparent 80%)';
+                light.style.borderRadius = '50%';
+                light.style.pointerEvents = 'none';
+                light.style.zIndex = '999';
+                light.style.boxShadow = '0 0 20px rgba(118, 185, 0, 0.8), 0 0 40px rgba(0, 191, 255, 0.4)';
+                light.style.animation = 'fadeOut 1.2s ease-out forwards';
+                document.body.appendChild(light);
+                
+                mouseTracker = setTimeout(() => {
+                    if (light.parentNode) {
+                        light.parentNode.removeChild(light);
+                    }
+                }, 1200);
+            });
+            
+            // 点击特效
+            document.addEventListener('click', function(e) {
+                const ripple = document.createElement('div');
+                ripple.style.position = 'fixed';
+                ripple.style.left = (e.clientX - 20) + 'px';
+                ripple.style.top = (e.clientY - 20) + 'px';
+                ripple.style.width = '40px';
+                ripple.style.height = '40px';
+                ripple.style.background = 'radial-gradient(circle, rgba(118, 185, 0, 0.4) 0%, rgba(0, 191, 255, 0.2) 50%, transparent 80%)';
+                ripple.style.borderRadius = '50%';
+                ripple.style.pointerEvents = 'none';
+                ripple.style.zIndex = '999';
+                ripple.style.animation = 'rippleExpand 1s ease-out forwards';
+                document.body.appendChild(ripple);
+                
+                setTimeout(() => {
+                    if (ripple.parentNode) {
+                        ripple.parentNode.removeChild(ripple);
+                    }
+                }, 1000);
+            });
+            
+            // 添加动画样式
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes fadeOut {
+                    from { opacity: 0.9; transform: scale(1); }
+                    to { opacity: 0; transform: scale(0); }
+                }
+                
+                @keyframes rippleExpand {
+                    from { opacity: 0.8; transform: scale(1); }
+                    to { opacity: 0; transform: scale(6); }
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>云计算数据中心应用 - NVIDIA DPU BlueField-3</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Microsoft YaHei", sans-serif;
+            background: #000;
+            color: white;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 复用背景效果 */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(ellipse at top left, rgba(118, 185, 0, 0.15) 0%, transparent 60%),
+                radial-gradient(ellipse at bottom right, rgba(118, 185, 0, 0.1) 0%, transparent 60%),
+                radial-gradient(ellipse at center, rgba(0, 100, 200, 0.05) 0%, transparent 70%),
+                linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 25%, #0f0f0f 50%, #1a1a1a 75%, #0a0a0a 100%);
+            animation: backgroundFlow 12s ease-in-out infinite;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(rgba(118, 185, 0, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(118, 185, 0, 0.02) 1px, transparent 1px);
+            background-size: 80px 80px;
+            animation: gridShift 30s linear infinite;
+        }
+
+        .data-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #76B900;
+            border-radius: 50%;
+            opacity: 0;
+            animation: particleFloat 10s infinite;
+        }
+
+        .circuit-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(45deg, transparent 48%, rgba(118, 185, 0, 0.06) 49%, rgba(118, 185, 0, 0.06) 51%, transparent 52%);
+            background-size: 400px 400px;
+            animation: circuitPulse 25s ease-in-out infinite;
+            opacity: 0.3;
+        }
+
+        /* 主容器 */
+        .slide-container {
+            width: 100%;
+            max-width: 1400px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 20px 30px 60px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 页面标题 */
+        .page-title {
+            font-size: 1.7rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 5px;
+            background: linear-gradient(135deg, #76B900, #a4d633);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(118, 185, 0, 0.3);
+            animation: fadeInDown 1s ease-out;
+            flex-shrink: 0;
+        }
+
+        .page-subtitle {
+            text-align: center;
+            font-size: 0.85rem;
+            color: #b0b0b0;
+            margin-bottom: 20px;
+            animation: fadeInDown 1s ease-out 0.2s both;
+            flex-shrink: 0;
+        }
+
+        /* 主要内容区域 */
+        .content-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            align-items: start;
+            animation: fadeInUp 1.2s ease-out 0.4s both;
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+        }
+
+        /* 左侧：应用场景卡片 */
+        .scenarios-section {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #76B900;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .scenario-card {
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px solid rgba(118, 185, 0, 0.3);
+            border-radius: 12px;
+            padding: 15px;
+            backdrop-filter: blur(10px);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .scenario-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(118, 185, 0, 0.1), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .scenario-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            border-color: rgba(118, 185, 0, 0.6);
+            box-shadow: 0 20px 40px rgba(118, 185, 0, 0.2);
+        }
+
+        .scenario-card:hover::before {
+            left: 100%;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 6px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-icon {
+            font-size: 1.6rem;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(118, 185, 0, 0.1);
+            border-radius: 12px;
+            border: 2px solid rgba(118, 185, 0, 0.3);
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #76B900;
+        }
+
+        .card-description {
+            font-size: 0.85rem;
+            line-height: 1.4;
+            color: #e0e0e0;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .benefits-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .benefit-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            color: #d0d0d0;
+            padding: 4px 0;
+            transition: all 0.3s ease;
+        }
+
+        .benefit-item:hover {
+            color: #ffffff;
+            transform: translateX(5px);
+        }
+
+        .benefit-icon {
+            color: #76B900;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        /* 右侧：架构图和数据展示 */
+        .architecture-section {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* 云架构图占位 */
+        .cloud-architecture-placeholder {
+            width: 100%;
+            height: 180px;
+            background: linear-gradient(135deg, rgba(118, 185, 0, 0.1), rgba(0, 150, 255, 0.05));
+            border: 2px dashed rgba(118, 185, 0, 0.4);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .cloud-architecture-placeholder:hover {
+            transform: scale(1.02);
+            box-shadow: 0 15px 35px rgba(118, 185, 0, 0.2);
+        }
+
+        .diagram-text {
+            color: #76B900;
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-align: center;
+        }
+
+        .diagram-subtitle {
+            color: #888;
+            font-size: 0.7rem;
+            text-align: center;
+            max-width: 90%;
+            line-height: 1.3;
+        }
+
+        /* 性能指标 */
+        .performance-metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .metric-card {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(118, 185, 0, 0.3);
+            border-radius: 10px;
+            padding: 12px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(118, 185, 0, 0.6);
+            box-shadow: 0 10px 25px rgba(118, 185, 0, 0.2);
+        }
+
+        .metric-number {
+            font-size: 1.3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #76B900, #a4d633);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 3px;
+        }
+
+        .metric-label {
+            font-size: 0.7rem;
+            color: #b0b0b0;
+            font-weight: 500;
+        }
+
+        /* 云服务商标识 */
+        .cloud-providers {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(118, 185, 0, 0.3);
+            border-radius: 12px;
+            padding: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .provider-logo {
+            width: 65px;
+            height: 45px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            color: #b0b0b0;
+            text-align: center;
+            border: 1px dashed rgba(118, 185, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .provider-logo:hover {
+            background: rgba(118, 185, 0, 0.1);
+            border-color: rgba(118, 185, 0, 0.6);
+            transform: scale(1.1);
+        }
+
+        /* 部署收益分析 */
+        .benefits-analysis {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(118, 185, 0, 0.3);
+            border-radius: 12px;
+            padding: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .analysis-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #76B900;
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .benefit-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .benefit-row:last-child {
+            border-bottom: none;
+        }
+
+        .benefit-row:hover {
+            background: rgba(118, 185, 0, 0.05);
+            transform: translateX(3px);
+        }
+
+        .benefit-metric {
+            font-size: 0.85rem;
+            color: #d0d0d0;
+        }
+
+        .benefit-value {
+            font-size: 0.9rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #76B900, #a4d633);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* 底部总结 */
+        .summary-section {
+            margin-top: 20px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(118, 185, 0, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            animation: fadeIn 1.5s ease-out 1s both;
+        }
+
+        .summary-text {
+            font-size: 1rem;
+            line-height: 1.5;
+            color: #ffffff;
+            font-weight: 500;
+        }
+
+        .summary-highlight {
+            background: linear-gradient(135deg, #76B900, #a4d633);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+        }
+
+        /* 导航提示 */
+        .navigation-hint {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 30px;
+            font-size: 0.9rem;
+            color: #888;
+            animation: fadeIn 1.5s ease-out 1.2s both;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-key {
+            background: rgba(118, 185, 0, 0.2);
+            color: #76B900;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-weight: 600;
+        }
+
+        /* 动画定义 */
+        @keyframes backgroundFlow {
+            0%, 100% { filter: hue-rotate(0deg) brightness(1); transform: scale(1); }
+            25% { filter: hue-rotate(5deg) brightness(1.1); transform: scale(1.02); }
+            50% { filter: hue-rotate(-3deg) brightness(0.95); transform: scale(0.98); }
+            75% { filter: hue-rotate(8deg) brightness(1.05); transform: scale(1.01); }
+        }
+
+        @keyframes gridShift {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(80px, 80px); }
+        }
+
+        @keyframes particleFloat {
+            0% { opacity: 0; transform: translateY(100vh) scale(0); }
+            15% { opacity: 1; transform: translateY(85vh) scale(1); }
+            85% { opacity: 1; transform: translateY(-15vh) scale(1); }
+            100% { opacity: 0; transform: translateY(-30vh) scale(0); }
+        }
+
+        @keyframes circuitPulse {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 0.4; }
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .content-area {
+                gap: 30px;
+            }
+            
+            .performance-metrics {
+                gap: 12px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .content-area {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            
+            .slide-container {
+                padding: 0 20px;
+            }
+            
+            .page-title {
+                font-size: 2.2rem;
+            }
+            
+            .performance-metrics {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 动态背景元素 -->
+    <div class="data-particles" id="particles"></div>
+    <div class="circuit-lines"></div>
+    
+    <div class="slide-container">
+        <h1 class="page-title">云计算数据中心应用</h1>
+        <div class="page-subtitle">BlueField-3在现代云基础设施中的核心应用场景</div>
+        
+        <div class="content-area">
+            <!-- 左侧：应用场景 -->
+            <div class="scenarios-section">
+                <div class="section-title">主要应用场景</div>
+                
+                <!-- 企业级云平台 -->
+                <div class="scenario-card">
+                    <div class="card-header">
+                        <div class="card-icon">☁️</div>
+                        <div class="card-title">企业级云平台</div>
+                    </div>
+                    <div class="card-description">
+                        为大型云服务提供商提供高性能网络处理和存储加速，支持数百万级虚拟机和容器的高效运行。DPU承担网络虚拟化、存储I/O和安全策略执行，让CPU专注于应用负载。
+                    </div>
+                    <div class="benefits-list">
+                        <div class="benefit-item">
+                            <span class="benefit-icon">⚡</span>
+                            <span>虚拟化开销降低80%，提升VM密度</span>
+                        </div>
+                        <div class="benefit-item">
+                            <span class="benefit-icon">📈</span>
+                            <span>网络延迟减少60%，提升用户体验</span>
+                        </div>
+                        <div class="benefit-item">
+                            <span class="benefit-icon">💰</span>
+                            <span>总拥有成本降低25%，ROI显著提升</span>
+                        </div>
+                        <div class="benefit-item">
+                            <span class="benefit-icon">🔧</span>
+                            <span>支持Docker/K8s容器编排优化</span>
+                        </div>
+                        <div class="benefit-item">
+                            <span class="benefit-icon">🌐</span>
+                            <span>多租户网络隔离和QoS保障</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 混合云架构 -->
+                <div class="scenario-card">
+                    <div class="card-header">
+                        <div class="card-icon">🔗</div>
+                        <div class="card-title">混合云架构</div>
+                    </div>
+                    <div class="card-description">
+                        在公有云和私有云之间提供统一的网络和安全管理，实现无缝的工作负载迁移和数据流动。BlueField-3提供跨云环境的一致性网络策略和安全防护。
+                    </div>
+                    <div class="benefits-list">
+                        <div class="benefit-item">
+                            <span class="benefit-icon">🔒</span>
+                            <span>统一安全策略管理和零信任架构</span>
+                        </div>
+                        <div class="benefit-item">
+                            <span class="benefit-icon">🔄</span>
+                            <span>透明工作负载迁移，业务连续性</span>
+                        </div>
+                        <div class="benefit-item">
+                            <span class="benefit-icon">📊</span>
+                            <span>实时性能监控和智能调度</span>
+                        </div>
+                        <div class="benefit-item">
+                            <span class="benefit-icon">🌉</span>
+                            <span>高速VPN和专线连接优化</span>
+                        </div>
+                        <div class="benefit-item">
+                            <span class="benefit-icon">⚖️</span>
+                            <span>智能负载均衡和成本优化</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 多租户隔离 -->
+                <div class="scenario-card">
+                    <div class="card-header">
+                        <div class="card-icon">🏢</div>
+                        <div class="card-title">多租户隔离</div>
+                    </div>
+                    <div class="card-description">
+                        为云服务提供商提供硬件级的租户隔离和资源管理，确保不同客户间的安全性和性能隔离。通过SRIOV和微分段技术实现完全隔离。
+                    </div>
+                    <div class="benefits-list">
+                        <div class="benefit-item">
+                            <span class="benefit-icon">🛡️</span>
+                            <span>硬件级租户隔离，无性能干扰</span>
+                        </div>
+                        <div class="benefit-item">
+                            <span class="benefit-icon">⚖️</span>
+                            <span>动态资源分配和弹性扩缩容</span>
+                        </div>
+                        <div class="benefit-item">
+                            <span class="benefit-icon">📋</span>
+                            <span>精细化计费支持和SLA保障</span>
+                        </div>
+                        <div class="benefit-item">
+                            <span class="benefit-icon">🔍</span>
+                            <span>实时流量监控和异常检测</span>
+                        </div>
+                        <div class="benefit-item">
+                            <span class="benefit-icon">🎯</span>
+                            <span>个性化网络策略和带宽控制</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧：架构图和性能数据 -->
+            <div class="architecture-section">
+                <div class="section-title">云架构优化</div>
+                
+                <!-- 云架构图占位 -->
+                <div class="cloud-architecture-placeholder">
+                    <div class="diagram-text">云数据中心架构图</div>
+                    <div class="diagram-subtitle">
+                        【手工替换】展示BlueField-3在云环境中的部署位置
+                        <br>推荐尺寸：600x280px
+                        <br>包含：虚拟机、容器、网络层、存储层等组件
+                    </div>
+                </div>
+
+                <!-- 性能指标 -->
+                <div class="performance-metrics">
+                    <div class="metric-card">
+                        <div class="metric-number">80%</div>
+                        <div class="metric-label">虚拟化开销降低</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-number">3x</div>
+                        <div class="metric-label">网络吞吐量提升</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-number">60%</div>
+                        <div class="metric-label">延迟减少</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-number">99.9%</div>
+                        <div class="metric-label">服务可用性</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-number">400G</div>
+                        <div class="metric-label">网络带宽</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-number">10K+</div>
+                        <div class="metric-label">并发租户支持</div>
+                    </div>
+                </div>
+
+                <!-- 云服务商支持 -->
+                <div class="cloud-providers">
+                    <div class="provider-logo">AWS<br>兼容</div>
+                    <div class="provider-logo">Azure<br>优化</div>
+                    <div class="provider-logo">阿里云<br>支持</div>
+                    <div class="provider-logo">腾讯云<br>集成</div>
+                </div>
+
+                <!-- 部署收益分析 -->
+                <div class="benefits-analysis">
+                    <div class="analysis-title">部署收益分析</div>
+                    <div class="benefit-row">
+                        <span class="benefit-metric">成本节约</span>
+                        <span class="benefit-value">25%</span>
+                    </div>
+                    <div class="benefit-row">
+                        <span class="benefit-metric">性能提升</span>
+                        <span class="benefit-value">3x</span>
+                    </div>
+                    <div class="benefit-row">
+                        <span class="benefit-metric">部署时间</span>
+                        <span class="benefit-value">-60%</span>
+                    </div>
+                    <div class="benefit-row">
+                        <span class="benefit-metric">管理复杂度</span>
+                        <span class="benefit-value">-50%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 底部总结 -->
+        <div class="summary-section">
+            <div class="summary-text">
+                <span class="summary-highlight">BlueField-3云数据中心解决方案</span>
+                通过硬件级虚拟化和网络卸载，为现代云基础设施提供前所未有的性能优势和成本效益，
+                已被全球主流云服务商广泛采用，成为下一代云计算的核心加速技术。
+            </div>
+        </div>
+    </div>
+    
+    <div class="navigation-hint">
+        <div class="nav-item">
+            <span class="nav-key">←</span>
+            <span>技术突破</span>
+        </div>
+        <div class="nav-item">
+            <span class="nav-key">→</span>
+            <span>AI基础设施</span>
+        </div>
+    </div>
+
+    <script>
+        // 创建动态粒子效果
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 22;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 10 + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            createParticles();
+            
+            // 场景卡片交错动画
+            const scenarioCards = document.querySelectorAll('.scenario-card');
+            scenarioCards.forEach((card, index) => {
+                card.style.animationDelay = `${0.6 + index * 0.2}s`;
+                card.style.animation = 'fadeInUp 1s ease-out both';
+            });
+            
+            // 指标卡片动画
+            const metricCards = document.querySelectorAll('.metric-card');
+            metricCards.forEach((card, index) => {
+                card.style.animationDelay = `${1 + index * 0.1}s`;
+                card.style.animation = 'fadeInUp 0.8s ease-out both';
+            });
+            
+            // 云服务商logo动画
+            const providerLogos = document.querySelectorAll('.provider-logo');
+            providerLogos.forEach((logo, index) => {
+                logo.style.animationDelay = `${1.4 + index * 0.1}s`;
+                logo.style.animation = 'fadeIn 0.6s ease-out both';
+            });
+            
+            // 数字滚动动画
+            const numbers = document.querySelectorAll('.metric-number');
+            numbers.forEach(number => {
+                const targetText = number.textContent;
+                const isPercentage = targetText.includes('%');
+                const isMultiplier = targetText.includes('x');
+                const isDecimal = targetText.includes('.');
+                
+                let targetValue = parseFloat(targetText) || 100;
+                let currentValue = 0;
+                const duration = 2000;
+                const steps = 60;
+                const increment = targetValue / steps;
+                
+                number.textContent = '0';
+                
+                const timer = setInterval(() => {
+                    currentValue += increment;
+                    if (currentValue >= targetValue) {
+                        currentValue = targetValue;
+                        clearInterval(timer);
+                    }
+                    
+                    let displayValue = isDecimal ? currentValue.toFixed(1) : Math.floor(currentValue);
+                    if (isPercentage) {
+                        number.textContent = displayValue + '%';
+                    } else if (isMultiplier) {
+                        number.textContent = displayValue + 'x';
+                    } else {
+                        number.textContent = displayValue + (isDecimal ? '' : '%');
+                    }
+                }, duration / steps);
+            });
+            
+            // 键盘导航
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'ArrowRight' || e.key === ' ') {
+                    // 切换到AI基础设施页面
+                    window.location.href = 'ai-infrastructure.html';
+                } else if (e.key === 'ArrowLeft') {
+                    // 返回BF-3技术突破页
+                    window.location.href = 'bf3-capabilities.html';
+                }
+            });
+
+            // 鼠标跟踪光效
+            let mouseTracker = null;
+            document.addEventListener('mousemove', function(e) {
+                if (mouseTracker) {
+                    clearTimeout(mouseTracker);
+                }
+                
+                const light = document.createElement('div');
+                light.style.position = 'fixed';
+                light.style.left = e.clientX + 'px';
+                light.style.top = e.clientY + 'px';
+                light.style.width = '6px';
+                light.style.height = '6px';
+                light.style.background = 'radial-gradient(circle, #76B900 0%, transparent 70%)';
+                light.style.borderRadius = '50%';
+                light.style.pointerEvents = 'none';
+                light.style.zIndex = '999';
+                light.style.animation = 'fadeOut 0.6s ease-out forwards';
+                document.body.appendChild(light);
+                
+                mouseTracker = setTimeout(() => {
+                    if (light.parentNode) {
+                        light.parentNode.removeChild(light);
+                    }
+                }, 600);
+            });
+            
+            // 添加淡出动画
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes fadeOut {
+                    from { opacity: 0.8; transform: scale(1); }
+                    to { opacity: 0; transform: scale(0); }
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlueField-3 性能提升亮点 - NVIDIA DPU</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Microsoft YaHei", sans-serif;
+            background: #000;
+            color: white;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* 复用背景效果 */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(ellipse at top left, rgba(118, 185, 0, 0.12) 0%, transparent 60%),
+                radial-gradient(ellipse at bottom right, rgba(255, 165, 0, 0.06) 0%, transparent 60%),
+                radial-gradient(ellipse at center, rgba(0, 100, 200, 0.04) 0%, transparent 70%),
+                linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 25%, #0f0f0f 50%, #1a1a1a 75%, #0a0a0a 100%);
+            animation: backgroundFlow 20s ease-in-out infinite;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(rgba(118, 185, 0, 0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(118, 185, 0, 0.015) 1px, transparent 1px);
+            background-size: 100px 100px;
+            animation: gridShift 45s linear infinite;
+        }
+
+        .data-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 1.5px;
+            height: 1.5px;
+            background: #76B900;
+            border-radius: 50%;
+            opacity: 0;
+            animation: particleFloat 18s infinite;
+        }
+
+        .circuit-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(45deg, transparent 49.5%, rgba(118, 185, 0, 0.02) 50%, transparent 50.5%);
+            background-size: 500px 500px;
+            animation: circuitPulse 40s ease-in-out infinite;
+            opacity: 0.6;
+        }
+
+        /* 主容器 */
+        .slide-container {
+            width: 100%;
+            max-width: 1400px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem 2rem 80px 2rem;
+            position: relative;
+            z-index: 1;
+            margin: 0 auto;
+        }
+
+        /* 页面标题 */
+        .page-title {
+            font-size: 2.4rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #76B900, #a4d633, #FFB347);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(118, 185, 0, 0.3);
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .page-subtitle {
+            text-align: center;
+            font-size: 1.1rem;
+            color: #b0b0b0;
+            margin-bottom: 20px;
+            animation: fadeInDown 1s ease-out 0.2s both;
+        }
+
+        /* 主要内容区域 */
+        .performance-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            flex: 1;
+        }
+
+        /* 左侧性能指标 */
+        .metrics-section {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .metrics-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #76B900;
+            margin-bottom: 5px;
+            animation: fadeInLeft 1s ease-out 0.4s both;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            animation: fadeInUp 1.2s ease-out 0.6s both;
+        }
+
+        /* 新的高亮卡片样式 */
+        .highlight-card {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(118, 185, 0, 0.3);
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+            animation: fadeInLeft 1s ease-out 0.6s both;
+        }
+
+        .highlight-card:hover {
+            border-color: rgba(118, 185, 0, 0.6);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(118, 185, 0, 0.2);
+        }
+
+        .highlight-card.network-card {
+            border-color: rgba(0, 150, 255, 0.3);
+        }
+
+        .highlight-card.network-card:hover {
+            border-color: rgba(0, 150, 255, 0.6);
+            box-shadow: 0 8px 20px rgba(0, 150, 255, 0.2);
+        }
+
+        .highlight-card.ai-card {
+            border-color: rgba(255, 165, 0, 0.3);
+        }
+
+        .highlight-card.ai-card:hover {
+            border-color: rgba(255, 165, 0, 0.6);
+            box-shadow: 0 8px 20px rgba(255, 165, 0, 0.2);
+        }
+
+        .highlight-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #76B900;
+            margin-bottom: 8px;
+        }
+
+        .highlight-content {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .highlight-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .highlight-metric {
+            font-size: 1.1rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #76B900, #a4d633);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .highlight-desc {
+            font-size: 0.8rem;
+            color: #ccc;
+            font-weight: 400;
+        }
+
+        .metric-card {
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(118, 185, 0, 0.3);
+            border-radius: 12px;
+            padding: 18px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent 30%, rgba(118, 185, 0, 0.1) 50%, transparent 70%);
+            transform: rotate(45deg);
+            transition: all 0.6s ease;
+            opacity: 0;
+        }
+
+        .metric-card:hover::before {
+            opacity: 1;
+            transform: rotate(45deg) translate(50%, 50%);
+        }
+
+        .metric-card:hover {
+            border-color: rgba(118, 185, 0, 0.7);
+            transform: translateY(-8px) scale(1.03);
+            box-shadow: 0 25px 50px rgba(118, 185, 0, 0.3);
+        }
+
+        .metric-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .metric-number {
+            font-size: 2.4rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #76B900, #a4d633);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 6px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .metric-label {
+            font-size: 0.9rem;
+            color: #e0e0e0;
+            font-weight: 500;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .metric-improvement {
+            font-size: 0.85rem;
+            color: #76B900;
+            font-weight: 600;
+            background: rgba(118, 185, 0, 0.1);
+            padding: 4px 8px;
+            border-radius: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 特殊指标卡片样式 */
+        .network-card {
+            border-color: rgba(0, 150, 255, 0.4);
+        }
+
+        .network-card:hover {
+            border-color: rgba(0, 150, 255, 0.8);
+            box-shadow: 0 25px 50px rgba(0, 150, 255, 0.3);
+        }
+
+        .network-card .metric-icon {
+            color: rgba(0, 150, 255, 0.8);
+        }
+
+        .ai-card {
+            border-color: rgba(255, 165, 0, 0.4);
+        }
+
+        .ai-card:hover {
+            border-color: rgba(255, 165, 0, 0.8);
+            box-shadow: 0 25px 50px rgba(255, 165, 0, 0.3);
+        }
+
+        .ai-card .metric-icon {
+            color: rgba(255, 165, 0, 0.8);
+        }
+
+        /* 右侧性能图表和关键优势 */
+        .performance-section {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .performance-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #76B900;
+            text-align: center;
+            animation: fadeInRight 1s ease-out 0.4s both;
+        }
+
+        /* PPT风格性能对比图表 */
+        .performance-chart {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(118, 185, 0, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            animation: fadeInRight 1.2s ease-out 0.6s both;
+        }
+
+        .chart-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #76B900;
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .chart-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            gap: 12px;
+        }
+
+        .chart-label {
+            flex: 0 0 90px;
+            font-size: 0.75rem;
+            color: #e0e0e0;
+            font-weight: 500;
+        }
+
+        .chart-bars {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .bar-container {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .bar-bf2, .bar-bf3 {
+            height: 10px;
+            border-radius: 5px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 4px;
+            color: white;
+            font-size: 0.6rem;
+            font-weight: 600;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+            min-width: 50px;
+        }
+
+        .bar-bf2 {
+            background: linear-gradient(90deg, rgba(100, 149, 237, 0.8), rgba(100, 149, 237, 0.6));
+            border: 1px solid rgba(100, 149, 237, 0.4);
+        }
+
+        .bar-bf3 {
+            background: linear-gradient(90deg, #76B900, #a4d633);
+            border: 1px solid rgba(118, 185, 0, 0.3);
+            box-shadow: 0 2px 6px rgba(118, 185, 0, 0.2);
+        }
+
+        .bar-label {
+            font-size: 0.65rem;
+            font-weight: 500;
+            color: #ccc;
+            min-width: 45px;
+        }
+
+        .improvement-badge {
+            background: linear-gradient(45deg, #76B900, #8bc34a);
+            color: white;
+            padding: 1px 3px;
+            border-radius: 3px;
+            font-size: 0.55rem;
+            font-weight: 600;
+            margin-left: 6px;
+        }
+
+        /* 关键优势列表 */
+        .advantages-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            animation: fadeInUp 1.2s ease-out 0.8s both;
+        }
+
+        .advantage-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(118, 185, 0, 0.2);
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .advantage-item:hover {
+            border-color: rgba(118, 185, 0, 0.6);
+            transform: translateX(10px);
+            box-shadow: 0 10px 25px rgba(118, 185, 0, 0.2);
+        }
+
+        .advantage-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #76B900, #a4d633);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: #000;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .advantage-content {
+            flex: 1;
+        }
+
+        .advantage-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 3px;
+        }
+
+        .advantage-description {
+            font-size: 0.85rem;
+            color: #b0b0b0;
+            line-height: 1.3;
+        }
+
+        /* 总结部分 */
+        .conclusion-section {
+            grid-column: 1 / -1;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(118, 185, 0, 0.4);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            margin-top: 10px;
+            animation: fadeIn 1.5s ease-out 1s both;
+        }
+
+        .conclusion-text {
+            font-size: 1.1rem;
+            line-height: 1.5;
+            color: #ffffff;
+            font-weight: 500;
+        }
+
+        .conclusion-highlight {
+            background: linear-gradient(135deg, #76B900, #a4d633, #FFB347);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+        }
+
+        /* 导航提示 */
+        .navigation-hint {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 30px;
+            font-size: 0.9rem;
+            color: #888;
+            animation: fadeIn 1.5s ease-out 1.2s both;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-key {
+            background: rgba(118, 185, 0, 0.2);
+            color: #76B900;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-weight: 600;
+        }
+
+        /* 动画定义 */
+        @keyframes backgroundFlow {
+            0%, 100% { filter: hue-rotate(0deg) brightness(1); }
+            50% { filter: hue-rotate(5deg) brightness(1.1); }
+        }
+
+        @keyframes gridShift {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(100px, 100px); }
+        }
+
+        @keyframes particleFloat {
+            0% { opacity: 0; transform: translateY(100vh) scale(0) rotate(0deg); }
+            30% { opacity: 1; transform: translateY(70vh) scale(1) rotate(90deg); }
+            70% { opacity: 1; transform: translateY(-30vh) scale(1) rotate(270deg); }
+            100% { opacity: 0; transform: translateY(-60vh) scale(0) rotate(360deg); }
+        }
+
+        @keyframes circuitPulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 0.7; }
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInLeft {
+            from { opacity: 0; transform: translateX(-40px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes fadeInRight {
+            from { opacity: 0; transform: translateX(40px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .performance-content {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .slide-container {
+                padding: 20px;
+            }
+            
+            .page-title {
+                font-size: 2.2rem;
+            }
+            
+            .metrics-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .performance-chart {
+                padding: 12px;
+            }
+            
+            .advantage-item {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 动态背景元素 -->
+    <div class="data-particles" id="particles"></div>
+    <div class="circuit-lines"></div>
+    
+    <div class="slide-container">
+        <h1 class="page-title">BlueField-3 性能提升亮点</h1>
+        <div class="page-subtitle">量级跨越 · 全面超越前代的性能表现</div>
+        
+        <div class="performance-content">
+            <!-- 左侧关键亮点 -->
+            <div class="metrics-section">
+                <div class="metrics-title">BlueField-3 核心亮点</div>
+                
+                <!-- 性能跃升卡片 -->
+                <div class="highlight-card">
+                    <div class="highlight-title">🚀 算力跃升</div>
+                    <div class="highlight-content">
+                        <div class="highlight-item">
+                            <span class="highlight-metric">42 SPECint</span>
+                            <span class="highlight-desc">vs BF-2的9 SPECint</span>
+                        </div>
+                        <div class="highlight-item">
+                            <span class="highlight-metric">1.5 TOPS</span>
+                            <span class="highlight-desc">AI推理算力</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 网络性能卡片 -->
+                <div class="highlight-card network-card">
+                    <div class="highlight-title">⚡ 网络升级</div>
+                    <div class="highlight-content">
+                        <div class="highlight-item">
+                            <span class="highlight-metric">400 Gb/s</span>
+                            <span class="highlight-desc">网络带宽</span>
+                        </div>
+                        <div class="highlight-item">
+                            <span class="highlight-metric">80 GB/s</span>
+                            <span class="highlight-desc">内存带宽</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI优化卡片 -->
+                <div class="highlight-card ai-card">
+                    <div class="highlight-title">🧠 AI加速</div>
+                    <div class="highlight-content">
+                        <div class="highlight-item">
+                            <span class="highlight-metric">16+ DPA</span>
+                            <span class="highlight-desc">超线程核心</span>
+                        </div>
+                        <div class="highlight-item">
+                            <span class="highlight-metric">260x</span>
+                            <span class="highlight-desc">压缩吞吐提升</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 虚拟化卡片 -->
+                <div class="highlight-card">
+                    <div class="highlight-title">🔧 虚拟化</div>
+                    <div class="highlight-content">
+                        <div class="highlight-item">
+                            <span class="highlight-metric">4096 VF</span>
+                            <span class="highlight-desc">虚拟功能支持</span>
+                        </div>
+                        <div class="highlight-item">
+                            <span class="highlight-metric">PCIe 5.0</span>
+                            <span class="highlight-desc">4x I/O提升</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧性能图表和优势 -->
+            <div class="performance-section">
+                <div class="performance-title">性能对比图表</div>
+                
+                <!-- PPT风格性能对比图表 -->
+                <div class="performance-chart">
+                    <div class="chart-title">BF-2 vs BF-3 关键性能对比</div>
+                    
+                    <div class="chart-item">
+                        <div class="chart-label">CPU性能</div>
+                        <div class="chart-bars">
+                            <div class="bar-container">
+                                <div class="bar-bf2" style="width: 25%;">9</div>
+                                <div class="bar-label">BF-2</div>
+                            </div>
+                            <div class="bar-container">
+                                <div class="bar-bf3" style="width: 100%;">42</div>
+                                <div class="bar-label">BF-3</div>
+                                <div class="improvement-badge">4.7x</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chart-item">
+                        <div class="chart-label">网络带宽</div>
+                        <div class="chart-bars">
+                            <div class="bar-container">
+                                <div class="bar-bf2" style="width: 50%;">200</div>
+                                <div class="bar-label">Gb/s</div>
+                            </div>
+                            <div class="bar-container">
+                                <div class="bar-bf3" style="width: 100%;">400</div>
+                                <div class="bar-label">Gb/s</div>
+                                <div class="improvement-badge">2x</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chart-item">
+                        <div class="chart-label">内存带宽</div>
+                        <div class="chart-bars">
+                            <div class="bar-container">
+                                <div class="bar-bf2" style="width: 20%;">16</div>
+                                <div class="bar-label">GB/s</div>
+                            </div>
+                            <div class="bar-container">
+                                <div class="bar-bf3" style="width: 100%;">80</div>
+                                <div class="bar-label">GB/s</div>
+                                <div class="improvement-badge">5x</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chart-item">
+                        <div class="chart-label">AI算力</div>
+                        <div class="chart-bars">
+                            <div class="bar-container">
+                                <div class="bar-bf2" style="width: 47%;">0.7</div>
+                                <div class="bar-label">TOPS</div>
+                            </div>
+                            <div class="bar-container">
+                                <div class="bar-bf3" style="width: 100%;">1.5</div>
+                                <div class="bar-label">TOPS</div>
+                                <div class="improvement-badge">2.1x</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="chart-item">
+                        <div class="chart-label">虚拟化</div>
+                        <div class="chart-bars">
+                            <div class="bar-container">
+                                <div class="bar-bf2" style="width: 25%;">1K</div>
+                                <div class="bar-label">VF</div>
+                            </div>
+                            <div class="bar-container">
+                                <div class="bar-bf3" style="width: 100%;">4K</div>
+                                <div class="bar-label">VF</div>
+                                <div class="improvement-badge">4x</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 关键优势列表 -->
+                <div class="advantages-list">
+                    <div class="advantage-item">
+                        <div class="advantage-icon">🚀</div>
+                        <div class="advantage-content">
+                            <div class="advantage-title">网络性能革命性提升</div>
+                            <div class="advantage-description">支持200Gbps SuperNIC，网络吞吐量比前代提升4倍，满足现代数据中心高带宽需求</div>
+                        </div>
+                    </div>
+
+                    <div class="advantage-item">
+                        <div class="advantage-icon">⚙️</div>
+                        <div class="advantage-content">
+                            <div class="advantage-title">先进制程工艺</div>
+                            <div class="advantage-description">采用7nm制程技术，相比BF2的16nm工艺，功耗效率显著提升</div>
+                        </div>
+                    </div>
+
+                    <div class="advantage-item">
+                        <div class="advantage-icon">🔮</div>
+                        <div class="advantage-content">
+                            <div class="advantage-title">集成AI推理加速</div>
+                            <div class="advantage-description">首次集成专用AI加速器，支持边缘AI推理，扩展DPU应用场景</div>
+                        </div>
+                    </div>
+
+                    <div class="advantage-item">
+                        <div class="advantage-icon">💾</div>
+                        <div class="advantage-content">
+                            <div class="advantage-title">DDR5内存技术</div>
+                            <div class="advantage-description">16GB DDR5内存提供更高带宽和更低延迟，支持更复杂的数据处理任务</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="conclusion-section">
+            <div class="conclusion-text">
+                <span class="conclusion-highlight">BlueField-3代表了DPU技术的重大飞跃</span>，
+                在网络性能、处理能力、AI集成等各个维度都实现了显著提升，
+                为下一代数据中心基础设施奠定了坚实的技术基础。
+            </div>
+        </div>
+    </div>
+    
+    <div class="navigation-hint">
+        <div class="nav-item">
+            <span class="nav-key">←</span>
+            <span>架构演进</span>
+        </div>
+        <div class="nav-item">
+            <span class="nav-key">→</span>
+            <span>核心能力</span>
+        </div>
+    </div>
+
+    <script>
+        // 创建动态粒子效果
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 20;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 18 + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // 数字计数动画
+        function animateNumbers() {
+            const numbers = document.querySelectorAll('.metric-number');
+            numbers.forEach((number, index) => {
+                const target = parseInt(number.getAttribute('data-target'));
+                let current = 0;
+                const duration = 2000 + index * 200;
+                const steps = 60;
+                const increment = target / steps;
+                
+                setTimeout(() => {
+                    const timer = setInterval(() => {
+                        current += increment;
+                        if (current >= target) {
+                            current = target;
+                            clearInterval(timer);
+                        }
+                        
+                        let displayValue = Math.floor(current);
+                        if (target >= 100) {
+                            number.textContent = displayValue + (target === 200 ? 'G' : target === 850 ? 'M' : '%');
+                        } else {
+                            number.textContent = displayValue;
+                        }
+                    }, duration / steps);
+                }, 1500);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            createParticles();
+            animateNumbers();
+            
+            // 指标卡片交错动画
+            const metricCards = document.querySelectorAll('.metric-card');
+            metricCards.forEach((card, index) => {
+                card.style.animationDelay = `${0.8 + index * 0.1}s`;
+            });
+            
+            // 优势项交错动画
+            const advantageItems = document.querySelectorAll('.advantage-item');
+            advantageItems.forEach((item, index) => {
+                item.style.animationDelay = `${1.2 + index * 0.15}s`;
+            });
+            
+            // 指标卡片悬停增强效果
+            metricCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-12px) scale(1.05)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0) scale(1)';
+                });
+            });
+            
+            // 键盘导航
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'ArrowRight' || e.key === ' ') {
+                    // 跳转到核心能力页面
+                    window.location.href = 'bf-capabilities.html';
+                } else if (e.key === 'ArrowLeft') {
+                    // 返回架构演进页面
+                    window.location.href = 'bf-evolution.html';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

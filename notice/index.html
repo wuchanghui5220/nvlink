@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>购物须知</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', 'Georgia', serif;
+            background: #f5f5f0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .card {
+            background: linear-gradient(135deg, #faf9f6 0%, #f5f3f0 50%, #ede8dc 100%);
+            max-width: 600px;
+            width: 100%;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(139, 115, 85, 0.15);
+            border: 2px solid #d4c4a0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #8b7355, #a0845c, #b8956b);
+        }
+
+        .header {
+            background: linear-gradient(135deg, rgba(160, 132, 92, 0.15), rgba(184, 149, 107, 0.1));
+            text-align: center;
+            padding: 28px 20px 22px;
+            position: relative;
+            border-bottom: 1px solid rgba(160, 132, 92, 0.2);
+        }
+
+        .header::after {
+            content: '❦';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #faf9f6;
+            color: #8b7355;
+            font-size: 14px;
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+
+        .title {
+            font-size: 1.7em;
+            font-weight: 700;
+            color: #5d4e37;
+            letter-spacing: 1px;
+            text-shadow: 0 1px 2px rgba(139, 115, 85, 0.1);
+        }
+
+        .content {
+            padding: 26px 24px 24px;
+            background: rgba(250, 249, 246, 0.8);
+        }
+
+        .notice-group {
+            margin-bottom: 16px;
+        }
+
+        .notice-group:last-child {
+            margin-bottom: 0;
+        }
+
+        .notice-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 10px;
+            font-size: 13.5px;
+            line-height: 1.6;
+            position: relative;
+            padding-left: 18px;
+        }
+
+        .notice-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .notice-item::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            top: 1px;
+            color: #a0845c;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .notice-label {
+            font-weight: 700;
+            color: #8b7355;
+            min-width: 48px;
+            margin-right: 6px;
+            font-size: 13px;
+        }
+
+        .notice-text {
+            color: #3e2723;
+            flex: 1;
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        .highlight {
+            color: #a0845c;
+            font-weight: 700;
+        }
+
+        .warning {
+            color: #8b4513;
+            font-weight: 700;
+        }
+
+        .section-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent 15%, rgba(160, 132, 92, 0.3) 50%, transparent 85%);
+            margin: 18px 0;
+            position: relative;
+        }
+
+        .section-divider::after {
+            content: '✦';
+            position: absolute;
+            left: 50%;
+            top: -7px;
+            transform: translateX(-50%);
+            background: #faf9f6;
+            color: #a0845c;
+            font-size: 12px;
+            width: 14px;
+            height: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .footer-note {
+            background: rgba(160, 132, 92, 0.08);
+            margin: 20px -24px -24px;
+            padding: 16px 24px;
+            text-align: center;
+            font-size: 12px;
+            color: #5d4e37;
+            font-weight: 600;
+            border-top: 1px solid rgba(160, 132, 92, 0.15);
+            font-style: italic;
+        }
+
+        .vintage-border {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            right: 8px;
+            bottom: 8px;
+            border: 1px solid rgba(160, 132, 92, 0.1);
+            border-radius: 12px;
+            pointer-events: none;
+        }
+
+        @media (max-width: 480px) {
+            .card {
+                max-width: 100%;
+                margin: 10px;
+            }
+            
+            .title {
+                font-size: 1.5em;
+            }
+            
+            .content {
+                padding: 22px 20px 20px;
+            }
+            
+            .footer-note {
+                margin: 18px -20px -20px;
+                padding: 14px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="vintage-border"></div>
+        <div class="header">
+            <h1 class="title">📋 购物须知</h1>
+        </div>
+        
+        <div class="content">
+            <div class="notice-group">
+                <div class="notice-item">
+                    <span class="notice-label">退换:</span>
+                    <span class="notice-text"><span class="warning">本店不支持7天无理由退换</span>，商品售出<span class="highlight">不退不换</span>，不支持售后。</span>
+                </div>
+
+                <div class="notice-item">
+                    <span class="notice-label">发货:</span>
+                    <span class="notice-text">现货<span class="highlight">7天内发货</span>，定制<span class="highlight">15天内发货</span>。<span class="highlight">不支持指定物流</span>。</span>
+                </div>
+
+                <div class="notice-item">
+                    <span class="notice-label">定制:</span>
+                    <span class="notice-text"><span class="highlight">必须先联系掌柜确定包型和选定布料后再拍下</span>，<span class="warning">未联系拍下订单无效</span>。</span>
+                </div>
+            </div>
+
+            <div class="section-divider"></div>
+
+            <div class="notice-group">
+                <div class="notice-item">
+                    <span class="notice-label">颜色:</span>
+                    <span class="notice-text">图片均为实拍，<span class="highlight">无法避免色差</span>，请谨慎下单。</span>
+                </div>
+
+                <div class="notice-item">
+                    <span class="notice-label">商品:</span>
+                    <span class="notice-text">手作品线头线迹等<span class="highlight">手工痕迹无法避免</span>，<span class="warning">完美主义者慎拍</span>。</span>
+                </div>
+            </div>
+
+            <div class="footer-note">
+                ~ 致敬传统手工艺，感谢您的理解与支持 ~
+            </div>
+        </div>
+    </div>
+</body>
+</html>

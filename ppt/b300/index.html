@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NVIDIA HGX B300 技术规格书</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', 'Microsoft YaHei', sans-serif;
+            line-height: 1.4;
+            color: #333;
+            background: #f8f9fa;
+        }
+
+        .datasheet {
+            max-width: 210mm;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #76b900 0%, #5c8a00 100%);
+            color: white;
+            padding: 30px 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 200px;
+            height: 200px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+        }
+
+        .logo-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .nvidia-logo {
+            display: flex;
+            align-items: center;
+            height: 40px;
+        }
+
+        .product-code {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .product-title {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .product-subtitle {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 35px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+            border-bottom: 3px solid #76b900;
+            padding-bottom: 8px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: #5c8a00;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #e8f5e8 0%, #f0f8f0 100%);
+            border-left: 4px solid #76b900;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .specs-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 25px 0;
+        }
+
+        .spec-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            min-height: 48px;
+        }
+
+        .spec-label {
+            font-weight: 600;
+            color: #555;
+            flex: 1;
+            text-align: left;
+            padding-right: 15px;
+        }
+
+        .spec-value {
+            font-weight: bold;
+            color: #333;
+            text-align: right;
+            flex: 0 0 auto;
+            min-width: 120px;
+        }
+
+        .performance-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 13px;
+        }
+
+        .performance-table th {
+            background: #76b900;
+            color: white;
+            padding: 12px 8px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .performance-table td {
+            padding: 10px 8px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+
+        .performance-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .performance-table .product-name {
+            text-align: left;
+            font-weight: bold;
+            background: #f0f8f0;
+        }
+
+        .key-features {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 25px 0;
+        }
+
+        .feature-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: transform 0.2s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .feature-title {
+            font-weight: bold;
+            color: #76b900;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .feature-desc {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .network-config {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .config-item {
+            margin: 10px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .config-item::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: #76b900;
+            font-weight: bold;
+        }
+
+        .footer {
+            background: #333;
+            color: white;
+            padding: 25px 40px;
+            text-align: center;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .footer-info {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .contact-info {
+            font-size: 12px;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #76b900;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+            margin: 2px;
+        }
+
+        @media print {
+            body { background: white; }
+            .datasheet { box-shadow: none; max-width: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="datasheet">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo-section">
+                <div class="nvidia-logo">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="120" height="40" viewBox="0 0 48 32" fill="none">
+                        <path d="M17.9101 9.54961V6.65962C18.1893 6.64003 18.4704 6.624 18.7567 6.6151C26.6044 6.36581 31.7531 13.4083 31.7531 13.4083C31.7531 13.4083 26.1926 21.1897 20.2308 21.1897C19.3718 21.1897 18.6029 21.0508 17.9101 20.8158V12.0496C20.9661 12.4218 21.5794 13.7804 23.4158 16.8645L27.5005 13.394C27.5005 13.394 24.5188 9.45345 19.492 9.45345C18.9458 9.45345 18.4227 9.49263 17.9083 9.54783L17.9101 9.54961ZM17.9083 0V4.31807C18.1893 4.29492 18.4721 4.27711 18.7549 4.26643C29.6675 3.89606 36.7781 13.2836 36.7781 13.2836C36.7781 13.2836 28.6123 23.2873 20.1035 23.2873C19.3241 23.2873 18.5941 23.2143 17.9083 23.0932V25.7624C18.4951 25.8372 19.1031 25.8817 19.7359 25.8817C27.6525 25.8817 33.3792 21.8094 38.9239 16.9874C39.843 17.7281 43.606 19.5319 44.3802 20.3225C39.1077 24.7688 26.8236 28.3515 19.8579 28.3515C19.1862 28.3515 18.5411 28.3105 17.9083 28.25V32H48V0.00178103H17.9101L17.9083 0ZM17.9083 20.814V23.0932C10.5856 21.7773 8.55293 14.1098 8.55293 14.1098C8.55293 14.1098 12.0685 10.1853 17.9083 9.54961V12.0496C17.9083 12.0496 17.9012 12.0496 17.8977 12.0496C14.8329 11.6793 12.4397 14.5639 12.4397 14.5639C12.4397 14.5639 13.7812 19.4197 17.9101 20.8175L17.9083 20.814ZM4.90481 13.7804C4.90481 13.7804 9.24403 7.32914 17.9101 6.6614V4.32163C8.31255 5.09799 0 13.2872 0 13.2872C0 13.2872 4.70685 26.9982 17.9101 28.2535V25.766C8.22064 24.5373 4.90481 13.7804 4.90481 13.7804Z" fill="white"/>
+                    </svg>
+                </div>
+                <div class="product-code">DS-HGX-B300-v1.0</div>
+            </div>
+            <div class="product-title">HGX B300</div>
+            <div class="product-subtitle">AI加速计算平台 | Blackwell Ultra架构</div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- 产品概述 -->
+            <div class="section">
+                <h2 class="section-title">产品概述</h2>
+                <div class="highlight-box">
+                    <p><strong>NVIDIA HGX B300</strong> 是基于Blackwell Ultra架构的先进AI加速计算平台，专为大规模AI推理、训练和高性能计算工作负载而设计。相比前代产品，内存容量提升至2.3TB，推理性能提升高达11倍。</p>
+                </div>
+                
+                <div class="key-features">
+                    <div class="feature-card">
+                        <div class="feature-title">标准配置</div>
+                        <div class="feature-desc">8x Blackwell Ultra SXM GPU<br>适合大多数AI训练和推理场景</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-title">NVL16变体</div>
+                        <div class="feature-desc">16个计算芯片配置<br>专为超大规模部署优化</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-title">Blackwell Ultra</div>
+                        <div class="feature-desc">12-Hi HBM3e内存堆栈<br>第二代Transformer Engine</div>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-title">高带宽网络</div>
+                        <div class="feature-desc">1.6TB/s网络带宽<br>14.4TB/s NVLink总带宽</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 技术规格 -->
+            <div class="section">
+                <h2 class="section-title">核心技术规格</h2>
+                <div class="specs-grid">
+                    <div>
+                        <div class="spec-item">
+                            <span class="spec-label">GPU配置</span>
+                            <span class="spec-value">8x Blackwell Ultra SXM</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">总内存</span>
+                            <span class="spec-value">2.3 TB HBM3e</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">FP4 Tensor Core</span>
+                            <span class="spec-value">144 PFLOPS</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">FP8 Tensor Core</span>
+                            <span class="spec-value">72 PFLOPS</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">FP16/BF16 Tensor</span>
+                            <span class="spec-value">36 PFLOPS</span>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="spec-item">
+                            <span class="spec-label">NVLink代数</span>
+                            <span class="spec-value">第5代</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">GPU间带宽</span>
+                            <span class="spec-value">1.8 TB/s</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">总NVLink带宽</span>
+                            <span class="spec-value">14.4 TB/s</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">网络带宽</span>
+                            <span class="spec-value">1.6 TB/s</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">机箱规格</span>
+                            <span class="spec-value">8U标准机架</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 网络配置 -->
+            <div class="section">
+                <h2 class="section-title">网络配置详解</h2>
+                <div class="network-config">
+                    <h4 style="color: #76b900; margin-bottom: 15px;">标准HGX B300配置</h4>
+                    <div class="config-item">8x NVIDIA ConnectX-8 VPI网卡</div>
+                    <div class="config-item">8x OSFP端口，每端口800 Gb/s</div>
+                    <div class="config-item">2x dual-port QSFP112端口</div>
+                    <div class="config-item">支持Quantum-X800 InfiniBand和Spectrum-X Ethernet</div>
+                    <div class="config-item">PCIe Gen 6支持，800G东-西向网络</div>
+                    
+                    <h4 style="color: #76b900; margin: 20px 0 15px 0;">NVL16变体配置</h4>
+                    <div class="config-item">8x ConnectX-8网卡，内置PCIe开关</div>
+                    <div class="config-item">OCP UBB风格连接器设计</div>
+                    <div class="config-item">减少对第三方PCIe组件依赖</div>
+                    <div class="config-item">集成NVIDIA BlueField-3 DPU</div>
+                </div>
+            </div>
+
+            <!-- 性能对比 -->
+            <div class="section">
+                <h2 class="section-title">代际性能对比</h2>
+                <table class="performance-table">
+                    <thead>
+                        <tr>
+                            <th>产品型号</th>
+                            <th>GPU配置</th>
+                            <th>总内存</th>
+                            <th>FP8性能</th>
+                            <th>NVLink带宽</th>
+                            <th>推理性能<br>(vs H100)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="product-name">HGX B300</td>
+                            <td>8x Blackwell Ultra</td>
+                            <td>2.3 TB HBM3e</td>
+                            <td>72 PFLOPS</td>
+                            <td>14.4 TB/s</td>
+                            <td><span class="badge">11倍</span></td>
+                        </tr>
+                        <tr>
+                            <td class="product-name">HGX B200</td>
+                            <td>8x Blackwell</td>
+                            <td>1.4 TB HBM3e</td>
+                            <td>72 PFLOPS</td>
+                            <td>14.4 TB/s</td>
+                            <td><span class="badge">8倍</span></td>
+                        </tr>
+                        <tr>
+                            <td class="product-name">HGX H200</td>
+                            <td>8x H200</td>
+                            <td>1.1 TB HBM3e</td>
+                            <td>32 PFLOPS</td>
+                            <td>7.2 TB/s</td>
+                            <td><span class="badge">4倍</span></td>
+                        </tr>
+                        <tr>
+                            <td class="product-name">HGX H100</td>
+                            <td>8x H100</td>
+                            <td>0.6 TB HBM3</td>
+                            <td>16 PFLOPS</td>
+                            <td>3.6 TB/s</td>
+                            <td>基线</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 性能指标 -->
+            <div class="section">
+                <h2 class="section-title">关键性能指标</h2>
+                <div class="highlight-box">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; text-align: center;">
+                        <div>
+                            <div style="font-size: 24px; font-weight: bold; color: #76b900;">11倍</div>
+                            <div style="font-size: 12px; color: #666;">Llama 3.1 405B<br>推理性能提升</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 24px; font-weight: bold; color: #76b900;">20ms</div>
+                            <div style="font-size: 12px; color: #666;">Token-to-token<br>延迟时间</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 24px; font-weight: bold; color: #76b900;">4倍</div>
+                            <div style="font-size: 12px; color: #666;">LLM训练<br>性能提升</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 应用场景 -->
+            <div class="section">
+                <h2 class="section-title">目标应用场景</h2>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="config-item">大语言模型训练和推理</div>
+                    <div class="config-item">智能体AI系统开发</div>
+                    <div class="config-item">高性能科学计算</div>
+                    <div class="config-item">物理AI和机器人应用</div>
+                    <div class="config-item">大规模数据分析</div>
+                    <div class="config-item">云端AI推理服务</div>
+                </div>
+            </div>
+
+            <!-- 生态系统 -->
+            <div class="section">
+                <h2 class="section-title">合作伙伴与可用性</h2>
+                <div style="margin: 20px 0;">
+                    <h4 style="color: #333; margin-bottom: 10px;">硬件合作伙伴</h4>
+                    <div>Supermicro • Dell • HPE • Lenovo • ASUS</div>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h4 style="color: #333; margin-bottom: 10px;">云服务提供商</h4>
+                    <div>AWS • Google Cloud • Microsoft Azure</div>
+                </div>
+                <div style="margin: 20px 0;">
+                    <h4 style="color: #333; margin-bottom: 10px;">上市时间</h4>
+                    <div>2025年Q3发布 • Q4规模化生产</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-content">
+                <div class="footer-info">
+                    © 2025 NVIDIA Corporation. 保留所有权利。<br>
+                    NVIDIA、NVIDIA标识和HGX是NVIDIA Corporation的商标。
+                </div>
+                <div class="contact-info">
+                    更多信息请访问：<br>
+		    www.nvidia.com/en-us/data-center/hgx/
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DPU在数据中心的重要性 - NVIDIA DPU BlueField-3</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Microsoft YaHei", sans-serif;
+            background: #000;
+            color: white;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 复用背景效果 */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(ellipse at top left, rgba(118, 185, 0, 0.15) 0%, transparent 60%),
+                radial-gradient(ellipse at bottom right, rgba(118, 185, 0, 0.1) 0%, transparent 60%),
+                radial-gradient(ellipse at center, rgba(0, 100, 200, 0.05) 0%, transparent 70%),
+                linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 25%, #0f0f0f 50%, #1a1a1a 75%, #0a0a0a 100%);
+            animation: backgroundFlow 12s ease-in-out infinite;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(rgba(118, 185, 0, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(118, 185, 0, 0.02) 1px, transparent 1px);
+            background-size: 80px 80px;
+            animation: gridShift 30s linear infinite;
+        }
+
+        .data-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #76B900;
+            border-radius: 50%;
+            opacity: 0;
+            animation: particleFloat 10s infinite;
+        }
+
+        .circuit-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(45deg, transparent 48%, rgba(118, 185, 0, 0.06) 49%, rgba(118, 185, 0, 0.06) 51%, transparent 52%);
+            background-size: 400px 400px;
+            animation: circuitPulse 25s ease-in-out infinite;
+            opacity: 0.3;
+        }
+
+        /* 主容器 */
+        .slide-container {
+            width: 100%;
+            max-width: 1300px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 0 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 页面标题 */
+        .page-title {
+            font-size: 2.8rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #76B900, #a4d633);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(118, 185, 0, 0.3);
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .page-subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            color: #b0b0b0;
+            margin-bottom: 45px;
+            animation: fadeInDown 1s ease-out 0.2s both;
+        }
+
+        /* 主要内容区域 */
+        .content-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: start;
+            animation: fadeInUp 1.2s ease-out 0.4s both;
+        }
+
+        /* 左侧：传统vs DPU对比 */
+        .comparison-section {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .comparison-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #76B900;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .comparison-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* 传统架构卡片 */
+        .traditional-card, .dpu-card {
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px solid;
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .traditional-card {
+            border-color: rgba(255, 100, 100, 0.3);
+        }
+
+        .traditional-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(255, 100, 100, 0.6);
+            box-shadow: 0 15px 35px rgba(255, 100, 100, 0.2);
+        }
+
+        .dpu-card {
+            border-color: rgba(118, 185, 0, 0.3);
+        }
+
+        .dpu-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(118, 185, 0, 0.6);
+            box-shadow: 0 15px 35px rgba(118, 185, 0, 0.2);
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .traditional-card .card-title {
+            color: rgba(255, 100, 100, 0.9);
+        }
+
+        .dpu-card .card-title {
+            color: #76B900;
+        }
+
+        .card-description {
+            font-size: 1rem;
+            line-height: 1.5;
+            color: #e0e0e0;
+            margin-bottom: 15px;
+        }
+
+        .card-problems, .card-benefits {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .problem-item, .benefit-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            color: #d0d0d0;
+            padding: 6px 0;
+        }
+
+        .problem-icon {
+            color: rgba(255, 100, 100, 0.8);
+            font-weight: bold;
+        }
+
+        .benefit-icon {
+            color: #76B900;
+            font-weight: bold;
+        }
+
+        /* 右侧：数据中心架构图 */
+        .architecture-section {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .architecture-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #76B900;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        /* 数据中心架构图占位 */
+        .datacenter-diagram-placeholder {
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(135deg, rgba(118, 185, 0, 0.1), rgba(0, 100, 200, 0.05));
+            border: 2px dashed rgba(118, 185, 0, 0.4);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .datacenter-diagram-placeholder:hover {
+            transform: scale(1.02);
+            box-shadow: 0 15px 35px rgba(118, 185, 0, 0.2);
+        }
+
+        .diagram-text {
+            color: #76B900;
+            font-weight: 600;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        .diagram-subtitle {
+            color: #888;
+            font-size: 0.9rem;
+            text-align: center;
+            max-width: 80%;
+            line-height: 1.4;
+        }
+
+        /* 关键指标展示 */
+        .metrics-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .metric-card {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(118, 185, 0, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(118, 185, 0, 0.6);
+            box-shadow: 0 10px 25px rgba(118, 185, 0, 0.2);
+        }
+
+        .metric-number {
+            font-size: 2.2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #76B900, #a4d633);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 5px;
+        }
+
+        .metric-label {
+            font-size: 0.95rem;
+            color: #b0b0b0;
+            font-weight: 500;
+        }
+
+        /* 总结部分 */
+        .conclusion-section {
+            grid-column: 1 / -1;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(118, 185, 0, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            margin-top: 30px;
+            animation: fadeIn 1.5s ease-out 0.8s both;
+        }
+
+        .conclusion-text {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            color: #ffffff;
+            font-weight: 500;
+        }
+
+        .conclusion-highlight {
+            background: linear-gradient(135deg, #76B900, #a4d633);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+        }
+
+        /* 导航提示 */
+        .navigation-hint {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 30px;
+            font-size: 0.9rem;
+            color: #888;
+            animation: fadeIn 1.5s ease-out 1s both;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-key {
+            background: rgba(118, 185, 0, 0.2);
+            color: #76B900;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-weight: 600;
+        }
+
+        /* 动画定义 */
+        @keyframes backgroundFlow {
+            0%, 100% { filter: hue-rotate(0deg) brightness(1); transform: scale(1); }
+            25% { filter: hue-rotate(5deg) brightness(1.1); transform: scale(1.02); }
+            50% { filter: hue-rotate(-3deg) brightness(0.95); transform: scale(0.98); }
+            75% { filter: hue-rotate(8deg) brightness(1.05); transform: scale(1.01); }
+        }
+
+        @keyframes gridShift {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(80px, 80px); }
+        }
+
+        @keyframes particleFloat {
+            0% { opacity: 0; transform: translateY(100vh) scale(0); }
+            15% { opacity: 1; transform: translateY(85vh) scale(1); }
+            85% { opacity: 1; transform: translateY(-15vh) scale(1); }
+            100% { opacity: 0; transform: translateY(-30vh) scale(0); }
+        }
+
+        @keyframes circuitPulse {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 0.4; }
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .content-area {
+                gap: 35px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .content-area {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            
+            .slide-container {
+                padding: 0 20px;
+            }
+            
+            .page-title {
+                font-size: 2.2rem;
+            }
+            
+            .metrics-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 动态背景元素 -->
+    <div class="data-particles" id="particles"></div>
+    <div class="circuit-lines"></div>
+    
+    <div class="slide-container">
+        <h1 class="page-title">DPU在数据中心的重要性</h1>
+        <div class="page-subtitle">从传统架构到DPU加速的基础设施革命</div>
+        
+        <div class="content-area">
+            <!-- 左侧：传统vs DPU对比 -->
+            <div class="comparison-section">
+                <div class="comparison-title">架构演进对比</div>
+                
+                <div class="comparison-container">
+                    <!-- 传统架构 -->
+                    <div class="traditional-card">
+                        <div class="card-title">
+                            <span>⚠️</span>
+                            传统数据中心架构
+                        </div>
+                        <div class="card-description">
+                            CPU承担所有计算任务，包括应用逻辑、网络处理、存储I/O和安全功能
+                        </div>
+                        <div class="card-problems">
+                            <div class="problem-item">
+                                <span class="problem-icon">✗</span>
+                                <span>CPU资源被基础设施任务占用</span>
+                            </div>
+                            <div class="problem-item">
+                                <span class="problem-icon">✗</span>
+                                <span>网络和存储性能受限</span>
+                            </div>
+                            <div class="problem-item">
+                                <span class="problem-icon">✗</span>
+                                <span>扩展性和灵活性不足</span>
+                            </div>
+                            <div class="problem-item">
+                                <span class="problem-icon">✗</span>
+                                <span>功耗效率低下</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- DPU架构 -->
+                    <div class="dpu-card">
+                        <div class="card-title">
+                            <span>✅</span>
+                            DPU增强架构
+                        </div>
+                        <div class="card-description">
+                            DPU专门处理基础设施任务，CPU专注于应用程序，实现功能分离和优化
+                        </div>
+                        <div class="card-benefits">
+                            <div class="benefit-item">
+                                <span class="benefit-icon">✓</span>
+                                <span>释放CPU算力给应用程序</span>
+                            </div>
+                            <div class="benefit-item">
+                                <span class="benefit-icon">✓</span>
+                                <span>网络和存储性能大幅提升</span>
+                            </div>
+                            <div class="benefit-item">
+                                <span class="benefit-icon">✓</span>
+                                <span>软件定义基础设施</span>
+                            </div>
+                            <div class="benefit-item">
+                                <span class="benefit-icon">✓</span>
+                                <span>能效比提升高达30%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧：数据中心架构和指标 -->
+            <div class="architecture-section">
+                <div class="architecture-title">现代数据中心架构</div>
+                
+                <!-- 数据中心架构图 -->
+                <div class="datacenter-diagram-placeholder">
+                    <div class="diagram-text">数据中心架构图</div>
+                    <div class="diagram-subtitle">
+                        【手工替换】建议使用展示DPU在数据中心网络拓扑中位置的架构图
+                        <br>推荐尺寸：600x300px
+                        <br>包含：服务器、交换机、DPU、存储等组件
+                    </div>
+                </div>
+
+                <!-- 关键指标 -->
+                <div class="metrics-container">
+                    <div class="metric-card">
+                        <div class="metric-number">30%</div>
+                        <div class="metric-label">功耗降低</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-number">2-5x</div>
+                        <div class="metric-label">网络性能提升</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-number">100%</div>
+                        <div class="metric-label">CPU资源释放</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-number">25Gb+</div>
+                        <div class="metric-label">网络带宽</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="conclusion-section">
+            <div class="conclusion-text">
+                <span class="conclusion-highlight">DPU的引入标志着数据中心架构的重大转变</span>，
+                从单一的CPU处理模式转向专业化分工协作，不仅提升了性能和效率，
+                更为云计算、AI和现代企业应用奠定了坚实的基础设施基础。
+            </div>
+        </div>
+    </div>
+    
+    <div class="navigation-hint">
+        <div class="nav-item">
+            <span class="nav-key">←</span>
+            <span>计算架构</span>
+        </div>
+        <div class="nav-item">
+            <span class="nav-key">→</span>
+            <span>核心能力</span>
+        </div>
+    </div>
+
+    <script>
+        // 创建动态粒子效果
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 18;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 10 + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            createParticles();
+            
+            // 指标卡片动画
+            const metricCards = document.querySelectorAll('.metric-card');
+            metricCards.forEach((card, index) => {
+                card.style.animationDelay = `${1 + index * 0.1}s`;
+                card.style.animation = 'fadeInUp 1s ease-out both';
+            });
+            
+            // 数字计数动画
+            const numbers = document.querySelectorAll('.metric-number');
+            numbers.forEach(number => {
+                const targetText = number.textContent;
+                const isPercentage = targetText.includes('%');
+                const isMultiplier = targetText.includes('x');
+                const isSpeed = targetText.includes('Gb');
+                
+                let targetValue = parseInt(targetText);
+                if (isNaN(targetValue)) targetValue = 100;
+                
+                let currentValue = 0;
+                const duration = 2000;
+                const steps = 60;
+                const increment = targetValue / steps;
+                
+                number.textContent = '0';
+                
+                const timer = setInterval(() => {
+                    currentValue += increment;
+                    if (currentValue >= targetValue) {
+                        currentValue = targetValue;
+                        clearInterval(timer);
+                    }
+                    
+                    let displayValue = Math.floor(currentValue);
+                    if (isPercentage) {
+                        number.textContent = displayValue + '%';
+                    } else if (isMultiplier) {
+                        number.textContent = displayValue + 'x';
+                    } else if (isSpeed) {
+                        number.textContent = displayValue + 'Gb+';
+                    } else {
+                        number.textContent = displayValue + '%';
+                    }
+                }, duration / steps);
+            });
+            
+            // 键盘导航
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'ArrowRight' || e.key === ' ') {
+                    // 切换到BlueField-3核心能力页面
+                    window.location.href = 'bf3-capabilities.html';
+                } else if (e.key === 'ArrowLeft') {
+                    // 返回计算架构页
+                    window.location.href = 'computing-pillars.html';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

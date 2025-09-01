@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>计算架构的三大支柱 - NVIDIA DPU BlueField-3</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Microsoft YaHei", sans-serif;
+            background: #000;
+            color: white;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 复用背景效果 */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(ellipse at top left, rgba(118, 185, 0, 0.15) 0%, transparent 60%),
+                radial-gradient(ellipse at bottom right, rgba(118, 185, 0, 0.1) 0%, transparent 60%),
+                radial-gradient(ellipse at center, rgba(0, 100, 200, 0.05) 0%, transparent 70%),
+                linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 25%, #0f0f0f 50%, #1a1a1a 75%, #0a0a0a 100%);
+            animation: backgroundFlow 12s ease-in-out infinite;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(rgba(118, 185, 0, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(118, 185, 0, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridShift 25s linear infinite;
+        }
+
+        .data-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #76B900;
+            border-radius: 50%;
+            opacity: 0;
+            animation: particleFloat 8s infinite;
+        }
+
+        .circuit-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(45deg, transparent 48%, rgba(118, 185, 0, 0.08) 49%, rgba(118, 185, 0, 0.08) 51%, transparent 52%);
+            background-size: 200px 200px;
+            animation: circuitPulse 20s ease-in-out infinite;
+            opacity: 0.2;
+        }
+
+        /* 主容器 */
+        .slide-container {
+            width: 100%;
+            max-width: 1400px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 0 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 页面标题 */
+        .page-title {
+            font-size: 2.8rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #76B900, #a4d633);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(118, 185, 0, 0.3);
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .page-subtitle {
+            text-align: center;
+            font-size: 1.3rem;
+            color: #b0b0b0;
+            margin-bottom: 50px;
+            animation: fadeInDown 1s ease-out 0.2s both;
+        }
+
+        /* 三大支柱容器 */
+        .pillars-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            margin-bottom: 40px;
+            animation: fadeInUp 1.2s ease-out 0.4s both;
+        }
+
+        /* 单个支柱卡片 */
+        .pillar-card {
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px solid rgba(118, 185, 0, 0.2);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pillar-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(118, 185, 0, 0.1), transparent);
+            transition: all 0.6s;
+        }
+
+        .pillar-card:hover::before {
+            left: 100%;
+        }
+
+        .pillar-card:hover {
+            transform: translateY(-10px) scale(1.03);
+            border-color: rgba(118, 185, 0, 0.6);
+            box-shadow: 0 25px 50px rgba(118, 185, 0, 0.2);
+        }
+
+        /* CPU卡片特殊样式 */
+        .cpu-card {
+            border-color: rgba(0, 150, 255, 0.3);
+        }
+
+        .cpu-card:hover {
+            border-color: rgba(0, 150, 255, 0.6);
+            box-shadow: 0 25px 50px rgba(0, 150, 255, 0.2);
+        }
+
+        /* GPU卡片特殊样式 */
+        .gpu-card {
+            border-color: rgba(255, 100, 0, 0.3);
+        }
+
+        .gpu-card:hover {
+            border-color: rgba(255, 100, 0, 0.6);
+            box-shadow: 0 25px 50px rgba(255, 100, 0, 0.2);
+        }
+
+        /* 图标占位区域 */
+        .pillar-icon-placeholder {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, rgba(118, 185, 0, 0.1), rgba(118, 185, 0, 0.05));
+            border: 2px dashed rgba(118, 185, 0, 0.4);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .cpu-card .pillar-icon-placeholder {
+            background: linear-gradient(135deg, rgba(0, 150, 255, 0.1), rgba(0, 150, 255, 0.05));
+            border-color: rgba(0, 150, 255, 0.4);
+        }
+
+        .gpu-card .pillar-icon-placeholder {
+            background: linear-gradient(135deg, rgba(255, 100, 0, 0.1), rgba(255, 100, 0, 0.05));
+            border-color: rgba(255, 100, 0, 0.4);
+        }
+
+        .icon-text {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #76B900;
+        }
+
+        .cpu-card .icon-text {
+            color: rgba(0, 150, 255, 0.9);
+        }
+
+        .gpu-card .icon-text {
+            color: rgba(255, 100, 0, 0.9);
+        }
+
+        .icon-subtitle {
+            font-size: 0.75rem;
+            color: #888;
+            text-align: center;
+            max-width: 90%;
+        }
+
+        /* 支柱标题 */
+        .pillar-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #76B900;
+        }
+
+        .cpu-card .pillar-title {
+            color: rgba(0, 150, 255, 0.9);
+        }
+
+        .gpu-card .pillar-title {
+            color: rgba(255, 100, 0, 0.9);
+        }
+
+        .pillar-subtitle {
+            font-size: 1.1rem;
+            color: #ffffff;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        /* 特性列表 */
+        .pillar-features {
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.95rem;
+            color: #e0e0e0;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .feature:hover {
+            background: rgba(118, 185, 0, 0.1);
+            transform: translateX(5px);
+        }
+
+        .cpu-card .feature:hover {
+            background: rgba(0, 150, 255, 0.1);
+        }
+
+        .gpu-card .feature:hover {
+            background: rgba(255, 100, 0, 0.1);
+        }
+
+        .feature-bullet {
+            width: 8px;
+            height: 8px;
+            background: #76B900;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .cpu-card .feature-bullet {
+            background: rgba(0, 150, 255, 0.9);
+        }
+
+        .gpu-card .feature-bullet {
+            background: rgba(255, 100, 0, 0.9);
+        }
+
+        /* 总结引言 */
+        .conclusion-section {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(118, 185, 0, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            animation: fadeIn 1.5s ease-out 0.8s both;
+        }
+
+        .conclusion-text {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            color: #ffffff;
+            font-weight: 500;
+        }
+
+        .conclusion-highlight {
+            background: linear-gradient(135deg, #76B900, #a4d633);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+        }
+
+        /* 导航提示 */
+        .navigation-hint {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 30px;
+            font-size: 0.9rem;
+            color: #888;
+            animation: fadeIn 1.5s ease-out 1s both;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-key {
+            background: rgba(118, 185, 0, 0.2);
+            color: #76B900;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-weight: 600;
+        }
+
+        /* 动画定义 */
+        @keyframes backgroundFlow {
+            0%, 100% { filter: hue-rotate(0deg) brightness(1); transform: scale(1); }
+            25% { filter: hue-rotate(5deg) brightness(1.1); transform: scale(1.02); }
+            50% { filter: hue-rotate(-3deg) brightness(0.95); transform: scale(0.98); }
+            75% { filter: hue-rotate(8deg) brightness(1.05); transform: scale(1.01); }
+        }
+
+        @keyframes gridShift {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        @keyframes particleFloat {
+            0% { opacity: 0; transform: translateY(100vh) scale(0); }
+            10% { opacity: 1; transform: translateY(90vh) scale(1); }
+            90% { opacity: 1; transform: translateY(-10vh) scale(1); }
+            100% { opacity: 0; transform: translateY(-20vh) scale(0); }
+        }
+
+        @keyframes circuitPulse {
+            0%, 100% { opacity: 0.1; }
+            50% { opacity: 0.3; }
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .pillars-container {
+                gap: 30px;
+            }
+            
+            .pillar-card {
+                padding: 25px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .pillars-container {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+            
+            .slide-container {
+                padding: 0 20px;
+            }
+            
+            .page-title {
+                font-size: 2.2rem;
+            }
+            
+            .pillar-card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 动态背景元素 -->
+    <div class="data-particles" id="particles"></div>
+    <div class="circuit-lines"></div>
+    
+    <div class="slide-container">
+        <h1 class="page-title">计算架构的三大支柱</h1>
+        <div class="page-subtitle">CPU · GPU · DPU 各司其职，共同构建现代计算生态</div>
+        
+        <div class="pillars-container">
+            <!-- CPU支柱 -->
+            <div class="pillar-card cpu-card">
+                <div class="pillar-icon-placeholder">
+                    <div class="icon-text">CPU图标</div>
+                    <div class="icon-subtitle">【手工替换】CPU芯片图标<br>推荐尺寸120x120px</div>
+                </div>
+                <div class="pillar-title">CPU</div>
+                <div class="pillar-subtitle">通用计算</div>
+                <div class="pillar-features">
+                    <div class="feature">
+                        <div class="feature-bullet"></div>
+                        <div>执行应用程序逻辑</div>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-bullet"></div>
+                        <div>操作系统管理</div>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-bullet"></div>
+                        <div>控制流处理</div>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-bullet"></div>
+                        <div>复杂决策运算</div>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-bullet"></div>
+                        <div>单线程性能优化</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GPU支柱 -->
+            <div class="pillar-card gpu-card">
+                <div class="pillar-icon-placeholder">
+                    <div class="icon-text">GPU图标</div>
+                    <div class="icon-subtitle">【手工替换】GPU芯片图标<br>推荐尺寸120x120px</div>
+                </div>
+                <div class="pillar-title">GPU</div>
+                <div class="pillar-subtitle">加速计算</div>
+                <div class="pillar-features">
+                    <div class="feature">
+                        <div class="feature-bullet"></div>
+                        <div>并行计算处理</div>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-bullet"></div>
+                        <div>AI/ML训练推理</div>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-bullet"></div>
+                        <div>图形渲染</div>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-bullet"></div>
+                        <div>科学计算</div>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-bullet"></div>
+                        <div>大规模数据处理</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DPU支柱 -->
+            <div class="pillar-card">
+                <div class="pillar-icon-placeholder">
+                    <div class="icon-text">DPU图标</div>
+                    <div class="icon-subtitle">【手工替换】DPU芯片图标<br>推荐尺寸120x120px</div>
+                </div>
+                <div class="pillar-title">DPU</div>
+                <div class="pillar-subtitle">数据移动</div>
+                <div class="pillar-features">
+                    <div class="feature">
+                        <div class="feature-bullet"></div>
+                        <div>网络数据包处理</div>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-bullet"></div>
+                        <div>存储I/O加速</div>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-bullet"></div>
+                        <div>安全加密/解密</div>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-bullet"></div>
+                        <div>基础设施卸载</div>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-bullet"></div>
+                        <div>软件定义网络</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="conclusion-section">
+            <div class="conclusion-text">
+                <span class="conclusion-highlight">DPU的出现完善了计算架构</span>，
+                使CPU专注于应用逻辑，GPU专注于加速计算，而DPU则专门负责数据移动和基础设施处理，
+                <strong>三者协同工作，共同提升数据中心的整体性能和效率。</strong>
+            </div>
+        </div>
+    </div>
+    
+    <div class="navigation-hint">
+        <div class="nav-item">
+            <span class="nav-key">←</span>
+            <span>DPU概念</span>
+        </div>
+        <div class="nav-item">
+            <span class="nav-key">→</span>
+            <span>数据中心价值</span>
+        </div>
+    </div>
+
+    <script>
+        // 创建动态粒子效果
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 15;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 8 + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            createParticles();
+            
+            // 卡片交错动画
+            const cards = document.querySelectorAll('.pillar-card');
+            cards.forEach((card, index) => {
+                card.style.animationDelay = `${0.6 + index * 0.2}s`;
+            });
+            
+            // 键盘导航
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'ArrowRight' || e.key === ' ') {
+                    // 切换到下一页（数据中心重要性）
+                    window.location.href = 'datacenter-value.html';
+                } else if (e.key === 'ArrowLeft') {
+                    // 返回DPU概念页
+                    window.location.href = 'dpu-concept.html';
+                }
+            });
+            
+            // 特性项悬停效果增强
+            document.querySelectorAll('.feature').forEach(feature => {
+                feature.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateX(8px) scale(1.02)';
+                });
+                
+                feature.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateX(0) scale(1)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
