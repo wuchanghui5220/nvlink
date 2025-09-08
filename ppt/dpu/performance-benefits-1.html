@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spectrum-X性能优势与RoCE加速（第1部分）</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Microsoft YaHei", sans-serif;
+            background: #000;
+            color: white;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 复用背景效果 */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(ellipse at top left, rgba(118, 185, 0, 0.15) 0%, transparent 60%),
+                radial-gradient(ellipse at bottom right, rgba(255, 69, 0, 0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at center, rgba(0, 117, 255, 0.05) 0%, transparent 70%),
+                linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 25%, #0f0f0f 50%, #1a1a1a 75%, #0a0a0a 100%);
+            animation: backgroundFlow 12s ease-in-out infinite;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(rgba(118, 185, 0, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(118, 185, 0, 0.03) 1px, transparent 1px);
+            background-size: 100px 100px, 100px 100px;
+            animation: gridShift 25s linear infinite;
+        }
+
+        .data-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #76B900;
+            border-radius: 50%;
+            opacity: 0;
+            animation: particleFloat 8s infinite;
+        }
+
+        .particle:nth-child(2n) {
+            background: rgba(255, 69, 0, 0.6);
+            animation-duration: 12s;
+        }
+
+        /* 主内容容器 */
+        .slide-container {
+            width: 100%;
+            max-width: 1200px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 页面标题 */
+        .page-title {
+            font-size: 2.6rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #FF4500, #76B900);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(255, 69, 0, 0.3);
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .page-subtitle {
+            font-size: 1.1rem;
+            color: #aaa;
+            margin-bottom: 40px;
+            font-weight: 500;
+            animation: fadeInUp 1s ease-out 0.3s both;
+        }
+
+        /* 主要内容区域 */
+        .content-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 35px;
+            width: 100%;
+            max-width: 1100px;
+            animation: fadeInUp 1.2s ease-out 0.5s both;
+        }
+
+        /* 性能提升卡片 */
+        .performance-section {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 69, 0, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #FF4500;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .performance-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 18px;
+            padding: 15px;
+            background: rgba(255, 69, 0, 0.05);
+            border-radius: 8px;
+            border-left: 4px solid #FF4500;
+            text-align: left;
+        }
+
+        .performance-icon {
+            color: #FF4500;
+            font-size: 1.3rem;
+            margin-right: 15px;
+            margin-top: 2px;
+            min-width: 24px;
+        }
+
+        .performance-content {
+            flex: 1;
+        }
+
+        .performance-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 6px;
+        }
+
+        .performance-desc {
+            font-size: 0.9rem;
+            color: #ddd;
+            line-height: 1.4;
+            margin-bottom: 8px;
+        }
+
+        .performance-metric {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #FF4500;
+            background: rgba(255, 69, 0, 0.1);
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        /* RoCE和AI训练优势 */
+        .benefits-section {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(118, 185, 0, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+        }
+
+        .benefits-section .section-title {
+            color: #76B900;
+        }
+
+        .benefit-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 18px;
+            padding: 15px;
+            background: rgba(118, 185, 0, 0.05);
+            border-radius: 8px;
+            border-left: 4px solid #76B900;
+            text-align: left;
+        }
+
+        .benefit-icon {
+            color: #76B900;
+            font-size: 1.3rem;
+            margin-right: 15px;
+            margin-top: 2px;
+            min-width: 24px;
+        }
+
+        .benefit-content {
+            flex: 1;
+        }
+
+        .benefit-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 6px;
+        }
+
+        .benefit-desc {
+            font-size: 0.9rem;
+            color: #ddd;
+            line-height: 1.4;
+            margin-bottom: 8px;
+        }
+
+        .benefit-metric {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #76B900;
+            background: rgba(118, 185, 0, 0.1);
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        /* 底部关键性能数据 */
+        .key-metrics {
+            position: absolute;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 40px;
+            animation: fadeIn 1.5s ease-out 1s both;
+        }
+
+        .metric-item {
+            text-align: center;
+            padding: 18px 25px;
+            background: linear-gradient(135deg, rgba(255, 69, 0, 0.1), rgba(118, 185, 0, 0.1));
+            border: 1px solid rgba(255, 69, 0, 0.3);
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .metric-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(255, 69, 0, 0.2);
+        }
+
+        .metric-number {
+            font-size: 1.6rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #FF4500, #76B900);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 5px;
+        }
+
+        .metric-label {
+            font-size: 0.8rem;
+            color: #bbb;
+            font-weight: 500;
+        }
+
+        /* 导航提示 */
+        .navigation-hint {
+            position: absolute;
+            top: 30px;
+            right: 40px;
+            display: flex;
+            gap: 20px;
+            font-size: 0.9rem;
+            color: #888;
+            animation: fadeIn 1.5s ease-out 1.2s both;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-key {
+            background: rgba(118, 185, 0, 0.2);
+            color: #76B900;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-weight: 600;
+        }
+
+        /* 动画定义 */
+        @keyframes backgroundFlow {
+            0%, 100% { 
+                filter: hue-rotate(0deg) brightness(1);
+            }
+            50% { 
+                filter: hue-rotate(20deg) brightness(1.1);
+            }
+        }
+
+        @keyframes gridShift {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(100px, 100px); }
+        }
+
+        @keyframes particleFloat {
+            0% { 
+                opacity: 0;
+                transform: translateY(100vh) translateX(0px) scale(0);
+            }
+            10% {
+                opacity: 1;
+                transform: translateY(90vh) translateX(10px) scale(1);
+            }
+            90% {
+                opacity: 1;
+                transform: translateY(-10vh) translateX(-10px) scale(1);
+            }
+            100% { 
+                opacity: 0;
+                transform: translateY(-20vh) translateX(-20px) scale(0);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .content-container {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            
+            .page-title {
+                font-size: 2rem;
+            }
+            
+            .key-metrics {
+                flex-direction: column;
+                gap: 15px;
+                bottom: 40px;
+            }
+            
+            .navigation-hint {
+                top: 20px;
+                right: 20px;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 动态背景元素 -->
+    <div class="data-particles" id="particles"></div>
+    
+    <div class="slide-container">
+        <h1 class="page-title">Spectrum-X性能优势</h1>
+        <p class="page-subtitle">显著提升的AI网络性能与RoCE加速</p>
+        
+        <div class="content-container">
+            <!-- 左侧：集合操作和网络性能 -->
+            <div class="performance-section">
+                <h2 class="section-title">集合操作与网络性能</h2>
+                
+                <div class="performance-item">
+                    <div class="performance-icon">🚀</div>
+                    <div class="performance-content">
+                        <div class="performance-title">减少集合操作尾部延迟</div>
+                        <div class="performance-desc">智能调度数据传输避免拥塞，重新排序接收数据，结合超高速流量监控</div>
+                        <div class="performance-metric">比传统以太网快1.6倍</div>
+                    </div>
+                </div>
+
+                <div class="performance-item">
+                    <div class="performance-icon">🔒</div>
+                    <div class="performance-content">
+                        <div class="performance-title">卓越的噪声隔离</div>
+                        <div class="performance-desc">消除网络热点，确保多租户或混合工作负载环境下性能不受影响</div>
+                        <div class="performance-metric">性能与无噪声场景几乎相同</div>
+                    </div>
+                </div>
+
+                <div class="performance-item">
+                    <div class="performance-icon">🛡️</div>
+                    <div class="performance-content">
+                        <div class="performance-title">强大的弹性性能</div>
+                        <div class="performance-desc">数据流重新平衡，全球自适应路由重新平衡NCCL流并避开故障路径</div>
+                        <div class="performance-metric">50%上行链路故障时仍远超传统以太网</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧：RoCE性能和AI训练加速 -->
+            <div class="benefits-section">
+                <h2 class="section-title">RoCE性能与AI训练加速</h2>
+                
+                <div class="benefit-item">
+                    <div class="benefit-icon">⚡</div>
+                    <div class="benefit-content">
+                        <div class="benefit-title">RoCE双向带宽提升</div>
+                        <div class="benefit-desc">极大地加速GPU之间的数据传输，提供卓越的网络吞吐量</div>
+                        <div class="benefit-metric">高4.3倍</div>
+                    </div>
+                </div>
+
+                <div class="benefit-item">
+                    <div class="benefit-icon">🎯</div>
+                    <div class="benefit-content">
+                        <div class="benefit-title">RoCE双向延迟降低</div>
+                        <div class="benefit-desc">降低通信开销，加速AI训练，对大语言模型训练尤其关键</div>
+                        <div class="benefit-metric">低2.2倍</div>
+                    </div>
+                </div>
+
+                <div class="benefit-item">
+                    <div class="benefit-icon">🤖</div>
+                    <div class="benefit-content">
+                        <div class="benefit-title">AI模型训练加速</div>
+                        <div class="benefit-desc">NVIDIA NeMo LLM 43B和FSDP Llama 70B模型训练显著加速</div>
+                        <div class="benefit-metric">快1.2-1.4倍</div>
+                    </div>
+                </div>
+
+                <div class="benefit-item">
+                    <div class="benefit-icon">📊</div>
+                    <div class="benefit-content">
+                        <div class="benefit-title">NCCL隔离性能</div>
+                        <div class="benefit-desc">在嘈杂的AI云环境中，NCCL集合操作隔离性能显著提升</div>
+                        <div class="benefit-metric">All-Reduce高1.5倍，All-to-All高1.1倍</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 关键性能数据 -->
+    <div class="key-metrics">
+        <div class="metric-item">
+            <div class="metric-number">1.6x</div>
+            <div class="metric-label">集合操作加速</div>
+        </div>
+        <div class="metric-item">
+            <div class="metric-number">4.3x</div>
+            <div class="metric-label">RoCE带宽提升</div>
+        </div>
+        <div class="metric-item">
+            <div class="metric-number">2.2x</div>
+            <div class="metric-label">延迟降低</div>
+        </div>
+        <div class="metric-item">
+            <div class="metric-number">1.4x</div>
+            <div class="metric-label">AI训练加速</div>
+        </div>
+    </div>
+
+    <!-- 导航提示 -->
+    <div class="navigation-hint">
+        <div class="nav-item">
+            <span class="nav-key">←</span>
+            <span>核心组件</span>
+        </div>
+        <div class="nav-item">
+            <span class="nav-key">→</span>
+            <span>性能优势2</span>
+        </div>
+    </div>
+
+    <script>
+        // 创建动态粒子效果
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 25;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 8 + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // 鼠标跟踪光效
+        function createMouseGlow() {
+            let mouseGlow = document.createElement('div');
+            mouseGlow.style.cssText = `
+                position: fixed;
+                width: 200px;
+                height: 200px;
+                background: radial-gradient(circle, rgba(255, 69, 0, 0.08) 0%, transparent 70%);
+                border-radius: 50%;
+                pointer-events: none;
+                z-index: 0;
+                transition: all 0.1s ease;
+                transform: translate(-50%, -50%);
+            `;
+            document.body.appendChild(mouseGlow);
+
+            document.addEventListener('mousemove', function(e) {
+                mouseGlow.style.left = e.clientX + 'px';
+                mouseGlow.style.top = e.clientY + 'px';
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            createParticles();
+            createMouseGlow();
+            
+            // 键盘导航
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'ArrowRight' || e.key === ' ') {
+                    window.location.href = 'performance-benefits-2.html';
+                } else if (e.key === 'ArrowLeft') {
+                    window.location.href = 'core-components.html';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

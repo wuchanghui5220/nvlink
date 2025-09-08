@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spectrum-X性能优势与RoCE加速（第2部分）</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Microsoft YaHei", sans-serif;
+            background: #000;
+            color: white;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 复用背景效果 */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(ellipse at top left, rgba(138, 43, 226, 0.12) 0%, transparent 60%),
+                radial-gradient(ellipse at bottom right, rgba(118, 185, 0, 0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at center, rgba(255, 165, 0, 0.05) 0%, transparent 70%),
+                linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 25%, #0f0f0f 50%, #1a1a1a 75%, #0a0a0a 100%);
+            animation: backgroundFlow 12s ease-in-out infinite;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(rgba(138, 43, 226, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(138, 43, 226, 0.03) 1px, transparent 1px);
+            background-size: 100px 100px, 100px 100px;
+            animation: gridShift 25s linear infinite;
+        }
+
+        .data-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #8A2BE2;
+            border-radius: 50%;
+            opacity: 0;
+            animation: particleFloat 8s infinite;
+        }
+
+        .particle:nth-child(2n) {
+            background: rgba(118, 185, 0, 0.6);
+            animation-duration: 12s;
+        }
+
+        /* 主内容容器 */
+        .slide-container {
+            width: 100%;
+            max-width: 1200px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 页面标题 */
+        .page-title {
+            font-size: 2.6rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #8A2BE2, #76B900);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(138, 43, 226, 0.3);
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .page-subtitle {
+            font-size: 1.1rem;
+            color: #aaa;
+            margin-bottom: 40px;
+            font-weight: 500;
+            animation: fadeInUp 1s ease-out 0.3s both;
+        }
+
+        /* 主要内容区域 */
+        .content-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 35px;
+            width: 100%;
+            max-width: 1100px;
+            animation: fadeInUp 1.2s ease-out 0.5s both;
+        }
+
+        /* 多租户性能隔离 */
+        .multi-tenancy-section {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #8A2BE2;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 18px;
+            padding: 15px;
+            background: rgba(138, 43, 226, 0.05);
+            border-radius: 8px;
+            border-left: 4px solid #8A2BE2;
+            text-align: left;
+        }
+
+        .feature-icon {
+            color: #8A2BE2;
+            font-size: 1.3rem;
+            margin-right: 15px;
+            margin-top: 2px;
+            min-width: 24px;
+        }
+
+        .feature-content {
+            flex: 1;
+        }
+
+        .feature-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 6px;
+        }
+
+        .feature-desc {
+            font-size: 0.9rem;
+            color: #ddd;
+            line-height: 1.4;
+            margin-bottom: 8px;
+        }
+
+        .feature-metric {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #8A2BE2;
+            background: rgba(138, 43, 226, 0.1);
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        /* 端到端优化和TCO */
+        .optimization-section {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(118, 185, 0, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+        }
+
+        .optimization-section .section-title {
+            color: #76B900;
+        }
+
+        .optimization-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 18px;
+            padding: 15px;
+            background: rgba(118, 185, 0, 0.05);
+            border-radius: 8px;
+            border-left: 4px solid #76B900;
+            text-align: left;
+        }
+
+        .optimization-icon {
+            color: #76B900;
+            font-size: 1.3rem;
+            margin-right: 15px;
+            margin-top: 2px;
+            min-width: 24px;
+        }
+
+        .optimization-content {
+            flex: 1;
+        }
+
+        .optimization-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 6px;
+        }
+
+        .optimization-desc {
+            font-size: 0.9rem;
+            color: #ddd;
+            line-height: 1.4;
+            margin-bottom: 8px;
+        }
+
+        .optimization-metric {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #76B900;
+            background: rgba(118, 185, 0, 0.1);
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        /* 底部关键TCO数据 */
+        .tco-metrics {
+            position: absolute;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 40px;
+            animation: fadeIn 1.5s ease-out 1s both;
+        }
+
+        .tco-item {
+            text-align: center;
+            padding: 18px 25px;
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.1), rgba(118, 185, 0, 0.1));
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .tco-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(138, 43, 226, 0.2);
+        }
+
+        .tco-number {
+            font-size: 1.6rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #8A2BE2, #76B900);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 5px;
+        }
+
+        .tco-label {
+            font-size: 0.8rem;
+            color: #bbb;
+            font-weight: 500;
+        }
+
+        /* 导航提示 */
+        .navigation-hint {
+            position: absolute;
+            top: 30px;
+            right: 40px;
+            display: flex;
+            gap: 20px;
+            font-size: 0.9rem;
+            color: #888;
+            animation: fadeIn 1.5s ease-out 1.2s both;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-key {
+            background: rgba(138, 43, 226, 0.2);
+            color: #8A2BE2;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-weight: 600;
+        }
+
+        /* 动画定义 */
+        @keyframes backgroundFlow {
+            0%, 100% { 
+                filter: hue-rotate(0deg) brightness(1);
+            }
+            50% { 
+                filter: hue-rotate(25deg) brightness(1.1);
+            }
+        }
+
+        @keyframes gridShift {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(100px, 100px); }
+        }
+
+        @keyframes particleFloat {
+            0% { 
+                opacity: 0;
+                transform: translateY(100vh) translateX(0px) scale(0);
+            }
+            10% {
+                opacity: 1;
+                transform: translateY(90vh) translateX(10px) scale(1);
+            }
+            90% {
+                opacity: 1;
+                transform: translateY(-10vh) translateX(-10px) scale(1);
+            }
+            100% { 
+                opacity: 0;
+                transform: translateY(-20vh) translateX(-20px) scale(0);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .content-container {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            
+            .page-title {
+                font-size: 2rem;
+            }
+            
+            .tco-metrics {
+                flex-direction: column;
+                gap: 15px;
+                bottom: 40px;
+            }
+            
+            .navigation-hint {
+                top: 20px;
+                right: 20px;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 动态背景元素 -->
+    <div class="data-particles" id="particles"></div>
+    
+    <div class="slide-container">
+        <h1 class="page-title">Spectrum-X高级特性</h1>
+        <p class="page-subtitle">多租户隔离、MoE支持与端到端优化</p>
+        
+        <div class="content-container">
+            <!-- 左侧：多租户性能隔离和MoE支持 -->
+            <div class="multi-tenancy-section">
+                <h2 class="section-title">多租户隔离与MoE支持</h2>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">🏢</div>
+                    <div class="feature-content">
+                        <div class="feature-title">多租户性能隔离</div>
+                        <div class="feature-desc">AI云多租户架构，网络虚拟化至关重要，确保不同租户获得卓越性能</div>
+                        <div class="feature-metric">EVPN VXLAN性能保持不变（1%以内）</div>
+                    </div>
+                </div>
+
+                <div class="feature-item">
+                    <div class="feature-icon">🧠</div>
+                    <div class="feature-content">
+                        <div class="feature-title">MoE技术强大支持</div>
+                        <div class="feature-desc">高效处理MoE稀疏、动态的流量模式，无流量冲突，性能可预测</div>
+                        <div class="feature-metric">GPT MoE 1.8T参数模型优化支持</div>
+                    </div>
+                </div>
+
+                <div class="feature-item">
+                    <div class="feature-icon">⚙️</div>
+                    <div class="feature-content">
+                        <div class="feature-title">专家并存能力</div>
+                        <div class="feature-desc">确保多个集体组和专家可以在大型集群中并存，满足MoE核心需求</div>
+                        <div class="feature-metric">大规模集群MoE部署验证</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧：端到端优化和TCO -->
+            <div class="optimization-section">
+                <h2 class="section-title">端到端优化与TCO</h2>
+                
+                <div class="optimization-item">
+                    <div class="optimization-icon">🔧</div>
+                    <div class="optimization-content">
+                        <div class="optimization-title">全栈端到端优化</div>
+                        <div class="optimization-desc">从硬件到AI模型各层级性能调优，最佳交换机和SuperNIC设计</div>
+                        <div class="optimization-metric">硬件→网络Fabric→AI原语→模型</div>
+                    </div>
+                </div>
+
+                <div class="optimization-item">
+                    <div class="optimization-icon">💰</div>
+                    <div class="optimization-content">
+                        <div class="optimization-title">总拥有成本降低</div>
+                        <div class="optimization-desc">对于2048个GPU系统，相比传统以太网显著降低TCO</div>
+                        <div class="optimization-metric">TCO可降低近10%</div>
+                    </div>
+                </div>
+
+                <div class="optimization-item">
+                    <div class="optimization-icon">🚀</div>
+                    <div class="optimization-content">
+                        <div class="optimization-title">GPT3性能提升</div>
+                        <div class="optimization-desc">GPT3 175B模型在Spectrum-X上实现全面性能提升</div>
+                        <div class="optimization-metric">1.7倍性能/GPU、性能/TCO$和性能/功耗</div>
+                    </div>
+                </div>
+
+                <div class="optimization-item">
+                    <div class="optimization-icon">⚡</div>
+                    <div class="optimization-content">
+                        <div class="optimization-title">系统效率优化</div>
+                        <div class="optimization-desc">带宽容量、功耗和占用空间的全面优化</div>
+                        <div class="optimization-metric">4x带宽，50%功耗降低，4x空间减少</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 关键TCO数据 -->
+    <div class="tco-metrics">
+        <div class="tco-item">
+            <div class="tco-number">10%</div>
+            <div class="tco-label">TCO降低</div>
+        </div>
+        <div class="tco-item">
+            <div class="tco-number">1.7x</div>
+            <div class="tco-label">性能/功耗</div>
+        </div>
+        <div class="tco-item">
+            <div class="tco-number">4x</div>
+            <div class="tco-label">带宽容量</div>
+        </div>
+        <div class="tco-item">
+            <div class="tco-number">50%</div>
+            <div class="tco-label">功耗降低</div>
+        </div>
+    </div>
+
+    <!-- 导航提示 -->
+    <div class="navigation-hint">
+        <div class="nav-item">
+            <span class="nav-key">←</span>
+            <span>性能优势1</span>
+        </div>
+        <div class="nav-item">
+            <span class="nav-key">→</span>
+            <span>网络架构</span>
+        </div>
+    </div>
+
+    <script>
+        // 创建动态粒子效果
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 25;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 8 + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // 鼠标跟踪光效
+        function createMouseGlow() {
+            let mouseGlow = document.createElement('div');
+            mouseGlow.style.cssText = `
+                position: fixed;
+                width: 200px;
+                height: 200px;
+                background: radial-gradient(circle, rgba(138, 43, 226, 0.08) 0%, transparent 70%);
+                border-radius: 50%;
+                pointer-events: none;
+                z-index: 0;
+                transition: all 0.1s ease;
+                transform: translate(-50%, -50%);
+            `;
+            document.body.appendChild(mouseGlow);
+
+            document.addEventListener('mousemove', function(e) {
+                mouseGlow.style.left = e.clientX + 'px';
+                mouseGlow.style.top = e.clientY + 'px';
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            createParticles();
+            createMouseGlow();
+            
+            // 键盘导航
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'ArrowRight' || e.key === ' ') {
+                    window.location.href = 'network-architecture.html';
+                } else if (e.key === 'ArrowLeft') {
+                    window.location.href = 'performance-benefits-1.html';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

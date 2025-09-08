@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NVIDIA DPU BlueField-3 - 目录</title>
+    <title>研讨会议程 - NVIDIA Spectrum-X与DPU平台网络研讨会</title>
     <style>
         * {
             margin: 0;
@@ -12,36 +12,15 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Microsoft YaHei", sans-serif;
-            background: #000;
-            color: white;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            position: relative;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 25%, #16213e 50%, #0a0a0a 75%, #000 100%);
+            min-height: 100vh;
+            color: #fff;
             overflow: hidden;
         }
 
-        /* 复用封面页的背景效果 */
-        body::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: 
-                radial-gradient(ellipse at top left, rgba(118, 185, 0, 0.15) 0%, transparent 60%),
-                radial-gradient(ellipse at bottom right, rgba(118, 185, 0, 0.1) 0%, transparent 60%),
-                radial-gradient(ellipse at center, rgba(0, 100, 200, 0.05) 0%, transparent 70%),
-                linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 25%, #0f0f0f 50%, #1a1a1a 75%, #0a0a0a 100%);
-            animation: backgroundFlow 12s ease-in-out infinite;
-        }
-
-        body::after {
-            content: '';
+        /* 动态背景网格 */
+        .circuit-lines {
             position: absolute;
             top: 0;
             left: 0;
@@ -71,40 +50,29 @@
             width: 2px;
             height: 2px;
             background: #76B900;
-            border-radius: 50%;
-            opacity: 0;
-            animation: particleFloat 8s infinite;
+            opacity: 0.6;
+            animation: float 8s infinite ease-in-out;
         }
 
-        .particle:nth-child(2n) {
-            width: 1px;
-            height: 1px;
-            background: rgba(118, 185, 0, 0.6);
-            animation-duration: 12s;
+        @keyframes gridShift {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(100px, 100px); }
         }
 
-        .circuit-lines {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-image: 
-                linear-gradient(45deg, transparent 48%, rgba(118, 185, 0, 0.1) 49%, rgba(118, 185, 0, 0.1) 51%, transparent 52%),
-                linear-gradient(-45deg, transparent 48%, rgba(118, 185, 0, 0.08) 49%, rgba(118, 185, 0, 0.08) 51%, transparent 52%);
-            background-size: 300px 300px, 400px 400px;
-            animation: circuitPulse 20s ease-in-out infinite;
-            opacity: 0.3;
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.4; }
+            50% { transform: translateY(-20px) rotate(180deg); opacity: 0.8; }
         }
 
+        /* 芯片装饰元素 */
         .chip-decoration {
             position: absolute;
             width: 150px;
             height: 150px;
-            border: 1px solid rgba(118, 185, 0, 0.2);
+            border: 1px solid rgba(118, 185, 0, 0.15);
             border-radius: 8px;
-            background: linear-gradient(45deg, transparent 30%, rgba(118, 185, 0, 0.03) 70%);
-            animation: chipGlow 6s ease-in-out infinite;
+            background: linear-gradient(45deg, transparent 30%, rgba(118, 185, 0, 0.02) 70%);
+            animation: chipGlow 8s ease-in-out infinite;
         }
 
         .chip-decoration::before {
@@ -114,273 +82,173 @@
             left: 8px;
             right: 8px;
             bottom: 8px;
-            border: 1px solid rgba(118, 185, 0, 0.1);
+            border: 1px solid rgba(118, 185, 0, 0.08);
             border-radius: 4px;
         }
 
-        .chip-top-left {
-            top: 8%;
-            left: 3%;
-            animation-delay: 0s;
+        .chip-top-left { top: 8%; left: 4%; animation-delay: 0s; }
+        .chip-top-right { top: 8%; right: 4%; animation-delay: 2s; }
+        .chip-bottom-left { bottom: 8%; left: 4%; animation-delay: 4s; }
+        .chip-bottom-right { bottom: 8%; right: 4%; animation-delay: 6s; }
+
+        @keyframes chipGlow {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.02); }
         }
 
-        .chip-top-right {
-            top: 12%;
-            right: 5%;
-            animation-delay: 2s;
-        }
-
-        .chip-bottom-left {
-            bottom: 15%;
-            left: 6%;
-            animation-delay: 4s;
-        }
-
-        .chip-bottom-right {
-            bottom: 8%;
-            right: 3%;
-            animation-delay: 1s;
-        }
-
-        /* 主要内容容器 */
+        /* 主容器 */
         .slide-container {
-            width: 100%;
-            max-width: 1000px;
+            position: relative;
+            z-index: 10;
             height: 100vh;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
-            text-align: center;
-            padding: 0 40px;
-            position: relative;
-            z-index: 1;
+            justify-content: center;
+            padding: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
         }
 
-        /* 页面标题 */
         .page-title {
             font-size: 3rem;
             font-weight: 700;
-            margin-bottom: 60px;
-            background: linear-gradient(135deg, #76B900, #a4d633);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-shadow: 0 0 30px rgba(118, 185, 0, 0.3);
-            animation: fadeInDown 1s ease-out;
+            color: #76B900;
+            text-align: center;
+            margin-bottom: 15px;
+            text-shadow: 0 0 20px rgba(118, 185, 0, 0.5);
+            letter-spacing: 2px;
         }
 
-        /* 目录容器 */
+        .page-subtitle {
+            text-align: center;
+            color: #b0b0b0;
+            margin-bottom: 50px;
+            font-size: 1.3rem;
+            font-weight: 300;
+        }
+
+        /* 内容网格 */
         .contents-container {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            max-width: 1200px;
             width: 100%;
-            max-width: 900px;
-            animation: fadeInUp 1.2s ease-out 0.3s both;
         }
 
-        /* 目录项 */
         .content-item {
-            display: flex;
-            align-items: center;
-            padding: 25px 30px;
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(118, 185, 0, 0.2);
+            background: rgba(20, 25, 40, 0.9);
             border-radius: 12px;
+            padding: 25px;
+            border-left: 4px solid #76B900;
             backdrop-filter: blur(10px);
             transition: all 0.3s ease;
             cursor: pointer;
-            text-align: left;
+            position: relative;
+            overflow: hidden;
         }
 
         .content-item:hover {
-            transform: translateY(-5px) scale(1.02);
-            border-color: rgba(118, 185, 0, 0.5);
-            box-shadow: 0 15px 35px rgba(118, 185, 0, 0.2);
-            background: rgba(118, 185, 0, 0.05);
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(118, 185, 0, 0.15);
+            border-left-color: #8BC34A;
         }
 
-        /* 序号 */
+        .content-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(118, 185, 0, 0.1), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .content-item:hover::before {
+            left: 100%;
+        }
+
         .item-number {
-            font-size: 2.5rem;
-            font-weight: 700;
+            font-size: 0.9rem;
             color: #76B900;
-            margin-right: 25px;
-            width: 60px;
-            text-align: center;
-        }
-
-        /* 内容文字 */
-        .item-content {
-            flex: 1;
+            font-weight: 600;
+            margin-bottom: 10px;
+            opacity: 0.8;
         }
 
         .item-title {
-            font-size: 1.4rem;
+            font-size: 1.1rem;
             font-weight: 600;
-            color: #ffffff;
+            color: #fff;
             margin-bottom: 8px;
             line-height: 1.3;
         }
 
         .item-subtitle {
-            font-size: 1rem;
+            font-size: 0.95rem;
             color: #b0b0b0;
             line-height: 1.4;
         }
 
+        /* 特色标记不同类型的内容 */
+        .content-item:nth-child(2) { border-left-color: #0096FF; }
+        .content-item:nth-child(4) { border-left-color: #FF6B35; }
+        .content-item:nth-child(5) { border-left-color: #8A2BE2; }
+        .content-item:nth-child(7) { border-left-color: #FF1744; }
+        .content-item:nth-child(8) { border-left-color: #00BCD4; }
+        .content-item:nth-child(10) { border-left-color: #FFC107; }
 
         /* 导航提示 */
         .navigation-hint {
             position: absolute;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%);
+            bottom: 20px;
             display: flex;
-            gap: 30px;
-            font-size: 0.9rem;
-            color: #888;
-            animation: fadeIn 1.5s ease-out 1s both;
+            gap: 40px;
+            z-index: 15;
         }
 
         .nav-item {
             display: flex;
             align-items: center;
             gap: 8px;
+            color: #888;
+            font-size: 0.9rem;
         }
 
         .nav-key {
             background: rgba(118, 185, 0, 0.2);
-            color: #76B900;
             padding: 4px 8px;
             border-radius: 4px;
             font-family: monospace;
-            font-weight: 600;
-        }
-
-        /* 动画定义 */
-        @keyframes backgroundFlow {
-            0%, 100% { 
-                filter: hue-rotate(0deg) brightness(1);
-                transform: scale(1);
-            }
-            25% {
-                filter: hue-rotate(5deg) brightness(1.1);
-                transform: scale(1.02);
-            }
-            50% { 
-                filter: hue-rotate(-3deg) brightness(0.95);
-                transform: scale(0.98);
-            }
-            75% {
-                filter: hue-rotate(8deg) brightness(1.05);
-                transform: scale(1.01);
-            }
-        }
-
-        @keyframes gridShift {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(100px, 100px); }
-        }
-
-        @keyframes particleFloat {
-            0% { 
-                opacity: 0;
-                transform: translateY(100vh) translateX(0px) scale(0);
-            }
-            10% {
-                opacity: 1;
-                transform: translateY(90vh) translateX(10px) scale(1);
-            }
-            90% {
-                opacity: 1;
-                transform: translateY(-10vh) translateX(-10px) scale(1);
-            }
-            100% { 
-                opacity: 0;
-                transform: translateY(-20vh) translateX(-20px) scale(0);
-            }
-        }
-
-        @keyframes circuitPulse {
-            0%, 100% { 
-                opacity: 0.2;
-                transform: scale(1) rotate(0deg);
-            }
-            50% { 
-                opacity: 0.4;
-                transform: scale(1.05) rotate(2deg);
-            }
-        }
-
-        @keyframes chipGlow {
-            0%, 100% { 
-                opacity: 0.3;
-                box-shadow: 0 0 20px rgba(118, 185, 0, 0.1);
-                transform: rotate(0deg);
-            }
-            50% { 
-                opacity: 0.6;
-                box-shadow: 0 0 40px rgba(118, 185, 0, 0.2);
-                transform: rotate(2deg);
-            }
-        }
-
-        @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
+            color: #76B900;
         }
 
         /* 响应式设计 */
-        @media (max-width: 768px) {
+        @media (max-width: 1200px) {
             .contents-container {
-                grid-template-columns: 1fr;
+                grid-template-columns: repeat(2, 1fr);
                 gap: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .slide-container {
+                padding: 20px;
             }
             
             .page-title {
                 font-size: 2.2rem;
             }
             
-            .content-item {
-                padding: 20px;
-            }
-            
-            .item-number {
-                font-size: 2rem;
-                margin-right: 15px;
-                width: 50px;
+            .contents-container {
+                grid-template-columns: 1fr;
+                gap: 15px;
             }
             
             .item-title {
-                font-size: 1.2rem;
+                font-size: 1rem;
             }
         }
     </style>
@@ -390,62 +258,81 @@
     <div class="data-particles" id="particles"></div>
     <div class="circuit-lines"></div>
     
-    <!-- DPU芯片装饰元素 -->
+    <!-- 芯片装饰元素 -->
     <div class="chip-decoration chip-top-left"></div>
     <div class="chip-decoration chip-top-right"></div>
     <div class="chip-decoration chip-bottom-left"></div>
     <div class="chip-decoration chip-bottom-right"></div>
     
     <div class="slide-container">
-        <h1 class="page-title">演讲大纲</h1>
+        <h1 class="page-title">研讨会议程</h1>
+        <p class="page-subtitle">NVIDIA Spectrum-X与DPU平台RoCE网络解决方案研讨会</p>
         
         <div class="contents-container">
-            <div class="content-item">
+            <div class="content-item" onclick="navigateToPage('ai-challenges.html')">
                 <div class="item-number">01</div>
-                <div class="item-content">
-                    <div class="item-title">DPU概念与发展</div>
-                    <div class="item-subtitle">什么是DPU？计算架构的三大支柱</div>
-                </div>
+                <div class="item-title">生成式AI数据中心的网络挑战</div>
+                <div class="item-subtitle">AI工厂规模计算，全栈优化AI Fabric需求分析</div>
             </div>
 
-            <div class="content-item">
+            <div class="content-item" onclick="navigateToPage('solution-overview.html')">
                 <div class="item-number">02</div>
-                <div class="item-content">
-                    <div class="item-title">BlueField产品系列对比</div>
-                    <div class="item-subtitle">BF-2 vs BF-3 技术架构演进</div>
-                </div>
+                <div class="item-title">Spectrum-X+DPU完整解决方案概览</div>
+                <div class="item-subtitle">端到端AI网络加速平台协同优势展示</div>
             </div>
 
-            <div class="content-item">
+            <div class="content-item" onclick="navigateToPage('spectrum-infrastructure.html')">
                 <div class="item-number">03</div>
-                <div class="item-content">
-                    <div class="item-title">BlueField-3 核心能力</div>
-                    <div class="item-subtitle">基础设施芯片化，软硬件加速</div>
-                </div>
+                <div class="item-title">Spectrum-X网络基础设施平台</div>
+                <div class="item-subtitle">专为AI设计的以太网交换架构和核心组件</div>
             </div>
 
-            <div class="content-item">
+            <div class="content-item" onclick="navigateToPage('dpu-acceleration.html')">
                 <div class="item-number">04</div>
-                <div class="item-content">
-                    <div class="item-title">实际应用场景</div>
-                    <div class="item-subtitle">云计算、AI基础设施、客户案例</div>
-                </div>
+                <div class="item-title">DPU网络加速与卸载能力</div>
+                <div class="item-subtitle">BlueField-3 DPU服务器端网络优化技术</div>
             </div>
 
-            <div class="content-item">
+            <div class="content-item" onclick="navigateToPage('roce-integration.html')">
                 <div class="item-number">05</div>
-                <div class="item-content">
-                    <div class="item-title">行业价值与优势</div>
-                    <div class="item-subtitle">能耗降低30%，运营效率提升</div>
-                </div>
+                <div class="item-title">RoCE技术整合与性能优势</div>
+                <div class="item-subtitle">融合以太网RDMA协同加速解决方案</div>
             </div>
 
-            <div class="content-item">
+            <div class="content-item" onclick="navigateToPage('network-architecture.html')">
                 <div class="item-number">06</div>
-                <div class="item-content">
-                    <div class="item-title">总结与问答</div>
-                    <div class="item-subtitle">核心要点回顾，开放交流</div>
-                </div>
+                <div class="item-title">端到端网络架构设计</div>
+                <div class="item-subtitle">Spectrum-X+DPU模块化扩展与32K GPU支持</div>
+            </div>
+
+            <div class="content-item" onclick="navigateToPage('performance-benefits.html')">
+                <div class="item-number">07</div>
+                <div class="item-title">协同性能优势与竞争力分析</div>
+                <div class="item-subtitle">Spectrum-X+DPU协同带来的性能提升展示</div>
+            </div>
+
+            <div class="content-item" onclick="navigateToPage('operations-management.html')">
+                <div class="item-number">08</div>
+                <div class="item-title">统一运营管理平台</div>
+                <div class="item-subtitle">Cumulus Linux、NetQ、Air跨平台管理工具</div>
+            </div>
+
+            <div class="content-item" onclick="navigateToPage('customer-success.html')">
+                <div class="item-number">09</div>
+                <div class="item-title">客户成功案例与PoC验证</div>
+                <div class="item-subtitle">真实世界部署案例及性能指标验证结果</div>
+            </div>
+
+            <div class="content-item" onclick="navigateToPage('summary-outlook.html')">
+                <div class="item-number">10</div>
+                <div class="item-title">整合方案总结与展望</div>
+                <div class="item-subtitle">Spectrum-X+DPU协同价值与未来发展趋势</div>
+            </div>
+
+            <div class="content-item" onclick="navigateToPage('qa-session.html')">
+                <div class="item-number">11</div>
+                <div class="item-title">问答环节</div>
+                <div class="item-subtitle">开放交流，技术答疑与方案讨论</div>
             </div>
         </div>
     </div>
@@ -453,11 +340,11 @@
     <div class="navigation-hint">
         <div class="nav-item">
             <span class="nav-key">←</span>
-            <span>上一页</span>
+            <span>返回封面</span>
         </div>
         <div class="nav-item">
             <span class="nav-key">→</span>
-            <span>下一页</span>
+            <span>开始演示</span>
         </div>
     </div>
 
@@ -465,7 +352,7 @@
         // 创建动态粒子效果
         function createParticles() {
             const particlesContainer = document.getElementById('particles');
-            const particleCount = 25;
+            const particleCount = 30;
             
             for (let i = 0; i < particleCount; i++) {
                 const particle = document.createElement('div');
@@ -487,67 +374,80 @@
                 border-radius: 50%;
                 pointer-events: none;
                 z-index: 0;
-                transition: all 0.1s ease;
                 transform: translate(-50%, -50%);
+                transition: all 0.1s ease;
             `;
             document.body.appendChild(mouseGlow);
 
-            document.addEventListener('mousemove', function(e) {
+            document.addEventListener('mousemove', (e) => {
                 mouseGlow.style.left = e.clientX + 'px';
                 mouseGlow.style.top = e.clientY + 'px';
             });
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
-            createParticles();
-            createMouseGlow();
+        // 页面导航功能
+        function navigateToPage(page) {
+            window.location.href = page;
+        }
+
+        // 键盘导航
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') {
+                window.location.href = 'index.html';
+            } else if (e.key === 'ArrowRight') {
+                window.location.href = 'ai-challenges.html';
+            }
+        });
+
+        // 点击涟漪效果
+        document.addEventListener('click', (e) => {
+            const ripple = document.createElement('div');
+            ripple.style.cssText = `
+                position: absolute;
+                width: 100px;
+                height: 100px;
+                background: rgba(118, 185, 0, 0.3);
+                border-radius: 50%;
+                transform: scale(0);
+                animation: rippleEffect 0.6s ease-out;
+                pointer-events: none;
+                left: ${e.clientX - 50}px;
+                top: ${e.clientY - 50}px;
+                z-index: 1000;
+            `;
             
-            // 目录项点击效果
-            document.querySelectorAll('.content-item').forEach(item => {
-                item.addEventListener('click', function() {
-                    const ripple = document.createElement('div');
-                    ripple.style.cssText = `
-                        position: absolute;
-                        width: 100px;
-                        height: 100px;
-                        background: radial-gradient(circle, rgba(118, 185, 0, 0.3) 0%, transparent 70%);
-                        border-radius: 50%;
-                        pointer-events: none;
-                        z-index: 1000;
-                        left: 50%;
-                        top: 50%;
-                        transform: translate(-50%, -50%) scale(0);
-                        animation: rippleEffect 0.8s ease-out;
-                    `;
-                    
-                    this.style.position = 'relative';
-                    this.appendChild(ripple);
-                    
-                    setTimeout(() => ripple.remove(), 800);
-                });
-            });
-            
-            // 键盘导航
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'ArrowRight' || e.key === ' ') {
-                    // 切换到DPU概念页面
-                    window.location.href = 'dpu-concept.html';
-                } else if (e.key === 'ArrowLeft') {
-                    // 返回封面页
-                    window.location.href = 'index.html';
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes rippleEffect {
+                    to {
+                        transform: scale(4);
+                        opacity: 0;
+                    }
                 }
+            `;
+            document.head.appendChild(style);
+            
+            document.body.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 600);
+        });
+
+        // 初始化
+        createParticles();
+        createMouseGlow();
+        
+        // 页面加载完成后添加进入动画
+        window.addEventListener('load', () => {
+            const items = document.querySelectorAll('.content-item');
+            items.forEach((item, index) => {
+                item.style.opacity = '0';
+                item.style.transform = 'translateY(30px)';
+                setTimeout(() => {
+                    item.style.transition = 'all 0.6s ease';
+                    item.style.opacity = '1';
+                    item.style.transform = 'translateY(0)';
+                }, index * 100);
             });
         });
-        
-        // CSS动画定义
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes rippleEffect {
-                0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
-                100% { transform: translate(-50%, -50%) scale(2); opacity: 0; }
-            }
-        `;
-        document.head.appendChild(style);
     </script>
 </body>
 </html>

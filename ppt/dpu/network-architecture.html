@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spectrum-X组网架构与规模化部署</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Microsoft YaHei", sans-serif;
+            background: #000;
+            color: white;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 复用背景效果 */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(ellipse at top left, rgba(138, 43, 226, 0.12) 0%, transparent 60%),
+                radial-gradient(ellipse at bottom right, rgba(118, 185, 0, 0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at center, rgba(0, 150, 255, 0.06) 0%, transparent 70%),
+                linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 25%, #0f0f0f 50%, #1a1a1a 75%, #0a0a0a 100%);
+            animation: backgroundFlow 12s ease-in-out infinite;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(118, 185, 0, 0.03) 35px, rgba(118, 185, 0, 0.03) 70px),
+                repeating-linear-gradient(-45deg, transparent, transparent 35px, rgba(0, 150, 255, 0.03) 35px, rgba(0, 150, 255, 0.03) 70px);
+            animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes backgroundFlow {
+            0%, 100% { opacity: 0.8; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.02); }
+        }
+
+        @keyframes gridMove {
+            0% { background-position: 0px 0px, 0px 0px; }
+            100% { background-position: 70px 70px, -70px 70px; }
+        }
+
+        .container {
+            width: 95%;
+            max-width: 1400px;
+            height: 95vh;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        h1 {
+            font-size: 3.2rem;
+            text-align: center;
+            margin-bottom: 40px;
+            background: linear-gradient(135deg, #76B900, #FFFFFF, #0096FF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+            text-shadow: none;
+            letter-spacing: -0.5px;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            width: 100%;
+            height: calc(50vh - 60px);
+        }
+
+        .image-section {
+            width: 100%;
+            margin-top: 20px;
+            background: rgba(25, 25, 35, 0.85);
+            border: 2px solid rgba(138, 43, 226, 0.3);
+            border-left: 6px solid #8A2BE2;
+            border-radius: 12px;
+            padding: 24px;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 8px 32px rgba(138, 43, 226, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 260px;
+        }
+
+        .image-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: #8A2BE2;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .image-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #8A2BE2, #9932CC);
+            color: #FFF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .image-container {
+            width: 100%;
+            max-width: 1000px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .architecture-image {
+            width: 100%;
+            max-width: 1200px;
+            height: auto;
+            max-height: 300px;
+            object-fit: contain;
+            border: 2px solid rgba(138, 43, 226, 0.3);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.02);
+            box-shadow: 0 4px 16px rgba(138, 43, 226, 0.1);
+        }
+
+        .image-caption {
+            margin-top: 12px;
+            color: #B19CD9;
+            font-size: 0.9rem;
+            text-align: center;
+            font-style: italic;
+        }
+
+        .image-section:hover {
+            transform: translateY(-3px);
+            transition: all 0.3s ease;
+            box-shadow: 0 12px 48px rgba(138, 43, 226, 0.15);
+        }
+
+        .architecture-section {
+            background: rgba(25, 25, 35, 0.85);
+            border: 2px solid rgba(118, 185, 0, 0.3);
+            border-left: 6px solid #76B900;
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 8px 32px rgba(118, 185, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .scaling-section {
+            background: rgba(25, 25, 35, 0.85);
+            border: 2px solid rgba(0, 150, 255, 0.3);
+            border-left: 6px solid #0096FF;
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 8px 32px rgba(0, 150, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .section-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .architecture-section .section-title {
+            color: #76B900;
+        }
+
+        .scaling-section .section-title {
+            color: #0096FF;
+        }
+
+        .section-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .architecture-section .section-icon {
+            background: linear-gradient(135deg, #76B900, #9ACD32);
+            color: #000;
+        }
+
+        .scaling-section .section-icon {
+            background: linear-gradient(135deg, #0096FF, #00BFFF);
+            color: #FFF;
+        }
+
+        .feature-list {
+            flex-grow: 1;
+        }
+
+        .feature-item {
+            margin-bottom: 14px;
+            line-height: 1.5;
+            font-size: 1rem;
+        }
+
+        .feature-title {
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .architecture-section .feature-title {
+            color: #76B900;
+        }
+
+        .scaling-section .feature-title {
+            color: #0096FF;
+        }
+
+        .feature-desc {
+            color: #E0E0E0;
+            font-size: 0.9rem;
+            margin-left: 12px;
+            line-height: 1.4;
+        }
+
+        .highlight {
+            color: #FFF;
+            font-weight: 600;
+            background: linear-gradient(90deg, rgba(118, 185, 0, 0.15), rgba(0, 150, 255, 0.15));
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .architecture-metrics, .scaling-metrics {
+            border-top: 2px solid rgba(255, 255, 255, 0.1);
+            padding-top: 16px;
+            margin-top: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .metric-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 6px 10px;
+            border-radius: 4px;
+        }
+
+        .metric-label {
+            color: #B0B0B0;
+        }
+
+        .metric-value {
+            font-weight: 700;
+            color: #FFF;
+        }
+
+        .bottom-stats {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            color: #B0B0B0;
+            font-size: 0.9rem;
+        }
+
+        .stats-highlight {
+            color: #76B900;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        /* 交互动效 */
+        .architecture-section:hover, .scaling-section:hover {
+            transform: translateY(-5px);
+            transition: all 0.3s ease;
+        }
+
+        .architecture-section:hover {
+            box-shadow: 0 12px 48px rgba(118, 185, 0, 0.2);
+        }
+
+        .scaling-section:hover {
+            box-shadow: 0 12px 48px rgba(0, 150, 255, 0.2);
+        }
+
+        /* 鼠标跟踪光效 */
+        #mouse-glow {
+            position: fixed;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(118, 185, 0, 0.1) 0%, rgba(0, 150, 255, 0.05) 50%, transparent 100%);
+            pointer-events: none;
+            z-index: 0;
+            transition: opacity 0.3s ease;
+            opacity: 0;
+        }
+
+        /* 粒子动画容器 */
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(118, 185, 0, 0.3);
+            border-radius: 50%;
+            animation: float 8s infinite linear;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1024px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            h1 {
+                font-size: 2.8rem;
+                margin-bottom: 30px;
+            }
+
+            .architecture-section, .scaling-section, .image-section {
+                padding: 24px;
+            }
+
+            .section-title, .image-title {
+                font-size: 1.6rem;
+            }
+
+            .architecture-image {
+                max-height: 180px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                width: 98%;
+                height: 98vh;
+            }
+
+            h1 {
+                font-size: 2.4rem;
+            }
+
+            .architecture-section, .scaling-section, .image-section {
+                padding: 20px;
+            }
+
+            .feature-item {
+                margin-bottom: 15px;
+                font-size: 1rem;
+            }
+
+            .architecture-image {
+                max-height: 150px;
+            }
+
+            .image-section {
+                margin-top: 20px;
+                min-height: 220px;
+            }
+        }
+
+        /* 键盘提示 */
+        .keyboard-hint {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            font-size: 0.8rem;
+            color: #666;
+            background: rgba(25, 25, 35, 0.9);
+            padding: 8px 12px;
+            border-radius: 6px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(118, 185, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div id="mouse-glow"></div>
+    <div class="particles"></div>
+    
+    <div class="container">
+        <h1>端到端网络架构设计</h1>
+        <p class="subtitle">Spectrum-X+DPU模块化扩展与32K GPU支持</p>
+        
+        <div class="content-grid">
+            <!-- 模块化架构设计 -->
+            <div class="architecture-section">
+                <div class="section-title">
+                    <div class="section-icon">🏗️</div>
+                    模块化架构设计
+                </div>
+                
+                <div class="feature-list">
+                    <div class="feature-item">
+                        <div class="feature-title">Spectrum-X+DPU可扩展单元</div>
+                        <div class="feature-desc">每个SU包含<span class="highlight">32台HGX服务器</span>，<span class="highlight">256个Hopper GPU</span>，每GPU配1个<span class="highlight">BlueField-3 DPU</span></div>
+                    </div>
+
+                    <div class="feature-item">
+                        <div class="feature-title">RoCE优化连接设计</div>
+                        <div class="feature-desc">DPU通过<span class="highlight">400G RoCE端口</span>连接到Spectrum-X交换机，实现硬件RDMA加速</div>
+                    </div>
+
+                    <div class="feature-item">
+                        <div class="feature-title">光纤互联</div>
+                        <div class="feature-desc">服务器和叶交换机间使用<span class="highlight">光纤连接</span>，提供更好的性能和可靠性</div>
+                    </div>
+
+                    <div class="feature-item">
+                        <div class="feature-title">导轨优化拓扑</div>
+                        <div class="feature-desc">满足服务器密度和<span class="highlight">EOR/MOR设计</span>需求的最佳架构</div>
+                    </div>
+                </div>
+
+                <div class="architecture-metrics">
+                    <div class="metric-item">
+                        <span class="metric-label">单SU GPU数量</span>
+                        <span class="metric-value">256个</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">单SU服务器数量</span>
+                        <span class="metric-value">32台HGX</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">服务器连接带宽</span>
+                        <span class="metric-value">8×400G</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 灵活分层扩展 -->
+            <div class="scaling-section">
+                <div class="section-title">
+                    <div class="section-icon">📈</div>
+                    灵活分层扩展
+                </div>
+                
+                <div class="feature-list">
+                    <div class="feature-item">
+                        <div class="feature-title">两层架构</div>
+                        <div class="feature-desc">最多支持<span class="highlight">8K个GPU</span>（或16K个L20 GPU），叶交换机按需部署，脊交换机预配置</div>
+                    </div>
+
+                    <div class="feature-item">
+                        <div class="feature-title">三层架构</div>
+                        <div class="feature-desc">支持超过<span class="highlight">8K个GPU</span>，更灵活的模块化设计，适应各种设施限制</div>
+                    </div>
+
+                    <div class="feature-item">
+                        <div class="feature-title">导轨块设计</div>
+                        <div class="feature-desc">SUs通过每导轨脊组连接形成导轨块，然后聚合成POD，<span class="highlight">POD间通过超脊组</span>连接</div>
+                    </div>
+
+                    <div class="feature-item">
+                        <div class="feature-title">LinkX互联优化</div>
+                        <div class="feature-desc">支持DAC、L-ACC、AOC、多模和单模收发器，根据距离选择<span class="highlight">最低成本技术</span></div>
+                    </div>
+                </div>
+
+                <div class="scaling-metrics">
+                    <div class="metric-item">
+                        <span class="metric-label">两层架构上限</span>
+                        <span class="metric-value">8K GPU</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">三层架构上限</span>
+                        <span class="metric-value">32K+ GPU</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">最大部署规模</span>
+                        <span class="metric-value">32K Hopper</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 网络架构图示区域 -->
+        <div class="image-section">
+            
+            <div class="image-container">
+                <img src="structure.png" alt="Spectrum-X+DPU网络架构拓扑图" class="architecture-image" />
+                <div class="image-caption">Spectrum-X+DPU端到端网络架构设计</div>
+            </div>
+        </div>
+
+        <div class="bottom-stats">
+            <div>专为AI云用例优化 • 模块化可扩展单元架构 • <span class="stats-highlight">32K Hopper GPU</span>最大扩展能力</div>
+        </div>
+    </div>
+
+    <div class="keyboard-hint">
+        ← 返回上页 • → 下一页
+    </div>
+
+    <script>
+        // 鼠标跟踪光效
+        const mouseGlow = document.getElementById('mouse-glow');
+        let mouseX = 0, mouseY = 0;
+        let glowX = 0, glowY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            mouseGlow.style.opacity = '1';
+        });
+
+        document.addEventListener('mouseleave', () => {
+            mouseGlow.style.opacity = '0';
+        });
+
+        function animateGlow() {
+            const dx = mouseX - glowX;
+            const dy = mouseY - glowY;
+            
+            glowX += dx * 0.1;
+            glowY += dy * 0.1;
+            
+            mouseGlow.style.left = (glowX - 100) + 'px';
+            mouseGlow.style.top = (glowY - 100) + 'px';
+            
+            requestAnimationFrame(animateGlow);
+        }
+
+        animateGlow();
+
+        // 粒子系统
+        function createParticles() {
+            const particlesContainer = document.querySelector('.particles');
+            const particleCount = 15;
+
+            for (let i = 0; i < particleCount; i++) {
+                setTimeout(() => {
+                    const particle = document.createElement('div');
+                    particle.classList.add('particle');
+                    particle.style.left = Math.random() * 100 + '%';
+                    particle.style.animationDelay = Math.random() * 8 + 's';
+                    particle.style.animationDuration = (8 + Math.random() * 4) + 's';
+                    
+                    const colors = ['rgba(118, 185, 0, 0.3)', 'rgba(0, 150, 255, 0.3)', 'rgba(255, 255, 255, 0.2)'];
+                    particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    
+                    particlesContainer.appendChild(particle);
+
+                    setTimeout(() => {
+                        particle.remove();
+                    }, 12000);
+                }, i * 500);
+            }
+        }
+
+        createParticles();
+        setInterval(createParticles, 12000);
+
+        // 键盘导航
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') {
+                window.location.href = 'roce-integration.html';
+            } else if (e.key === 'ArrowRight') {
+                window.location.href = 'performance-benefits.html';
+                //window.location.href = 'operations-management.html';
+            }
+        });
+
+        // 卡片悬停音效（可选）
+        const sections = document.querySelectorAll('.architecture-section, .scaling-section');
+        sections.forEach(section => {
+            section.addEventListener('mouseenter', () => {
+                section.style.transform = 'translateY(-5px)';
+            });
+            
+            section.addEventListener('mouseleave', () => {
+                section.style.transform = 'translateY(0)';
+            });
+        });
+    </script>
+</body>
+</html>

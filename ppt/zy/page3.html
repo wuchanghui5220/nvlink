@@ -43,7 +43,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: 
+            background:
                 radial-gradient(circle at 20% 80%, rgba(34, 197, 94, 0.15) 0%, transparent 50%),
                 radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.12) 0%, transparent 50%),
                 radial-gradient(circle at 40% 40%, rgba(6, 95, 70, 0.2) 0%, transparent 50%);
@@ -85,11 +85,11 @@
         }
 
         @keyframes cornerPulse {
-            0%, 100% { 
+            0%, 100% {
                 transform: scale(0.8);
                 opacity: 0.6;
             }
-            50% { 
+            50% {
                 transform: scale(1.2);
                 opacity: 1;
             }
@@ -164,13 +164,13 @@
         }
 
         @keyframes float {
-            0%, 100% { 
+            0%, 100% {
                 transform: translateY(0px) rotate(0deg);
                 opacity: 0;
             }
             10% { opacity: 1; }
             90% { opacity: 1; }
-            50% { 
+            50% {
                 transform: translateY(-80px) rotate(180deg);
             }
         }
@@ -486,12 +486,12 @@
                 grid-template-columns: 1fr;
                 gap: 30px;
             }
-            
+
             .capabilities-grid {
                 grid-template-columns: repeat(2, 1fr);
                 gap: 25px;
             }
-            
+
             .main-content {
                 padding: 40px 50px;
             }
@@ -501,27 +501,27 @@
             .main-content {
                 padding: 30px 20px;
             }
-            
+
             .header-section {
                 flex-direction: column;
                 gap: 20px;
                 margin-bottom: 30px;
             }
-            
+
             .capabilities-grid {
                 grid-template-columns: 1fr;
                 gap: 20px;
             }
-            
+
             .corner-decoration {
                 width: 80px;
                 height: 80px;
             }
-            
+
             .tech-tags {
                 gap: 8px;
             }
-            
+
             .tech-tag {
                 font-size: 12px;
                 padding: 6px 12px;
@@ -573,50 +573,50 @@
 
                 <div class="capabilities-grid">
                     <div class="capability-card">
-                        <div class="capability-icon">🚀</div>
-                        <h4 class="capability-title">高性能计算</h4>
+                        <div class="capability-icon">🏛️</div>
+                        <h4 class="capability-title">集群架构设计</h4>
                         <p class="capability-description">
-                            基于NVIDIA GPU架构的高性能计算解决方案，支持科学计算、工程仿真和数据分析等应用场景
+                            集群规模规划和架构设计
                         </p>
                     </div>
 
                     <div class="capability-card">
-                        <div class="capability-icon">🤖</div>
-                        <h4 class="capability-title">AI深度学习</h4>
+                        <div class="capability-icon">🛠️</div>
+                        <h4 class="capability-title">部署实施</h4>
                         <p class="capability-description">
-                            专业的人工智能深度学习平台，提供模型训练、推理部署和优化服务，加速AI应用落地
+                            软硬件集成服务和一体化部署
                         </p>
                     </div>
 
                     <div class="capability-card">
-                        <div class="capability-icon">🌐</div>
-                        <h4 class="capability-title">网络优化</h4>
+                        <div class="capability-icon">⚡</div>
+                        <h4 class="capability-title">集群性能优化</h4>
                         <p class="capability-description">
-                            企业数据中心网络优化方案，包括InfiniBand网络设计、部署和性能调优服务
+                            通过调整配置等进行系统优化
                         </p>
                     </div>
 
                     <div class="capability-card">
-                        <div class="capability-icon">🏗️</div>
-                        <h4 class="capability-title">智算中心</h4>
-                        <p class="capability-description">
-                            端到端智算中心建设方案，从硬件选型到软件配置，提供完整的交钥匙工程服务
-                        </p>
-                    </div>
-
-                    <div class="capability-card">
-                        <div class="capability-icon">🔧</div>
+                        <div class="capability-icon">🛡️</div>
                         <h4 class="capability-title">运维服务</h4>
                         <p class="capability-description">
-                            7x24小时专业运维服务，确保系统稳定运行，提供技术支持和故障快速响应
+                            安全监控、系统升级及故障排除等定期运维服务
                         </p>
                     </div>
 
                     <div class="capability-card">
-                        <div class="capability-icon">📊</div>
-                        <h4 class="capability-title">数据分析</h4>
+                        <div class="capability-icon">🎓</div>
+                        <h4 class="capability-title">专业培训服务</h4>
                         <p class="capability-description">
-                            大数据分析系统构建，帮助企业挖掘数据价值，支持实时分析和机器学习应用
+                            技术团队定期与NVIDIA技术团队进行技术更新交流，学习新技术，以求对客户提供最佳解决方案。
+                        </p>
+                    </div>
+
+                    <div class="capability-card">
+                        <div class="capability-icon">💡</div>
+                        <h4 class="capability-title">软件应用</h4>
+                        <p class="capability-description">
+                            数字孪生及智能化运维系统等智能软件服务的研发和应用
                         </p>
                     </div>
                 </div>
@@ -655,24 +655,24 @@
         function createTechParticles() {
             const particlesContainer = document.getElementById('particles');
             const particleCount = 20;
-            
+
             for (let i = 0; i < particleCount; i++) {
                 const particle = document.createElement('div');
                 particle.className = 'particle';
-                
+
                 // 随机大小
                 const size = Math.random() * 3 + 1;
                 particle.style.width = size + 'px';
                 particle.style.height = size + 'px';
-                
+
                 // 随机位置
                 particle.style.left = Math.random() * 100 + '%';
                 particle.style.top = Math.random() * 100 + '%';
-                
+
                 // 随机动画延迟
                 particle.style.animationDelay = Math.random() * 6 + 's';
                 particle.style.animationDuration = (Math.random() * 4 + 4) + 's';
-                
+
                 particlesContainer.appendChild(particle);
             }
         }
@@ -680,22 +680,22 @@
         // 页面加载完成后初始化
         document.addEventListener('DOMContentLoaded', function() {
             createTechParticles();
-            
+
             // 添加页面加载动画
             document.body.style.opacity = '0';
             document.body.style.transition = 'opacity 0.8s ease';
-            
+
             setTimeout(() => {
                 document.body.style.opacity = '1';
             }, 100);
-            
+
             // 添加卡片交互效果
             const cards = document.querySelectorAll('.overview-card, .capability-card');
             cards.forEach((card, index) => {
                 card.addEventListener('mouseenter', () => {
                     card.style.transform = 'translateY(-10px) scale(1.02)';
                 });
-                
+
                 card.addEventListener('mouseleave', () => {
                     card.style.transform = 'translateY(0) scale(1)';
                 });
@@ -707,13 +707,13 @@
                 tag.addEventListener('mouseenter', () => {
                     tag.style.transform = 'translateY(-3px) scale(1.05)';
                 });
-                
+
                 tag.addEventListener('mouseleave', () => {
                     tag.style.transform = 'translateY(0) scale(1)';
                 });
             });
         });
-        
+
         // 添加键盘导航
         document.addEventListener('keydown', function(e) {
             if (e.key === 'ArrowRight' || e.key === ' ') {

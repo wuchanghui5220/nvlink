@@ -43,7 +43,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: 
+            background:
                 radial-gradient(circle at 20% 80%, rgba(34, 197, 94, 0.15) 0%, transparent 50%),
                 radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.12) 0%, transparent 50%),
                 radial-gradient(circle at 40% 40%, rgba(6, 95, 70, 0.2) 0%, transparent 50%);
@@ -85,11 +85,11 @@
         }
 
         @keyframes cornerPulse {
-            0%, 100% { 
+            0%, 100% {
                 transform: scale(0.8);
                 opacity: 0.6;
             }
-            50% { 
+            50% {
                 transform: scale(1.2);
                 opacity: 1;
             }
@@ -164,13 +164,13 @@
         }
 
         @keyframes float {
-            0%, 100% { 
+            0%, 100% {
                 transform: translateY(0px) rotate(0deg);
                 opacity: 0;
             }
             10% { opacity: 1; }
             90% { opacity: 1; }
-            50% { 
+            50% {
                 transform: translateY(-80px) rotate(180deg);
             }
         }
@@ -290,10 +290,21 @@
             border-color: rgba(34, 197, 94, 0.4);
         }
 
+        /* --- MODIFIED CSS START --- */
         .partner-logo {
-            font-size: 32px;
+            height: 48px; /* Set a consistent height for the logo container */
             margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
+
+        .partner-logo img {
+            max-height: 100%; /* Ensure image fits within the container height */
+            max-width: 100%;
+            object-fit: contain;
+        }
+        /* --- MODIFIED CSS END --- */
 
         .partner-title {
             font-size: 1.1rem;
@@ -437,6 +448,23 @@
             box-shadow: 0 8px 25px rgba(34, 197, 94, 0.4);
         }
 
+        /* QR Code Styles */
+        .qr-code-container {
+            margin-top: 15px;
+        }
+
+        .qr-code-image {
+            width: 90px;
+            height: 90px;
+            border-radius: 8px;
+            border: 2px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .qr-code-text {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 8px;
+        }
 
         .page-indicator {
             position: absolute;
@@ -513,12 +541,12 @@
                 grid-template-columns: 1fr;
                 gap: 30px;
             }
-            
+
             .partnership-grid {
                 grid-template-columns: 1fr;
                 gap: 15px;
             }
-            
+
             .main-content {
                 padding: 40px 50px;
             }
@@ -528,17 +556,17 @@
             .main-content {
                 padding: 30px 20px;
             }
-            
+
             .header-section {
                 flex-direction: column;
                 gap: 20px;
                 margin-bottom: 30px;
             }
-            
+
             .partnership-grid {
                 grid-template-columns: 1fr;
             }
-            
+
             .corner-decoration {
                 width: 80px;
                 height: 80px;
@@ -574,7 +602,11 @@
                         </h3>
                         <div class="partnership-grid">
                             <div class="partner-item">
-                                <div class="partner-logo">🟢</div>
+                                <!-- --- MODIFIED HTML START --- -->
+                                <div class="partner-logo">
+                                    <img src="zy_elite.png" alt="NVIDIA Elite Partner">
+                                </div>
+                                <!-- --- MODIFIED HTML END --- -->
                                 <div class="partner-title">NVIDIA</div>
                                 <div class="partner-desc">Networking精英级合作伙伴<br>Compute注册级合作伙伴</div>
                             </div>
@@ -584,7 +616,7 @@
                                 <div class="partner-desc">中国投资协会大中型企业投资专业委员会<br>北京自然资源资产协会</div>
                             </div>
                         </div>
-                        
+
                         <h4 class="section-title" style="font-size: 1.2rem; margin-top: 20px;">
                             <div class="section-icon" style="width: 35px; height: 35px; font-size: 16px;">🏆</div>
                             资质认证
@@ -624,28 +656,28 @@
                                 <div class="contact-icon">📍</div>
                                 <div class="contact-info">
                                     <div class="contact-label">公司地址</div>
-                                    <div class="contact-value">北京市海淀区</div>
+                                    <div class="contact-value">北京市西城区</div>
                                 </div>
                             </div>
                             <div class="contact-item">
                                 <div class="contact-icon">📞</div>
                                 <div class="contact-info">
                                     <div class="contact-label">联系电话</div>
-                                    <div class="contact-value">+86 xxx-xxxx-xxxx</div>
+                                    <div class="contact-value">+86 010-63085531</div>
                                 </div>
                             </div>
                             <div class="contact-item">
                                 <div class="contact-icon">📧</div>
                                 <div class="contact-info">
                                     <div class="contact-label">商务邮箱</div>
-                                    <div class="contact-value">business@zhengyang.com</div>
+                                    <div class="contact-value">ludan@zhengyang.com</div>
                                 </div>
                             </div>
                             <div class="contact-item">
                                 <div class="contact-icon">🌐</div>
                                 <div class="contact-info">
                                     <div class="contact-label">官方网站</div>
-                                    <div class="contact-value">www.zhengyang.com</div>
+                                    <div class="contact-value">www.zhengytech.com</div>
                                 </div>
                             </div>
                         </div>
@@ -656,10 +688,9 @@
                         <p class="cta-text">
                             让我们一起构建智能未来，为您的AI算力需求提供最专业的解决方案
                         </p>
-                        <a href="#" class="cta-button">
-                            <span>立即咨询</span>
-                            <span>→</span>
-                        </a>
+                        <div class="qr-code-container">
+                            <img src="gzh.jpg" alt="公众号二维码" class="qr-code-image">
+                        </div>
                     </div>
                 </div>
             </div>
@@ -679,24 +710,24 @@
         function createTechParticles() {
             const particlesContainer = document.getElementById('particles');
             const particleCount = 20;
-            
+
             for (let i = 0; i < particleCount; i++) {
                 const particle = document.createElement('div');
                 particle.className = 'particle';
-                
+
                 // 随机大小
                 const size = Math.random() * 3 + 1;
                 particle.style.width = size + 'px';
                 particle.style.height = size + 'px';
-                
+
                 // 随机位置
                 particle.style.left = Math.random() * 100 + '%';
                 particle.style.top = Math.random() * 100 + '%';
-                
+
                 // 随机动画延迟
                 particle.style.animationDelay = Math.random() * 6 + 's';
                 particle.style.animationDuration = (Math.random() * 4 + 4) + 's';
-                
+
                 particlesContainer.appendChild(particle);
             }
         }
@@ -704,15 +735,15 @@
         // 页面加载完成后初始化
         document.addEventListener('DOMContentLoaded', function() {
             createTechParticles();
-            
+
             // 添加页面加载动画
             document.body.style.opacity = '0';
             document.body.style.transition = 'opacity 0.8s ease';
-            
+
             setTimeout(() => {
                 document.body.style.opacity = '1';
             }, 100);
-            
+
             // 添加交互效果
             const interactiveElements = document.querySelectorAll('.partner-item, .cert-item, .contact-item');
             interactiveElements.forEach((element, index) => {
@@ -725,7 +756,7 @@
                         element.style.transform = 'translateX(8px)';
                     }
                 });
-                
+
                 element.addEventListener('mouseleave', () => {
                     element.style.transform = element.classList.contains('partner-item') ? 'translateY(0) scale(1)' : 'translateX(0)';
                 });
@@ -736,12 +767,12 @@
             ctaButton.addEventListener('mouseenter', () => {
                 ctaButton.style.transform = 'translateY(-3px) scale(1.05)';
             });
-            
+
             ctaButton.addEventListener('mouseleave', () => {
                 ctaButton.style.transform = 'translateY(0) scale(1)';
             });
         });
-        
+
         // 添加键盘导航
         document.addEventListener('keydown', function(e) {
             if (e.key === 'ArrowRight' || e.key === ' ') {

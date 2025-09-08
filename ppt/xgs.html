@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NVIDIA Spectrum-XGS 以太网技术问答</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', 'Microsoft YaHei', sans-serif;
+            line-height: 1.6; /* 增加行高以提高可读性 */
+            color: #333;
+            background: #f8f9fa;
+        }
+
+        .datasheet {
+            max-width: 210mm;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #76b900 0%, #5c8a00 100%);
+            color: white;
+            padding: 30px 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 200px;
+            height: 200px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+        }
+
+        .logo-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .nvidia-logo {
+            display: flex;
+            align-items: center;
+            height: 40px;
+        }
+
+        .product-code {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .product-title {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .product-subtitle {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 35px;
+        }
+
+        .section-title {
+            font-size: 22px; /* 稍大一些以突出标题 */
+            font-weight: bold;
+            color: #333;
+            border-bottom: 3px solid #76b900;
+            padding-bottom: 8px;
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: #5c8a00;
+        }
+        
+        /* 为问答内容设计的样式 */
+        .faq-container {
+            display: flex;
+            flex-direction: column;
+            gap: 28px; /* 增加问答对之间的间距 */
+        }
+
+        .faq-item {
+            padding-left: 25px;
+            position: relative;
+            border-left: 3px solid #e8f5e8;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed #eee;
+        }
+        .faq-item:last-child {
+            border-bottom: none;
+        }
+
+        .faq-item::before {
+            content: 'Q';
+            position: absolute;
+            left: -15px;
+            top: -2px;
+            width: 30px;
+            height: 30px;
+            background: #76b900;
+            color: white;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 16px;
+        }
+
+        .faq-question {
+            font-weight: bold;
+            color: #5c8a00;
+            margin-bottom: 10px;
+            font-size: 17px; /* 突出问题文本 */
+        }
+
+        .faq-answer {
+            color: #555;
+            font-size: 15px;
+        }
+        
+        .footer {
+            background: #333;
+            color: white;
+            padding: 25px 40px;
+            text-align: center;
+        }
+
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .footer-info {
+            font-size: 12px;
+            opacity: 0.8;
+            text-align: left;
+        }
+
+        .contact-info {
+            font-size: 12px;
+            text-align: right;
+        }
+
+        @media print {
+            body { background: white; }
+            .datasheet { box-shadow: none; max-width: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="datasheet">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo-section">
+                <div class="nvidia-logo">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="120" height="40" viewBox="0 0 48 32" fill="none">
+                        <path d="M17.9101 9.54961V6.65962C18.1893 6.64003 18.4704 6.624 18.7567 6.6151C26.6044 6.36581 31.7531 13.4083 31.7531 13.4083C31.7531 13.4083 26.1926 21.1897 20.2308 21.1897C19.3718 21.1897 18.6029 21.0508 17.9101 20.8158V12.0496C20.9661 12.4218 21.5794 13.7804 23.4158 16.8645L27.5005 13.394C27.5005 13.394 24.5188 9.45345 19.492 9.45345C18.9458 9.45345 18.4227 9.49263 17.9083 9.54783L17.9101 9.54961ZM17.9083 0V4.31807C18.1893 4.29492 18.4721 4.27711 18.7549 4.26643C29.6675 3.89606 36.7781 13.2836 36.7781 13.2836C36.7781 13.2836 28.6123 23.2873 20.1035 23.2873C19.3241 23.2873 18.5941 23.2143 17.9083 23.0932V25.7624C18.4951 25.8372 19.1031 25.8817 19.7359 25.8817C27.6525 25.8817 33.3792 21.8094 38.9239 16.9874C39.843 17.7281 43.606 19.5319 44.3802 20.3225C39.1077 24.7688 26.8236 28.3515 19.8579 28.3515C19.1862 28.3515 18.5411 28.3105 17.9083 28.25V32H48V0.00178103H17.9101L17.9083 0ZM17.9083 20.814V23.0932C10.5856 21.7773 8.55293 14.1098 8.55293 14.1098C8.55293 14.1098 12.0685 10.1853 17.9083 9.54961V12.0496C17.9083 12.0496 17.9012 12.0496 17.8977 12.0496C14.8329 11.6793 12.4397 14.5639 12.4397 14.5639C12.4397 14.5639 13.7812 19.4197 17.9101 20.8175L17.9083 20.814ZM4.90481 13.7804C4.90481 13.7804 9.24403 7.32914 17.9101 6.6614V4.32163C8.31255 5.09799 0 13.2872 0 13.2872C0 13.2872 4.70685 26.9982 17.9101 28.2535V25.766C8.22064 24.5373 4.90481 13.7804 4.90481 13.7804Z" fill="white"/>
+                    </svg>
+                </div>
+                <div class="product-code">TB-SPECTRUM-XGS-v1.0</div>
+            </div>
+            <div class="product-title">Spectrum-XGS 以太网</div>
+            <div class="product-subtitle">跨域扩展的千兆级 AI 网络技术</div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <div class="section">
+                <h2 class="section-title">技术问答 (FAQ)</h2>
+                <div class="faq-container">
+
+                    <div class="faq-item">
+                        <h3 class="faq-question">什么是 Spectrum-XGS 以太网？</h3>
+                        <p class="faq-answer">NVIDIA Spectrum-XGS 以太网是一项跨域扩展技术，可将分布式数据中心整合为统一的千兆级 AI 超级工厂。该技术已集成到 Spectrum-X 以太网平台中，其硬件基础与 Spectrum-X 以太网相同，均采用 Spectrum-X 以太网交换机与 ConnectX-8 超级网卡（SuperNIC）的组合。</p>
+                    </div>
+
+                    <div class="faq-item">
+                        <h3 class="faq-question">Spectrum-XGS 以太网中的 “GS” 代表什么？</h3>
+                        <p class="faq-answer">Spectrum-XGS 以太网中的 “GS” 代表 “千兆级（giga-scale）”。“千兆级” 是一个缩略术语，用于描述千兆瓦级（gigawatt class）AI 超级工厂的部署规模。</p>
+                    </div>
+
+                    <div class="faq-item">
+                        <h3 class="faq-question">Spectrum-XGS 以太网与 Spectrum-X 以太网有何区别？</h3>
+                        <p class="faq-answer">Spectrum-XGS 以太网是 Spectrum-X 以太网平台内的一项特色技术。</p>
+                    </div>
+
+                    <div class="faq-item">
+                        <h3 class="faq-question">Spectrum-XGS 以太网兼容哪些硬件？</h3>
+                        <p class="faq-answer">由于 Spectrum-XGS 以太网技术是 Spectrum-X 以太网平台的一部分，因此它可与 Spectrum-X 以太网硬件配合使用，包括 SN5610 交换机和 ConnectX-8 超级网卡；同时也支持现有的 SN5600 交换机部署。</p>
+                    </div>
+
+                    <div class="faq-item">
+                        <h3 class="faq-question">Spectrum-XGS 以太网是否支持未来版本的 Spectrum-X 以太网平台？</h3>
+                        <p class="faq-answer">是的。Spectrum-XGS 以太网是 NVIDIA Spectrum-X 以太网平台的一项基础功能，未来各代 Spectrum-X 以太网交换机（包括基于硅光子技术的新型 Spectrum-6/Spectrum-X 光子交换机）都将支持该功能。通过将 Spectrum-XGS 以太网集成到 Spectrum-4 及后续版本的交换机中，NVIDIA 确保客户能够从当前部署无缝过渡到下一代架构，且不会造成业务中断。这种连续性不仅能保护客户的投资，还能将 AI 网络的覆盖范围从园区级扩展到数百公里（未来还将进一步延伸），使 AI 工厂突破数据中心边界的限制，实现规模增长。</p>
+                    </div>
+
+                    <div class="faq-item">
+                        <h3 class="faq-question">Spectrum-XGS 以太网何时可正式销售？</h3>
+                        <p class="faq-answer">Spectrum-XGS 以太网是 Spectrum-X 以太网平台的一项内置功能，目前已向客户开放。该功能需根据每位客户的需求进行定制，因此请联系您的网络销售团队，开启关于如何为特定客户启用 Spectrum-XGS 以太网的沟通。</p>
+                    </div>
+
+                    <div class="faq-item">
+                        <h3 class="faq-question">与 Spectrum-X 以太网相比，Spectrum-XGS 以太网有哪些优势？</h3>
+                        <p class="faq-answer">Spectrum-X 以太网提供横向扩展架构，而 Spectrum-XGS 以太网在此基础上新增了跨域扩展功能，可支持 100 万块 GPU 的规模部署。</p>
+                    </div>
+
+                    <div class="faq-item">
+                        <h3 class="faq-question">NVIDIA Spectrum-XGS 以太网在性能方面有哪些优势？</h3>
+                        <p class="faq-answer">NVIDIA Spectrum-XGS 以太网能连接多个数据中心，同时确保各数据中心原有的性能不受影响。在数据中心间互联场景中，其网络通信库（NCCL）性能比现成（OTS）以太网高出 1.9 倍。</p>
+                    </div>
+
+                    <div class="faq-item">
+                        <h3 class="faq-question">NVIDIA 为何选择 CoreWeave 作为该平台的早期采用者？CoreWeave 多久能感受到 Spectrum-XGS 以太网带来的影响？</h3>
+                        <p class="faq-answer">CoreWeave 与 NVIDIA 拥有稳固的战略合作伙伴关系，NVIDIA 是 CoreWeave 的关键 GPU 及网络设备供应商。CoreWeave 已基于 NVIDIA 加速计算技术构建了多个数据中心，因此自然适合采用 Spectrum-XGS 以太网实现数据中心间的连接与规模扩展。我们期待将这项技术交付给 CoreWeave 使用。</p>
+                    </div>
+
+                    <div class="faq-item">
+                        <h3 class="faq-question">要使用 Spectrum-XGS 以太网，数据中心之间的最大距离可达多少？每公里光缆会导致延迟增加多少？</h3>
+                        <p class="faq-answer">Spectrum-XGS 以太网支持的数据中心跨域扩展网络，覆盖范围从 500 米的短距离园区互联，到数百公里的长距离数据中心互联，未来还将进一步扩展到更长距离。通过结合距离感知型拥塞控制、精准延迟管理和端到端遥测技术，Spectrum-XGS 以太网能在上述距离范围内保持稳定可预测的性能。参考数据显示，光信号在光纤中传输时，标准延迟增量约为每公里 5 微秒；而 Spectrum-XGS 以太网的设计可应对这一情况，确保多站点 AI 业务稳定运行。</p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-content">
+                <div class="footer-info">
+                    © 2025 NVIDIA Corporation. 保留所有权利。<br>
+                    NVIDIA、NVIDIA 标识、Spectrum-X 是 NVIDIA Corporation 的商标。
+                </div>
+                <div class="contact-info">
+                    更多信息请访问：<br>
+                    www.nvidia.com/networking
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

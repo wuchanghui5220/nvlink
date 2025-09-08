@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DPU网络加速与卸载能力 - NVIDIA网络研讨会</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, 
+                #0a0a0a 0%, #1a1a2e 25%, #16213e 50%, #0a0a0a 75%, #000 100%);
+            min-height: 100vh;
+            color: #fff;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* 科技网格背景 */
+        .tech-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                linear-gradient(rgba(255, 107, 53, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 107, 53, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            animation: gridMove 22s linear infinite;
+            z-index: 1;
+        }
+
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(60px, 60px); }
+        }
+
+        /* DPU电路纹理 */
+        .dpu-circuit {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 25% 25%, rgba(255, 107, 53, 0.08) 3px, transparent 3px),
+                radial-gradient(circle at 75% 75%, rgba(138, 43, 226, 0.06) 2px, transparent 2px),
+                linear-gradient(30deg, transparent 45%, rgba(255, 107, 53, 0.04) 50%, transparent 55%);
+            background-size: 120px 120px, 80px 80px, 180px 180px;
+            animation: dpuFlow 28s ease-in-out infinite;
+            z-index: 1;
+        }
+
+        @keyframes dpuFlow {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 0.7; }
+        }
+
+        /* 芯片装饰 */
+        .chip-decoration {
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            border: 2px solid rgba(255, 107, 53, 0.2);
+            border-radius: 12px;
+            background: linear-gradient(45deg, transparent 30%, rgba(255, 107, 53, 0.05) 70%);
+            animation: chipPulse 6s ease-in-out infinite;
+        }
+
+        .chip-decoration::before {
+            content: '';
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            right: 12px;
+            bottom: 12px;
+            border: 1px solid rgba(255, 107, 53, 0.15);
+            border-radius: 8px;
+        }
+
+        .chip-decoration::after {
+            content: 'DPU';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: rgba(255, 107, 53, 0.6);
+            font-size: 0.8em;
+            font-weight: 600;
+            letter-spacing: 2px;
+        }
+
+        .chip-top-left { top: 8%; left: 4%; animation-delay: 0s; }
+        .chip-top-right { top: 8%; right: 4%; animation-delay: 2s; }
+        .chip-bottom-left { bottom: 8%; left: 4%; animation-delay: 4s; }
+
+        @keyframes chipPulse {
+            0%, 100% { opacity: 0.4; transform: scale(1); border-color: rgba(255, 107, 53, 0.2); }
+            50% { opacity: 0.8; transform: scale(1.02); border-color: rgba(255, 107, 53, 0.4); }
+        }
+
+        /* 主容器 */
+        .container {
+            position: relative;
+            z-index: 10;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* 标题区域 */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.8em;
+            font-weight: 700;
+            color: #FF6B35;
+            margin-bottom: 15px;
+            text-shadow: 0 0 20px rgba(255, 107, 53, 0.5);
+            letter-spacing: 2px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            color: #b0b0b0;
+            margin-bottom: 20px;
+        }
+
+        /* 主内容区域 */
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            flex: 1;
+            align-items: start;
+        }
+
+        /* BlueField-3 规格卡片 */
+        .bluefield-card {
+            background: rgba(25, 30, 45, 0.9);
+            border-radius: 15px;
+            padding: 30px;
+            border-left: 5px solid #FF6B35;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            height: fit-content;
+        }
+
+        .bluefield-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(255, 107, 53, 0.2);
+            border-left-color: #FF8A65;
+        }
+
+        .bluefield-card h2 {
+            font-size: 1.8em;
+            color: #FF6B35;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .bluefield-card h2::before {
+            content: "💎";
+            font-size: 0.8em;
+        }
+
+        /* DPU能力卡片 */
+        .capability-card {
+            background: rgba(20, 25, 40, 0.9);
+            border-radius: 15px;
+            padding: 30px;
+            border-left: 5px solid #8A2BE2;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            height: fit-content;
+        }
+
+        .capability-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(138, 43, 226, 0.2);
+            border-left-color: #BA68C8;
+        }
+
+        .capability-card h2 {
+            font-size: 1.8em;
+            color: #8A2BE2;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .capability-card h2::before {
+            content: "⚡";
+            font-size: 0.8em;
+        }
+
+        /* 特性列表 */
+        .feature-list {
+            list-style: none;
+        }
+
+        .feature-list li {
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin-bottom: 15px;
+            padding-left: 20px;
+            position: relative;
+            color: #e0e0e0;
+        }
+
+        .bluefield-card .feature-list li::before {
+            content: "🔸";
+            position: absolute;
+            left: 0;
+            font-size: 0.9em;
+        }
+
+        .capability-card .feature-list li::before {
+            content: "⚙️";
+            position: absolute;
+            left: 0;
+            font-size: 0.8em;
+        }
+
+        /* 底部应用场景 */
+        .application-section {
+            grid-column: 1 / -1;
+            background: rgba(30, 35, 50, 0.9);
+            border-radius: 15px;
+            padding: 30px;
+            border: 2px solid rgba(0, 150, 255, 0.3);
+            backdrop-filter: blur(15px);
+            margin-top: 20px;
+        }
+
+        .application-section h2 {
+            font-size: 1.8em;
+            color: #0096FF;
+            margin-bottom: 25px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .application-section h2::before {
+            content: "🎯";
+        }
+
+        .application-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .application-item {
+            background: rgba(0, 150, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .application-item:hover {
+            background: rgba(0, 150, 255, 0.2);
+            transform: scale(1.02);
+        }
+
+        .application-icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .application-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #0096FF;
+            margin-bottom: 10px;
+        }
+
+        .application-desc {
+            color: #c0c0c0;
+            font-size: 0.95em;
+            line-height: 1.4;
+        }
+
+        /* 底部关键数据 */
+        .bottom-stats {
+            margin-top: 30px;
+            text-align: center;
+            padding: 25px;
+            background: rgba(15, 20, 35, 0.8);
+            border-radius: 12px;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 107, 53, 0.2);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .stat-item {
+            padding: 15px;
+            background: rgba(255, 107, 53, 0.1);
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .stat-item:hover {
+            background: rgba(255, 107, 53, 0.2);
+            transform: scale(1.05);
+        }
+
+        .stat-number {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #FF6B35;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #b0b0b0;
+            margin-top: 5px;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2.2em;
+            }
+            
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .application-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+            
+            .bluefield-card, .capability-card {
+                padding: 20px;
+            }
+        }
+
+        /* 涟漪点击效果 */
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 107, 53, 0.6);
+            transform: scale(0);
+            animation: rippleEffect 0.6s linear;
+            pointer-events: none;
+        }
+
+        @keyframes rippleEffect {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+
+        /* 浮动粒子系统 */
+        .particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: #FF6B35;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        /* 鼠标跟踪光效 */
+        .mouse-trail {
+            position: absolute;
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 107, 53, 0.12) 0%, transparent 70%);
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            transition: all 0.1s ease;
+            z-index: 2;
+        }
+    </style>
+</head>
+<body>
+    <!-- 科技背景效果 -->
+    <div class="tech-grid"></div>
+    <div class="dpu-circuit"></div>
+    
+    <!-- 芯片装饰元素 -->
+    <div class="chip-decoration chip-top-left"></div>
+    <div class="chip-decoration chip-top-right"></div>
+    <div class="chip-decoration chip-bottom-left"></div>
+    
+    <!-- 鼠标跟踪光效 -->
+    <div class="mouse-trail"></div>
+
+    <!-- 主容器 -->
+    <div class="container">
+        <!-- 标题区域 -->
+        <div class="header">
+            <h1>DPU网络加速与卸载能力</h1>
+            <p>BlueField-3 DPU服务器端网络优化技术</p>
+        </div>
+
+        <!-- 主内容区域 -->
+        <div class="main-content">
+            <!-- BlueField-3规格 -->
+            <div class="bluefield-card">
+                <h2>BlueField-3 SuperNIC规格</h2>
+                <ul class="feature-list">
+                    <li><strong>网络带宽</strong>：400Gb/s以太网，支持最新网络标准</li>
+                    <li><strong>处理器</strong>：16个Arm Cortex-A78 64位核心</li>
+                    <li><strong>加速器</strong>：256线程数据路径加速器</li>
+                    <li><strong>内存</strong>：高带宽内存，低延迟访问</li>
+                    <li><strong>功耗</strong>：小于75W，高效能设计</li>
+                    <li><strong>部署比例</strong>：与GPU 1:1配比部署</li>
+                </ul>
+            </div>
+
+            <!-- DPU核心能力 -->
+            <div class="capability-card">
+                <h2>DPU核心加速能力</h2>
+                <ul class="feature-list">
+                    <li><strong>网络卸载</strong>：释放CPU资源用于AI计算任务</li>
+                    <li><strong>RDMA加速</strong>：硬件级RoCE协议栈实现</li>
+                    <li><strong>安全隔离</strong>：硬件级多租户网络隔离</li>
+                    <li><strong>存储卸载</strong>：NVMe-oF和分布式存储加速</li>
+                    <li><strong>AI推理</strong>：边缘AI推理任务卸载</li>
+                    <li><strong>虚拟化</strong>：SR-IOV和虚拟化网络功能</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 应用场景区域 -->
+        <div class="application-section">
+            <h2>DPU关键应用场景</h2>
+            <div class="application-grid">
+                <div class="application-item">
+                    <div class="application-icon">🧠</div>
+                    <div class="application-title">AI训练加速</div>
+                    <div class="application-desc">卸载集合操作和通信任务，提升GPU利用率和训练效率</div>
+                </div>
+                <div class="application-item">
+                    <div class="application-icon">🛡️</div>
+                    <div class="application-title">安全隔离</div>
+                    <div class="application-desc">硬件级租户隔离，确保多租户环境下的安全性</div>
+                </div>
+                <div class="application-item">
+                    <div class="application-icon">💾</div>
+                    <div class="application-title">存储优化</div>
+                    <div class="application-desc">NVMe-oF和分布式存储访问加速，降低存储延迟</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部关键统计数据 -->
+        <div class="bottom-stats">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-number">400G</span>
+                    <span class="stat-label">网络带宽</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">16</span>
+                    <span class="stat-label">Arm核心</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">75W</span>
+                    <span class="stat-label">功耗上限</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">1:1</span>
+                    <span class="stat-label">与GPU配比</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DPU主题粒子系统
+        function createDPUParticle() {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + 'vw';
+            particle.style.top = Math.random() * 100 + 'vh';
+            particle.style.animationDuration = (Math.random() * 4 + 3) + 's';
+            particle.style.opacity = Math.random() * 0.6 + 0.3;
+            
+            const size = Math.random() * 4 + 2;
+            particle.style.width = size + 'px';
+            particle.style.height = size + 'px';
+            
+            // DPU主题色彩
+            const colors = ['#FF6B35', '#8A2BE2', '#FF8A65', '#BA68C8'];
+            particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+            
+            document.body.appendChild(particle);
+            
+            const animation = particle.animate([
+                {
+                    transform: `translate(${Math.random() * 300 - 150}px, ${Math.random() * 300 - 150}px) rotate(0deg)`,
+                    opacity: particle.style.opacity
+                },
+                {
+                    transform: `translate(${Math.random() * 500 - 250}px, ${Math.random() * 500 - 250}px) rotate(360deg)`,
+                    opacity: 0
+                }
+            ], {
+                duration: parseFloat(particle.style.animationDuration) * 1000,
+                easing: 'ease-out'
+            });
+            
+            animation.onfinish = () => particle.remove();
+        }
+        
+        setInterval(createDPUParticle, 400);
+        
+        // 鼠标跟踪光效
+        const mouseTrail = document.querySelector('.mouse-trail');
+        let mouseX = 0, mouseY = 0;
+        
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+        
+        function updateMouseTrail() {
+            mouseTrail.style.left = mouseX + 'px';
+            mouseTrail.style.top = mouseY + 'px';
+            requestAnimationFrame(updateMouseTrail);
+        }
+        updateMouseTrail();
+        
+        // 点击涟漪效果
+        document.addEventListener('click', (e) => {
+            const ripple = document.createElement('div');
+            ripple.className = 'ripple';
+            ripple.style.left = (e.clientX - 30) + 'px';
+            ripple.style.top = (e.clientY - 30) + 'px';
+            ripple.style.width = '60px';
+            ripple.style.height = '60px';
+            document.body.appendChild(ripple);
+            
+            setTimeout(() => ripple.remove(), 600);
+        });
+        
+        // 键盘导航
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') {
+                // 返回Spectrum-X基础设施页面
+                window.location.href = 'spectrum-infrastructure.html';
+            } else if (e.key === 'ArrowRight') {
+                // 前往RoCE整合页面
+                window.location.href = 'roce-integration.html';
+            }
+        });
+        
+        // 卡片悬停增强效果
+        const cards = document.querySelectorAll('.bluefield-card, .capability-card, .application-item');
+        cards.forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-8px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+        
+        // 芯片装饰交互
+        const chips = document.querySelectorAll('.chip-decoration');
+        chips.forEach(chip => {
+            chip.addEventListener('click', () => {
+                chip.style.animation = 'none';
+                setTimeout(() => {
+                    chip.style.animation = 'chipPulse 6s ease-in-out infinite';
+                }, 10);
+            });
+        });
+        
+        // 标题脉冲效果
+        setInterval(() => {
+            const header = document.querySelector('.header h1');
+            header.style.textShadow = '0 0 30px rgba(255, 107, 53, 0.8), 0 0 60px rgba(255, 107, 53, 0.4)';
+            setTimeout(() => {
+                header.style.textShadow = '0 0 20px rgba(255, 107, 53, 0.5)';
+            }, 500);
+        }, 4000);
+        
+        // 统计数据动画
+        const observerCallback = (entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const statNumbers = entry.target.querySelectorAll('.stat-number');
+                    statNumbers.forEach(stat => {
+                        stat.style.animation = 'none';
+                        setTimeout(() => {
+                            stat.style.animation = 'pulse 1.2s ease-in-out';
+                        }, 100);
+                    });
+                }
+            });
+        };
+        
+        const observer = new IntersectionObserver(observerCallback);
+        const bottomStats = document.querySelector('.bottom-stats');
+        if (bottomStats) observer.observe(bottomStats);
+    </script>
+</body>
+</html>
