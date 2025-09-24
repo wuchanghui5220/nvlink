@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>NVIDIA ConnectX-8 SuperNIC</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(220, 240, 230, 0.8);
+            font-family: 'Arial', sans-serif;
+            overflow-x: hidden;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .slide-container {
+            width: 96%;
+            max-width: 1600px;
+            aspect-ratio: 16/9;
+            background: #76a67e;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            padding: 15px 40px;
+            background: #3e703e;
+            color: white;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2.2em;
+            font-weight: 600;
+        }
+
+        h2 {
+            margin: 5px 0 0 0;
+            font-size: 1.3em;
+            font-weight: 400;
+        }
+
+        .content {
+            display: flex;
+            flex: 1;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .left-panel {
+            flex: 1;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .right-panel {
+            flex: 2;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .image-container {
+            background: rgba(210, 225, 210, 0.8);
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 10px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .image-title {
+            font-size: 1.2em;
+            color: #2c5e2e;
+            text-align: center;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .image-box {
+            text-align: center;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            width: 90%;
+            height: 75%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .cx8-placeholder {
+            width: 280px;
+            height: 140px;
+            background: linear-gradient(135deg, #2c5e2e, #4a854c);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .section-title {
+            font-size: 1.5em;
+            color: #fff;
+            margin: 5px 0 10px 0;
+            font-weight: 600;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .specs-container {
+            background: rgba(210, 225, 210, 0.8);
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 10px;
+            flex: 1;
+            overflow: auto;
+        }
+
+        .specs-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .specs-table td {
+            padding: 6px;
+            border-bottom: 1px solid rgba(60, 120, 60, 0.2);
+            font-size: 0.95em;
+        }
+
+        .specs-table td:first-child {
+            font-weight: bold;
+            color: #2c5e2e;
+            width: 40%;
+        }
+
+        .features-container {
+            background: rgba(210, 225, 210, 0.8);
+            border-radius: 10px;
+            padding: 10px;
+            flex: 1;
+            overflow: auto;
+            margin-bottom: 0;
+        }
+
+        .feature-column {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .feature-item {
+            flex: 1 0 45%;
+            margin: 3px;
+            padding: 4px 10px 4px 25px;
+            position: relative;
+            font-size: 0.9em;
+        }
+
+        .feature-item::before {
+            content: "✓";
+            position: absolute;
+            left: 5px;
+            color: #4a854c;
+            font-weight: bold;
+        }
+
+        .highlight-spec {
+            background: rgba(118, 166, 126, 0.2);
+            font-weight: bold;
+        }
+
+        .footer {
+            text-align: right;
+            padding: 5px 20px;
+            color: white;
+            font-style: italic;
+            font-size: 0.9em;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+            background: #3e703e;
+        }
+
+        /* 悬停效果单独添加 */
+        .nav-button:hover {
+            background-color: #4a854c !important;
+            transform: scale(1.05);
+        }
+
+        .performance-badge {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: #ff6b35;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        @media screen and (max-width: 1200px) {
+            h1 {
+                font-size: 1.8em;
+            }
+            h2 {
+                font-size: 1.1em;
+            }
+            .section-title {
+                font-size: 1.3em;
+            }
+            .image-title {
+                font-size: 1em;
+            }
+            .feature-item {
+                font-size: 0.8em;
+            }
+            .specs-table td {
+                font-size: 0.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="header">
+            <h1>NVIDIA ConnectX-8 SuperNIC</h1>
+            <h2>Highest-performance 800G networking designed for massive-scale AI</h2>
+        </div>
+        <div class="content">
+            <div class="left-panel">
+                <div class="image-container">
+                    <div class="image-title">ConnectX-8 SuperNIC 单端口</div>
+                    <div class="image-box">
+                        <img src="cx8180-1.png" alt="NVIDIA ConnectX-8 SuperNIC Single-Port Network Adapter" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                    </div>
+                </div>
+                <div class="image-container">
+                    <div class="image-title">ConnectX-8 SuperNIC 双端口</div>
+                    <div class="image-box">
+                        <img src="cx8240-2.png" alt="NVIDIA ConnectX-8 SuperNIC Dual-Port Network Adapter" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+                    </div>
+                </div>
+            </div>
+
+            <div class="right-panel">
+                <div class="section-title">产品规格</div>
+                <div class="specs-container">
+                    <table class="specs-table">
+                        <tr>
+                            <td>支持网络协议</td>
+                            <td>InfiniBand, Ethernet</td>
+                        </tr>
+                        <tr class="highlight-spec">
+                            <td>最大总带宽</td>
+                            <td>800Gb/s</td>
+                        </tr>
+                        <tr>
+                            <td>InfiniBand速率</td>
+                            <td>800/400/200/100Gb/s</td>
+                        </tr>
+                        <tr>
+                            <td>以太网速率</td>
+                            <td>400/200/100/50/25Gb/s</td>
+                        </tr>
+                        <tr>
+                            <td>网络端口数量</td>
+                            <td>单端口 x OSFP 或 双端口 x QSFP112</td>
+                        </tr>
+                        <tr class="highlight-spec">
+                            <td>主机接口</td>
+                            <td>PCIe Gen6，最多48通道</td>
+                        </tr>
+                        <tr>
+                            <td>产品形态</td>
+                            <td>PCIe HHHL, 双ConnectX-8夹层卡</td>
+                        </tr>
+                        <tr>
+                            <td>I/O通道</td>
+                            <td>1600万个I/O通道</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="section-title">关键特性</div>
+                <div class="features-container">
+                    <div class="feature-column">
+                        <div class="feature-item">专为大规模AI工厂优化</div>
+                        <div class="feature-item">RDMA和RoCEv2加速</div>
+                        <div class="feature-item">高级可编程拥塞控制</div>
+                        <div class="feature-item">NVIDIA GPUDirect RDMA</div>
+                        <div class="feature-item">网络内计算功能</div>
+                        <div class="feature-item">SHARP协议扩展支持</div>
+                        <div class="feature-item">高速数据包重排序</div>
+                        <div class="feature-item">MPI加速和集合操作</div>
+                        <div class="feature-item">硬件信任根安全启动</div>
+                        <div class="feature-item">内联加密加速 (IPsec, MACsec)</div>
+                        <div class="feature-item">SR-IOV虚拟化支持</div>
+                        <div class="feature-item">多主机支持（最多4个主机）</div>
+                        <div class="feature-item">ASAP2 SDN/NFV加速</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            为万亿参数AI模型训练和推理提供前所未有的网络性能 — ConnectX-8 SuperNIC
+        </div>
+    </div>
+
+    <!-- 导航按钮 - 独立于主内容区 -->
+    <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+        <a href="index18.html" class="nav-button" style="display: inline-block; width: 40px; height: 40px; line-height: 40px; text-align: center; background-color: #3e703e; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+        <a href="index20.html" class="nav-button" style="display: inline-block; width: 40px; height: 40px; line-height: 40px; text-align: center; background-color: #3e703e; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+    </div>
+</body>
+</html>

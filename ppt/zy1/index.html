@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>北京正阳恒卓科技有限公司</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'PingFang SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            max-width: 900px;
+            width: 100%;
+            position: relative;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="white" opacity="0.1"/><circle cx="80" cy="40" r="1.5" fill="white" opacity="0.1"/><circle cx="40" cy="80" r="1" fill="white" opacity="0.1"/></svg>');
+        }
+        
+        .company-name {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .tagline {
+            font-size: 16px;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .section {
+            margin-bottom: 25px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #2a5298;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 18px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 2px;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .info-item {
+            background: #f8f9ff;
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .info-label {
+            font-weight: bold;
+            color: #2a5298;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        
+        .info-value {
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .services-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        
+        .service-item {
+            background: white;
+            border: 2px solid #e8ecf4;
+            padding: 15px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .service-item:hover {
+            border-color: #667eea;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .service-title {
+            font-weight: bold;
+            color: #2a5298;
+            margin-bottom: 8px;
+        }
+        
+        .service-desc {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        
+        .solutions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .solution-badge {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 500;
+            text-align: center;
+            flex: 1;
+            min-width: 200px;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        
+        .certifications {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .cert-badge {
+            background: #e8f4fd;
+            color: #1976d2;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            border: 1px solid #bbdefb;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            text-align: center;
+        }
+        
+        .stat-item {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 20px 15px;
+            border-radius: 12px;
+        }
+        
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+        
+        @media (max-width: 768px) {
+            .company-name {
+                font-size: 24px;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .services-list {
+                grid-template-columns: 1fr;
+            }
+            
+            .solutions {
+                flex-direction: column;
+            }
+            
+            .solution-badge {
+                min-width: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="header">
+            <div class="company-name">北京正阳恒卓科技有限公司</div>
+            <div class="tagline">高性能计算与人工智能技术解决方案提供商</div>
+        </div>
+        
+        <div class="content">
+            <div class="section">
+                <div class="section-title">公司概况</div>
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-number">2015</div>
+                        <div class="stat-label">成立年份</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">50+</div>
+                        <div class="stat-label">员工人数</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">3年</div>
+                        <div class="stat-label">A级纳税人</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">北京</div>
+                        <div class="stat-label">总部</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <div class="section-title">NVIDIA合作资质</div>
+                <div class="certifications">
+                    <div class="cert-badge">Networking 精英级合作伙伴</div>
+                    <div class="cert-badge">Compute 注册级合作伙伴</div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <div class="section-title">核心服务</div>
+                <div class="services-list">
+                    <div class="service-item">
+                        <div class="service-title">前期规划与设计</div>
+                        <div class="service-desc">评估计算集群规模，整体架构设计</div>
+                    </div>
+                    <div class="service-item">
+                        <div class="service-title">集成部署</div>
+                        <div class="service-desc">硬件软件系统集成、安装调试、一体化交付</div>
+                    </div>
+                    <div class="service-item">
+                        <div class="service-title">性能优化</div>
+                        <div class="service-desc">系统配置深度调优，发挥硬件平台计算性能</div>
+                    </div>
+                    <div class="service-item">
+                        <div class="service-title">运维支持</div>
+                        <div class="service-desc">安全监控、版本升级、故障诊断排除</div>
+                    </div>
+                    <div class="service-item">
+                        <div class="service-title">增值服务</div>
+                        <div class="service-desc">技术培训、智能运维软件研发</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <div class="section-title">核心解决方案</div>
+                <div class="solutions">
+                    <div class="solution-badge">NVIDIA高性能计算解决方案</div>
+                    <div class="solution-badge">人工智能深度学习平台</div>
+                    <div class="solution-badge">企业数据中心网络优化</div>
+                </div>
+            </div>
+            
+            <div class="section">
+                <div class="section-title">行业组织</div>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">2024年加入</div>
+                        <div class="info-value">中国投资协会大中型企业投资专业委员会<br>北京自然资源资产协会</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

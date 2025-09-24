@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>北京正阳恒卓科技有限公司 - 核心能力</title>
+    <style>
+        :root {
+            --primary-color: #76a67e;
+            --primary-glow-color: rgba(34, 197, 94, 0.4);
+            --bg-gradient: linear-gradient(135deg, #0c4a3e 0%, #134e4a 25%, #065f46 50%, #047857 75%, #059669 100%);
+            --card-bg-color: rgba(12, 28, 24, 0.4);
+            --card-bg-hover: rgba(18, 42, 36, 0.6);
+            --card-border-color: rgba(76, 166, 126, 0.3);
+            --text-color-primary: #fff;
+            --text-color-secondary: rgba(255, 255, 255, 0.85);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'WenQuanYi Micro Hei', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-color-primary);
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            background: var(--bg-gradient);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            padding: 40px;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        /* 装饰元素与导航按钮样式 */
+        .decorative-elements { position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: 2; pointer-events: none; }
+        .corner-decoration { position: absolute; width: 150px; height: 150px; border: 2px solid rgba(34, 197, 94, 0.3); }
+        .corner-decoration.top-left { top: 25px; left: 25px; border-right: none; border-bottom: none; }
+        .corner-decoration.top-right { top: 25px; right: 25px; border-left: none; border-bottom: none; }
+        .corner-decoration.bottom-left { bottom: 25px; left: 25px; border-right: none; border-top: none; }
+        .corner-decoration.bottom-right { bottom: 25px; right: 25px; border-left: none; border-top: none; }
+
+        .page-indicator, .nav-controls { z-index: 15; }
+        .page-indicator { position: absolute; bottom: 40px; right: 40px; font-size: 18px; color: var(--text-color-secondary); }
+        .page-indicator .slide-number { font-weight: 700; color: var(--primary-color); }
+        .nav-controls { position: absolute; top: 50%; transform: translateY(-50%); font-size: 48px; color: rgba(255, 255, 255, 0.6); cursor: pointer; user-select: none; transition: all 0.3s ease; padding: 20px; }
+        .nav-controls:hover { color: var(--primary-color); transform: translateY(-50%) scale(1.2); }
+        .nav-prev { left: 30px; }
+        .nav-next { right: 30px; opacity: 0.5; cursor: not-allowed; }
+
+        /* 主要内容区 */
+        .main-content {
+            z-index: 10;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-section {
+            text-align: center;
+            flex-shrink: 0;
+            margin-bottom: 25px;
+            opacity: 0;
+            animation: fadeInDown 0.8s ease-out forwards;
+        }
+
+        .page-title {
+            font-size: clamp(2.8rem, 5vw, 3.5rem);
+            font-weight: 700;
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, #ffffff 0%, var(--primary-color) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* 三栏式布局 */
+        .content-layout {
+            flex-grow: 1;
+            display: grid;
+            grid-template-columns: 1fr 1.6fr 1fr; /* 中间栏更宽 */
+            gap: 25px;
+            height: calc(100% - 100px); /* 动态计算高度 */
+        }
+
+        .layout-column {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        
+        .card {
+            background: var(--card-bg-color);
+            border: 1px solid var(--card-border-color);
+            border-radius: 20px;
+            backdrop-filter: blur(15px);
+            padding: 30px;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            animation: fadeInScaleUp 0.8s ease-out forwards;
+            flex-grow: 1; /* 让卡片填满列空间 */
+        }
+
+        .card:hover {
+            transform: translateY(-5px) scale(1.01);
+            border-color: var(--primary-color);
+            background: var(--card-bg-hover);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+        }
+
+        .card-title {
+            font-size: clamp(1.8rem, 2.5vw, 2rem);
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 25px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        /* 左栏：核心解决方案 */
+        .solution-list {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            flex-grow: 1;
+        }
+        .solution-item {
+            text-align: center;
+            padding: 15px;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+        .solution-item:hover {
+            background: rgba(var(--primary-glow-color), 0.3);
+        }
+        .solution-item .icon { font-size: 3.5rem; margin-bottom: 15px; }
+        .solution-item .title { font-size: 1.8rem; font-weight: 600; }
+        .solution-item .desc { font-size: 1rem; color: var(--text-color-secondary); margin-top: 8px; }
+
+        /* 中栏：全周期服务 */
+        .service-list {
+            list-style: none;
+            counter-reset: service-counter;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .service-step {
+            position: relative;
+            padding-left: 60px;
+            margin-bottom: 15px;
+        }
+        .service-step::before {
+            counter-increment: service-counter;
+            content: "0" counter(service-counter);
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            opacity: 0.5;
+            transition: all 0.3s ease;
+        }
+        .service-step:hover::before {
+            opacity: 1;
+            transform: translateY(-50%) scale(1.1);
+        }
+        .service-step .title { font-size: 1.3rem; font-weight: 600; margin-bottom: 6px; }
+        .service-step .desc { font-size: 1rem; color: var(--text-color-secondary); line-height: 1.6; }
+
+        /* 右栏：企业实力 */
+        .strength-card {
+            justify-content: space-around;
+        }
+        .strength-category {
+            text-align: center;
+        }
+        .strength-category .label {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 12px;
+        }
+        .strength-category .content {
+            font-size: 1.1rem;
+            color: var(--text-color-secondary);
+            line-height: 1.7;
+        }
+        .strength-card hr {
+            border: none;
+            height: 1px;
+            background: var(--card-border-color);
+            margin: 20px 0;
+        }
+        .content ul { list-style: none; padding: 0; }
+
+        /* 动画 */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInScaleUp {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .layout-column .card:nth-child(1) { animation-delay: 0.2s; }
+        .layout-column .card:nth-child(2) { animation-delay: 0.4s; }
+        .layout-column.center .card { animation-delay: 0.3s; }
+        .layout-column.right .card { animation-delay: 0.4s; }
+
+        /* 响应式设计 */
+        @media (max-width: 1280px) {
+            .content-layout {
+                grid-template-columns: 1fr;
+                height: auto;
+                overflow-y: auto;
+                padding-bottom: 80px;
+            }
+        }
+        @media (max-width: 768px) {
+            .slide-container { padding: 20px; }
+            .page-title { font-size: 2.2rem; }
+            .card { padding: 20px; }
+            .nav-controls { bottom: 20px; top: auto; transform: none; }
+            .nav-prev { left: 15px; }
+            .nav-next { right: 15px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="decorative-elements">
+            <div class="corner-decoration top-left"></div>
+            <div class="corner-decoration top-right"></div>
+            <div class="corner-decoration bottom-left"></div>
+            <div class="corner-decoration bottom-right"></div>
+        </div>
+
+        <div class="main-content">
+            <header class="header-section">
+                <h1 class="page-title">核心能力体系</h1>
+            </header>
+
+            <div class="content-layout">
+                <!-- 左栏 -->
+                <div class="layout-column left">
+                    <div class="card">
+                        <h2 class="card-title">核心解决方案</h2>
+                        <div class="solution-list">
+                            <div class="solution-item">
+                                <div class="icon">🚀</div>
+                                <div class="title">高性能计算</div>
+                                <div class="desc">NVIDIA平台HPC方案</div>
+                            </div>
+                             <div class="solution-item">
+                                <div class="icon">🧠</div>
+                                <div class="title">AI深度学习</div>
+                                <div class="desc">平台构建与性能优化</div>
+                            </div>
+                             <div class="solution-item">
+                                <div class="icon">🌐</div>
+                                <div class="title">数据中心网络</div>
+                                <div class="desc">企业级网络优化</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 中栏 -->
+                <div class="layout-column center">
+                    <div class="card">
+                        <h2 class="card-title">贯穿全周期的技术服务</h2>
+                        <ol class="service-list">
+                            <li class="service-step">
+                                <div class="title">规划与设计</div>
+                                <div class="desc">依据客户需求，评估集群规模并进行整体架构设计。</div>
+                            </li>
+                             <li class="service-step">
+                                <div class="title">集成与部署</div>
+                                <div class="desc">负责软硬件系统集成、安装调试与一体化交付。</div>
+                            </li>
+                             <li class="service-step">
+                                <div class="title">性能与优化</div>
+                                <div class="desc">通过深度调优，充分释放硬件平台的极致计算潜能。</div>
+                            </li>
+                             <li class="service-step">
+                                <div class="title">运维与支持</div>
+                                <div class="desc">提供安全监控、版本升级、故障诊断等长期运维。</div>
+                            </li>
+                            <li class="service-step">
+                                <div class="title">培训与增值</div>
+                                <div class="desc">提供专业技术培训及自研智能化运维软件。</div>
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+
+                <!-- 右栏 -->
+                <div class="layout-column right">
+                     <div class="card strength-card">
+                        <h2 class="card-title">企业实力</h2>
+                        <div class="strength-category">
+                            <div class="label">NVIDIA 战略合作</div>
+                            <div class="content">
+                                <b>精英级 (Networking)</b><br>
+                                <b>注册级 (Compute)</b>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="strength-category">
+                             <div class="label">专业团队</div>
+                            <div class="content">
+                                50+名经验丰富的工程师，<br>具备深厚技术背景。
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="strength-category">
+                             <div class="label">行业认可</div>
+                            <div class="content">
+                                <ul>
+                                    <li>连续3年 A级纳税人</li>
+                                    <li>双重行业协会成员</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="page-indicator">
+            <span class="slide-number">02</span> / 02
+        </div>
+
+        <div class="nav-controls nav-prev" onclick="window.location.href='index.html'">‹</div>
+        <div class="nav-controls nav-next">›</div>
+    </div>
+    <script>
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft') {
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
+</body>
+</html>
