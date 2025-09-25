@@ -64,11 +64,8 @@
             height: 100%;
             aspect-ratio: 16 / 9;
             object-fit: contain;
-
-            /* [核心修改] 声明为容器查询的容器 */
             container-type: inline-size;
             container-name: table;
-
             background: rgba(250, 250, 250, 0.8);
             padding: 1.5vmin;
             border-radius: 15px;
@@ -95,7 +92,6 @@
         }
         
         .equation {
-            /* 设置一个基础字体大小 */
             font-size: 1.5em; 
             font-weight: 700;
             color: #333;
@@ -107,7 +103,6 @@
             transition: opacity 0.3s ease;
         }
 
-        /* [核心修改] 使用容器查询动态调整字体大小 */
         @container table (max-width: 800px) {
             .equation {
                 font-size: 1.2em;
@@ -166,11 +161,43 @@
         .tooltip-title, .visual-grid, .tooltip-explanation { max-width: 90vw; }
         .tooltip-title { font-size: 1.2em; font-weight: 700; color: #2e7d32; margin-bottom: 15px; }
         .visual-grid { display: inline-grid; gap: 12px; margin: 15px 0; justify-content: center; }
+        
+        /* [新增] 组和编号的包装器样式 */
+        .group-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
         .group { border: 2px solid #ff9800; border-radius: 8px; padding: 8px; background: rgba(255, 152, 0, 0.1); display: inline-grid; gap: 6px; justify-content: center; }
         .visual-item { font-size: 1.8em; text-align: center; animation: popIn 0.15s ease-out both; }
+        
+        /* [新增] 组编号样式 */
+        .group-number {
+            font-size: 1em;
+            font-weight: 600;
+            color: #333;
+            background-color: #e0e0e0;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
         .visual-tooltip.is-large .visual-item { font-size: 1.4em; }
         .visual-tooltip.is-large .group { padding: 5px; gap: 4px; }
         .visual-tooltip.is-large .visual-grid { gap: 8px; }
+
+        /* [新增] 紧凑模式下的编号样式 */
+        .visual-tooltip.is-large .group-number {
+            font-size: 0.8em;
+            width: 20px;
+            height: 20px;
+        }
+
         @keyframes popIn { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
         .tooltip-explanation { font-size: 1em; color: #666; margin-top: 10px; line-height: 1.4; }
     </style>
@@ -214,7 +241,6 @@
     </div>
 
     <script>
-        // JavaScript 部分无需修改
         const table = document.getElementById('table');
         let clickedCells = new Set();
         let hiddenMode = false;
@@ -236,9 +262,13 @@
             title.textContent = `${itemsPerGroup} × ${numGroups} = ${result}`;
             grid.innerHTML = '';
             grid.style.gridTemplateColumns = `repeat(${numGroups}, 1fr)`;
-            explanation.innerHTML = `一组 <strong>${itemsPerGroup}</strong> 个 ${pattern}，有 <strong>${numGroups}</strong> 组<br>${numGroups}个${itemsPerGroup}相加, 总共有 <strong>${result}</strong> 个 ${pattern}`; 
+            explanation.innerHTML = `一组 <strong>${itemsPerGroup}</strong> 个 ${pattern}，有 <strong>${numGroups}</strong> 组<br>${numGroups}个${itemsPerGroup}相加, 总共有 <strong>${result}</strong> 个 ${pattern}`;
             let itemIndex = 0;
             for (let group = 0; group < numGroups; group++) {
+                // [核心修改] 创建包装器
+                const wrapper = document.createElement('div');
+                wrapper.className = 'group-wrapper';
+
                 const groupDiv = document.createElement('div');
                 groupDiv.className = 'group';
                 let columnsInGroup = (itemsPerGroup > 3) ? Math.ceil(itemsPerGroup / 2) : itemsPerGroup;
@@ -252,7 +282,18 @@
                     groupDiv.appendChild(itemDiv);
                     itemIndex++;
                 }
-                grid.appendChild(groupDiv);
+                
+                // [核心修改] 创建编号
+                const numberDiv = document.createElement('div');
+                numberDiv.className = 'group-number';
+                numberDiv.textContent = group + 1; // 编号从1开始
+
+                // [核心修改] 将组和编号都添加到包装器
+                wrapper.appendChild(groupDiv);
+                wrapper.appendChild(numberDiv);
+
+                // [核心修改] 将包装器添加到网格
+                grid.appendChild(wrapper);
             }
             
             const rect = event.target.closest('.cell').getBoundingClientRect();
@@ -351,7 +392,8 @@
             hiddenMode = true;
             document.querySelectorAll('.cell').forEach(cell => {
                 if (!clickedCells.has(cell.getAttribute('data-id'))) {
-                    cell.querySelector('.result-span').style.opacity = '0';
+                    const span = cell.querySelector('.result-span');
+                    if (span) span.style.opacity = '0';
                 }
             });
         }
@@ -367,7 +409,11 @@
             updateProgress();
         }
         
-        document.addEventListener('DOMContentLoaded', generateTable);
+        document.addEventListener('DOMContentLoaded', function() {
+            generateTable();
+            hideAll();
+        });
+        
         document.body.addEventListener('mouseleave', hideVisualTooltip);
     </script>
 </body>
