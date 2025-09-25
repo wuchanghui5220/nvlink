@@ -262,7 +262,7 @@
             title.textContent = `${itemsPerGroup} × ${numGroups} = ${result}`;
             grid.innerHTML = '';
             grid.style.gridTemplateColumns = `repeat(${numGroups}, 1fr)`;
-            explanation.innerHTML = `一组 <strong>${itemsPerGroup}</strong> 个 ${pattern}，有 <strong>${numGroups}</strong> 组<br>${numGroups}个${itemsPerGroup}相加, 总共有 <strong>${result}</strong> 个 ${pattern}`;
+			    explanation.innerHTML = `一组 <strong>${itemsPerGroup}</strong> 个 ${pattern}，有 <strong>${numGroups}</strong> 组<br><strong>${numGroups}</strong> 个 <strong>${itemsPerGroup}</strong> 相加, 总共有 <strong>${result}</strong> 个 ${pattern}`;
             let itemIndex = 0;
             for (let group = 0; group < numGroups; group++) {
                 // [核心修改] 创建包装器
