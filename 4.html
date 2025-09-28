@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>工作证明</title>
+<style>
+    /* 页面基础样式，适用于打印 */
+    body {
+        font-family: 'SimSun', '宋体', sans-serif; /* 使用宋体，这是中文公文常用字体 */
+        font-size: 16px;
+        color: #000;
+        line-height: 2.0; /* 设置一个舒适的行高 */
+    }
+    /* A4页面容器 */
+    .container {
+        width: 800px; /* 设定一个合适的宽度 */
+        margin: 30px auto; /* 居中显示 */
+        padding: 40px;
+    }
+    /* 页眉 */
+    .header {
+        text-align: left;
+        font-size: 14px;
+        border-bottom: 1px solid #000; /* 底部加一条黑线 */
+        padding-bottom: 8px;
+        margin-bottom: 20px;
+    }
+    /* 主标题 */
+    .title {
+        text-align: center;
+        font-size: 32px;
+        font-weight: bold;
+        margin: 60px 0;
+    }
+    /* 内容区域 */
+    .content p {
+        margin: 25px 0; /* 设置段落间距 */
+    }
+    /* 页脚区域 */
+    .footer {
+        margin-top: 100px;
+        position: relative; /* 用于后续定位 */
+        height: 200px; /* 给页脚一个足够的高度 */
+    }
+    /* 盖章处，靠右对齐 */
+    .seal-area {
+        position: absolute;
+        right: 20px;
+        top: 0;
+        text-align: left;
+    }
+    .seal-area p {
+        margin: 15px 0;
+    }
+    /* 客户经理信息，靠左下角 */
+    .manager-info {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        text-align: left;
+    }
+    .manager-info p {
+        margin: 15px 0;
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="title">
+        工作证明
+    </div>
+
+    <div class="content">
+        <p>兹有我单位：</p>
+        <p>姓名：</p>
+        <p>身份证号：</p>
+        <p>职务：</p>
+
+        <p>该员工为我单位正式员工。</p>
+        <p>此证明仅限于办理招商银行信用卡使用！单位证明只限于证明劳动关系，不承担经济连带责任！</p>
+    </div>
+
+    <div class="footer">
+        <div class="seal-area">
+            <p>盖章处</p>
+            <p>（公司章、人事章、财务章）</p>
+            <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;年&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;月&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;日</p>
+        </div>
+
+        <div class="manager-info">
+            <p>客户经理姓名：</p>
+            <p>手机：</p>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
