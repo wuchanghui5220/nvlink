@@ -1,5 +1,28 @@
 // 报价管理功能
 
+// 报价显示状态
+let isShowingAllQuotes = false;
+const DEFAULT_QUOTE_LIMIT = 10;
+
+// 检查是否有筛选条件
+function hasQuoteFilters() {
+    const productFilter = document.getElementById('filterProduct');
+    const customerFilter = document.getElementById('filterCustomer');
+    const dateFromFilter = document.getElementById('filterDateFrom');
+    const dateToFilter = document.getElementById('filterDateTo');
+
+    return (productFilter && productFilter.value) ||
+           (customerFilter && customerFilter.value) ||
+           (dateFromFilter && dateFromFilter.value) ||
+           (dateToFilter && dateToFilter.value);
+}
+
+// 切换报价显示模式
+function toggleQuoteView() {
+    isShowingAllQuotes = !isShowingAllQuotes;
+    refreshQuoteTable();
+}
+
 // 筛选报价记录
 function getFilteredQuotes() {
     if (!app || !app.quotes) return [];
@@ -43,6 +66,10 @@ function refreshQuoteTable() {
     if (!tableBody) return;
 
     const filteredQuotes = getFilteredQuotes();
+    const hasFilters = hasQuoteFilters();
+
+    // 更新控制按钮的显示状态
+    updateQuoteTableControls(filteredQuotes.length, hasFilters);
 
     if (filteredQuotes.length === 0) {
         const allQuotes = app.quotes || [];
@@ -54,10 +81,16 @@ function refreshQuoteTable() {
         return;
     }
 
-    // 按日期降序排列
+    // 按日期降序排列（最新的在前面）
     const sortedQuotes = filteredQuotes.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-    tableBody.innerHTML = sortedQuotes.map(quote => {
+    // 决定显示的记录数量
+    let displayQuotes = sortedQuotes;
+    if (!hasFilters && !isShowingAllQuotes && sortedQuotes.length > DEFAULT_QUOTE_LIMIT) {
+        displayQuotes = sortedQuotes.slice(0, DEFAULT_QUOTE_LIMIT);
+    }
+
+    tableBody.innerHTML = displayQuotes.map(quote => {
         const product = app.products.find(p => p.id === quote.productId);
         const productName = product ? product.model : '已删除的产品';
         const quantity = quote.quantity || 1;
@@ -99,6 +132,47 @@ function refreshQuoteTable() {
             </tr>
         `;
     }).join('');
+
+    // 更新显示计数
+    updateQuoteCounts(displayQuotes.length, sortedQuotes.length);
+}
+
+// 更新报价表格控制按钮
+function updateQuoteTableControls(totalQuotes, hasFilters) {
+    const controlsDiv = document.getElementById('quoteTableControls');
+    const toggleBtn = document.getElementById('toggleQuoteViewBtn');
+
+    if (!controlsDiv || !toggleBtn) return;
+
+    // 如果有筛选条件或记录数量少于等于限制数量，隐藏控制按钮
+    if (hasFilters || totalQuotes <= DEFAULT_QUOTE_LIMIT) {
+        controlsDiv.style.display = 'none';
+        return;
+    }
+
+    // 显示控制按钮
+    controlsDiv.style.display = 'block';
+
+    // 更新按钮文本和图标
+    const icon = toggleBtn.querySelector('i');
+    if (isShowingAllQuotes) {
+        toggleBtn.innerHTML = '<i class="fas fa-chevron-up me-1"></i>收起';
+        icon.className = 'fas fa-chevron-up me-1';
+    } else {
+        toggleBtn.innerHTML = '<i class="fas fa-chevron-down me-1"></i>查看更多记录';
+        icon.className = 'fas fa-chevron-down me-1';
+    }
+}
+
+// 更新报价计数显示
+function updateQuoteCounts(displayed, total) {
+    const displayedSpan = document.getElementById('displayedQuoteCount');
+    const totalSpan = document.getElementById('totalQuoteCount');
+
+    if (displayedSpan && totalSpan) {
+        displayedSpan.textContent = displayed;
+        totalSpan.textContent = total;
+    }
 }
 
 // 更新报价产品选择下拉框
@@ -213,6 +287,9 @@ function clearQuoteFilters() {
     if (filterCustomer) filterCustomer.value = '';
     if (filterDateFrom) filterDateFrom.value = '';
     if (filterDateTo) filterDateTo.value = '';
+
+    // 重置显示状态
+    isShowingAllQuotes = false;
 
     refreshQuoteTable();
 }
@@ -659,6 +736,9 @@ document.addEventListener('DOMContentLoaded', function() {
     updateFilterCustomerSelect();
     updateCustomerSelect();
 });
+
+// 将报价管理相关函数暴露到全局作用域
+window.toggleQuoteView = toggleQuoteView;
 
 // 在app对象上添加相关方法
 if (typeof QuoteApp !== 'undefined') {

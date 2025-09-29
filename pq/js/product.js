@@ -1,5 +1,28 @@
 // 产品管理功能
 
+// 产品显示状态
+let isShowingAllProducts = false;
+const DEFAULT_PRODUCT_LIMIT = 10;
+
+// 检查是否有筛选条件
+function hasProductFilters() {
+    const modelFilter = document.getElementById('filterProductModel');
+    const manufacturerFilter = document.getElementById('filterManufacturer');
+    const dateFromFilter = document.getElementById('filterProductDateFrom');
+    const dateToFilter = document.getElementById('filterProductDateTo');
+
+    return (modelFilter && modelFilter.value.trim()) ||
+           (manufacturerFilter && manufacturerFilter.value) ||
+           (dateFromFilter && dateFromFilter.value) ||
+           (dateToFilter && dateToFilter.value);
+}
+
+// 切换产品显示模式
+function toggleProductView() {
+    isShowingAllProducts = !isShowingAllProducts;
+    refreshProductTable();
+}
+
 // 筛选产品记录
 function getFilteredProducts() {
     if (!app || !app.products) return [];
@@ -52,6 +75,10 @@ function refreshProductTable() {
     if (!tableBody) return;
 
     const filteredProducts = getFilteredProducts();
+    const hasFilters = hasProductFilters();
+
+    // 更新控制按钮的显示状态
+    updateProductTableControls(filteredProducts.length, hasFilters);
 
     if (filteredProducts.length === 0) {
         const allProducts = app.products || [];
@@ -63,7 +90,13 @@ function refreshProductTable() {
         return;
     }
 
-    tableBody.innerHTML = filteredProducts.map(product => {
+    // 决定显示的产品数量
+    let displayProducts = filteredProducts;
+    if (!hasFilters && !isShowingAllProducts && filteredProducts.length > DEFAULT_PRODUCT_LIMIT) {
+        displayProducts = filteredProducts.slice(0, DEFAULT_PRODUCT_LIMIT);
+    }
+
+    tableBody.innerHTML = displayProducts.map(product => {
         const quoteCount = app.quotes.filter(q => q.productId === product.id).length;
         const createDate = app.formatDate(product.createDate);
 
@@ -93,6 +126,47 @@ function refreshProductTable() {
             </tr>
         `;
     }).join('');
+
+    // 更新显示计数
+    updateProductCounts(displayProducts.length, filteredProducts.length);
+}
+
+// 更新产品表格控制按钮
+function updateProductTableControls(totalProducts, hasFilters) {
+    const controlsDiv = document.getElementById('productTableControls');
+    const toggleBtn = document.getElementById('toggleProductViewBtn');
+
+    if (!controlsDiv || !toggleBtn) return;
+
+    // 如果有筛选条件或产品数量少于等于限制数量，隐藏控制按钮
+    if (hasFilters || totalProducts <= DEFAULT_PRODUCT_LIMIT) {
+        controlsDiv.style.display = 'none';
+        return;
+    }
+
+    // 显示控制按钮
+    controlsDiv.style.display = 'block';
+
+    // 更新按钮文本和图标
+    const icon = toggleBtn.querySelector('i');
+    if (isShowingAllProducts) {
+        toggleBtn.innerHTML = '<i class="fas fa-chevron-up me-1"></i>收起';
+        icon.className = 'fas fa-chevron-up me-1';
+    } else {
+        toggleBtn.innerHTML = '<i class="fas fa-chevron-down me-1"></i>查看更多产品';
+        icon.className = 'fas fa-chevron-down me-1';
+    }
+}
+
+// 更新产品计数显示
+function updateProductCounts(displayed, total) {
+    const displayedSpan = document.getElementById('displayedProductCount');
+    const totalSpan = document.getElementById('totalProductCount');
+
+    if (displayedSpan && totalSpan) {
+        displayedSpan.textContent = displayed;
+        totalSpan.textContent = total;
+    }
 }
 
 // 更新筛选厂商下拉框
@@ -130,6 +204,9 @@ function clearProductFilters() {
     if (filterManufacturer) filterManufacturer.value = '';
     if (filterProductDateFrom) filterProductDateFrom.value = '';
     if (filterProductDateTo) filterProductDateTo.value = '';
+
+    // 重置显示状态
+    isShowingAllProducts = false;
 
     refreshProductTable();
 }
@@ -392,6 +469,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // 初始化筛选下拉框
     updateFilterManufacturerSelect();
 });
+
+// 将产品管理相关函数暴露到全局作用域
+window.toggleProductView = toggleProductView;
 
 // 在app对象上添加相关方法
 if (typeof QuoteApp !== 'undefined') {
