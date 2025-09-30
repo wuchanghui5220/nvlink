@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>网络适配器 - NVIDIA Networking 培训</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f8fafb;
+            color: #2c3e50;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* PPT 样式背景 */
+        .ppt-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #ffffff 0%, #f1f8ff 50%, #f0f9f4 100%);
+            overflow: hidden;
+        }
+
+        .ppt-background::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 60%;
+            height: 100%;
+            background: linear-gradient(45deg, #3b82f6 0%, #06b6d4 30%, #22c55e 70%, #76b900 100%);
+            clip-path: polygon(30% 0%, 100% 0%, 100% 100%, 0% 100%);
+            opacity: 0.12;
+        }
+
+        /* 创意装饰元素 - 圆点网格 */
+        .decoration-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        /* 右上角圆点装饰 */
+        .decoration-lines::before {
+            content: '';
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            width: 8px;
+            height: 8px;
+            background: linear-gradient(135deg, #3b82f6, #06b6d4);
+            border-radius: 50%;
+            box-shadow:
+                20px 0 0 rgba(59, 130, 246, 0.4),
+                40px 0 0 rgba(59, 130, 246, 0.3),
+                60px 0 0 rgba(59, 130, 246, 0.2),
+                0 20px 0 rgba(59, 130, 246, 0.4),
+                20px 20px 0 rgba(59, 130, 246, 0.3),
+                40px 20px 0 rgba(59, 130, 246, 0.2),
+                0 40px 0 rgba(59, 130, 246, 0.3),
+                20px 40px 0 rgba(59, 130, 246, 0.2);
+            opacity: 0.6;
+        }
+
+        /* 左下角几何图形装饰 */
+        .decoration-lines::after {
+            content: '';
+            position: absolute;
+            bottom: 40px;
+            left: 40px;
+            width: 60px;
+            height: 60px;
+            border: 3px solid rgba(34, 197, 94, 0.2);
+            border-radius: 12px;
+            transform: rotate(15deg);
+            box-shadow:
+                80px 0 0 rgba(34, 197, 94, 0.15),
+                160px 0 0 rgba(34, 197, 94, 0.1);
+        }
+
+        /* 主容器 */
+        .slide-container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 40px 80px 60px;
+        }
+
+        /* 头部区域 - 整合LOGO、标题、面包屑 */
+        .slide-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nvidia-logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .nvidia-logo svg {
+            height: 30px;
+            width: auto;
+        }
+
+        /* 标题区域 - 紧凑设计 */
+        .slide-title {
+            display: flex;
+            align-items: center;
+            margin-left: 20px;
+        }
+
+        .module-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            background: linear-gradient(45deg, #3b82f6, #06b6d4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+            flex-shrink: 0;
+        }
+
+        .title-content {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .main-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            line-height: 1.1;
+            background: linear-gradient(90deg, #3b82f6 0%, #06b6d4 40%, #22c55e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 0.85rem;
+            color: #64748b;
+            font-weight: 400;
+        }
+
+        .breadcrumb {
+            font-size: 0.85rem;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .breadcrumb a {
+            color: #3b82f6;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .breadcrumb a:hover {
+            color: #1e40af;
+        }
+
+        /* 内容区域 */
+        .content-main {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 30px;
+        }
+
+        .content-section {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 16px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(59, 130, 246, 0.1);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            max-height: calc(100vh - 400px);
+        }
+
+        .content-section:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 35px rgba(59, 130, 246, 0.15);
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-icon {
+            display: none;
+        }
+
+        .section-content {
+            color: #64748b;
+            line-height: 1.6;
+            flex: 1;
+        }
+
+        .connectx-series {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .connectx-card {
+            background: rgba(59, 130, 246, 0.05);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid #3b82f6;
+            text-align: center;
+        }
+
+        .connectx-model {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .connectx-model:hover {
+            color: #3b82f6;
+            text-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+        }
+
+        .connectx-desc {
+            font-size: 0.8rem;
+            color: #64748b;
+            margin-bottom: 5px;
+        }
+
+        .connectx-specs {
+            font-size: 0.72rem;
+            color: #475569;
+            padding-top: 5px;
+            border-top: 1px solid rgba(59, 130, 246, 0.15);
+            line-height: 1.3;
+        }
+
+        .application-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .app-item {
+            background: rgba(34, 197, 94, 0.05);
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 3px solid #22c55e;
+        }
+
+        .app-title {
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 6px;
+        }
+
+        .app-desc {
+            font-size: 0.78rem;
+            color: #64748b;
+            line-height: 1.5;
+            margin-bottom: 6px;
+        }
+
+        .app-features {
+            font-size: 0.72rem;
+            color: #475569;
+            line-height: 1.4;
+            padding-top: 6px;
+            border-top: 1px solid rgba(34, 197, 94, 0.15);
+        }
+
+        .app-features strong {
+            color: #22c55e;
+            font-weight: 600;
+        }
+
+        /* 产品图片滚动展示 */
+        .product-showcase {
+            margin-top: 15px;
+            overflow: hidden;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.5);
+            padding: 15px 0;
+            position: relative;
+        }
+
+        .product-showcase::before,
+        .product-showcase::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            width: 80px;
+            height: 100%;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .product-showcase::before {
+            left: 0;
+            background: linear-gradient(to right, rgba(255, 255, 255, 0.9), transparent);
+        }
+
+        .product-showcase::after {
+            right: 0;
+            background: linear-gradient(to left, rgba(255, 255, 255, 0.9), transparent);
+        }
+
+        .showcase-track {
+            display: flex;
+            gap: 20px;
+            animation: scroll-left 30s linear infinite;
+            width: fit-content;
+        }
+
+        .showcase-track:hover {
+            animation-play-state: paused;
+        }
+
+        .showcase-item {
+            flex-shrink: 0;
+            width: 240px;
+            height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            border-radius: 8px;
+            padding: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease;
+        }
+
+        .showcase-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+        }
+
+        .showcase-item img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        @keyframes scroll-left {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+
+        /* 总结区域 */
+        .summary-section {
+            background: linear-gradient(45deg, rgba(59, 130, 246, 0.1), rgba(6, 182, 212, 0.1));
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .summary-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .summary-points {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .summary-point {
+            text-align: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 12px;
+        }
+
+        .summary-point-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 8px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #3b82f6;
+        }
+
+        .summary-point-desc {
+            font-size: 0.8rem;
+            color: #64748b;
+            line-height: 1.4;
+        }
+
+        /* 底部信息 */
+        .slide-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .presenter-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .presenter-name {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .presenter-title {
+            font-size: 0.9rem;
+            background: linear-gradient(90deg, #3b82f6, #06b6d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 500;
+        }
+
+        .slide-number {
+            background: linear-gradient(45deg, rgba(59, 130, 246, 0.1), rgba(6, 182, 212, 0.1));
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: #475569;
+        }
+
+        /* 导航控制 */
+        .navigation-controls {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .nav-button {
+            background: linear-gradient(45deg, rgba(59, 130, 246, 0.1), rgba(6, 182, 212, 0.1));
+            border: 1px solid transparent;
+            color: #3b82f6;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-button::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            padding: 1px;
+            background: linear-gradient(45deg, #3b82f6, #06b6d4);
+            border-radius: inherit;
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask-composite: xor;
+            -webkit-mask-composite: xor;
+        }
+
+        .nav-button:hover {
+            background: linear-gradient(45deg, #3b82f6, #06b6d4);
+            color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+        }
+
+        .nav-hint {
+            color: #64748b;
+            font-size: 0.8rem;
+        }
+
+        /* 动画效果 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .content-section {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .content-section:nth-child(1) { animation-delay: 0.1s; }
+        .content-section:nth-child(2) { animation-delay: 0.2s; }
+
+        /* 图片提示框 */
+        .image-tooltip {
+            position: absolute;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.98);
+            border: 2px solid #3b82f6;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 20px 40px rgba(59, 130, 246, 0.3);
+            backdrop-filter: blur(10px);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            pointer-events: none;
+            min-width: 300px;
+            max-width: 400px;
+        }
+
+        .image-tooltip.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .tooltip-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 10px;
+            text-align: center;
+            background: linear-gradient(90deg, #3b82f6, #06b6d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .tooltip-image {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 10px;
+        }
+
+        .tooltip-description {
+            font-size: 0.9rem;
+            color: #64748b;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        .tooltip-loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+
+        .tooltip-error {
+            text-align: center;
+            padding: 20px;
+            color: #ef4444;
+            font-size: 0.9rem;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .slide-container {
+                padding: 50px 60px;
+            }
+            .content-main {
+                gap: 30px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .content-main {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            .main-title {
+                font-size: 2.5rem;
+            }
+            .slide-container {
+                padding: 40px 30px;
+            }
+            .summary-points {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            .connectx-series {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="ppt-background"></div>
+    <div class="decoration-lines"></div>
+
+    <div class="slide-container">
+        <header class="slide-header">
+            <div class="header-left">
+                <div class="nvidia-logo">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="100" height="67" viewBox="0 0 48 32" fill="none">
+                        <path d="M17.9101 9.54961V6.65962C18.1893 6.64003 18.4704 6.624 18.7567 6.6151C26.6044 6.36581 31.7531 13.4083 31.7531 13.4083C31.7531 13.4083 26.1926 21.1897 20.2308 21.1897C19.3718 21.1897 18.6029 21.0508 17.9101 20.8158V12.0496C20.9661 12.4218 21.5794 13.7804 23.4158 16.8645L27.5005 13.394C27.5005 13.394 24.5188 9.45345 19.492 9.45345C18.9458 9.45345 18.4227 9.49263 17.9083 9.54783L17.9101 9.54961ZM17.9083 0V4.31807C18.1893 4.29492 18.4721 4.27711 18.7549 4.26643C29.6675 3.89606 36.7781 13.2836 36.7781 13.2836C36.7781 13.2836 28.6123 23.2873 20.1035 23.2873C19.3241 23.2873 18.5941 23.2143 17.9083 23.0932V25.7624C18.4951 25.8372 19.1031 25.8817 19.7359 25.8817C27.6525 25.8817 33.3792 21.8094 38.9239 16.9874C39.843 17.7281 43.606 19.5319 44.3802 20.3225C39.1077 24.7688 26.8236 28.3515 19.8579 28.3515C19.1862 28.3515 18.5411 28.3105 17.9083 28.25V32H48V0.00178103H17.9101L17.9083 0ZM17.9083 20.814V23.0932C10.5856 21.7773 8.55293 14.1098 8.55293 14.1098C8.55293 14.1098 12.0685 10.1853 17.9083 9.54961V12.0496C17.9083 12.0496 17.9012 12.0496 17.8977 12.0496C14.8329 11.6793 12.4397 14.5639 12.4397 14.5639C12.4397 14.5639 13.7812 19.4197 17.9101 20.8175L17.9083 20.814ZM4.90481 13.7804C4.90481 13.7804 9.24403 7.32914 17.9101 6.6614V4.32163C8.31255 5.09799 0 13.2872 0 13.2872C0 13.2872 4.70685 26.9982 17.9101 28.2535V25.766C8.22064 24.5373 4.90481 13.7804 4.90481 13.7804Z" fill="#76B900"/>
+                    </svg>
+                </div>
+                <div class="slide-title">
+                    <div class="title-content">
+                        <h1 class="main-title">网络适配器</h1>
+                        <p class="subtitle">ConnectX 系列高性能网络连接解决方案</p>
+                    </div>
+                </div>
+            </div>
+            <div class="breadcrumb">
+                <a href="catalog.html">培训目录</a>
+                <span>></span>
+                <span>网络适配器</span>
+            </div>
+        </header>
+
+        <main class="content-main">
+            <div class="content-section">
+                <h3 class="section-title">
+                    <span class="section-icon"></span>
+                    ConnectX 产品系列
+                </h3>
+                <div class="section-content">
+                    <p>NVIDIA ConnectX 系列是业界领先的网络适配器产品线，提供从入门级到旗舰级的完整解决方案。</p>
+                    <div class="connectx-series">
+                        <div class="connectx-card">
+                            <div class="connectx-model" data-image="https://resource.fs.com/mall/mainImg/20250820105824bpf4s8.jpg.webp">ConnectX-8</div>
+                            <div class="connectx-desc">最新旗舰级产品</div>
+                            <div class="connectx-specs">800Gb/s | XDR InfiniBand</div>
+                        </div>
+                        <div class="connectx-card">
+                            <div class="connectx-model" data-image="https://www.nvidia.com/en-us/networking/infiniband-adapters/_jcr_content/root/responsivegrid/nv_container/nv_container_copy_co/nv_image.coreimg.100.850.png/1716393233781/connectx-7-2c50-d-2x.png">ConnectX-7</div>
+                            <div class="connectx-desc">高性能AI集群互连</div>
+                            <div class="connectx-specs">400Gb/s | PCIe 5.0</div>
+                        </div>
+                        <div class="connectx-card">
+                            <div class="connectx-model" data-image="https://www.nvidia.com/en-us/networking/infiniband-adapters/_jcr_content/root/responsivegrid/nv_container/nv_container_copy_co_2091409932/nv_image.coreimg.100.850.jpeg/1716393233971/nvidia-mellanox-connectx-6-infiniband-adapter-2c50-d-2x.jpeg">ConnectX-6</div>
+                            <div class="connectx-desc">高速存储解决方案</div>
+                            <div class="connectx-specs">200Gb/s | HDR/Ethernet</div>
+                        </div>
+                        <div class="connectx-card">
+                            <div class="connectx-model" data-image="https://www.nvidia.com/en-us/networking/infiniband-adapters/_jcr_content/root/responsivegrid/nv_container/nv_container_copy_co_519389783/nv_image.coreimg.100.850.jpeg/1716393234164/nvidia-mellanox-connectx-5-infiniband-adapter-2c50-d-2x.jpeg">ConnectX-5</div>
+                            <div class="connectx-desc">经济型选择</div>
+                            <div class="connectx-specs">25/100Gb/s | EDR/Ethernet</div>
+                        </div>
+                        <div class="connectx-card">
+                            <div class="connectx-model" data-image="https://www.nvidia.com/content/dam/en-zz/Solutions/networking/Ethernet/ethernet-adapters/connectx4-lx/nvidia-mellanox-connectx4-lx-2c50-p@2x.jpg">ConnectX-4</div>
+                            <div class="connectx-desc">云和虚拟化</div>
+                            <div class="connectx-specs">10/25Gb/s | PCIe 3.0</div>
+                        </div>
+                        <div class="connectx-card">
+                            <div class="connectx-model" data-image="https://www.nvidia.com/en-us/networking/infiniband-adapters/_jcr_content/root/responsivegrid/nv_container/nv_container_1913768/nv_teaser.coreimg.100.850.jpeg/1716393234769/nvidia-mellanox-connectx-6dx-ocp-smartnic-3c33-d-2x.jpeg">PCIe/OCP</div>
+                            <div class="connectx-desc">多种接口标准</div>
+                            <div class="connectx-specs">PCIe 4.0/5.0 | OCP 3.0</div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 15px; padding: 12px; background: rgba(59, 130, 246, 0.05); border-radius: 8px; border-left: 3px solid #3b82f6;">
+                        <div style="font-size: 0.85rem; font-weight: 600; color: #1e293b; margin-bottom: 6px;">产品特性</div>
+                        <div style="font-size: 0.8rem; color: #64748b; line-height: 1.5;">
+                            支持 RDMA、RoCE、GPUDirect、SR-IOV 等先进技术 | 硬件卸载引擎 | 低延迟优化 | 广泛的操作系统支持
+                        </div>
+                    </div>
+
+                    <!-- 图片滚动展示 -->
+                    <div class="product-showcase">
+                        <div class="showcase-track">
+                            <div class="showcase-item"><img src="https://resource.fs.com/mall/mainImg/20250820105824bpf4s8.jpg.webp" alt="ConnectX-8"></div>
+                            <div class="showcase-item"><img src="https://www.nvidia.com/en-us/networking/infiniband-adapters/_jcr_content/root/responsivegrid/nv_container/nv_container_copy_co/nv_image.coreimg.100.850.png/1716393233781/connectx-7-2c50-d-2x.png" alt="ConnectX-7"></div>
+                            <div class="showcase-item"><img src="https://www.nvidia.com/en-us/networking/infiniband-adapters/_jcr_content/root/responsivegrid/nv_container/nv_container_copy_co_2091409932/nv_image.coreimg.100.850.jpeg/1716393233971/nvidia-mellanox-connectx-6-infiniband-adapter-2c50-d-2x.jpeg" alt="ConnectX-6"></div>
+                            <div class="showcase-item"><img src="https://www.nvidia.com/en-us/networking/infiniband-adapters/_jcr_content/root/responsivegrid/nv_container/nv_container_copy_co_519389783/nv_image.coreimg.100.850.jpeg/1716393234164/nvidia-mellanox-connectx-5-infiniband-adapter-2c50-d-2x.jpeg" alt="ConnectX-5"></div>
+                            <div class="showcase-item"><img src="https://www.nvidia.com/content/dam/en-zz/Solutions/networking/Ethernet/ethernet-adapters/connectx4-lx/nvidia-mellanox-connectx4-lx-2c50-p@2x.jpg" alt="ConnectX-4"></div>
+                            <div class="showcase-item"><img src="https://www.nvidia.com/en-us/networking/infiniband-adapters/_jcr_content/root/responsivegrid/nv_container/nv_container_1913768/nv_teaser.coreimg.100.850.jpeg/1716393234769/nvidia-mellanox-connectx-6dx-ocp-smartnic-3c33-d-2x.jpeg" alt="OCP"></div>
+                            <!-- 重复一遍实现无缝循环 -->
+                            <div class="showcase-item"><img src="https://resource.fs.com/mall/mainImg/20250820105824bpf4s8.jpg.webp" alt="ConnectX-8"></div>
+                            <div class="showcase-item"><img src="https://www.nvidia.com/en-us/networking/infiniband-adapters/_jcr_content/root/responsivegrid/nv_container/nv_container_copy_co/nv_image.coreimg.100.850.png/1716393233781/connectx-7-2c50-d-2x.png" alt="ConnectX-7"></div>
+                            <div class="showcase-item"><img src="https://www.nvidia.com/en-us/networking/infiniband-adapters/_jcr_content/root/responsivegrid/nv_container/nv_container_copy_co_2091409932/nv_image.coreimg.100.850.jpeg/1716393233971/nvidia-mellanox-connectx-6-infiniband-adapter-2c50-d-2x.jpeg" alt="ConnectX-6"></div>
+                            <div class="showcase-item"><img src="https://www.nvidia.com/en-us/networking/infiniband-adapters/_jcr_content/root/responsivegrid/nv_container/nv_container_copy_co_519389783/nv_image.coreimg.100.850.jpeg/1716393234164/nvidia-mellanox-connectx-5-infiniband-adapter-2c50-d-2x.jpeg" alt="ConnectX-5"></div>
+                            <div class="showcase-item"><img src="https://www.nvidia.com/content/dam/en-zz/Solutions/networking/Ethernet/ethernet-adapters/connectx4-lx/nvidia-mellanox-connectx4-lx-2c50-p@2x.jpg" alt="ConnectX-4"></div>
+                            <div class="showcase-item"><img src="https://www.nvidia.com/en-us/networking/infiniband-adapters/_jcr_content/root/responsivegrid/nv_container/nv_container_1913768/nv_teaser.coreimg.100.850.jpeg/1716393234769/nvidia-mellanox-connectx-6dx-ocp-smartnic-3c33-d-2x.jpeg" alt="OCP"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-section">
+                <h3 class="section-title">
+                    <span class="section-icon"></span>
+                    应用场景
+                </h3>
+                <div class="section-content">
+                    <p>ConnectX 适配器广泛应用于各种计算和网络场景，提供高性能、低延迟的连接能力。</p>
+                    <div class="application-grid">
+                        <div class="app-item">
+                            <div class="app-title">超大规模云计算</div>
+                            <div class="app-desc">支撑 AWS、Azure、Google Cloud 等大型云服务提供商的基础设施，实现高密度计算和网络虚拟化</div>
+                            <div class="app-features"><strong>关键特性:</strong> SR-IOV | 网络虚拟化 | 多租户隔离 | QoS保障</div>
+                        </div>
+                        <div class="app-item">
+                            <div class="app-title">机器学习 / 深度学习</div>
+                            <div class="app-desc">加速大规模 AI 训练集群的数据传输，支持 GPUDirect RDMA 技术，减少 CPU 开销和延迟</div>
+                            <div class="app-features"><strong>关键特性:</strong> GPUDirect | RDMA | 集合通信加速 | 低延迟</div>
+                        </div>
+                        <div class="app-item">
+                            <div class="app-title">高性能计算 (HPC)</div>
+                            <div class="app-desc">服务于科学计算、天气模拟、基因测序等大规模并行计算任务，提供 MPI 通信优化</div>
+                            <div class="app-features"><strong>关键特性:</strong> InfiniBand HDR/NDR | MPI优化 | 集体操作加速</div>
+                        </div>
+                        <div class="app-item">
+                            <div class="app-title">分布式存储系统</div>
+                            <div class="app-desc">支持 Ceph、GlusterFS、NFS over RDMA 等分布式存储方案，提升 IOPS 和吞吐量</div>
+                            <div class="app-features"><strong>关键特性:</strong> NVMe-oF | iSER | RoCE v2 | 零拷贝技术</div>
+                        </div>
+                        <div class="app-item">
+                            <div class="app-title">电信 / 边缘计算</div>
+                            <div class="app-desc">为 5G 核心网、边缘数据中心、vRAN 提供低延迟网络连接，支持网络功能虚拟化</div>
+                            <div class="app-features"><strong>关键特性:</strong> 低延迟 | 网络切片 | NFV加速 | 精确时钟同步</div>
+                        </div>
+                        <div class="app-item">
+                            <div class="app-title">金融交易系统</div>
+                            <div class="app-desc">支持高频交易、算法交易平台，提供纳秒级延迟和确定性网络性能</div>
+                            <div class="app-features"><strong>关键特性:</strong> 超低延迟 | 硬件时间戳 | 流量整形 | 丢包恢复</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <div class="summary-section">
+            <h3 class="summary-title">核心技术优势</h3>
+            <div class="summary-points">
+                <div class="summary-point">
+                    <div class="summary-point-title">超低延迟</div>
+                    <div class="summary-point-desc">纳秒级网络延迟，关键任务应用的理想选择</div>
+                </div>
+                <div class="summary-point">
+                    <div class="summary-point-title">高带宽</div>
+                    <div class="summary-point-desc">支持以太网和 InfiniBand 高速连接</div>
+                </div>
+                <div class="summary-point">
+                    <div class="summary-point-title">硬件卸载</div>
+                    <div class="summary-point-desc">减轻 CPU 负担，提高整体系统性能</div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="slide-footer">
+            <div class="presenter-info">
+                <div class="presenter-name">Vincent</div>
+                <div class="presenter-title">技术总监</div>
+            </div>
+            <div class="slide-number">5 / 9</div>
+        </footer>
+    </div>
+
+    <div class="navigation-controls">
+        <button class="nav-button" onclick="goBack()">← 返回目录</button>
+        <button class="nav-button" onclick="nextModule()">下一模块 →</button>
+        <div class="nav-hint">使用左右箭头键导航</div>
+    </div>
+
+    <script>
+        function goBack() {
+            window.location.href = 'catalog.html';
+        }
+
+        function nextModule() {
+            window.location.href = 'bluefield.html';
+        }
+
+        // 键盘导航
+        document.addEventListener('keydown', function(e) {
+            if (e.code === 'ArrowLeft') {
+                e.preventDefault();
+                goBack();
+            } else if (e.code === 'ArrowRight' || e.code === 'Space') {
+                e.preventDefault();
+                nextModule();
+            } else if (e.code === 'Escape') {
+                goBack();
+            }
+        });
+
+        // 面包屑导航
+        document.querySelector('.breadcrumb a').addEventListener('click', function(e) {
+            e.preventDefault();
+            goBack();
+        });
+
+        // 图片悬停功能
+        document.addEventListener('DOMContentLoaded', function() {
+            // 创建提示框元素
+            const tooltip = document.createElement('div');
+            tooltip.className = 'image-tooltip';
+            document.body.appendChild(tooltip);
+
+            // 获取所有ConnectX模型元素
+            const connectxModels = document.querySelectorAll('.connectx-model[data-image]');
+
+            connectxModels.forEach(model => {
+                model.addEventListener('mouseenter', function(e) {
+                    const imageName = this.getAttribute('data-image');
+                    const modelName = this.textContent.trim();
+
+                    showImageTooltip(e, imageName, modelName);
+                });
+
+                model.addEventListener('mouseleave', function() {
+                    hideImageTooltip();
+                });
+
+                model.addEventListener('mousemove', function(e) {
+                    updateTooltipPosition(e);
+                });
+            });
+
+            function showImageTooltip(e, imageName, modelName) {
+                // 设置提示框内容
+                tooltip.innerHTML = `
+                    <div class="tooltip-title">${modelName}</div>
+                    <div class="tooltip-loading">正在加载图片...</div>
+                `;
+
+                // 显示提示框
+                tooltip.classList.add('show');
+                updateTooltipPosition(e);
+
+                // 创建并加载图片
+                const img = new Image();
+                img.onload = function() {
+                    tooltip.innerHTML = `
+                        <div class="tooltip-title">${modelName} 网络适配器</div>
+                        <img src="${imageName}" alt="${modelName}" class="tooltip-image">
+                        <div class="tooltip-description">NVIDIA ${modelName} 系列高性能网络适配器</div>
+                    `;
+                };
+
+                img.onerror = function() {
+                    tooltip.innerHTML = `
+                        <div class="tooltip-title">${modelName}</div>
+                        <div class="tooltip-error">📷 图片加载失败<br>可能是网络问题或图片链接无效</div>
+                    `;
+                };
+
+                img.src = imageName;
+            }
+
+            function hideImageTooltip() {
+                tooltip.classList.remove('show');
+            }
+
+            function updateTooltipPosition(e) {
+                const tooltipRect = tooltip.getBoundingClientRect();
+                const viewportWidth = window.innerWidth;
+                const viewportHeight = window.innerHeight;
+
+                let x = e.clientX + 15;
+                let y = e.clientY - tooltipRect.height / 2;
+
+                // 防止提示框超出右边界
+                if (x + tooltipRect.width > viewportWidth - 20) {
+                    x = e.clientX - tooltipRect.width - 15;
+                }
+
+                // 防止提示框超出上下边界
+                if (y < 20) {
+                    y = 20;
+                } else if (y + tooltipRect.height > viewportHeight - 20) {
+                    y = viewportHeight - tooltipRect.height - 20;
+                }
+
+                tooltip.style.left = x + 'px';
+                tooltip.style.top = y + 'px';
+            }
+        });
+    </script>
+</body>
+</html>

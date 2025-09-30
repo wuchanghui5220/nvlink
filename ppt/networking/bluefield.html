@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlueField DPU - NVIDIA Networking 培训</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f8fafb;
+            color: #2c3e50;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* PPT 样式背景 */
+        .ppt-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #ffffff 0%, #f1f8ff 50%, #f0f9f4 100%);
+            overflow: hidden;
+        }
+
+        .ppt-background::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 60%;
+            height: 100%;
+            background: linear-gradient(45deg, #3b82f6 0%, #06b6d4 30%, #22c55e 70%, #76b900 100%);
+            clip-path: polygon(30% 0%, 100% 0%, 100% 100%, 0% 100%);
+            opacity: 0.12;
+        }
+
+        /* 创意装饰元素 - 圆点网格 */
+        .decoration-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        /* 右上角圆点装饰 */
+        .decoration-lines::before {
+            content: '';
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            width: 8px;
+            height: 8px;
+            background: linear-gradient(135deg, #3b82f6, #06b6d4);
+            border-radius: 50%;
+            box-shadow:
+                20px 0 0 rgba(59, 130, 246, 0.4),
+                40px 0 0 rgba(59, 130, 246, 0.3),
+                60px 0 0 rgba(59, 130, 246, 0.2),
+                0 20px 0 rgba(59, 130, 246, 0.4),
+                20px 20px 0 rgba(59, 130, 246, 0.3),
+                40px 20px 0 rgba(59, 130, 246, 0.2),
+                0 40px 0 rgba(59, 130, 246, 0.3),
+                20px 40px 0 rgba(59, 130, 246, 0.2);
+            opacity: 0.6;
+        }
+
+        /* 左下角几何图形装饰 */
+        .decoration-lines::after {
+            content: '';
+            position: absolute;
+            bottom: 40px;
+            left: 40px;
+            width: 60px;
+            height: 60px;
+            border: 3px solid rgba(34, 197, 94, 0.2);
+            border-radius: 12px;
+            transform: rotate(15deg);
+            box-shadow:
+                80px 0 0 rgba(34, 197, 94, 0.15),
+                160px 0 0 rgba(34, 197, 94, 0.1);
+        }
+
+        /* 主容器 */
+        .slide-container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 40px 80px 60px;
+        }
+
+        /* 头部区域 - 整合LOGO、标题、面包屑 */
+        .slide-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nvidia-logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .nvidia-logo svg {
+            height: 30px;
+            width: auto;
+        }
+
+        /* 标题区域 - 紧凑设计 */
+        .slide-title {
+            display: flex;
+            align-items: center;
+            margin-left: 20px;
+        }
+
+        .module-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 10px;
+            background: linear-gradient(45deg, #3b82f6, #06b6d4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+            flex-shrink: 0;
+        }
+
+        .title-content {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .main-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            line-height: 1.1;
+            background: linear-gradient(90deg, #3b82f6 0%, #06b6d4 40%, #22c55e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 0.85rem;
+            color: #64748b;
+            font-weight: 400;
+        }
+
+        .breadcrumb {
+            font-size: 0.85rem;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .breadcrumb a {
+            color: #3b82f6;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .breadcrumb a:hover {
+            color: #1e40af;
+        }
+
+        /* 内容区域 */
+        .content-main {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 25px;
+        }
+
+        .content-section {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 16px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(59, 130, 246, 0.1);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            max-height: calc(100vh - 380px);
+        }
+
+        .content-section:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 35px rgba(59, 130, 246, 0.15);
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-icon {
+            display: none;
+        }
+
+        .section-content {
+            color: #64748b;
+            line-height: 1.6;
+            flex: 1;
+        }
+
+        .section-content p {
+            margin-bottom: 15px;
+        }
+
+        /* DOCA 特性列表 */
+        .doca-features {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .feature-item {
+            background: rgba(59, 130, 246, 0.05);
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 3px solid #3b82f6;
+            display: flex;
+            align-items: start;
+            gap: 10px;
+        }
+
+        .feature-icon {
+            display: none;
+        }
+
+        .feature-text {
+            flex: 1;
+        }
+
+        .feature-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 3px;
+        }
+
+        .feature-desc {
+            font-size: 0.85rem;
+            color: #64748b;
+            line-height: 1.4;
+        }
+
+        /* DPU 硬件卡片 */
+        .dpu-hardware {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .dpu-card {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(6, 182, 212, 0.05));
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 3px solid #06b6d4;
+        }
+
+        .dpu-model {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+
+        .dpu-specs {
+            font-size: 0.85rem;
+            color: #64748b;
+            line-height: 1.5;
+        }
+
+        /* 应用场景网格 */
+        .application-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .app-item {
+            background: rgba(34, 197, 94, 0.05);
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 3px solid #22c55e;
+        }
+
+        .app-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .app-desc {
+            font-size: 0.8rem;
+            color: #64748b;
+            line-height: 1.4;
+        }
+
+        /* 资源链接 */
+        .resource-links {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .resource-link {
+            background: rgba(118, 185, 0, 0.05);
+            padding: 10px 15px;
+            border-radius: 8px;
+            border-left: 3px solid #76b900;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s ease;
+        }
+
+        .resource-link:hover {
+            background: rgba(118, 185, 0, 0.1);
+            transform: translateX(5px);
+        }
+
+        .resource-icon {
+            display: none;
+        }
+
+        .resource-info {
+            flex: 1;
+        }
+
+        .resource-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 2px;
+        }
+
+        .resource-desc {
+            font-size: 0.75rem;
+            color: #64748b;
+        }
+
+        /* 总结区域 */
+        .summary-section {
+            background: linear-gradient(45deg, rgba(59, 130, 246, 0.1), rgba(6, 182, 212, 0.1));
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .summary-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .summary-points {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .summary-point {
+            text-align: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 12px;
+        }
+
+        .summary-point-icon {
+            display: none;
+        }
+
+        .summary-point-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 8px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #3b82f6;
+        }
+
+        .summary-point-desc {
+            font-size: 0.8rem;
+            color: #64748b;
+            line-height: 1.4;
+        }
+
+        /* 底部信息 */
+        .slide-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .presenter-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .presenter-name {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .presenter-title {
+            font-size: 0.9rem;
+            background: linear-gradient(90deg, #3b82f6, #06b6d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 500;
+        }
+
+        .slide-number {
+            background: linear-gradient(45deg, rgba(59, 130, 246, 0.1), rgba(6, 182, 212, 0.1));
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: #475569;
+        }
+
+        /* 导航控制 */
+        .navigation-controls {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .nav-button {
+            background: linear-gradient(45deg, rgba(59, 130, 246, 0.1), rgba(6, 182, 212, 0.1));
+            border: 1px solid transparent;
+            color: #3b82f6;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-button::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            padding: 1px;
+            background: linear-gradient(45deg, #3b82f6, #06b6d4);
+            border-radius: inherit;
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask-composite: xor;
+            -webkit-mask-composite: xor;
+        }
+
+        .nav-button:hover {
+            background: linear-gradient(45deg, #3b82f6, #06b6d4);
+            color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+        }
+
+        .nav-hint {
+            color: #64748b;
+            font-size: 0.8rem;
+        }
+
+        /* 动画效果 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .content-section {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .content-section:nth-child(1) { animation-delay: 0.1s; }
+        .content-section:nth-child(2) { animation-delay: 0.2s; }
+
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .slide-container {
+                padding: 50px 60px;
+            }
+            .content-main {
+                gap: 30px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .content-main {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            .main-title {
+                font-size: 2.5rem;
+            }
+            .slide-container {
+                padding: 40px 30px;
+            }
+            .summary-points {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            .application-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="ppt-background"></div>
+    <div class="decoration-lines"></div>
+
+    <div class="slide-container">
+        <header class="slide-header">
+            <div class="header-left">
+                <div class="nvidia-logo">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="100" height="67" viewBox="0 0 48 32" fill="none">
+                        <path d="M17.9101 9.54961V6.65962C18.1893 6.64003 18.4704 6.624 18.7567 6.6151C26.6044 6.36581 31.7531 13.4083 31.7531 13.4083C31.7531 13.4083 26.1926 21.1897 20.2308 21.1897C19.3718 21.1897 18.6029 21.0508 17.9101 20.8158V12.0496C20.9661 12.4218 21.5794 13.7804 23.4158 16.8645L27.5005 13.394C27.5005 13.394 24.5188 9.45345 19.492 9.45345C18.9458 9.45345 18.4227 9.49263 17.9083 9.54783L17.9101 9.54961ZM17.9083 0V4.31807C18.1893 4.29492 18.4721 4.27711 18.7549 4.26643C29.6675 3.89606 36.7781 13.2836 36.7781 13.2836C36.7781 13.2836 28.6123 23.2873 20.1035 23.2873C19.3241 23.2873 18.5941 23.2143 17.9083 23.0932V25.7624C18.4951 25.8372 19.1031 25.8817 19.7359 25.8817C27.6525 25.8817 33.3792 21.8094 38.9239 16.9874C39.843 17.7281 43.606 19.5319 44.3802 20.3225C39.1077 24.7688 26.8236 28.3515 19.8579 28.3515C19.1862 28.3515 18.5411 28.3105 17.9083 28.25V32H48V0.00178103H17.9101L17.9083 0ZM17.9083 20.814V23.0932C10.5856 21.7773 8.55293 14.1098 8.55293 14.1098C8.55293 14.1098 12.0685 10.1853 17.9083 9.54961V12.0496C17.9083 12.0496 17.9012 12.0496 17.8977 12.0496C14.8329 11.6793 12.4397 14.5639 12.4397 14.5639C12.4397 14.5639 13.7812 19.4197 17.9101 20.8175L17.9083 20.814ZM4.90481 13.7804C4.90481 13.7804 9.24403 7.32914 17.9101 6.6614V4.32163C8.31255 5.09799 0 13.2872 0 13.2872C0 13.2872 4.70685 26.9982 17.9101 28.2535V25.766C8.22064 24.5373 4.90481 13.7804 4.90481 13.7804Z" fill="#76B900"/>
+                    </svg>
+                </div>
+                <div class="slide-title">
+                    <div class="title-content">
+                        <h1 class="main-title">BlueField DPU</h1>
+                        <p class="subtitle">数据处理单元 - 数据中心基础设施芯片</p>
+                    </div>
+                </div>
+            </div>
+            <div class="breadcrumb">
+                <a href="catalog.html">培训目录</a>
+                <span>></span>
+                <span>BlueField DPU</span>
+            </div>
+        </header>
+
+        <main class="content-main">
+            <div class="content-section">
+                <h3 class="section-title">
+                    <span class="section-icon">💻</span>
+                    DOCA 软件平台
+                </h3>
+                <div class="section-content">
+                    <p><strong>DOCA</strong> (Data Center Infrastructure on Chip Architecture) 是 NVIDIA DPU 的软件开发框架和工具集。</p>
+                    <div class="doca-features">
+                        <div class="feature-item">
+                            <span class="feature-icon">📚</span>
+                            <div class="feature-text">
+                                <div class="feature-title">SDK 和库</div>
+                                <div class="feature-desc">提供完整的开发工具和 API 库</div>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">🔧</span>
+                            <div class="feature-text">
+                                <div class="feature-title">基础设施加速</div>
+                                <div class="feature-desc">网络、存储、安全功能硬件卸载</div>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">🛡️</span>
+                            <div class="feature-text">
+                                <div class="feature-title">安全增强</div>
+                                <div class="feature-desc">零信任架构和数据加密处理</div>
+                            </div>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">📊</span>
+                            <div class="feature-text">
+                                <div class="feature-title">多版本支持</div>
+                                <div class="feature-desc">DOCA 3.1+ 及多个 LTS 长期支持版本</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-section">
+                <h3 class="section-title">
+                    <span class="section-icon">🖥️</span>
+                    DPU 硬件
+                </h3>
+                <div class="section-content">
+                    <p>BlueField DPU 将强大的 Arm 处理器、高性能网络和加速引擎集成在一颗芯片上。</p>
+                    <div class="dpu-hardware">
+                        <div class="dpu-card">
+                            <div class="dpu-model">BlueField-3</div>
+                            <div class="dpu-specs">
+                                • 最新一代 DPU 产品<br>
+                                • 支持 400Gb/s 网络连接<br>
+                                • InfiniBand 和 Ethernet 双模式<br>
+                                • 增强的 AI 和加密加速能力
+                            </div>
+                        </div>
+                        <div class="dpu-card">
+                            <div class="dpu-model">BlueField-2</div>
+                            <div class="dpu-specs">
+                                • 成熟稳定的企业级方案<br>
+                                • 支持 200Gb/s 网络带宽<br>
+                                • 集成 BMC 管理功能<br>
+                                • 广泛的生态系统支持
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-section">
+                <h3 class="section-title">
+                    <span class="section-icon">🎯</span>
+                    应用场景
+                </h3>
+                <div class="section-content">
+                    <p>BlueField DPU 适用于多种数据中心和边缘计算场景，提供卓越的性能和安全性。</p>
+                    <div class="application-grid">
+                        <div class="app-item">
+                            <div class="app-title">边缘计算</div>
+                            <div class="app-desc">5G 网络和边缘数据中心</div>
+                        </div>
+                        <div class="app-item">
+                            <div class="app-title">云数据中心</div>
+                            <div class="app-desc">虚拟化和容器化基础设施</div>
+                        </div>
+                        <div class="app-item">
+                            <div class="app-title">网络安全</div>
+                            <div class="app-desc">防火墙和入侵检测系统</div>
+                        </div>
+                        <div class="app-item">
+                            <div class="app-title">加速网络</div>
+                            <div class="app-desc">SDN 和 NFV 网络功能虚拟化</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-section">
+                <h3 class="section-title">
+                    <span class="section-icon">📖</span>
+                    相关资源
+                </h3>
+                <div class="section-content">
+                    <p>NVIDIA 提供完善的文档、工具和支持资源，帮助开发者快速上手。</p>
+                    <div class="resource-links">
+                        <a href="https://docs.nvidia.com/doca/sdk/index.html" class="resource-link" target="_blank">
+                            <span class="resource-icon">📘</span>
+                            <div class="resource-info">
+                                <div class="resource-title">DOCA SDK 文档</div>
+                                <div class="resource-desc">完整的软件开发工具包文档</div>
+                            </div>
+                        </a>
+                        <a href="https://docs.nvidia.com/networking/dpu-doca/index.html" class="resource-link" target="_blank">
+                            <span class="resource-icon">🔗</span>
+                            <div class="resource-info">
+                                <div class="resource-title">DPU 产品文档</div>
+                                <div class="resource-desc">硬件规格和部署指南</div>
+                            </div>
+                        </a>
+                        <a href="https://docs.nvidia.com/doca/sdk/api/index.html" class="resource-link" target="_blank">
+                            <span class="resource-icon">⚙️</span>
+                            <div class="resource-info">
+                                <div class="resource-title">API 参考手册</div>
+                                <div class="resource-desc">DOCA 3.1+ API 接口文档</div>
+                            </div>
+                        </a>
+                        <a href="#" class="resource-link" onclick="alert('BSP v4.12.0 固件和驱动资源'); return false;">
+                            <span class="resource-icon">🔧</span>
+                            <div class="resource-info">
+                                <div class="resource-title">固件与驱动</div>
+                                <div class="resource-desc">BlueField 平台软件 BSP</div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <div class="summary-section">
+            <h3 class="summary-title">核心价值</h3>
+            <div class="summary-points">
+                <div class="summary-point">
+                    <span class="summary-point-icon">💪</span>
+                    <div class="summary-point-title">基础设施卸载</div>
+                    <div class="summary-point-desc">释放 CPU 资源用于核心业务处理</div>
+                </div>
+                <div class="summary-point">
+                    <span class="summary-point-icon">🛡️</span>
+                    <div class="summary-point-title">增强安全性</div>
+                    <div class="summary-point-desc">硬件级隔离和零信任架构</div>
+                </div>
+                <div class="summary-point">
+                    <span class="summary-point-icon">🔄</span>
+                    <div class="summary-point-title">灵活可编程</div>
+                    <div class="summary-point-desc">通过 DOCA 框架定制化开发</div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="slide-footer">
+            <div class="presenter-info">
+                <div class="presenter-name">Vincent</div>
+                <div class="presenter-title">技术总监</div>
+            </div>
+            <div class="slide-number">6 / 9</div>
+        </footer>
+    </div>
+
+    <div class="navigation-controls">
+        <button class="nav-button" onclick="goBack()">← 返回目录</button>
+        <button class="nav-button" onclick="nextModule()">下一模块 →</button>
+        <div class="nav-hint">使用左右箭头键导航</div>
+    </div>
+
+    <script>
+        function goBack() {
+            window.location.href = 'catalog.html';
+        }
+
+        function nextModule() {
+            window.location.href = 'linkx.html';
+        }
+
+        // 键盘导航
+        document.addEventListener('keydown', function(e) {
+            if (e.code === 'ArrowLeft') {
+                e.preventDefault();
+                goBack();
+            } else if (e.code === 'ArrowRight' || e.code === 'Space') {
+                e.preventDefault();
+                nextModule();
+            } else if (e.code === 'Escape') {
+                goBack();
+            }
+        });
+
+        // 面包屑导航
+        document.querySelector('.breadcrumb a').addEventListener('click', function(e) {
+            e.preventDefault();
+            goBack();
+        });
+    </script>
+</body>
+</html>

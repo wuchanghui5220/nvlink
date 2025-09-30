@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NVIDIA Networking 基础培训</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f8fafb;
+            color: #2c3e50;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* PPT 样式背景 */
+        .ppt-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #ffffff 0%, #f1f8ff 50%, #f0f9f4 100%);
+            overflow: hidden;
+        }
+
+        .ppt-background::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 60%;
+            height: 100%;
+            background: linear-gradient(45deg, #3b82f6 0%, #1e40af 30%, #76b900 70%, #22c55e 100%);
+            clip-path: polygon(30% 0%, 100% 0%, 100% 100%, 0% 100%);
+            opacity: 0.12;
+        }
+
+        /* 装饰线条 */
+        .decoration-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .decoration-lines::before {
+            content: '';
+            position: absolute;
+            top: 50px;
+            left: 50px;
+            width: 200px;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #1e40af);
+            border-radius: 2px;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+        }
+
+        .decoration-lines::after {
+            content: '';
+            position: absolute;
+            bottom: 50px;
+            right: 50px;
+            width: 150px;
+            height: 4px;
+            background: linear-gradient(90deg, #22c55e, #76b900);
+            border-radius: 2px;
+            box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
+        }
+
+        /* 主容器 */
+        .slide-container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 80px 100px;
+        }
+
+        /* 头部区域 */
+        .slide-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 60px;
+        }
+
+        .nvidia-logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .nvidia-logo svg {
+            height: 40px;
+            width: auto;
+        }
+
+        .partner-badge {
+            background: linear-gradient(45deg, rgba(59, 130, 246, 0.1), rgba(34, 197, 94, 0.1));
+            border: 2px solid transparent;
+            background-clip: padding-box;
+            color: #1e40af;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+        }
+
+        .partner-badge::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            padding: 2px;
+            background: linear-gradient(45deg, #3b82f6, #22c55e);
+            border-radius: inherit;
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask-composite: xor;
+            -webkit-mask-composite: xor;
+        }
+
+        /* 主标题区域 */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            max-width: 1000px;
+        }
+
+        .title-section {
+            margin-bottom: 80px;
+        }
+
+        .main-title {
+            font-size: 4.5rem;
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 20px;
+            background: linear-gradient(90deg, #1e40af 0%, #3b82f6 30%, #22c55e 70%, #76b900 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 1.8rem;
+            color: #475569;
+            font-weight: 300;
+            margin-bottom: 40px;
+        }
+
+        .description {
+            font-size: 1.2rem;
+            color: #64748b;
+            line-height: 1.6;
+            max-width: 600px;
+        }
+
+        /* 底部信息 */
+        .slide-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .presenter-info {
+            text-align: left;
+        }
+
+        .presenter-name {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 5px;
+        }
+
+        .presenter-title {
+            font-size: 1rem;
+            background: linear-gradient(90deg, #3b82f6, #22c55e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 500;
+        }
+
+        .slide-number {
+            background: linear-gradient(45deg, rgba(59, 130, 246, 0.1), rgba(34, 197, 94, 0.1));
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: #475569;
+        }
+
+        /* 导航提示 */
+        .navigation-controls {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .nav-button {
+            background: linear-gradient(45deg, rgba(59, 130, 246, 0.1), rgba(34, 197, 94, 0.1));
+            border: 1px solid transparent;
+            color: #1e40af;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-button::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            padding: 1px;
+            background: linear-gradient(45deg, #3b82f6, #22c55e);
+            border-radius: inherit;
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask-composite: xor;
+            -webkit-mask-composite: xor;
+        }
+
+        .nav-button:hover {
+            background: linear-gradient(45deg, #3b82f6, #22c55e);
+            color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+        }
+
+        .nav-hint {
+            color: #64748b;
+            font-size: 0.8rem;
+        }
+
+        /* 动画效果 */
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .slide-header {
+            animation: slideInLeft 0.8s ease;
+        }
+
+        .main-content {
+            animation: fadeInUp 1s ease 0.3s both;
+        }
+
+        .slide-footer {
+            animation: slideInRight 0.8s ease 0.6s both;
+        }
+
+        .navigation-controls {
+            animation: fadeInUp 1s ease 1s both;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .slide-container {
+                padding: 60px 80px;
+            }
+            .main-title {
+                font-size: 3.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .slide-container {
+                padding: 40px 40px;
+            }
+            .slide-header {
+                flex-direction: column;
+                gap: 20px;
+                align-items: flex-start;
+            }
+            .main-title {
+                font-size: 2.8rem;
+            }
+            .subtitle {
+                font-size: 1.4rem;
+            }
+            .slide-footer {
+                flex-direction: column;
+                gap: 20px;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="ppt-background"></div>
+    <div class="decoration-lines"></div>
+
+    <div class="slide-container">
+        <header class="slide-header">
+            <div class="nvidia-logo">
+                <svg xmlns="http://www.w3.org/2000/svg" width="120" height="80" viewBox="0 0 48 32" fill="none">
+                    <path d="M17.9101 9.54961V6.65962C18.1893 6.64003 18.4704 6.624 18.7567 6.6151C26.6044 6.36581 31.7531 13.4083 31.7531 13.4083C31.7531 13.4083 26.1926 21.1897 20.2308 21.1897C19.3718 21.1897 18.6029 21.0508 17.9101 20.8158V12.0496C20.9661 12.4218 21.5794 13.7804 23.4158 16.8645L27.5005 13.394C27.5005 13.394 24.5188 9.45345 19.492 9.45345C18.9458 9.45345 18.4227 9.49263 17.9083 9.54783L17.9101 9.54961ZM17.9083 0V4.31807C18.1893 4.29492 18.4721 4.27711 18.7549 4.26643C29.6675 3.89606 36.7781 13.2836 36.7781 13.2836C36.7781 13.2836 28.6123 23.2873 20.1035 23.2873C19.3241 23.2873 18.5941 23.2143 17.9083 23.0932V25.7624C18.4951 25.8372 19.1031 25.8817 19.7359 25.8817C27.6525 25.8817 33.3792 21.8094 38.9239 16.9874C39.843 17.7281 43.606 19.5319 44.3802 20.3225C39.1077 24.7688 26.8236 28.3515 19.8579 28.3515C19.1862 28.3515 18.5411 28.3105 17.9083 28.25V32H48V0.00178103H17.9101L17.9083 0ZM17.9083 20.814V23.0932C10.5856 21.7773 8.55293 14.1098 8.55293 14.1098C8.55293 14.1098 12.0685 10.1853 17.9083 9.54961V12.0496C17.9083 12.0496 17.9012 12.0496 17.8977 12.0496C14.8329 11.6793 12.4397 14.5639 12.4397 14.5639C12.4397 14.5639 13.7812 19.4197 17.9101 20.8175L17.9083 20.814ZM4.90481 13.7804C4.90481 13.7804 9.24403 7.32914 17.9101 6.6614V4.32163C8.31255 5.09799 0 13.2872 0 13.2872C0 13.2872 4.70685 26.9982 17.9101 28.2535V25.766C8.22064 24.5373 4.90481 13.7804 4.90481 13.7804Z" fill="#76B900"/>
+                </svg>
+            </div>
+            <div class="partner-badge">Elite Partner</div>
+        </header>
+
+        <main class="main-content">
+            <div class="title-section">
+                <h1 class="main-title">Networking<br>基础培训</h1>
+                <p class="subtitle">产品与解决方案概览</p>
+                <p class="description">
+                    面向新员工和客户的 NVIDIA 网络技术入门培训<br>
+                    涵盖 GPU 互连、网络适配器、DPU、交换机等核心产品线
+                </p>
+            </div>
+        </main>
+
+        <footer class="slide-footer">
+            <div class="presenter-info">
+                <div class="presenter-name">Vincent</div>
+                <div class="presenter-title">技术总监</div>
+            </div>
+            <div class="slide-number">1 / 9</div>
+        </footer>
+    </div>
+
+    <div class="navigation-controls">
+        <button class="nav-button" onclick="startPresentation()">
+            <span>开始培训</span>
+            <span>→</span>
+        </button>
+        <div class="nav-hint">使用 → 键或点击按钮导航</div>
+    </div>
+
+    <script>
+        function startPresentation() {
+            // 跳转到目录页面
+            window.location.href = 'catalog.html';
+        }
+
+        // 键盘导航
+        document.addEventListener('keydown', function(e) {
+            if (e.code === 'ArrowRight' || e.code === 'Space') {
+                e.preventDefault();
+                startPresentation();
+            } else if (e.code === 'Escape') {
+                // 退出全屏等功能
+                if (document.fullscreenElement) {
+                    document.exitFullscreen();
+                }
+            }
+        });
+
+        // 支持触摸滑动
+        let touchStartX = 0;
+        document.addEventListener('touchstart', function(e) {
+            touchStartX = e.touches[0].clientX;
+        });
+
+        document.addEventListener('touchend', function(e) {
+            const touchEndX = e.changedTouches[0].clientX;
+            if (touchStartX - touchEndX > 50) {
+                startPresentation();
+            }
+        });
+    </script>
+</body>
+</html>
