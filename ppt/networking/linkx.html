@@ -178,244 +178,310 @@
             color: #1e40af;
         }
 
-        /* 内容区域 - 创新布局：上中下结构 */
+        /* 内容区域 - 左侧文字 + 右侧图像展示 */
         .content-main {
             flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
+            display: grid;
+            grid-template-columns: 420px 1fr;
+            gap: 25px;
             margin-bottom: 25px;
         }
 
-        /* 顶部横向大板块 */
-        .top-section {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        /* 中部全宽板块 */
-        .middle-section {
-            width: 100%;
-        }
-
-        /* 底部3列板块 */
-        .bottom-section {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
+        /* 左侧内容区 - 紧凑垂直布局 */
+        .left-content {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
 
         .content-section {
             background: rgba(255, 255, 255, 0.9);
-            border-radius: 16px;
-            padding: 20px;
+            border-radius: 12px;
+            padding: 15px 18px;
             backdrop-filter: blur(10px);
             border: 1px solid rgba(59, 130, 246, 0.1);
             transition: all 0.3s ease;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* 中部板块样式 - 更大空间 */
-        .middle-section .content-section {
-            padding: 25px 30px;
-        }
-
-        /* 底部小板块样式 - 紧凑设计 */
-        .bottom-section .content-section {
-            padding: 18px;
         }
 
         .content-section:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 15px 35px rgba(59, 130, 246, 0.15);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.12);
         }
 
         .section-title {
-            font-size: 1.3rem;
+            font-size: 1.05rem;
             font-weight: 600;
             color: #1e293b;
-            margin-bottom: 12px;
-            padding-bottom: 6px;
+            margin-bottom: 8px;
+            padding-bottom: 4px;
             border-bottom: 2px solid #3b82f6;
-        }
-
-        /* 底部小板块标题 - 更紧凑 */
-        .bottom-section .section-title {
-            font-size: 1.1rem;
-            margin-bottom: 10px;
         }
 
         .section-content {
             color: #64748b;
-            line-height: 1.6;
-            flex: 1;
+            line-height: 1.5;
+            font-size: 0.85rem;
         }
 
         .section-content p {
-            margin-bottom: 15px;
+            margin-bottom: 8px;
         }
 
-        /* 产品类型网格 */
+        /* 产品类型网格 - 紧凑 */
         .product-types {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-top: 15px;
+            grid-template-columns: 1fr;
+            gap: 8px;
+            margin-top: 8px;
         }
 
         .type-card {
             background: rgba(59, 130, 246, 0.05);
-            padding: 15px;
-            border-radius: 8px;
+            padding: 10px 12px;
+            border-radius: 6px;
             border-left: 3px solid #3b82f6;
         }
 
         .type-title {
-            font-size: 0.95rem;
+            font-size: 0.88rem;
             font-weight: 600;
             color: #1e293b;
-            margin-bottom: 6px;
+            margin-bottom: 3px;
         }
 
         .type-desc {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
+            color: #64748b;
+            line-height: 1.3;
+        }
+
+        /* 技术特点列表 - 紧凑 */
+        .tech-features {
+            display: grid;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .tech-item {
+            background: rgba(118, 185, 0, 0.05);
+            padding: 8px 12px;
+            border-radius: 6px;
+            border-left: 3px solid #76b900;
+            font-size: 0.78rem;
             color: #64748b;
             line-height: 1.4;
         }
 
-        /* 速率系列 - 横向滚动条设计 */
-        .speed-series {
+        /* 右侧图像展示区域 - 风车布局 */
+        .right-gallery {
+            position: relative;
+            width: 100%;
+            height: 100%;
             display: flex;
             align-items: center;
-            gap: 15px;
-            margin-top: 20px;
-            padding: 15px 0;
+            justify-content: center;
         }
 
-        .speed-card {
-            flex: 1;
-            background: linear-gradient(135deg, rgba(6, 182, 212, 0.08), rgba(34, 197, 94, 0.08));
-            padding: 15px 10px;
-            border-radius: 10px;
-            text-align: center;
-            border-bottom: 4px solid #06b6d4;
+        /* 风车容器 - 圆形放射状布局 */
+        .gallery-stack {
             position: relative;
-            transition: all 0.3s ease;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .speed-card:hover {
-            transform: translateY(-5px);
-            border-bottom-color: #22c55e;
-            box-shadow: 0 8px 20px rgba(6, 182, 212, 0.2);
+        /* 中心装饰圆环 */
+        .gallery-stack::before {
+            content: '';
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6, #06b6d4, #22c55e);
+            opacity: 0.15;
+            z-index: 1;
+            animation: rotate 20s linear infinite;
         }
 
-        .speed-value {
-            font-size: 1.6rem;
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .cable-card {
+            position: absolute;
+            width: 280px;
+            height: 200px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 255, 0.95));
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.15);
+            border: 2px solid rgba(59, 130, 246, 0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            cursor: pointer;
+            z-index: 2;
+        }
+
+        /* 双圈布局：外圈8张（45度间隔），内圈4张（90度间隔）*/
+
+        /* 外圈8张卡片 - 半径较大 */
+        .cable-card:nth-child(1) {
+            left: 50%;
+            top: 3%;
+            transform: translate(-50%, 0);
+        }
+
+        .cable-card:nth-child(2) {
+            right: 12%;
+            top: 12%;
+            transform: translate(0, 0);
+        }
+
+        .cable-card:nth-child(3) {
+            right: 3%;
+            top: 50%;
+            transform: translate(0, -50%);
+        }
+
+        .cable-card:nth-child(4) {
+            right: 12%;
+            bottom: 12%;
+            transform: translate(0, 0);
+        }
+
+        .cable-card:nth-child(5) {
+            left: 50%;
+            bottom: 3%;
+            transform: translate(-50%, 0);
+        }
+
+        .cable-card:nth-child(6) {
+            left: 12%;
+            bottom: 12%;
+            transform: translate(0, 0);
+        }
+
+        .cable-card:nth-child(7) {
+            left: 3%;
+            top: 50%;
+            transform: translate(0, -50%);
+        }
+
+        .cable-card:nth-child(8) {
+            left: 12%;
+            top: 12%;
+            transform: translate(0, 0);
+        }
+
+        /* 内圈4张卡片 - 半径较小 */
+        .cable-card:nth-child(9) {
+            left: 50%;
+            top: 28%;
+            transform: translate(-50%, 0);
+        }
+
+        .cable-card:nth-child(10) {
+            right: 28%;
+            top: 50%;
+            transform: translate(0, -50%);
+        }
+
+        .cable-card:nth-child(11) {
+            left: 50%;
+            bottom: 28%;
+            transform: translate(-50%, 0);
+        }
+
+        .cable-card:nth-child(12) {
+            left: 28%;
+            top: 50%;
+            transform: translate(0, -50%);
+        }
+
+        /* 悬停效果 - 外圈和内圈9/10放大1.8倍 */
+        .cable-card:nth-child(1):hover,
+        .cable-card:nth-child(5):hover,
+        .cable-card:nth-child(9):hover {
+            transform: translate(-50%, 0) scale(1.8);
+        }
+
+        .cable-card:nth-child(3):hover,
+        .cable-card:nth-child(7):hover,
+        .cable-card:nth-child(10):hover {
+            transform: translate(0, -50%) scale(1.8);
+        }
+
+        .cable-card:nth-child(2):hover,
+        .cable-card:nth-child(4):hover,
+        .cable-card:nth-child(6):hover,
+        .cable-card:nth-child(8):hover {
+            transform: translate(0, 0) scale(1.8);
+        }
+
+
+        .cable-card:hover {
+            z-index: 100 !important;
+            box-shadow: 0 40px 100px rgba(59, 130, 246, 0.4);
+            border-color: rgba(59, 130, 246, 0.5);
+        }
+
+        /* 悬停时其他卡片轻微透明，不模糊 */
+        .gallery-stack:hover .cable-card:not(:hover) {
+            opacity: 0.6;
+        }
+
+        .cable-icon {
+            width: 160px;
+            height: 100px;
+            object-fit: contain;
+            margin-bottom: 8px;
+            filter: drop-shadow(0 2px 6px rgba(59, 130, 246, 0.2));
+            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        /* 内圈11/12号卡片悬停时，卡片整体放大以容纳大图 */
+        .cable-card:nth-child(11):hover {
+            transform: translate(-50%, 0) scale(2.5) !important;
+        }
+
+        .cable-card:nth-child(12):hover {
+            transform: translate(0, -50%) scale(2.5) !important;
+        }
+
+        /* 内圈11/12号卡片的图片悬停时放大2倍（相对于卡片） */
+        .cable-card:nth-child(11):hover .cable-icon,
+        .cable-card:nth-child(12):hover .cable-icon {
+            transform: scale(1);
+        }
+
+        .cable-name {
+            font-size: 0.95rem;
             font-weight: 700;
-            background: linear-gradient(135deg, #06b6d4, #22c55e);
+            color: #1e293b;
+            margin-bottom: 4px;
+            text-align: center;
+        }
+
+        .cable-speed {
+            font-size: 1.4rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #3b82f6, #06b6d4, #22c55e);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             margin-bottom: 4px;
         }
 
-        .speed-label {
+        .cable-desc {
             font-size: 0.7rem;
             color: #64748b;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        /* 应用场景 */
-        .application-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-top: 15px;
-        }
-
-        .app-item {
-            background: rgba(34, 197, 94, 0.05);
-            padding: 12px;
-            border-radius: 8px;
-            border-left: 3px solid #22c55e;
-        }
-
-        .app-title {
-            font-size: 0.88rem;
-            font-weight: 600;
-            color: #1e293b;
-            margin-bottom: 6px;
-        }
-
-        .app-desc {
-            font-size: 0.78rem;
-            color: #64748b;
-            line-height: 1.5;
-        }
-
-        /* 技术特点列表 */
-        .tech-features {
-            display: grid;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .tech-item {
-            background: rgba(118, 185, 0, 0.05);
-            padding: 10px 15px;
-            border-radius: 8px;
-            border-left: 3px solid #76b900;
-            font-size: 0.85rem;
-            color: #64748b;
-            line-height: 1.5;
-        }
-
-        /* 总结区域 */
-        .summary-section {
-            background: linear-gradient(45deg, rgba(59, 130, 246, 0.1), rgba(6, 182, 212, 0.1));
-            border-radius: 16px;
-            padding: 25px;
-            margin-bottom: 20px;
-            border: 1px solid rgba(59, 130, 246, 0.2);
-        }
-
-        .summary-title {
-            font-size: 1.3rem;
-            font-weight: 600;
-            color: #1e293b;
-            margin-bottom: 15px;
             text-align: center;
-        }
-
-        .summary-points {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 20px;
-        }
-
-        .summary-point {
-            text-align: center;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.7);
-            border-radius: 12px;
-        }
-
-        .summary-point-title {
-            font-size: 1rem;
-            font-weight: 600;
-            color: #1e293b;
-            margin-bottom: 8px;
-            padding-bottom: 5px;
-            border-bottom: 2px solid #3b82f6;
-        }
-
-        .summary-point-desc {
-            font-size: 0.8rem;
-            color: #64748b;
-            line-height: 1.4;
+            line-height: 1.3;
         }
 
         /* 底部信息 */
@@ -526,29 +592,40 @@
         .content-section:nth-child(4) { animation-delay: 0.4s; }
 
         /* 响应式设计 */
-        @media (max-width: 1200px) {
-            .slide-container {
-                padding: 50px 60px;
-            }
+        @media (max-width: 1400px) {
             .content-main {
-                gap: 25px;
+                grid-template-columns: 380px 1fr;
+            }
+            .cable-card {
+                width: 320px;
+                height: 200px;
             }
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) {
             .content-main {
                 grid-template-columns: 1fr;
                 gap: 20px;
             }
-            .main-title {
-                font-size: 2.5rem;
+            .right-gallery {
+                height: 400px;
             }
+            .cable-card {
+                width: 280px;
+                height: 180px;
+            }
+        }
+
+        @media (max-width: 768px) {
             .slide-container {
-                padding: 40px 30px;
+                padding: 30px 40px;
             }
-            .summary-points {
-                grid-template-columns: 1fr;
-                gap: 15px;
+            .main-title {
+                font-size: 1.5rem;
+            }
+            .cable-card {
+                width: 240px;
+                height: 160px;
             }
         }
     </style>
@@ -580,166 +657,167 @@
         </header>
 
         <main class="content-main">
-            <!-- 顶部：产品概述 全宽 -->
-            <div class="middle-section">
+            <!-- 左侧内容 - 极度紧凑 -->
+            <div class="left-content">
+                <!-- 产品概述 -->
                 <div class="content-section">
-                    <h3 class="section-title">产品概述 - 全速率覆盖</h3>
+                    <h3 class="section-title">产品概述</h3>
                     <div class="section-content">
-                        <p>NVIDIA LinkX 是业界最完整的网络互连产品线，提供从 10G 到 1600G 的全系列线缆和光模块解决方案。</p>
-                        <div class="speed-series">
-                            <div class="speed-card">
-                                <div class="speed-value">1600G</div>
-                                <div class="speed-label">旗舰级</div>
-                            </div>
-                            <div class="speed-card">
-                                <div class="speed-value">800G</div>
-                                <div class="speed-label">高端</div>
-                            </div>
-                            <div class="speed-card">
-                                <div class="speed-value">400G</div>
-                                <div class="speed-label">主流</div>
-                            </div>
-                            <div class="speed-card">
-                                <div class="speed-value">200G</div>
-                                <div class="speed-label">企业级</div>
-                            </div>
-                            <div class="speed-card">
-                                <div class="speed-value">100G</div>
-                                <div class="speed-label">普及</div>
-                            </div>
-                            <div class="speed-card">
-                                <div class="speed-value">25G</div>
-                                <div class="speed-label">基础</div>
-                            </div>
-                        </div>
+                        <p>NVIDIA LinkX 是业界最完整的网络互连产品线，提供从 10G 到 1600G 的全系列线缆和光模块解决方案，支持 Ethernet 和 InfiniBand 双协议。</p>
                     </div>
                 </div>
-            </div>
 
-            <!-- 中部：产品类型 + 技术特点 -->
-            <div class="top-section">
+                <!-- 产品类型 -->
                 <div class="content-section">
                     <h3 class="section-title">产品类型</h3>
                     <div class="section-content">
-                        <p>LinkX 产品家族涵盖多种互连技术，满足不同距离和性能需求。</p>
                         <div class="product-types">
                             <div class="type-card">
                                 <div class="type-title">DAC 直连铜缆</div>
-                                <div class="type-desc">无源铜缆，低成本短距离连接，最长 7 米，适用于机架内互连</div>
+                                <div class="type-desc">无源铜缆，低成本短距离连接，最长 7 米</div>
                             </div>
                             <div class="type-card">
                                 <div class="type-title">AOC 有源光缆</div>
-                                <div class="type-desc">集成光模块的光缆，支持 10-100 米传输，低功耗高性能</div>
+                                <div class="type-desc">集成光模块的光缆，10-100 米传输</div>
                             </div>
                             <div class="type-card">
                                 <div class="type-title">光收发器</div>
-                                <div class="type-desc">可插拔光模块 (QSFP/OSFP)，支持 100 米到数公里传输距离</div>
+                                <div class="type-desc">可插拔光模块，100 米到数公里传输</div>
                             </div>
                             <div class="type-card">
                                 <div class="type-title">光纤跳线</div>
-                                <div class="type-desc">配合光模块使用的光纤，支持单模/多模，灵活部署</div>
+                                <div class="type-desc">配合光模块使用，单模/多模可选</div>
                             </div>
                         </div>
                     </div>
                 </div>
 
+                <!-- 技术特点 -->
                 <div class="content-section">
                     <h3 class="section-title">技术特点</h3>
                     <div class="section-content">
-                        <p>LinkX 产品采用先进技术，确保高性能、高可靠性和兼容性。</p>
                         <div class="tech-features">
                             <div class="tech-item">
-                                <strong>双协议支持：</strong>兼容 Ethernet 和 InfiniBand 网络架构
+                                <strong>全速率覆盖：</strong>10G-1600G 完整产品线
                             </div>
                             <div class="tech-item">
-                                <strong>多种接口标准：</strong>OSFP、QSFP112、QSFP-DD、QSFP28、QSFP+、SFP28 等
+                                <strong>双协议支持：</strong>Ethernet 和 InfiniBand
                             </div>
                             <div class="tech-item">
-                                <strong>广泛兼容性：</strong>与主流交换机和网卡完全兼容
+                                <strong>多种接口：</strong>OSFP、QSFP112、QSFP-DD 等
                             </div>
                             <div class="tech-item">
-                                <strong>企业级品质：</strong>严格质量控制，长期稳定可靠运行
+                                <strong>广泛兼容：</strong>主流交换机和网卡完全兼容
                             </div>
                             <div class="tech-item">
-                                <strong>灵活传输距离：</strong>从机架内到跨数据中心的全覆盖
-                            </div>
-                            <div class="tech-item">
-                                <strong>低延迟设计：</strong>优化信号传输路径，减少网络延迟
+                                <strong>企业级品质：</strong>严格质量控制，长期稳定
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- 底部：应用场景 3列 -->
-            <div class="bottom-section">
-                <div class="content-section">
-                    <h3 class="section-title">云 & AI</h3>
-                    <div class="section-content">
-                        <div class="application-grid" style="grid-template-columns: 1fr;">
-                            <div class="app-item">
-                                <div class="app-title">超大规模云数据中心</div>
-                                <div class="app-desc">构建高密度服务器互连网络，支持大规模虚拟化和容器化部署</div>
-                            </div>
-                            <div class="app-item">
-                                <div class="app-title">AI 训练集群</div>
-                                <div class="app-desc">连接 GPU 服务器，提供高带宽低延迟的训练数据传输通道</div>
-                            </div>
-                        </div>
+            <!-- 右侧图像展示 - 3D 层叠卡片 -->
+            <div class="right-gallery">
+                <div class="gallery-stack">
+                    <!-- 卡片 1: ACC 直连铜缆 -->
+                    <div class="cable-card">
+                        <img src="https://docscontent.nvidia.com/dims4/default/1f88532/2147483647/strip/true/crop/1948x1180+0+0/resize/2880x1744!/format/webp/quality/90/?url=https%3A%2F%2Fk3-prod-nvidia-docs.s3.us-west-2.amazonaws.com%2Fbrightspot%2Fconfluence%2F00000197-7ef8-de34-a7d7-7efd10de0000%2Fimages%2Fdownload%2Fattachments%2F3931365580%2Fimage-2024-8-20_12-26-18-version-1-modificationdate-1748332345247-api-v2.png" alt="ACC 直连铜缆" class="cable-icon">
+                        <div class="cable-name">ACC 直连铜缆</div>
+                        <div class="cable-speed">1600G</div>
+                        <div class="cable-desc">NVL5 交换机互连</div>
                     </div>
-                </div>
 
-                <div class="content-section">
-                    <h3 class="section-title">HPC & 存储</h3>
-                    <div class="section-content">
-                        <div class="application-grid" style="grid-template-columns: 1fr;">
-                            <div class="app-item">
-                                <div class="app-title">高性能计算 HPC</div>
-                                <div class="app-desc">构建 InfiniBand 或高速以太网计算集群，加速科学计算</div>
-                            </div>
-                            <div class="app-item">
-                                <div class="app-title">存储网络</div>
-                                <div class="app-desc">连接存储阵列和服务器，支持 NVMe-oF 和高速 SAN 网络</div>
-                            </div>
-                        </div>
+                    <!-- 卡片 2: DAC 直连铜缆 -->
+                    <div class="cable-card">
+                        <img src="https://docscontent.nvidia.com/dims4/default/bba2670/2147483647/strip/true/crop/549x365+0+0/resize/1098x730!/format/webp/quality/90/?url=https%3A%2F%2Fk3-prod-nvidia-docs.s3.us-west-2.amazonaws.com%2Fbrightspot%2Fconfluence%2F0000018c-ee04-d4f7-abef-ff1da52a0000%2Fimages%2Fnetworking%2Fdownload%2Fattachments%2F119755576%2Fimage2023-5-1_11-0-46.png" alt="DAC 直连铜缆" class="cable-icon">
+                        <div class="cable-name">DAC 直连铜缆</div>
+                        <div class="cable-speed">800G</div>
+                        <div class="cable-desc">NVL5 交换机互连</div>
                     </div>
-                </div>
+                    <!-- 卡片 3: ACC Split Cable -->
+                    <div class="cable-card">
+                        <img src="https://docscontent.nvidia.com/dims4/default/28560e6/2147483647/strip/true/crop/770x207+0+0/resize/1540x414!/format/webp/quality/90/?url=https%3A%2F%2Fk3-prod-nvidia-docs.s3.us-west-2.amazonaws.com%2Fbrightspot%2Fconfluence%2F00000192-2aa8-d2ee-af9e-3ae8c2c10000%2Fimages%2Fdownload%2Fattachments%2F3201677541%2Fimage-2024-9-25_21-22-11-version-1-modificationdate-1727292131721-api-v2.png" alt="ACC Split Cable" class="cable-icon">
+                        <div class="cable-name">ACC Split Cable</div>
+                        <div class="cable-speed">800G to 2x400G </div>
+                        <div class="cable-desc">交换机到网卡互连</div>
+                    </div>
 
-                <div class="content-section">
-                    <h3 class="section-title">企业 & 电信</h3>
-                    <div class="section-content">
-                        <div class="application-grid" style="grid-template-columns: 1fr;">
-                            <div class="app-item">
-                                <div class="app-title">企业数据中心</div>
-                                <div class="app-desc">构建核心网络基础设施，支持关键业务应用和数据库服务</div>
-                            </div>
-                            <div class="app-item">
-                                <div class="app-title">电信 5G 网络</div>
-                                <div class="app-desc">连接基站和核心网设备，支持边缘计算和网络切片</div>
-                            </div>
-                        </div>
+                    <!-- 卡片 4: ACC Split Cable 2 -->
+                    <div class="cable-card">
+                        <img src="https://docscontent.nvidia.com/dims4/default/afe6acc/2147483647/strip/true/crop/563x152+0+0/resize/1126x304!/format/webp/quality/90/?url=https%3A%2F%2Fk3-prod-nvidia-docs.s3.us-west-2.amazonaws.com%2Fbrightspot%2Fconfluence%2F00000192-2a4f-d2ee-af9e-3a4f8d2d0000%2Fimages%2Fdownload%2Fattachments%2F2539089654%2Fimage-2024-5-7_14-41-56-version-1-modificationdate-1715085715020-api-v2.png" alt="ACC Split Cable 2" class="cable-icon">
+                        <div class="cable-name">ACC Split Cable 2</div>
+                        <div class="cable-speed">800G to 4x200G</div>
+                        <div class="cable-desc">交换机到200G网卡</div>
                     </div>
+
+                    <!-- 卡片 5: OSFP 模块 -->
+                    <div class="cable-card">
+                        <img src="https://docscontent.nvidia.com/dims4/default/66a6c3e/2147483647/strip/true/crop/279x184+0+0/resize/558x368!/format/webp/quality/90/?url=https%3A%2F%2Fk3-prod-nvidia-docs.s3.us-west-2.amazonaws.com%2Fbrightspot%2Fconfluence%2F00000198-375b-d4f6-a7fb-3fdf97fb0000%2Fimages%2Fdownload%2Fthumbnails%2F2955941531%2Fimage-2024-7-1_9-59-50-version-1-modificationdate-1719837674153-api-v2.png" alt="OSFP 模块" class="cable-icon">
+                        <div class="cable-name">OSFP 模块</div>
+                        <div class="cable-speed">1600G</div>
+                        <div class="cable-desc">超级GB300集群 · AI 训练 · 高带宽</div>
+                    </div>
+
+                    <!-- 卡片 6: OSFP 模块2 -->
+                    <div class="cable-card">
+                        <img src="https://docscontent.nvidia.com/dims4/default/3eda85d/2147483647/strip/true/crop/555x92+0+0/resize/1110x184!/format/webp/quality/90/?url=https%3A%2F%2Fk3-prod-nvidia-docs.s3.us-west-2.amazonaws.com%2Fbrightspot%2Fconfluence%2F00000192-6b73-d292-a3fb-6b7bf86d0000%2Fimages%2Fdownload%2Fattachments%2F2848089239%2Fimage-2024-4-8_15-11-22-version-1-modificationdate-1716815483077-api-v2.png" alt="OSFP 模块" class="cable-icon">
+                        <div class="cable-name">OSFP 模块</div>
+                        <div class="cable-speed">800G</div>
+                        <div class="cable-desc">高端应用 · AI 训练 · 高带宽</div>
+                    </div>
+                    <!-- 卡片 7: QSFP-DD 模块 -->
+                    <div class="cable-card">
+                        <img src="https://docscontent.nvidia.com/dims4/default/c288fc4/2147483647/strip/true/crop/450x294+0+0/resize/900x588!/format/webp/quality/90/?url=https%3A%2F%2Fk3-prod-nvidia-docs.s3.us-west-2.amazonaws.com%2Fbrightspot%2Fconfluence%2F0000018f-84de-d396-a3af-86ff0a5e0000%2Fimages%2Fdownload%2Fattachments%2F2848065406%2Fimage2023-4-20_15-8-17-version-1-modificationdate-1715920666975-api-v2.png" alt="QSFP-DD 模块" class="cable-icon">
+                        <div class="cable-name">QSFP-DD 模块</div>
+                        <div class="cable-speed">400G</div>
+                        <div class="cable-desc">RoCE组网 · 灵活部署 · 兼容性强</div>
+                    </div>
+
+                    <!-- 卡片 8: QSFP112 模块 -->
+                    <div class="cable-card">
+                        <img src="https://docscontent.nvidia.com/dims4/default/c288fc4/2147483647/strip/true/crop/450x294+0+0/resize/900x588!/format/webp/quality/90/?url=https%3A%2F%2Fk3-prod-nvidia-docs.s3.us-west-2.amazonaws.com%2Fbrightspot%2Fconfluence%2F0000018f-84de-d396-a3af-86ff0a5e0000%2Fimages%2Fdownload%2Fattachments%2F2848065406%2Fimage2023-4-20_15-8-17-version-1-modificationdate-1715920666975-api-v2.png" alt="QSFP112 模块" class="cable-icon">
+                        <div class="cable-name">QSFP112 模块</div>
+                        <div class="cable-speed">400G/200G</div>
+                        <div class="cable-desc">IB/RoCE · AI 训练 · 高带宽</div>
+                    </div>
+
+                    <!-- 卡片 9: Split 多模光纤 -->
+                    <div class="cable-card">
+                        <img src="https://docscontent.nvidia.com/dims4/default/ce2ee28/2147483647/strip/true/crop/953x250+0+0/resize/1906x500!/format/webp/quality/90/?url=https%3A%2F%2Fk3-prod-nvidia-docs.s3.us-west-2.amazonaws.com%2Fbrightspot%2Fconfluence%2F0000018b-16cd-dec8-ad8b-b6cf64800000%2Fimages%2Fnetworking%2Fdownload%2Fattachments%2F125797041%2Fimage2022-10-6_12-41-41.png" alt="光纤" class="cable-icon">
+                        <div class="cable-name">Split 多模光纤</div>
+                        <div class="cable-speed">400G/200G</div>
+                        <div class="cable-desc">IB/RoCE · AI 训练 · 高带宽</div>
+                    </div>
+
+                    <!-- 卡片 10: 多模光纤 -->
+                    <div class="cable-card">
+                        <img src="https://docscontent.nvidia.com/dims4/default/863a48c/2147483647/strip/true/crop/953x151+0+0/resize/1906x302!/format/webp/quality/90/?url=https%3A%2F%2Fk3-prod-nvidia-docs.s3.us-west-2.amazonaws.com%2Fbrightspot%2Fconfluence%2F0000018b-16ce-dec8-ad8b-b6cf052f0000%2Fimages%2Fnetworking%2Fdownload%2Fattachments%2F125796994%2Fimage2022-10-5_16-45-23.png" alt="光纤" class="cable-icon">
+                        <div class="cable-name">多模光纤</div>
+                        <div class="cable-speed">400G/200G</div>
+                        <div class="cable-desc">IB/RoCE · AI 训练 · 高带宽</div>
+                    </div>
+
+                    <!-- 卡片 11 : Split 光纤 -->
+                    <div class="cable-card">
+                        <img src="https://docscontent.nvidia.com/dims4/default/b2ff9b6/2147483647/strip/true/crop/950x436+0+0/resize/950x436!/quality/90/?url=https%3A%2F%2Fk3-prod-nvidia-docs.s3.us-west-2.amazonaws.com%2Fbrightspot%2Fconfluence%2F0000018b-16cb-d788-a5ff-97cfda340000%2Fimages%2Fnetworking%2Fdownload%2Fattachments%2F138809307%2Fimage2023-9-8_15-12-2.png" alt="光纤" class="cable-icon">
+                        <div class="cable-name">单模光纤</div>
+                        <div class="cable-speed">400G/200G</div>
+                        <div class="cable-desc">IB · 长距离 500米</div>
+                    </div>
+
+
+                    <!-- 卡片 12: 光纤 -->
+                    <div class="cable-card">
+                        <img src="https://docscontent.nvidia.com/dims4/default/f87404a/2147483647/strip/true/crop/1164x828+0+0/resize/1164x828!/quality/90/?url=https%3A%2F%2Fk3-prod-nvidia-docs.s3.us-west-2.amazonaws.com%2Fbrightspot%2Fconfluence%2F00000198-376f-dda4-a3bb-f7eff6d50000%2Fimages%2Fdownload%2Fattachments%2F2955941008%2Fimage-2024-7-5_14-17-13-1-version-1-modificationdate-1720181833073-api-v2.png" alt="光纤" class="cable-icon">
+                        <div class="cable-name">单模光纤</div>
+                        <div class="cable-speed">800G/400G</div>
+                        <div class="cable-desc">IB · 长距离 500米</div>
+                    </div>
+
                 </div>
             </div>
         </main>
-
-        <div class="summary-section">
-            <h3 class="summary-title">核心优势</h3>
-            <div class="summary-points">
-                <div class="summary-point">
-                    <div class="summary-point-title">全速率覆盖</div>
-                    <div class="summary-point-desc">从 10G 到 1600G 完整产品线</div>
-                </div>
-                <div class="summary-point">
-                    <div class="summary-point-title">多种技术选择</div>
-                    <div class="summary-point-desc">铜缆、光缆、收发器灵活组合</div>
-                </div>
-                <div class="summary-point">
-                    <div class="summary-point-title">企业级可靠</div>
-                    <div class="summary-point-desc">严格测试认证，稳定长期运行</div>
-                </div>
-            </div>
-        </div>
 
         <footer class="slide-footer">
             <div class="presenter-info">
@@ -762,8 +840,7 @@
         }
 
         function nextModule() {
-            alert('下一模块：网络交换机（Quantum 和 Spectrum）');
-            // 后续可以跳转到 switches.html
+            window.location.href = 'switches.html';
         }
 
         // 键盘导航
