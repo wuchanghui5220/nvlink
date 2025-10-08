@@ -439,6 +439,7 @@
             max-height: 100%;
             object-fit: contain;
             filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+            cursor: pointer;
         }
 
         /* 左右渐变遮罩 */
@@ -575,6 +576,106 @@
         .feature-card:nth-child(1) { animation-delay: 0.3s; }
         .feature-card:nth-child(2) { animation-delay: 0.35s; }
         .feature-card:nth-child(3) { animation-delay: 0.4s; }
+
+        /* Lightbox 图片放大功能 */
+        .lightbox-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.92);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            cursor: zoom-out;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .lightbox-overlay.active {
+            display: flex;
+        }
+
+        .lightbox-content {
+            max-width: 90%;
+            max-height: 90%;
+            position: relative;
+            animation: zoomIn 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .lightbox-content img {
+            max-width: 100%;
+            max-height: 80vh;
+            object-fit: contain;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 10000;
+            line-height: 1;
+            padding: 0;
+        }
+
+        .lightbox-close:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: rotate(90deg);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .lightbox-caption {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            color: #1e293b;
+            padding: 12px 28px;
+            border-radius: 25px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes zoomIn {
+            from {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
 
         /* 响应式设计 */
         @media (max-width: 1400px) {
@@ -720,70 +821,70 @@
                     <!-- 第一行：从右向左滚动 -->
                     <div class="gallery-row">
                         <div class="switch-image-card">
-                            <img src="https://www.nvidia.com/content/dam/en-zz/Solutions/data-center/ethernet-switching/quantum-2-infiniband-switch-2c50-d@2x.jpg" alt="Quantum-2 NDR Switch">
+                            <img src="https://docscontent.nvidia.com/dims4/default/e49d7c6/2147483647/strip/true/crop/1296x520+0+0/resize/1296x520!/quality/90/?url=https%3A%2F%2Fk3-prod-nvidia-docs.s3.us-west-2.amazonaws.com%2Fbrightspot%2Fconfluence%2F00000199-1013-db43-a99b-747bad1a0000%2Fimages%2Fdownload%2Fattachments%2F3205820665%2Fimage-2024-11-18_12-23-30-version-1-modificationdate-1731929010773-api-v2.png" alt="Quantum-3 XDR Switch: Q3400">
                         </div>
                         <div class="switch-image-card">
-                            <img src="https://www.nvidia.com/content/dam/en-zz/Solutions/gtcs22/networking-gtc22/spectrum-4-switch-system-2c50-d@2x.jpg" alt="Spectrum-4 Switch">
+                            <img src="https://leaderssys.com/img/product-list/networking/infiniband/thumb-quantum-q3200.png" alt="Quantum-3 Switch: Q3200">
                         </div>
                         <div class="switch-image-card">
-                            <img src="https://www.nvidia.com/content/dam/en-zz/Solutions/data-center/ethernet-switching/nvidia-spectrum-sn4600c-1c50-d@2x.jpg" alt="Spectrum-3 SN4600">
+                            <img src="https://docscontent.nvidia.com/dims4/default/37408c5/2147483647/strip/true/crop/1655x165+0+0/resize/1440x144!/quality/90/?url=https%3A%2F%2Fk3-prod-nvidia-docs.s3.us-west-2.amazonaws.com%2Fbrightspot%2Fconfluence%2F00000197-a6b3-de11-a3b7-b7ffe18d0000%2Fimages%2Fdownload%2Fattachments%2F3356876172%2Fimage2021-11-25_14-4-13-version-1-modificationdate-1732000949003-api-v2.png" alt="Quantum-2 Switch: QM9700">
                         </div>
                         <div class="switch-image-card">
-                            <img src="https://www.nvidia.com/content/dam/en-zz/Solutions/data-center/ethernet-switching/nvidia-spectrum-sn3700c-1c50-d@2x.jpg" alt="Spectrum-2 SN3700">
+                            <img src="https://docscontent.nvidia.com/dims4/default/be698fd/2147483647/strip/true/crop/1824x182+0+0/resize/1440x144!/quality/90/?url=https%3A%2F%2Fk3-prod-nvidia-docs.s3.us-west-2.amazonaws.com%2Fbrightspot%2Fconfluence%2F00000197-a6b3-de11-a3b7-b7ffe18d0000%2Fimages%2Fdownload%2Fattachments%2F3356876172%2Fimage2021-11-25_14-5-52-version-1-modificationdate-1732000949393-api-v2.png" alt="Quantum-2 Switch: QM9790">
                         </div>
                         <div class="switch-image-card">
-                            <img src="https://www.nvidia.com/content/dam/en-zz/Solutions/data-center/ethernet-switching/nvidia-spectrum-sn2201-1c50-d@2x.jpg" alt="Spectrum SN2201">
+                            <img src="https://www.pny.com/image%20library/commercial/explore%20our%20products/mellanox/nns-qm8700.png" alt="Quantum-1 Switch: QM8700">
                         </div>
                         <!-- 重复一遍实现无缝循环 -->
                         <div class="switch-image-card">
-                            <img src="https://www.nvidia.com/content/dam/en-zz/Solutions/data-center/ethernet-switching/quantum-2-infiniband-switch-2c50-d@2x.jpg" alt="Quantum-2 NDR Switch">
+                            <img src="https://docscontent.nvidia.com/dims4/default/e49d7c6/2147483647/strip/true/crop/1296x520+0+0/resize/1296x520!/quality/90/?url=https%3A%2F%2Fk3-prod-nvidia-docs.s3.us-west-2.amazonaws.com%2Fbrightspot%2Fconfluence%2F00000199-1013-db43-a99b-747bad1a0000%2Fimages%2Fdownload%2Fattachments%2F3205820665%2Fimage-2024-11-18_12-23-30-version-1-modificationdate-1731929010773-api-v2.png" alt="Quantum-3 XDR Switch: Q3400">
                         </div>
                         <div class="switch-image-card">
-                            <img src="https://www.nvidia.com/content/dam/en-zz/Solutions/gtcs22/networking-gtc22/spectrum-4-switch-system-2c50-d@2x.jpg" alt="Spectrum-4 Switch">
+                            <img src="https://leaderssys.com/img/product-list/networking/infiniband/thumb-quantum-q3200.png" alt="Quantum-3 Switch: Q3200">
                         </div>
                         <div class="switch-image-card">
-                            <img src="https://www.nvidia.com/content/dam/en-zz/Solutions/data-center/ethernet-switching/nvidia-spectrum-sn4600c-1c50-d@2x.jpg" alt="Spectrum-3 SN4600">
+                            <img src="https://docscontent.nvidia.com/dims4/default/37408c5/2147483647/strip/true/crop/1655x165+0+0/resize/1440x144!/quality/90/?url=https%3A%2F%2Fk3-prod-nvidia-docs.s3.us-west-2.amazonaws.com%2Fbrightspot%2Fconfluence%2F00000197-a6b3-de11-a3b7-b7ffe18d0000%2Fimages%2Fdownload%2Fattachments%2F3356876172%2Fimage2021-11-25_14-4-13-version-1-modificationdate-1732000949003-api-v2.png" alt="Quantum-2 Switch: QM9700">
                         </div>
                         <div class="switch-image-card">
-                            <img src="https://www.nvidia.com/content/dam/en-zz/Solutions/data-center/ethernet-switching/nvidia-spectrum-sn3700c-1c50-d@2x.jpg" alt="Spectrum-2 SN3700">
+                            <img src="https://docscontent.nvidia.com/dims4/default/be698fd/2147483647/strip/true/crop/1824x182+0+0/resize/1440x144!/quality/90/?url=https%3A%2F%2Fk3-prod-nvidia-docs.s3.us-west-2.amazonaws.com%2Fbrightspot%2Fconfluence%2F00000197-a6b3-de11-a3b7-b7ffe18d0000%2Fimages%2Fdownload%2Fattachments%2F3356876172%2Fimage2021-11-25_14-5-52-version-1-modificationdate-1732000949393-api-v2.png" alt="Quantum-2 Switch: QM9790">
                         </div>
                         <div class="switch-image-card">
-                            <img src="https://www.nvidia.com/content/dam/en-zz/Solutions/data-center/ethernet-switching/nvidia-spectrum-sn2201-1c50-d@2x.jpg" alt="Spectrum SN2201">
+                            <img src="https://www.pny.com/image%20library/commercial/explore%20our%20products/mellanox/nns-qm8700.png" alt="Quantum-1 Switch: QM8700">
                         </div>
                     </div>
 
                     <!-- 第二行：从左向右滚动 -->
                     <div class="gallery-row">
                         <div class="switch-image-card">
-                            <img src="https://www.nvidia.com/content/dam/en-zz/Solutions/design-visualization/quadro-product-literature/proviz-line-card-quadro-sync-2c50-d@2x.jpg" alt="Quantum HDR Switch">
+                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQAlBySEgV8oPWIX2tDMrlqQ8YEG03ZKxwPpKNJ3KBcbvdJyX4wTYmBECYrbyzY4HcC-A&usqp=CAU" alt="Spectrum-4 Switch">
                         </div>
                         <div class="switch-image-card">
-                            <img src="https://www.nvidia.com/content/dam/en-zz/Solutions/data-center/ethernet-switching/nvidia-spectrum-sn4700-1c50-d@2x.jpg" alt="Spectrum-3 SN4700">
+                            <img src="https://www.chaoqing-i.com/upload/20231128/SB5400.png" alt="Spectrum-4 Switch">
                         </div>
                         <div class="switch-image-card">
-                            <img src="https://www.nvidia.com/content/dam/en-zz/Solutions/data-center/ethernet-switching/nvidia-spectrum-sn3420-1c50-d@2x.jpg" alt="Spectrum-2 SN3420">
+                            <img src="https://docscontent.nvidia.com/dims4/default/9450568/2147483647/strip/true/crop/1558x325+0+0/resize/1440x300!/quality/90/?url=https%3A%2F%2Fk3-prod-nvidia-docs.s3.us-west-2.amazonaws.com%2Fbrightspot%2Fconfluence%2F0000018e-7f7a-d6f5-a5bf-7ffae0050000%2Fimages%2Fdownload%2Fattachments%2F2538860697%2Fimage2022-3-23_11-26-3-version-1-modificationdate-1648060292117-api-v2.png" alt="Spectrum-3 Switch">
                         </div>
                         <div class="switch-image-card">
-                            <img src="https://www.nvidia.com/content/dam/en-zz/Solutions/data-center/ethernet-switching/nvidia-spectrum-sn2700-1c50-d@2x.jpg" alt="Spectrum SN2700">
+                            <img src="https://docscontent.nvidia.com/dims4/default/a5fafa9/2147483647/strip/true/crop/900x91+0+0/resize/900x91!/quality/90/?url=https%3A%2F%2Fk3-prod-nvidia-docs.s3.us-west-2.amazonaws.com%2Fbrightspot%2Fconfluence%2F00000191-4f53-d665-aff9-ffdf43820000%2Fimages%2Fnetworking%2Fdownload%2Fattachments%2F71030283%2Fworddavef68cf22e03ef8807e772a5071251d8e.png" alt="Spectrum-2 Switch">
                         </div>
                         <div class="switch-image-card">
-                            <img src="https://www.nvidia.com/content/dam/en-zz/Solutions/data-center/nvlink-switch/nvlink-switch-2c50-d@2x.jpg" alt="NVLink Switch">
+                            <img src="https://www.servants.co.jp/cms/wp-content/uploads/2024/12/nvidia-spectrum-sn2201-1u-switch-systems.jpg" alt="Spectrum Switch">
                         </div>
                         <!-- 重复一遍实现无缝循环 -->
                         <div class="switch-image-card">
-                            <img src="https://www.nvidia.com/content/dam/en-zz/Solutions/design-visualization/quadro-product-literature/proviz-line-card-quadro-sync-2c50-d@2x.jpg" alt="Quantum HDR Switch">
+                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQAlBySEgV8oPWIX2tDMrlqQ8YEG03ZKxwPpKNJ3KBcbvdJyX4wTYmBECYrbyzY4HcC-A&usqp=CAU" alt="Spectrum-4 Switch">
                         </div>
                         <div class="switch-image-card">
-                            <img src="https://www.nvidia.com/content/dam/en-zz/Solutions/data-center/ethernet-switching/nvidia-spectrum-sn4700-1c50-d@2x.jpg" alt="Spectrum-3 SN4700">
+                            <img src="https://www.chaoqing-i.com/upload/20231128/SB5400.png" alt="Spectrum-4 Switch">
                         </div>
                         <div class="switch-image-card">
-                            <img src="https://www.nvidia.com/content/dam/en-zz/Solutions/data-center/ethernet-switching/nvidia-spectrum-sn3420-1c50-d@2x.jpg" alt="Spectrum-2 SN3420">
+                            <img src="https://docscontent.nvidia.com/dims4/default/9450568/2147483647/strip/true/crop/1558x325+0+0/resize/1440x300!/quality/90/?url=https%3A%2F%2Fk3-prod-nvidia-docs.s3.us-west-2.amazonaws.com%2Fbrightspot%2Fconfluence%2F0000018e-7f7a-d6f5-a5bf-7ffae0050000%2Fimages%2Fdownload%2Fattachments%2F2538860697%2Fimage2022-3-23_11-26-3-version-1-modificationdate-1648060292117-api-v2.png" alt="Spectrum-3 Switch">
                         </div>
                         <div class="switch-image-card">
-                            <img src="https://www.nvidia.com/content/dam/en-zz/Solutions/data-center/ethernet-switching/nvidia-spectrum-sn2700-1c50-d@2x.jpg" alt="Spectrum SN2700">
+                            <img src="https://docscontent.nvidia.com/dims4/default/a5fafa9/2147483647/strip/true/crop/900x91+0+0/resize/900x91!/quality/90/?url=https%3A%2F%2Fk3-prod-nvidia-docs.s3.us-west-2.amazonaws.com%2Fbrightspot%2Fconfluence%2F00000191-4f53-d665-aff9-ffdf43820000%2Fimages%2Fnetworking%2Fdownload%2Fattachments%2F71030283%2Fworddavef68cf22e03ef8807e772a5071251d8e.png" alt="Spectrum-2 Switch">
                         </div>
                         <div class="switch-image-card">
-                            <img src="https://www.nvidia.com/content/dam/en-zz/Solutions/data-center/nvlink-switch/nvlink-switch-2c50-d@2x.jpg" alt="NVLink Switch">
+                            <img src="https://www.servants.co.jp/cms/wp-content/uploads/2024/12/nvidia-spectrum-sn2201-1u-switch-systems.jpg" alt="Spectrum Switch">
                         </div>
                     </div>
                 </div>
@@ -805,14 +906,22 @@
         <div class="nav-hint">使用左右箭头键导航</div>
     </div>
 
+    <!-- Lightbox 图片放大遮罩层 -->
+    <div class="lightbox-overlay" id="lightboxOverlay">
+        <div class="lightbox-close" onclick="closeLightbox()">×</div>
+        <div class="lightbox-content" id="lightboxContent">
+            <img src="" alt="" id="lightboxImage">
+            <div class="lightbox-caption" id="lightboxCaption"></div>
+        </div>
+    </div>
+
     <script>
         function goBack() {
             window.location.href = 'catalog.html';
         }
 
         function nextModule() {
-            alert('下一模块：网络解决方案');
-            // 后续可以跳转到 solutions.html
+            window.location.href = 'solutions.html';
         }
 
         // 键盘导航
@@ -832,6 +941,46 @@
         document.querySelector('.breadcrumb a').addEventListener('click', function(e) {
             e.preventDefault();
             goBack();
+        });
+
+        // Lightbox 图片放大功能
+        const lightboxOverlay = document.getElementById('lightboxOverlay');
+        const lightboxImage = document.getElementById('lightboxImage');
+        const lightboxCaption = document.getElementById('lightboxCaption');
+
+        // 为所有图片添加点击事件
+        document.querySelectorAll('.switch-image-card img').forEach(img => {
+            img.addEventListener('click', function(e) {
+                e.stopPropagation(); // 防止事件冒泡
+                openLightbox(this.src, this.alt);
+            });
+        });
+
+        function openLightbox(src, alt) {
+            lightboxImage.src = src;
+            lightboxCaption.textContent = alt;
+            lightboxOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden'; // 禁止背景滚动
+        }
+
+        function closeLightbox() {
+            lightboxOverlay.classList.remove('active');
+            document.body.style.overflow = ''; // 恢复滚动
+        }
+
+        // 点击遮罩层关闭
+        lightboxOverlay.addEventListener('click', function(e) {
+            if (e.target === lightboxOverlay) {
+                closeLightbox();
+            }
+        });
+
+        // ESC键关闭 Lightbox（不影响页面导航）
+        document.addEventListener('keydown', function(e) {
+            if (e.code === 'Escape' && lightboxOverlay.classList.contains('active')) {
+                e.stopPropagation();
+                closeLightbox();
+            }
         });
     </script>
 </body>

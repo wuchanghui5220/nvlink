@@ -145,7 +145,7 @@
         .catalog-item {
             background: rgba(255, 255, 255, 0.9);
             border-radius: 12px;
-            padding: 20px;
+            padding: 25px;
             transition: all 0.3s ease;
             cursor: pointer;
             position: relative;
@@ -154,7 +154,7 @@
             backdrop-filter: blur(10px);
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            justify-content: flex-start;
         }
 
         .catalog-item::before {
@@ -188,14 +188,14 @@
         }
 
         .item-icon {
-            width: 45px;
-            height: 45px;
-            border-radius: 10px;
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 15px;
-            font-size: 1.4rem;
+            margin-bottom: 18px;
+            font-size: 1.6rem;
         }
 
         .item-icon.network {
@@ -219,31 +219,31 @@
         }
 
         .item-title {
-            font-size: 1.1rem;
-            font-weight: 600;
+            font-size: 1.35rem;
+            font-weight: 700;
             color: #1e293b;
-            margin-bottom: 8px;
+            margin-bottom: 12px;
             line-height: 1.3;
         }
 
         .item-description {
-            font-size: 0.85rem;
+            font-size: 1rem;
             color: #64748b;
-            line-height: 1.4;
-            margin-bottom: 12px;
-            flex: 1;
+            line-height: 1.6;
+            margin-bottom: 18px;
         }
 
         .item-features {
             list-style: none;
-            font-size: 0.75rem;
+            font-size: 0.9rem;
             color: #475569;
         }
 
         .item-features li {
             position: relative;
-            padding-left: 15px;
-            margin-bottom: 6px;
+            padding-left: 18px;
+            margin-bottom: 10px;
+            line-height: 1.5;
         }
 
         .item-features li::before {
@@ -252,7 +252,7 @@
             left: 0;
             color: #3b82f6;
             font-weight: bold;
-            font-size: 0.8rem;
+            font-size: 0.95rem;
         }
 
         /* 底部信息 */
@@ -448,69 +448,75 @@
                 </ul>
             </div>
 
-            <div class="catalog-item" onclick="navigateToSection('adapters')">
+            <div class="catalog-item" onclick="window.location.href='adapters.html'">
                 <div class="item-icon network">🌐</div>
                 <h3 class="item-title">网络适配器</h3>
                 <p class="item-description">ConnectX 系列高性能网络适配器</p>
                 <ul class="item-features">
-                    <li>ConnectX 系列产品</li>
-                    <li>以太网和 InfiniBand</li>
-                    <li>硬件卸载功能</li>
+                    <li>ConnectX-8/7/6/5 系列产品</li>
+                    <li>以太网和 InfiniBand 双协议</li>
+                    <li>硬件卸载和加速功能</li>
+                    <li>AI/HPC/云计算应用场景</li>
                 </ul>
             </div>
 
-            <div class="catalog-item" onclick="navigateToSection('bluefield')">
+            <div class="catalog-item" onclick="window.location.href='bluefield.html'">
                 <div class="item-icon gpu">🔧</div>
                 <h3 class="item-title">BlueField DPU</h3>
                 <p class="item-description">数据处理单元和 SuperNIC 解决方案</p>
                 <ul class="item-features">
-                    <li>数据中心基础设施处理</li>
-                    <li>网络、存储和安全卸载</li>
-                    <li>DOCA 开发框架</li>
+                    <li>数据中心基础设施卸载</li>
+                    <li>网络、存储和安全加速</li>
+                    <li>DOCA 软件开发框架</li>
+                    <li>BlueField-3/2 硬件平台</li>
                 </ul>
             </div>
 
-            <div class="catalog-item" onclick="navigateToSection('interconnect')">
+            <div class="catalog-item" onclick="window.location.href='linkx.html'">
                 <div class="item-icon interconnect">⚡</div>
-                <h3 class="item-title">网络互连</h3>
-                <p class="item-description">LinkX 线缆和光收发器产品</p>
+                <h3 class="item-title">LinkX 网络互连</h3>
+                <p class="item-description">高性能线缆和光模块解决方案</p>
                 <ul class="item-features">
-                    <li>高速线缆解决方案</li>
-                    <li>光纤收发器</li>
-                    <li>数据中心互连</li>
+                    <li>DAC/AOC 线缆产品</li>
+                    <li>光收发器和光纤跳线</li>
+                    <li>10G-1600G 全速率覆盖</li>
+                    <li>数据中心互连方案</li>
                 </ul>
             </div>
 
-            <div class="catalog-item" onclick="navigateToSection('switches')">
+            <div class="catalog-item" onclick="window.location.href='switches.html'">
                 <div class="item-icon network">🔄</div>
                 <h3 class="item-title">网络交换机</h3>
-                <p class="item-description">Quantum 和 Spectrum 交换机系列</p>
+                <p class="item-description">Quantum InfiniBand 与 Spectrum Ethernet</p>
                 <ul class="item-features">
-                    <li>InfiniBand 交换机</li>
-                    <li>以太网交换机</li>
-                    <li>高性能网络架构</li>
+                    <li>Quantum InfiniBand 交换机</li>
+                    <li>Spectrum 以太网交换机</li>
+                    <li>800G 超高带宽</li>
+                    <li>AI 集群和数据中心网络</li>
                 </ul>
             </div>
 
-            <div class="catalog-item" onclick="navigateToSection('solutions')">
+            <div class="catalog-item" onclick="window.location.href='solutions.html'">
                 <div class="item-icon software">🏗️</div>
                 <h3 class="item-title">网络解决方案</h3>
-                <p class="item-description">数据中心部署参考设计指南</p>
+                <p class="item-description">面向AI、HPC和云数据中心的综合方案</p>
                 <ul class="item-features">
-                    <li>参考架构设计</li>
-                    <li>最佳实践指南</li>
-                    <li>部署案例研究</li>
+                    <li>AI 训练集群解决方案</li>
+                    <li>AI 推理服务方案</li>
+                    <li>云数据中心网络</li>
+                    <li>企业网络解决方案</li>
                 </ul>
             </div>
 
-            <div class="catalog-item" onclick="navigateToSection('planning')">
-                <div class="item-icon interconnect">📋</div>
-                <h3 class="item-title">规划资源</h3>
-                <p class="item-description">网络规划和部署指导资源</p>
+            <div class="catalog-item" onclick="window.location.href='ibvseth.html'">
+                <div class="item-icon network">⚖️</div>
+                <h3 class="item-title">IB vs RoCE</h3>
+                <p class="item-description">InfiniBand 与 RoCE 技术对比</p>
                 <ul class="item-features">
-                    <li>网络规划工具</li>
-                    <li>配置指南</li>
-                    <li>性能优化建议</li>
+                    <li>InfiniBand 技术优势</li>
+                    <li>RoCE 网络特性</li>
+                    <li>性能与成本对比</li>
+                    <li>应用场景分析</li>
                 </ul>
             </div>
         </main>
@@ -531,44 +537,6 @@
     </div>
 
     <script>
-        function navigateToSection(section) {
-            const sectionPages = {
-                'nvlink': 'nvlink.html',
-                'software': 'software.html',
-                'adapters': 'adapters.html',
-                'bluefield': 'bluefield.html',
-                'interconnect': 'interconnect.html',
-                'switches': 'switches.html',
-                'solutions': 'solutions.html',
-                'planning': 'planning.html'
-            };
-
-            const page = sectionPages[section];
-            if (page) {
-                if (section === 'nvlink' || section === 'software' || section === 'adapters') {
-                    // 已完成的页面，直接跳转
-                    window.location.href = page;
-                } else {
-                    // 其他页面暂未制作，显示提示
-                    alert(`即将进入 ${getSectionName(section)} 培训模块...`);
-                }
-            }
-        }
-
-        function getSectionName(section) {
-            const sectionNames = {
-                'nvlink': 'NVLink 高速互连',
-                'software': '网络软件',
-                'adapters': '网络适配器',
-                'bluefield': 'BlueField DPU',
-                'interconnect': '网络互连',
-                'switches': '网络交换机',
-                'solutions': '网络解决方案',
-                'planning': '规划资源'
-            };
-            return sectionNames[section] || section;
-        }
-
         function goBack() {
             window.location.href = 'index.html';
         }
@@ -578,23 +546,36 @@
             window.location.href = 'nvlink.html';
         }
 
-        // 键盘导航
+        // 键盘导航 - 箭头键和空格
         document.addEventListener('keydown', function(e) {
-            if (e.code === 'ArrowLeft') {
+            // 箭头键导航
+            if (e.code === 'ArrowLeft' || e.code === 'Escape') {
                 e.preventDefault();
                 goBack();
             } else if (e.code === 'ArrowRight' || e.code === 'Space') {
                 e.preventDefault();
                 startTraining();
             }
-        });
 
-        // 添加键盘数字导航
-        document.addEventListener('keydown', function(e) {
+            // 数字键盘跳转 (1-8)
             const num = parseInt(e.key);
             if (num >= 1 && num <= 8) {
-                const sections = ['nvlink', 'software', 'adapters', 'bluefield', 'interconnect', 'switches', 'solutions', 'planning'];
-                navigateToSection(sections[num - 1]);
+                e.preventDefault();
+                const pages = [
+                    'nvlink.html',      // 1
+                    'software.html',    // 2
+                    'adapters.html',    // 3
+                    'bluefield.html',   // 4
+                    'linkx.html',       // 5
+                    'switches.html',    // 6
+                    'solutions.html',   // 7
+                    'ibvseth.html'      // 8 - IB vs RoCE
+                ];
+
+                const targetPage = pages[num - 1];
+                if (targetPage) {
+                    window.location.href = targetPage;
+                }
             }
         });
     </script>
