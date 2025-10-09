@@ -691,7 +691,8 @@
                 <div class="usage-step">
                     <h3>2. 准备 License 文件</h3>
                     <div class="code-block">
-			    <code># 将 UFM license 文件复制到临时目录<br>
+			    <code># 创建主目录，并将 UFM license 文件复制到临时目录<br>
+				    mkdir -p /opt/ufm/files<br>
 				    mkdir -p /tmp/license_file<br>
 				    cp your_license.lic /tmp/license_file/<br></code>
                         <button class="copy-code-btn" onclick="copyCode(this)">复制</button>
