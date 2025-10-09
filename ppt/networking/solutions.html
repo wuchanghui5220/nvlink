@@ -641,7 +641,7 @@
 
     <div class="navigation-controls">
         <button class="nav-button" onclick="goBack()">← 返回目录</button>
-        <button class="nav-button" onclick="goHome()">返回首页 🏠</button>
+        <button class="nav-button" onclick="nextModule()">下一模块 →</button>
         <div class="nav-hint">使用左右箭头键导航</div>
     </div>
 
@@ -650,8 +650,8 @@
             window.location.href = 'catalog.html';
         }
 
-        function goHome() {
-            window.location.href = 'index.html';
+        function nextModule() {
+            window.location.href = 'ibvseth.html';
         }
 
         // 键盘导航
@@ -661,7 +661,7 @@
                 goBack();
             } else if (e.code === 'ArrowRight' || e.code === 'Space') {
                 e.preventDefault();
-                goHome();
+                nextModule();
             } else if (e.code === 'Escape') {
                 goBack();
             }
