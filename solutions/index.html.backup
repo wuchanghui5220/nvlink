@@ -228,8 +228,8 @@
                 <div class="tech-circle"></div>
             </div>
             <h1>Vincent's Learning Vault</h1>
-            <a href="../" style="text-decoration: none; color: inherit;">
-            <img src="../images/avatar/avatar.jpg" alt="个人头像" class="avatar">
+            <a href="/" style="text-decoration: none; color: inherit;">
+            <img src="/images/avatar/avatar.jpg" alt="个人头像" class="avatar">
             </a>
         </div>
     </header>
@@ -237,9 +237,9 @@
     <main class="container">
         <div class="content">
             <div class="card fade-module">
-                <a href="small_hgx.pdf" style="text-decoration: none; color: inherit;">
+                <a href="/solutions/small_hgx.pdf" style="text-decoration: none; color: inherit;">
                 <div class="card">
-                    <img src="../images/dgx-a100.jpg" alt="经验分享" class="card-image">
+                    <img src="/images/dgx-a100.jpg" alt="经验分享" class="card-image">
                     <div class="card-content">
                         <h2>Small DGX Solution</h2>
                         <p>ACCELERATE YOUR TENSORFLOW WITH NVIDIA RDMA</p>
@@ -249,9 +249,9 @@
             </div>
 
             <div class="card fade-module">
-                <a href="caseshare-mdf.pdf" style="text-decoration: none; color: inherit;">
+                <a href="/solutions/caseshare-mdf.pdf" style="text-decoration: none; color: inherit;">
                 <div class="card">
-                    <img src="../images/products.jpg" alt="经验分享" class="card-image">
+                    <img src="/images/products.jpg" alt="经验分享" class="card-image">
                     <div class="card-content">
                         <h2>Networking Cases Share</h2>
                         <p>The Critical Role of InfiniBand in Large Model Training</p>
@@ -263,7 +263,7 @@
             <div class="card fade-module">
                 <a href="https://nvcrm.my.site.com/ESPCommunity/s/" target="_blank" style="text-decoration: none; color: inherit;">
                 <div class="card">
-                    <img src="../images/s.png" alt="经验分享" class="card-image">
+                    <img src="/images/s.png" alt="经验分享" class="card-image">
                     <div class="card-content">
                         <h2>NPN Portal</h2>
                         <p>NVIDIA Enterprise Support Portal, RMA, Create Case for help</p>
@@ -275,7 +275,7 @@
             <div class="card fade-module">
                 <a href="https://www.nvidia.com/en-us/networking/ethernet-switching/" target="_blank" style="text-decoration: none; color: inherit;">
                 <div class="card">
-                    <img src="../images/sn5600.jpg" alt="经验分享" class="card-image">
+                    <img src="/images/sn5600.jpg" alt="经验分享" class="card-image">
                     <div class="card-content">
                         <h2>Spectrum Ethernet Platform</h2>
                         <p>NVIDIA Supercharges Ethernet Networking for Generative AI</p>
@@ -287,7 +287,7 @@
             <div class="card fade-module">
                 <a href="https://www.nvidia.com/en-us/networking/products/data-processing-unit/" target="_blank" style="text-decoration: none; color: inherit;">
                 <div class="card">
-                    <img src="../images/dpu3.jpeg" alt="经验分享" class="card-image">
+                    <img src="/images/dpu3.jpeg" alt="经验分享" class="card-image">
                     <div class="card-content">
                         <h2>BlueField Platform (DPU)</h2>
                         <p>Transform the Data Center With NVIDIA BlueField</p>
@@ -299,7 +299,7 @@
             <div class="card fade-module">
                 <a href="https://www.nvidia.com/en-us/networking/products/infiniband/" target="_blank" style="text-decoration: none; color: inherit;">
                 <div class="card">
-                    <img src="../images/x800.jpg" alt="经验分享" class="card-image">
+                    <img src="/images/x800.jpg" alt="经验分享" class="card-image">
                     <div class="card-content">
                         <h2>Quantum InfiniBand Platform</h2>
                         <p>NVIDIA Quantum-X800 InfiniBand for Highest-Performance AI-Dedicated Infrastructure</p>
@@ -335,7 +335,7 @@
                 <div class="footer-section">
                     <h3>联系我</h3>
                     <ul>
-                        <li>	<a href="../">Email: vincentwu@zhengytech.com&nbsp;&nbsp;&nbsp;&nbsp;</a> 
+                        <li>	<a href="/">Email: vincentwu@zhengytech.com&nbsp;&nbsp;&nbsp;&nbsp;</a> 
 				<a href="https://nvid.nvidia.com/dashboard" target="_blank">Portal&nbsp;&nbsp;</a> 
 			</li>
                     </ul>
