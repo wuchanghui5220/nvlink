@@ -295,6 +295,14 @@
             padding: 15px;
             border-radius: 8px;
             border-left: 3px solid #06b6d4;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .dpu-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(6, 182, 212, 0.2);
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(6, 182, 212, 0.1));
         }
 
         .dpu-model {
@@ -302,6 +310,27 @@
             font-weight: 600;
             color: #1e293b;
             margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .image-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px;
+            height: 22px;
+            background: linear-gradient(135deg, #3b82f6, #06b6d4);
+            border-radius: 4px;
+            color: white;
+            font-size: 0.75rem;
+            transition: all 0.3s ease;
+        }
+
+        .dpu-card:hover .image-icon {
+            transform: scale(1.15);
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
         }
 
         .dpu-specs {
@@ -538,6 +567,89 @@
         .content-section:nth-child(1) { animation-delay: 0.1s; }
         .content-section:nth-child(2) { animation-delay: 0.2s; }
 
+        /* Lightbox 图片放大效果 */
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.92);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .lightbox.active {
+            display: flex;
+        }
+
+        .lightbox-image {
+            max-width: 90%;
+            max-height: 80vh;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            animation: zoomIn 0.3s ease;
+        }
+
+        .lightbox-caption {
+            color: white;
+            font-size: 1.1rem;
+            margin-top: 20px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 25px;
+            border-radius: 25px;
+            backdrop-filter: blur(10px);
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .lightbox-close:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: rotate(90deg);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes zoomIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
         /* 响应式设计 */
         @media (max-width: 1200px) {
             .slide-container {
@@ -644,8 +756,15 @@
                 <div class="section-content">
                     <p>BlueField DPU 将强大的 Arm 处理器、高性能网络和加速引擎集成在一颗芯片上。</p>
                     <div class="dpu-hardware">
-                        <div class="dpu-card">
-                            <div class="dpu-model">BlueField-3</div>
+                        <div class="dpu-card"
+                             data-image="https://developer-blogs.nvidia.com/zh-cn-blog/wp-content/uploads/sites/2/2023/05/nvidia-bluefield-dpu-1536x864-1.jpg"
+                             data-caption="BlueField-3 DPU - 最新一代数据处理单元"
+                             onclick="openLightbox(this)"
+                             title="点击查看产品图片">
+                            <div class="dpu-model">
+                                BlueField-3
+                                <span class="image-icon">🖼️</span>
+                            </div>
                             <div class="dpu-specs">
                                 • 最新一代 DPU 产品<br>
                                 • 支持 400Gb/s 网络连接<br>
@@ -653,8 +772,15 @@
                                 • 增强的 AI 和加密加速能力
                             </div>
                         </div>
-                        <div class="dpu-card">
-                            <div class="dpu-model">BlueField-2</div>
+                        <div class="dpu-card"
+                             data-image="https://blogs.nvidia.cn/wp-content/uploads/sites/20/2021/12/bluefield-2-dpu.jpg"
+                             data-caption="BlueField-2 DPU - 成熟稳定的企业级方案"
+                             onclick="openLightbox(this)"
+                             title="点击查看产品图片">
+                            <div class="dpu-model">
+                                BlueField-2
+                                <span class="image-icon">🖼️</span>
+                            </div>
                             <div class="dpu-specs">
                                 • 成熟稳定的企业级方案<br>
                                 • 支持 200Gb/s 网络带宽<br>
@@ -765,6 +891,13 @@
         </footer>
     </div>
 
+    <!-- Lightbox 图片放大 -->
+    <div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
+        <button class="lightbox-close" onclick="closeLightbox(event)">×</button>
+        <img class="lightbox-image" id="lightboxImage" src="" alt="">
+        <div class="lightbox-caption" id="lightboxCaption"></div>
+    </div>
+
     <div class="navigation-controls">
         <button class="nav-button" onclick="goBack()">← 返回目录</button>
         <button class="nav-button" onclick="nextModule()">下一模块 →</button>
@@ -780,8 +913,43 @@
             window.location.href = 'linkx.html';
         }
 
+        // Lightbox 图片放大功能
+        function openLightbox(element) {
+            const imageUrl = element.getAttribute('data-image');
+            const caption = element.getAttribute('data-caption');
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImage = document.getElementById('lightboxImage');
+            const lightboxCaption = document.getElementById('lightboxCaption');
+
+            lightboxImage.src = imageUrl;
+            lightboxImage.alt = caption;
+            lightboxCaption.textContent = caption;
+            lightbox.classList.add('active');
+            document.body.style.overflow = 'hidden'; // 禁止背景滚动
+        }
+
+        function closeLightbox(event) {
+            const lightbox = document.getElementById('lightbox');
+            // 只有点击遮罩层或关闭按钮才关闭
+            if (event.target === lightbox || event.target.classList.contains('lightbox-close')) {
+                lightbox.classList.remove('active');
+                document.body.style.overflow = 'auto'; // 恢复背景滚动
+            }
+        }
+
         // 键盘导航
         document.addEventListener('keydown', function(e) {
+            const lightbox = document.getElementById('lightbox');
+            const isLightboxOpen = lightbox.classList.contains('active');
+
+            // 如果 Lightbox 打开，ESC 只关闭 Lightbox
+            if (isLightboxOpen && e.code === 'Escape') {
+                e.preventDefault();
+                closeLightbox({target: lightbox});
+                return;
+            }
+
+            // 否则执行页面导航
             if (e.code === 'ArrowLeft') {
                 e.preventDefault();
                 goBack();
