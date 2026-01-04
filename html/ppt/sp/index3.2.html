@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NVIDIA SuperPOD参考架构</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f0f0f0;
+      font-family: 'Noto Sans SC', sans-serif;
+      overflow: hidden;
+    }
+
+    .slide-container {
+      width: 100vw;
+      height: 56.25vw; /* 16:9 aspect ratio */
+      max-height: 100vh;
+      max-width: 177.78vh; /* 16:9 aspect ratio (reversed) */
+      position: relative;
+      background: #111827;
+      color: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    /* 背景图形元素 */
+    .bg-grid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image:
+        linear-gradient(rgba(24, 92, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(24, 92, 255, 0.05) 1px, transparent 1px);
+      background-size: 20px 20px;
+      z-index: 0;
+    }
+
+    .bg-gradient {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 120% 45%, rgba(76, 29, 149, 0.7) 0%, rgba(17, 24, 39, 0) 50%);
+      z-index: 1;
+    }
+
+    .bg-circle1 {
+      position: absolute;
+      top: -15%;
+      right: -15%;
+      width: 40%;
+      height: 40%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #76b900 0%, #1a4163 100%);
+      filter: blur(80px);
+      opacity: 0.6;
+      z-index: 2;
+    }
+
+    .bg-circle2 {
+      position: absolute;
+      bottom: -10%;
+      left: -10%;
+      width: 30%;
+      height: 30%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0099da 0%, #1e40af 100%);
+      filter: blur(60px);
+      opacity: 0.5;
+      z-index: 2;
+    }
+
+    /* 主要内容 */
+    .content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    .header {
+      padding: 2.5% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .nvidia-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-box {
+      width: 8%;
+      min-width: 100px;
+      height: 36px;
+      background: #76b900;
+      border-radius: 4px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 700;
+      font-size: clamp(16px, 2vw, 22px);
+      transform: skew(-10deg);
+    }
+
+    .partner-text {
+      font-size: clamp(12px, 1.5vw, 16px);
+      font-weight: 500;
+      opacity: 0.9;
+    }
+
+    .slide-title {
+      font-size: clamp(16px, 1.8vw, 20px);
+      font-weight: 600;
+      padding: 0.5% 4%;
+      background: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(5px);
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 2% 4%;
+      overflow: hidden;
+    }
+
+    .title-block {
+      margin-bottom: 25px;
+    }
+
+    .main-title {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 15px;
+      background: linear-gradient(135deg, #76b900 0%, #3b82f6 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .subtitle {
+      font-size: 18px;
+      line-height: 1.5;
+      color: rgba(255, 255, 255, 0.9);
+      font-weight: 400;
+    }
+
+    .two-columns {
+      display: flex;
+      gap: 30px;
+      flex: 1;
+      margin-top: 20px;
+    }
+
+    .column {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 25px;
+    }
+
+    .info-card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 25px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .card-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .architecture-icon {
+      background: linear-gradient(135deg, #76b900 0%, #3e703e 100%);
+      box-shadow: 0 5px 15px rgba(118, 185, 0, 0.3);
+    }
+
+    .components-icon {
+      background: linear-gradient(135deg, #0099da 0%, #1e40af 100%);
+      box-shadow: 0 5px 15px rgba(0, 153, 218, 0.3);
+    }
+
+    .card-icon svg {
+      width: 30px;
+      height: 30px;
+      fill: white;
+    }
+
+    .card-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .architecture-title {
+      color: #76b900;
+    }
+
+    .components-title {
+      color: #0099da;
+    }
+
+    .card-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .component-item {
+      display: flex;
+      gap: 15px;
+      align-items: flex-start;
+    }
+
+    .component-icon {
+      width: 36px;
+      height: 36px;
+      min-width: 36px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .dgx-icon {
+      background: linear-gradient(135deg, #76b900 0%, #3e703e 100%);
+      box-shadow: 0 5px 15px rgba(118, 185, 0, 0.2);
+    }
+
+    .infiniband-icon {
+      background: linear-gradient(135deg, #0099da 0%, #1e40af 100%);
+      box-shadow: 0 5px 15px rgba(0, 153, 218, 0.2);
+    }
+
+    .nvlink-icon {
+      background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+      box-shadow: 0 5px 15px rgba(139, 92, 246, 0.2);
+    }
+
+    .component-icon svg {
+      width: 20px;
+      height: 20px;
+      fill: white;
+    }
+
+    .component-info {
+      flex: 1;
+    }
+
+    .component-title {
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .dgx-title {
+      color: #76b900;
+    }
+
+    .infiniband-title {
+      color: #0099da;
+    }
+
+    .nvlink-title {
+      color: #8b5cf6;
+    }
+
+    .component-desc {
+      font-size: 14px;
+      line-height: 1.5;
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .highlights {
+      margin-top: 15px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .highlight-item {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 5px 10px;
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .dgx-badge {
+      color: #76b900;
+      border: 1px solid rgba(118, 185, 0, 0.3);
+    }
+
+    .h100-badge {
+      color: #0099da;
+      border: 1px solid rgba(0, 153, 218, 0.3);
+    }
+
+    .architecture-badge {
+      color: #f59e0b;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .hopper-badge {
+      color: #8b5cf6;
+      border: 1px solid rgba(139, 92, 246, 0.3);
+    }
+
+    .footer {
+      padding: 1.5% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .page-number {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .company-name {
+      font-weight: 500;
+    }
+
+    .rotating-lines {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 50%;
+      height: 50%;
+      z-index: 5;
+      opacity: 0.15;
+      animation: rotate 60s linear infinite;
+    }
+
+    @keyframes rotate {
+      from {
+        transform: translate(-50%, -50%) rotate(0deg);
+      }
+      to {
+        transform: translate(-50%, -50%) rotate(360deg);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <!-- 背景元素 -->
+    <div class="bg-grid"></div>
+    <div class="bg-gradient"></div>
+    <div class="bg-circle1"></div>
+    <div class="bg-circle2"></div>
+
+    <!-- 旋转线框背景 -->
+    <svg class="rotating-lines" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+      <path d="M250,10 L490,250 L250,490 L10,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,50 L450,250 L250,450 L50,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,90 L410,250 L250,410 L90,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,130 L370,250 L250,370 L130,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,170 L330,250 L250,330 L170,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,210 L290,250 L250,290 L210,250 Z" fill="none" stroke="white" stroke-width="1" />
+    </svg>
+
+    <!-- 主要内容 -->
+    <div class="content">
+      <div class="header">
+        <div class="nvidia-logo">
+          <div class="logo-box">NVIDIA</div>
+          <div class="partner-text">Networking NPN Elite Partner</div>
+        </div>
+        <div class="slide-title">NVIDIA SuperPOD参考架构</div>
+      </div>
+
+      <div class="main-content">
+        <div class="title-block">
+          <div class="main-title">NVIDIA DGX SuperPOD架构概述</div>
+          <div class="subtitle">
+            NVIDIA DGX SuperPOD 是用于人工智能和高性能计算的下一代数据中心架构，旨在提供解决AI、HPC以及混合应用中先进计算挑战所需的计算性能水平。以模块化设计为基础，支持从小型集群到ExaFLOPS级别的扩展。
+          </div>
+          
+          <div class="highlights">
+            <div class="highlight-item architecture-badge">用于AI和HPC</div>
+            <div class="highlight-item dgx-badge">NVIDIA原厂验证架构</div>
+            <div class="highlight-item h100-badge">H100 GPU加速</div>
+            <div class="highlight-item hopper-badge">Hopper架构</div>
+          </div>
+        </div>
+
+        <div class="two-columns">
+          <div class="column">
+            <div class="info-card">
+              <div class="card-header">
+                <div class="card-icon architecture-icon">
+                  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z"/>
+                  </svg>
+                </div>
+                <h2 class="card-title architecture-title">架构设计理念</h2>
+              </div>
+              <div class="card-content">
+                <p>DGX SuperPOD架构的设计目标是最大化最先进模型训练的性能，扩展到ExaFLOPS级别，为存储提供最高性能，并支持企业、高等教育、研究和公共部门的各类客户。</p>
+                
+                <p>采用<strong>模块化设计</strong>，基于<strong>可扩展单元(SU)</strong>构建。每个SU包含32个DGX H100系统，这使得系统可以快速部署不同规模的集群。</p>
+                
+                <p>NVIDIA研发团队内部使用相同架构，确保所有软件、应用和支持结构在发布前经过充分测试验证。</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="column">
+            <div class="info-card">
+              <div class="card-header">
+                <div class="card-icon components-icon">
+                  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M4 6h18V4H4c-1.1 0-2 .9-2 2v11H0v3h14v-3H4V6zm19 2h-6c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h6c.55 0 1-.45 1-1V9c0-.55-.45-1-1-1zm-1 9h-4v-7h4v7z"/>
+                  </svg>
+                </div>
+                <h2 class="card-title components-title">核心技术组件</h2>
+              </div>
+              <div class="card-content">
+                <div class="component-item">
+                  <div class="component-icon dgx-icon">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z"/>
+                      <path d="M14 17H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+                    </svg>
+                  </div>
+                  <div class="component-info">
+                    <div class="component-title dgx-title">NVIDIA DGX H100系统</div>
+                    <div class="component-desc">提供8个H100 GPU，FP8精度下性能提升9倍，支持高达32 petaFLOPS的FP8精度性能。每系统配备双Intel Xeon处理器(112核)、2TB内存和640GB HBM3显存。</div>
+                  </div>
+                </div>
+                
+                <div class="component-item">
+                  <div class="component-icon infiniband-icon">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M21 14.5v-2.07H9.89C9.45 11.28 8.29 10.5 7 10.5c-1.3 0-2.45.78-2.89 1.93H2v2.07h2.11c.44 1.15 1.6 1.93 2.89 1.93 1.3 0 2.45-.78 2.89-1.93H21zm-16-2.5c.83 0 1.5.67 1.5 1.5s-.67 1.5-1.5 1.5-1.5-.67-1.5-1.5.67-1.5 1.5-1.5zm13-6v-2H5v2h13z"/>
+                    </svg>
+                  </div>
+                  <div class="component-info">
+                    <div class="component-title infiniband-title">NVIDIA NDR (400 Gbps) InfiniBand</div>
+                    <div class="component-desc">提供最高性能、最低延迟和最可扩展的网络互连，采用优化的全胖树拓扑，支持高速节点间通信。</div>
+                  </div>
+                </div>
+                
+                <div class="component-item">
+                  <div class="component-icon nvlink-icon">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path d="m14.8 8.75-4.33 4.33L9.39 12 8 13.39l2.47 2.47 5.74-5.74z"/>
+                      <path d="M13.25 18h-11.7V6h11.7v1.5h-2.47c.21.54.33 1.12.33 1.73 0 .6-.12 1.18-.33 1.73h2.47V18zm6.45-8.17c.21.54.33 1.12.33 1.73 0 .6-.12 1.18-.33 1.73H22V18H12.73l2.66-2.67c-.46-.35-.83-.79-1.09-1.33h-1.8V9.27h1.8c.26-.54.63-.98 1.09-1.33L12.73 5.25H22v5.32h-2.3z"/>
+                    </svg>
+                  </div>
+                  <div class="component-info">
+                    <div class="component-title nvlink-title">NVIDIA NVLink®技术</div>
+                    <div class="component-desc">第四代NVLink技术连接GPU，每GPU带宽达到900 GBps，比上一代提升1.5倍，为大规模分布式训练提供前所未有的性能。</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="company-name">北京正阳恒卓科技有限公司</div>
+        <div class="page-number">15</div>
+      </div>
+    </div>
+  </div>
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+        <a href="index3.1.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+        <a href="index3.3.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+    </div>
+</body>
+</html>

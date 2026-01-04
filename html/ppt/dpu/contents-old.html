@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NVIDIA Spectrum-X网络研讨会 - 议程</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Microsoft YaHei", sans-serif;
+            background: #000;
+            color: white;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 复用封面页的背景效果 */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(ellipse at top left, rgba(118, 185, 0, 0.15) 0%, transparent 60%),
+                radial-gradient(ellipse at bottom right, rgba(118, 185, 0, 0.1) 0%, transparent 60%),
+                radial-gradient(ellipse at center, rgba(0, 100, 200, 0.05) 0%, transparent 70%),
+                linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 25%, #0f0f0f 50%, #1a1a1a 75%, #0a0a0a 100%);
+            animation: backgroundFlow 12s ease-in-out infinite;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(rgba(118, 185, 0, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(118, 185, 0, 0.03) 1px, transparent 1px),
+                linear-gradient(rgba(118, 185, 0, 0.01) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(118, 185, 0, 0.01) 1px, transparent 1px);
+            background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
+            animation: gridShift 25s linear infinite;
+        }
+
+        .data-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #76B900;
+            border-radius: 50%;
+            opacity: 0;
+            animation: particleFloat 8s infinite;
+        }
+
+        .particle:nth-child(2n) {
+            width: 1px;
+            height: 1px;
+            background: rgba(118, 185, 0, 0.6);
+            animation-duration: 12s;
+        }
+
+        .circuit-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(45deg, transparent 48%, rgba(118, 185, 0, 0.1) 49%, rgba(118, 185, 0, 0.1) 51%, transparent 52%),
+                linear-gradient(-45deg, transparent 48%, rgba(118, 185, 0, 0.08) 49%, rgba(118, 185, 0, 0.08) 51%, transparent 52%);
+            background-size: 300px 300px, 400px 400px;
+            animation: circuitPulse 20s ease-in-out infinite;
+            opacity: 0.3;
+        }
+
+        .chip-decoration {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            border: 1px solid rgba(118, 185, 0, 0.2);
+            border-radius: 8px;
+            background: linear-gradient(45deg, transparent 30%, rgba(118, 185, 0, 0.03) 70%);
+            animation: chipGlow 6s ease-in-out infinite;
+        }
+
+        .chip-decoration::before {
+            content: '';
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            right: 8px;
+            bottom: 8px;
+            border: 1px solid rgba(118, 185, 0, 0.1);
+            border-radius: 4px;
+        }
+
+        .chip-top-left {
+            top: 8%;
+            left: 3%;
+            animation-delay: 0s;
+        }
+
+        .chip-top-right {
+            top: 12%;
+            right: 5%;
+            animation-delay: 2s;
+        }
+
+        .chip-bottom-left {
+            bottom: 15%;
+            left: 6%;
+            animation-delay: 4s;
+        }
+
+        .chip-bottom-right {
+            bottom: 8%;
+            right: 3%;
+            animation-delay: 1s;
+        }
+
+        /* 主要内容容器 */
+        .slide-container {
+            width: 100%;
+            max-width: 1000px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 页面标题 */
+        .page-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 60px;
+            background: linear-gradient(135deg, #76B900, #a4d633);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(118, 185, 0, 0.3);
+            animation: fadeInDown 1s ease-out;
+        }
+
+        /* 目录容器 */
+        .contents-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            width: 100%;
+            max-width: 1000px;
+            animation: fadeInUp 1.2s ease-out 0.3s both;
+        }
+
+        /* 目录项 */
+        .content-item {
+            display: flex;
+            align-items: center;
+            padding: 20px 25px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(118, 185, 0, 0.2);
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .content-item:hover {
+            transform: translateY(-5px) scale(1.02);
+            border-color: rgba(118, 185, 0, 0.5);
+            box-shadow: 0 15px 35px rgba(118, 185, 0, 0.2);
+            background: rgba(118, 185, 0, 0.05);
+        }
+
+        /* 序号 */
+        .item-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #76B900;
+            margin-right: 25px;
+            width: 60px;
+            text-align: center;
+        }
+
+        /* 内容文字 */
+        .item-content {
+            flex: 1;
+        }
+
+        .item-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .item-subtitle {
+            font-size: 1rem;
+            color: #b0b0b0;
+            line-height: 1.4;
+        }
+
+
+        /* 导航提示 */
+        .navigation-hint {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 30px;
+            font-size: 0.9rem;
+            color: #888;
+            animation: fadeIn 1.5s ease-out 1s both;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-key {
+            background: rgba(118, 185, 0, 0.2);
+            color: #76B900;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-weight: 600;
+        }
+
+        /* 动画定义 */
+        @keyframes backgroundFlow {
+            0%, 100% { 
+                filter: hue-rotate(0deg) brightness(1);
+                transform: scale(1);
+            }
+            25% {
+                filter: hue-rotate(5deg) brightness(1.1);
+                transform: scale(1.02);
+            }
+            50% { 
+                filter: hue-rotate(-3deg) brightness(0.95);
+                transform: scale(0.98);
+            }
+            75% {
+                filter: hue-rotate(8deg) brightness(1.05);
+                transform: scale(1.01);
+            }
+        }
+
+        @keyframes gridShift {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(100px, 100px); }
+        }
+
+        @keyframes particleFloat {
+            0% { 
+                opacity: 0;
+                transform: translateY(100vh) translateX(0px) scale(0);
+            }
+            10% {
+                opacity: 1;
+                transform: translateY(90vh) translateX(10px) scale(1);
+            }
+            90% {
+                opacity: 1;
+                transform: translateY(-10vh) translateX(-10px) scale(1);
+            }
+            100% { 
+                opacity: 0;
+                transform: translateY(-20vh) translateX(-20px) scale(0);
+            }
+        }
+
+        @keyframes circuitPulse {
+            0%, 100% { 
+                opacity: 0.2;
+                transform: scale(1) rotate(0deg);
+            }
+            50% { 
+                opacity: 0.4;
+                transform: scale(1.05) rotate(2deg);
+            }
+        }
+
+        @keyframes chipGlow {
+            0%, 100% { 
+                opacity: 0.3;
+                box-shadow: 0 0 20px rgba(118, 185, 0, 0.1);
+                transform: rotate(0deg);
+            }
+            50% { 
+                opacity: 0.6;
+                box-shadow: 0 0 40px rgba(118, 185, 0, 0.2);
+                transform: rotate(2deg);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .contents-container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .page-title {
+                font-size: 2.2rem;
+            }
+            
+            .content-item {
+                padding: 20px;
+            }
+            
+            .item-number {
+                font-size: 2rem;
+                margin-right: 15px;
+                width: 50px;
+            }
+            
+            .item-title {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 动态背景元素 -->
+    <div class="data-particles" id="particles"></div>
+    <div class="circuit-lines"></div>
+    
+    <!-- DPU芯片装饰元素 -->
+    <div class="chip-decoration chip-top-left"></div>
+    <div class="chip-decoration chip-top-right"></div>
+    <div class="chip-decoration chip-bottom-left"></div>
+    <div class="chip-decoration chip-bottom-right"></div>
+    
+    <div class="slide-container">
+        <h1 class="page-title">研讨会议程</h1>
+        
+        <div class="contents-container">
+            <div class="content-item">
+                <div class="item-number">01</div>
+                <div class="item-content">
+                    <div class="item-title">生成式AI数据中心的网络挑战</div>
+                    <div class="item-subtitle">AI工厂规模计算，全栈优化AI Fabric</div>
+                </div>
+            </div>
+
+            <div class="content-item">
+                <div class="item-number">02</div>
+                <div class="item-content">
+                    <div class="item-title">NVIDIA Spectrum-X：专为AI打造</div>
+                    <div class="item-subtitle">全球首个AI以太网平台</div>
+                </div>
+            </div>
+
+            <div class="content-item">
+                <div class="item-number">03</div>
+                <div class="item-content">
+                    <div class="item-title">核心组件：Spectrum-4与BlueField-3</div>
+                    <div class="item-subtitle">交换机与SuperNIC协同</div>
+                </div>
+            </div>
+
+            <div class="content-item">
+                <div class="item-number">04</div>
+                <div class="item-content">
+                    <div class="item-title">Spectrum-X性能优势（第1部分）</div>
+                    <div class="item-subtitle">集合操作性能，RoCE加速</div>
+                </div>
+            </div>
+
+            <div class="content-item">
+                <div class="item-number">05</div>
+                <div class="item-content">
+                    <div class="item-title">Spectrum-X性能优势（第2部分）</div>
+                    <div class="item-subtitle">多租户隔离，MoE支持</div>
+                </div>
+            </div>
+
+            <div class="content-item">
+                <div class="item-number">06</div>
+                <div class="item-content">
+                    <div class="item-title">组网架构与规模化部署</div>
+                    <div class="item-subtitle">模块化扩展，32K GPU支持</div>
+                </div>
+            </div>
+
+            <div class="content-item">
+                <div class="item-number">07</div>
+                <div class="item-content">
+                    <div class="item-title">运营管理：软件平台与工具</div>
+                    <div class="item-subtitle">Cumulus Linux，NetQ，Air</div>
+                </div>
+            </div>
+
+            <div class="content-item">
+                <div class="item-number">08</div>
+                <div class="item-content">
+                    <div class="item-title">客户成功案例（第1部分）</div>
+                    <div class="item-subtitle">以色列-1数据中心，PoC流程</div>
+                </div>
+            </div>
+
+            <div class="content-item">
+                <div class="item-number">09</div>
+                <div class="item-content">
+                    <div class="item-title">客户成功案例（第2部分）</div>
+                    <div class="item-subtitle">PoC测试，性能验证</div>
+                </div>
+            </div>
+
+            <div class="content-item">
+                <div class="item-number">10</div>
+                <div class="item-content">
+                    <div class="item-title">总结与展望</div>
+                    <div class="item-subtitle">核心价值，竞争优势</div>
+                </div>
+            </div>
+
+            <div class="content-item">
+                <div class="item-number">11</div>
+                <div class="item-content">
+                    <div class="item-title">问答环节</div>
+                    <div class="item-subtitle">开放交流，答疑解惑</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="navigation-hint">
+        <div class="nav-item">
+            <span class="nav-key">←</span>
+            <span>上一页</span>
+        </div>
+        <div class="nav-item">
+            <span class="nav-key">→</span>
+            <span>下一页</span>
+        </div>
+    </div>
+
+    <script>
+        // 创建动态粒子效果
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 25;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 8 + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // 鼠标跟踪光效
+        function createMouseGlow() {
+            let mouseGlow = document.createElement('div');
+            mouseGlow.style.cssText = `
+                position: fixed;
+                width: 200px;
+                height: 200px;
+                background: radial-gradient(circle, rgba(118, 185, 0, 0.1) 0%, transparent 70%);
+                border-radius: 50%;
+                pointer-events: none;
+                z-index: 0;
+                transition: all 0.1s ease;
+                transform: translate(-50%, -50%);
+            `;
+            document.body.appendChild(mouseGlow);
+
+            document.addEventListener('mousemove', function(e) {
+                mouseGlow.style.left = e.clientX + 'px';
+                mouseGlow.style.top = e.clientY + 'px';
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            createParticles();
+            createMouseGlow();
+            
+            // 目录项点击效果
+            document.querySelectorAll('.content-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const ripple = document.createElement('div');
+                    ripple.style.cssText = `
+                        position: absolute;
+                        width: 100px;
+                        height: 100px;
+                        background: radial-gradient(circle, rgba(118, 185, 0, 0.3) 0%, transparent 70%);
+                        border-radius: 50%;
+                        pointer-events: none;
+                        z-index: 1000;
+                        left: 50%;
+                        top: 50%;
+                        transform: translate(-50%, -50%) scale(0);
+                        animation: rippleEffect 0.8s ease-out;
+                    `;
+                    
+                    this.style.position = 'relative';
+                    this.appendChild(ripple);
+                    
+                    setTimeout(() => ripple.remove(), 800);
+                });
+            });
+            
+            // 键盘导航
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'ArrowRight' || e.key === ' ') {
+                    // 切换到AI挑战页面
+                    window.location.href = 'ai-challenges.html';
+                } else if (e.key === 'ArrowLeft') {
+                    // 返回封面页
+                    window.location.href = 'index.html';
+                }
+            });
+        });
+        
+        // CSS动画定义
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes rippleEffect {
+                0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+                100% { transform: translate(-50%, -50%) scale(2); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

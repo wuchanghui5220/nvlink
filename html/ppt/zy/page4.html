@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>成功案例展示 - 北京正阳恒卓科技有限公司</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'WenQuanYi Micro Hei', sans-serif;
+            background: linear-gradient(135deg, #0c4a3e 0%, #134e4a 25%, #065f46 50%, #047857 75%, #059669 100%);
+            color: #fff;
+            overflow: hidden;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            background: linear-gradient(135deg, #0c4a3e 0%, #134e4a 25%, #065f46 50%, #047857 75%, #059669 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .slide-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(34, 197, 94, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.12) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(6, 95, 70, 0.2) 0%, transparent 50%);
+            animation: pulseLight 20s ease-in-out infinite;
+            z-index: 1;
+        }
+
+        @keyframes pulseLight {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.8; }
+        }
+
+        .decorative-elements {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .corner-decoration {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            border: 2px solid rgba(34, 197, 94, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .corner-decoration::before {
+            content: '';
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: rgba(34, 197, 94, 0.6);
+            border-radius: 50%;
+            animation: cornerPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes cornerPulse {
+            0%, 100% { 
+                transform: scale(0.8);
+                opacity: 0.6;
+            }
+            50% { 
+                transform: scale(1.2);
+                opacity: 1;
+            }
+        }
+
+        .corner-decoration.top-left {
+            top: 30px;
+            left: 30px;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .corner-decoration.top-left::before {
+            top: -6px;
+            left: -6px;
+        }
+
+        .corner-decoration.top-right {
+            top: 30px;
+            right: 30px;
+            border-left: none;
+            border-bottom: none;
+        }
+
+        .corner-decoration.top-right::before {
+            top: -6px;
+            right: -6px;
+            animation-delay: 0.5s;
+        }
+
+        .corner-decoration.bottom-left {
+            bottom: 30px;
+            left: 30px;
+            border-right: none;
+            border-top: none;
+        }
+
+        .corner-decoration.bottom-left::before {
+            bottom: -6px;
+            left: -6px;
+            animation-delay: 1s;
+        }
+
+        .corner-decoration.bottom-right {
+            bottom: 30px;
+            right: 30px;
+            border-left: none;
+            border-top: none;
+        }
+
+        .corner-decoration.bottom-right::before {
+            bottom: -6px;
+            right: -6px;
+            animation-delay: 1.5s;
+        }
+
+        .tech-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(34, 197, 94, 0.6);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { 
+                transform: translateY(0px) rotate(0deg);
+                opacity: 0;
+            }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            50% { 
+                transform: translateY(-80px) rotate(180deg);
+            }
+        }
+
+        .main-content {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            padding: 35px 50px;
+        }
+
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .page-title {
+            font-size: clamp(2.5rem, 4vw, 3.5rem);
+            font-weight: 700;
+            background: linear-gradient(135deg, #ffffff 0%, #22c55e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .brand-image {
+            max-height: 50px;
+            height: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 15px rgba(34, 197, 94, 0.3));
+        }
+
+        .content-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .cases-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            flex: 1;
+        }
+
+        .case-card {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 18px;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            backdrop-filter: blur(15px);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .case-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, #22c55e, #10b981, #0d9488);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .case-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .case-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(34, 197, 94, 0.4);
+            box-shadow: 0 15px 40px rgba(34, 197, 94, 0.2);
+        }
+
+        .case-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .case-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #22c55e, #10b981);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .case-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #fff;
+            line-height: 1.2;
+        }
+
+        .case-subtitle {
+            font-size: 1rem;
+            color: #22c55e;
+            font-weight: 500;
+            margin-bottom: 15px;
+        }
+
+        .case-content {
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.5;
+            font-size: 14px;
+            flex: 1;
+        }
+
+        .case-specs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .spec-tag {
+            background: rgba(34, 197, 94, 0.2);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 12px;
+            padding: 4px 12px;
+            color: #22c55e;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .summary-section {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 18px;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            backdrop-filter: blur(15px);
+            margin-top: 20px;
+        }
+
+        .summary-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .summary-stat {
+            text-align: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .summary-stat:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-3px);
+        }
+
+        .summary-number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #22c55e;
+            margin-bottom: 5px;
+        }
+
+        .summary-label {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+
+        .page-indicator {
+            position: absolute;
+            bottom: 40px;
+            right: 40px;
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.6);
+            z-index: 10;
+        }
+
+        .slide-number {
+            font-weight: 600;
+            color: #22c55e;
+        }
+
+        .nav-controls {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+            font-size: 30px;
+            color: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            user-select: none;
+        }
+
+        .nav-controls:hover {
+            color: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(76, 166, 126, 0.3);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .nav-prev {
+            left: 30px;
+        }
+
+        .nav-next {
+            right: 30px;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .main-content > * {
+            animation: slideIn 0.8s ease-out forwards;
+        }
+
+        .main-content > *:nth-child(1) { animation-delay: 0.1s; }
+        .main-content > *:nth-child(2) { animation-delay: 0.2s; }
+
+        @media (max-width: 1200px) {
+            .cases-grid {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+            
+            .summary-stats {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+            
+            .main-content {
+                padding: 40px 50px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 30px 20px;
+            }
+            
+            .header-section {
+                flex-direction: column;
+                gap: 20px;
+                margin-bottom: 30px;
+            }
+            
+            .case-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            
+            .summary-stats {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            
+            .corner-decoration {
+                width: 80px;
+                height: 80px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="decorative-elements">
+            <div class="corner-decoration top-left"></div>
+            <div class="corner-decoration top-right"></div>
+            <div class="corner-decoration bottom-left"></div>
+            <div class="corner-decoration bottom-right"></div>
+        </div>
+
+        <div class="tech-particles" id="particles"></div>
+
+        <div class="main-content">
+            <div class="header-section">
+                <h1 class="page-title">成功案例展示</h1>
+                <div class="brand-logo">
+                    <img src="zy_elite.png" alt="正阳恒卓科技 NVIDIA Elite Partner" class="brand-image">
+                </div>
+            </div>
+
+            <div class="content-section">
+                <div class="cases-grid">
+                    <div class="case-card">
+                        <div class="case-header">
+                            <div class="case-icon">🏢</div>
+                            <div>
+                                <div class="case-title">济南超算中心</div>
+                                <div class="case-subtitle">总规模超4亿元人民币</div>
+                            </div>
+                        </div>
+                        <div class="case-content">
+                            完成125台8卡GPU服务器、64台英伟达400G交换机、1000张400G网卡、2536个400G/800G模块的硬件配备。提供完整的网络设备供货、安装服务和调优服务。
+                        </div>
+                        <div class="case-specs">
+                            <span class="spec-tag">125台GPU服务器</span>
+                            <span class="spec-tag">64台400G交换机</span>
+                            <span class="spec-tag">1000张网卡</span>
+                            <span class="spec-tag">2536个模块</span>
+                        </div>
+                    </div>
+
+                    <div class="case-card">
+                        <div class="case-header">
+                            <div class="case-icon">☁️</div>
+                            <div>
+                                <div class="case-title">山东艾特云翔智算中心</div>
+                                <div class="case-subtitle">高性能智算平台</div>
+                            </div>
+                        </div>
+                        <div class="case-content">
+                            设备96台MQ9790交换机，MMA4Z00系列光模块数千个，MPO线缆数千根。为客户打造高效稳定的智算基础设施。
+                        </div>
+                        <div class="case-specs">
+                            <span class="spec-tag">96台MQ9790</span>
+                            <span class="spec-tag">数千光模块</span>
+                            <span class="spec-tag">MPO线缆</span>
+                        </div>
+                    </div>
+
+                    <div class="case-card">
+                        <div class="case-header">
+                            <div class="case-icon">🌟</div>
+                            <div>
+                                <div class="case-title">庆阳智算中心</div>
+                                <div class="case-subtitle">区域智算枢纽</div>
+                            </div>
+                        </div>
+                        <div class="case-content">
+                            MQM8700交换机56台，MFS1S00系列线缆3000根，完成项目实施及维护。为西北地区提供强大的AI算力支撑。
+                        </div>
+                        <div class="case-specs">
+                            <span class="spec-tag">56台MQM8700</span>
+                            <span class="spec-tag">3000根线缆</span>
+                            <span class="spec-tag">实施维护</span>
+                        </div>
+                    </div>
+
+                    <div class="case-card">
+                        <div class="case-header">
+                            <div class="case-icon">🔥</div>
+                            <div>
+                                <div class="case-title">万卡集群建设</div>
+                                <div class="case-subtitle">突破性规模部署</div>
+                            </div>
+                        </div>
+                        <div class="case-content">
+                            通过技术积累和多方合作，具备了万卡规模的集群能力，产品IB网络具备首屈一指的供货能力。积极探索5万卡集群建设。
+                        </div>
+                        <div class="case-specs">
+                            <span class="spec-tag">万卡规模</span>
+                            <span class="spec-tag">IB网络</span>
+                            <span class="spec-tag">5万卡探索</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="summary-section">
+                    <h3 class="summary-title">项目成果统计</h3>
+                    <div class="summary-stats">
+                        <div class="summary-stat">
+                            <div class="summary-number">11+</div>
+                            <div class="summary-label">重大项目</div>
+                        </div>
+                        <div class="summary-stat">
+                            <div class="summary-number">50K+</div>
+                            <div class="summary-label">GPU部署</div>
+                        </div>
+                        <div class="summary-stat">
+                            <div class="summary-number">4亿+</div>
+                            <div class="summary-label">项目总值</div>
+                        </div>
+                        <div class="summary-stat">
+                            <div class="summary-number">99.9%</div>
+                            <div class="summary-label">客户满意度</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="page-indicator">
+            <span class="slide-number">04</span> / 05
+        </div>
+
+        <div class="nav-controls nav-prev" onclick="window.location.href='page3.html'">‹</div>
+        <div class="nav-controls nav-next" onclick="window.location.href='page5.html'">›</div>
+    </div>
+
+    <script>
+        // 创建科技粒子效果
+        function createTechParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 20;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                // 随机大小
+                const size = Math.random() * 3 + 1;
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                
+                // 随机位置
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                
+                // 随机动画延迟
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 4 + 4) + 's';
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            createTechParticles();
+            
+            // 添加页面加载动画
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.8s ease';
+            
+            setTimeout(() => {
+                document.body.style.opacity = '1';
+            }, 100);
+            
+            // 添加案例卡片交互效果
+            const caseCards = document.querySelectorAll('.case-card');
+            caseCards.forEach((card, index) => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.transform = 'translateY(-8px) scale(1.02)';
+                });
+                
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'translateY(0) scale(1)';
+                });
+            });
+
+            // 统计数据动画效果
+            const summaryStats = document.querySelectorAll('.summary-stat');
+            summaryStats.forEach((stat, index) => {
+                stat.addEventListener('mouseenter', () => {
+                    stat.style.transform = 'translateY(-5px) scale(1.05)';
+                });
+                
+                stat.addEventListener('mouseleave', () => {
+                    stat.style.transform = 'translateY(0) scale(1)';
+                });
+            });
+        });
+        
+        // 添加键盘导航
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                window.location.href = 'page5.html';
+            }
+            if (e.key === 'ArrowLeft') {
+                window.location.href = 'page3.html';
+            }
+        });
+    </script>
+</body>
+</html>

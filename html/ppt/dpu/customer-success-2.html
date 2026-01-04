@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>客户成功案例与PoC（第2部分）</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Microsoft YaHei", sans-serif;
+            background: #000;
+            color: white;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 复用背景效果 */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(ellipse at top left, rgba(0, 150, 255, 0.12) 0%, transparent 60%),
+                radial-gradient(ellipse at bottom right, rgba(138, 43, 226, 0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at center, rgba(118, 185, 0, 0.06) 0%, transparent 70%),
+                linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 25%, #0f0f0f 50%, #1a1a1a 75%, #0a0a0a 100%);
+            animation: backgroundFlow 12s ease-in-out infinite;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(0, 150, 255, 0.03) 35px, rgba(0, 150, 255, 0.03) 70px),
+                repeating-linear-gradient(-45deg, transparent, transparent 35px, rgba(138, 43, 226, 0.03) 35px, rgba(138, 43, 226, 0.03) 70px);
+            animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes backgroundFlow {
+            0%, 100% { opacity: 0.8; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.02); }
+        }
+
+        @keyframes gridMove {
+            0% { background-position: 0px 0px, 0px 0px; }
+            100% { background-position: 70px 70px, -70px 70px; }
+        }
+
+        .container {
+            width: 95%;
+            max-width: 1400px;
+            height: 95vh;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        h1 {
+            font-size: 3.2rem;
+            text-align: center;
+            margin-bottom: 40px;
+            background: linear-gradient(135deg, #0096FF, #FFFFFF, #8A2BE2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+            text-shadow: none;
+            letter-spacing: -0.5px;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            width: 100%;
+            height: calc(100% - 160px);
+        }
+
+        .performance-indicators-section {
+            background: rgba(25, 25, 35, 0.85);
+            border: 2px solid rgba(0, 150, 255, 0.3);
+            border-left: 6px solid #0096FF;
+            border-radius: 16px;
+            padding: 28px;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 8px 32px rgba(0, 150, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .testing-process-section {
+            background: rgba(25, 25, 35, 0.85);
+            border: 2px solid rgba(138, 43, 226, 0.3);
+            border-left: 6px solid #8A2BE2;
+            border-radius: 16px;
+            padding: 28px;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 8px 32px rgba(138, 43, 226, 0.1);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .performance-indicators-section .section-title {
+            color: #0096FF;
+        }
+
+        .testing-process-section .section-title {
+            color: #8A2BE2;
+        }
+
+        .section-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .performance-indicators-section .section-icon {
+            background: linear-gradient(135deg, #0096FF, #00BFFF);
+            color: #FFF;
+        }
+
+        .testing-process-section .section-icon {
+            background: linear-gradient(135deg, #8A2BE2, #9370DB);
+            color: #FFF;
+        }
+
+        .feature-list {
+            flex-grow: 1;
+        }
+
+        .feature-item {
+            margin-bottom: 18px;
+            line-height: 1.6;
+            font-size: 1.05rem;
+        }
+
+        .feature-title {
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .performance-indicators-section .feature-title {
+            color: #0096FF;
+        }
+
+        .testing-process-section .feature-title {
+            color: #8A2BE2;
+        }
+
+        .feature-desc {
+            color: #E0E0E0;
+            font-size: 0.95rem;
+            margin-left: 16px;
+            line-height: 1.5;
+        }
+
+        .highlight {
+            color: #FFF;
+            font-weight: 600;
+            background: linear-gradient(90deg, rgba(0, 150, 255, 0.15), rgba(138, 43, 226, 0.15));
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .test-components {
+            background: rgba(0, 150, 255, 0.1);
+            border: 1px solid rgba(0, 150, 255, 0.3);
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+        }
+
+        .test-components-title {
+            color: #0096FF;
+            font-weight: 700;
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+
+        .components-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .component-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .component-label {
+            color: #B0B0B0;
+            font-size: 0.8rem;
+        }
+
+        .component-value {
+            color: #FFF;
+            font-weight: 600;
+        }
+
+        .test-flow {
+            background: rgba(138, 43, 226, 0.1);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+        }
+
+        .test-flow-title {
+            color: #8A2BE2;
+            font-weight: 700;
+            font-size: 1rem;
+            margin-bottom: 12px;
+        }
+
+        .flow-step {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .step-number {
+            background: linear-gradient(135deg, #8A2BE2, #9370DB);
+            color: #FFF;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.8rem;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        .step-desc {
+            color: #E0E0E0;
+            line-height: 1.4;
+        }
+
+        .performance-metrics, .testing-metrics {
+            border-top: 2px solid rgba(255, 255, 255, 0.1);
+            padding-top: 20px;
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .metric-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.95rem;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 8px 12px;
+            border-radius: 6px;
+        }
+
+        .metric-label {
+            color: #B0B0B0;
+        }
+
+        .metric-value {
+            font-weight: 700;
+            color: #FFF;
+        }
+
+        .bottom-stats {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            color: #B0B0B0;
+            font-size: 0.9rem;
+        }
+
+        .stats-highlight {
+            color: #0096FF;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        /* 交互动效 */
+        .performance-indicators-section:hover, .testing-process-section:hover {
+            transform: translateY(-5px);
+            transition: all 0.3s ease;
+        }
+
+        .performance-indicators-section:hover {
+            box-shadow: 0 12px 48px rgba(0, 150, 255, 0.2);
+        }
+
+        .testing-process-section:hover {
+            box-shadow: 0 12px 48px rgba(138, 43, 226, 0.2);
+        }
+
+        /* 鼠标跟踪光效 */
+        #mouse-glow {
+            position: fixed;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0, 150, 255, 0.1) 0%, rgba(138, 43, 226, 0.05) 50%, transparent 100%);
+            pointer-events: none;
+            z-index: 0;
+            transition: opacity 0.3s ease;
+            opacity: 0;
+        }
+
+        /* 粒子动画容器 */
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(0, 150, 255, 0.4);
+            border-radius: 50%;
+            animation: float 8s infinite linear;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1024px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            h1 {
+                font-size: 2.8rem;
+                margin-bottom: 30px;
+            }
+
+            .performance-indicators-section, .testing-process-section {
+                padding: 24px;
+            }
+
+            .section-title {
+                font-size: 1.6rem;
+            }
+
+            .components-grid {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                width: 98%;
+                height: 98vh;
+            }
+
+            h1 {
+                font-size: 2.4rem;
+            }
+
+            .performance-indicators-section, .testing-process-section {
+                padding: 20px;
+            }
+
+            .feature-item {
+                margin-bottom: 15px;
+                font-size: 1rem;
+            }
+        }
+
+        /* 键盘提示 */
+        .keyboard-hint {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            font-size: 0.8rem;
+            color: #666;
+            background: rgba(25, 25, 35, 0.9);
+            padding: 8px 12px;
+            border-radius: 6px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 150, 255, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div id="mouse-glow"></div>
+    <div class="particles"></div>
+    
+    <div class="container">
+        <h1>客户成功案例与PoC（第2部分）</h1>
+        
+        <div class="content-grid">
+            <!-- PoC性能指标展示 -->
+            <div class="performance-indicators-section">
+                <div class="section-title">
+                    <div class="section-icon">📊</div>
+                    PoC核心性能指标
+                </div>
+                
+                <div class="feature-list">
+                    <div class="feature-item">
+                        <div class="feature-title">LLM训练性能</div>
+                        <div class="feature-desc">验证从<span class="highlight">4节点到16节点</span>规模的高效扩展性，以及多作业隔离下的性能表现</div>
+                    </div>
+
+                    <div class="feature-item">
+                        <div class="feature-title">Spectrum-X解决方案弹性</div>
+                        <div class="feature-desc">展示在链路故障等不利条件下，利用<span class="highlight">全球自适应路由技术</span>，仍能实现平稳降级</div>
+                    </div>
+
+                    <div class="feature-item">
+                        <div class="feature-title">网络性能量化</div>
+                        <div class="feature-desc">量化<span class="highlight">RDMA和NCCL</span>等关键AI网络构建块的最佳性能表现</div>
+                    </div>
+
+                    <div class="test-components">
+                        <div class="test-components-title">PoC测试关键组件</div>
+                        <div class="components-grid">
+                            <div class="component-item">
+                                <div class="component-label">硬件平台</div>
+                                <div class="component-value">Spectrum-4交换机</div>
+                            </div>
+                            <div class="component-item">
+                                <div class="component-label">网络加速</div>
+                                <div class="component-value">BlueField-3 SuperNIC</div>
+                            </div>
+                            <div class="component-item">
+                                <div class="component-label">GPU集群</div>
+                                <div class="component-value">HGX集群(16节点×8GPU)</div>
+                            </div>
+                            <div class="component-item">
+                                <div class="component-label">操作系统</div>
+                                <div class="component-value">Cumulus Linux NOS</div>
+                            </div>
+                            <div class="component-item">
+                                <div class="component-label">监控工具</div>
+                                <div class="component-value">NVIDIA NetQ</div>
+                            </div>
+                            <div class="component-item">
+                                <div class="component-label">测试框架</div>
+                                <div class="component-value">CloudAI测试框架</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="performance-metrics">
+                    <div class="metric-item">
+                        <span class="metric-label">扩展验证</span>
+                        <span class="metric-value">4-16节点</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">GPU配置</span>
+                        <span class="metric-value">16×8 GPU</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">核心技术</span>
+                        <span class="metric-value">自适应路由</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PoC测试流程 -->
+            <div class="testing-process-section">
+                <div class="section-title">
+                    <div class="section-icon">🔄</div>
+                    PoC测试流程
+                </div>
+                
+                <div class="feature-list">
+                    <div class="test-flow">
+                        <div class="test-flow-title">标准化测试流程</div>
+                        
+                        <div class="flow-step">
+                            <div class="step-number">1</div>
+                            <div class="step-desc">使用<span class="highlight">RCP自动化</span>构建和配置Spectrum-X PoC Fabric</div>
+                        </div>
+
+                        <div class="flow-step">
+                            <div class="step-number">2</div>
+                            <div class="step-desc">安装和准备所需的<span class="highlight">固件和软件组件</span></div>
+                        </div>
+
+                        <div class="flow-step">
+                            <div class="step-number">3</div>
+                            <div class="step-desc">配置<span class="highlight">CloudAI测试参数</span>和测试Schema</div>
+                        </div>
+
+                        <div class="flow-step">
+                            <div class="step-number">4</div>
+                            <div class="step-desc">运行<span class="highlight">NEMO Megatron</span> (LLAMA, GPT)和NCCL集体操作</div>
+                        </div>
+
+                        <div class="flow-step">
+                            <div class="step-number">5</div>
+                            <div class="step-desc">细致审查测试报告，<span class="highlight">比较多维度性能</span>和弹性表现</div>
+                        </div>
+                    </div>
+
+                    <div class="feature-item">
+                        <div class="feature-title">多维度性能分析</div>
+                        <div class="feature-desc">比较不同规模、拓扑、<span class="highlight">流量条件</span>（单租户、多租户隔离）下的性能差异</div>
+                    </div>
+
+                    <div class="feature-item">
+                        <div class="feature-title">弹性验证测试</div>
+                        <div class="feature-desc">在<span class="highlight">链路故障</span>下的弹性表现和自适应路由能力验证</div>
+                    </div>
+
+                    <div class="feature-item">
+                        <div class="feature-title">最小验证拓扑</div>
+                        <div class="feature-desc">在<span class="highlight">16个GPU节点以上</span>的两层脊叶Fabric拓扑中，都能显示出实际且显著的性能差异</div>
+                    </div>
+                </div>
+
+                <div class="testing-metrics">
+                    <div class="metric-item">
+                        <span class="metric-label">测试工作负载</span>
+                        <span class="metric-value">NEMO/NCCL</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">配置工具</span>
+                        <span class="metric-value">RCP自动化</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">最小拓扑</span>
+                        <span class="metric-value">两层脊叶</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">专家支持</span>
+                        <span class="metric-value">全程伴随</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bottom-stats">
+            <div>标准化PoC验证流程 • CloudAI测试框架 • <span class="stats-highlight">NVIDIA专家团队</span>全程伴随支持</div>
+        </div>
+    </div>
+
+    <div class="keyboard-hint">
+        ← 返回上页 • → 下一页
+    </div>
+
+    <script>
+        // 鼠标跟踪光效
+        const mouseGlow = document.getElementById('mouse-glow');
+        let mouseX = 0, mouseY = 0;
+        let glowX = 0, glowY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            mouseGlow.style.opacity = '1';
+        });
+
+        document.addEventListener('mouseleave', () => {
+            mouseGlow.style.opacity = '0';
+        });
+
+        function animateGlow() {
+            const dx = mouseX - glowX;
+            const dy = mouseY - glowY;
+            
+            glowX += dx * 0.1;
+            glowY += dy * 0.1;
+            
+            mouseGlow.style.left = (glowX - 100) + 'px';
+            mouseGlow.style.top = (glowY - 100) + 'px';
+            
+            requestAnimationFrame(animateGlow);
+        }
+
+        animateGlow();
+
+        // 粒子系统
+        function createParticles() {
+            const particlesContainer = document.querySelector('.particles');
+            const particleCount = 15;
+
+            for (let i = 0; i < particleCount; i++) {
+                setTimeout(() => {
+                    const particle = document.createElement('div');
+                    particle.classList.add('particle');
+                    particle.style.left = Math.random() * 100 + '%';
+                    particle.style.animationDelay = Math.random() * 8 + 's';
+                    particle.style.animationDuration = (8 + Math.random() * 4) + 's';
+                    
+                    const colors = ['rgba(0, 150, 255, 0.4)', 'rgba(138, 43, 226, 0.4)', 'rgba(118, 185, 0, 0.3)', 'rgba(255, 255, 255, 0.2)'];
+                    particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    
+                    particlesContainer.appendChild(particle);
+
+                    setTimeout(() => {
+                        particle.remove();
+                    }, 12000);
+                }, i * 500);
+            }
+        }
+
+        createParticles();
+        setInterval(createParticles, 12000);
+
+        // 键盘导航
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') {
+                window.location.href = 'customer-success-1.html';
+            } else if (e.key === 'ArrowRight') {
+                window.location.href = 'summary-outlook.html';
+            }
+        });
+
+        // 卡片悬停动效
+        const sections = document.querySelectorAll('.performance-indicators-section, .testing-process-section');
+        sections.forEach(section => {
+            section.addEventListener('mouseenter', () => {
+                section.style.transform = 'translateY(-5px)';
+            });
+            
+            section.addEventListener('mouseleave', () => {
+                section.style.transform = 'translateY(0)';
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>NVIDIA高速光收发器详解</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(220, 240, 230, 0.8);
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+        }
+
+	.slide-container {
+            width: 96%;
+            max-width: 1600px;
+            aspect-ratio: 16/9;
+            background: #76a67e;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            padding: 20px 40px;
+            background: rgba(60, 120, 60, 0.95);
+            color: white;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2.2em;
+            font-weight: 600;
+        }
+
+        h2 {
+            margin: 5px 0 0 0;
+            font-size: 1.3em;
+            font-weight: 400;
+        }
+
+        .content {
+            display: flex;
+            flex: 1;
+            padding: 0;
+        }
+
+        .left-panel, .right-panel {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .section-title {
+            font-size: 1.5em;
+            color: #fff;
+            margin-bottom: 15px;
+            font-weight: 600;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .product-box {
+            background: rgba(210, 225, 210, 0.8);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            flex: 1;
+        }
+
+        .product-title {
+            font-size: 1.3em;
+            color: #2c5e2e;
+            text-align: center;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .product-subtitle {
+            font-size: 1em;
+            color: #333;
+            text-align: center;
+            margin-bottom: 15px;
+            font-style: italic;
+        }
+
+        .product-image {
+            text-align: center;
+            margin: 15px 0;
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .product-image img {
+            max-width: 100%;
+            max-height: 120px;
+        }
+
+        .transceiver-placeholder {
+            width: 240px;
+            height: 80px;
+            background: linear-gradient(135deg, #2c5e2e, #4a854c);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 12px;
+            text-align: center;
+            margin: 0 auto;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .product-description {
+            padding: 10px;
+            margin-top: 10px;
+            background: rgba(240, 250, 240, 0.7);
+            border-radius: 8px;
+            border-left: 4px solid #4a854c;
+        }
+
+        .feature-list {
+            background: rgba(210, 225, 210, 0.8);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 10px;
+        }
+
+        .feature-title {
+            font-size: 1.2em;
+            color: #2c5e2e;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .feature-items {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .feature-item {
+            flex: 1 0 40%;
+            margin: 5px;
+            padding: 5px 10px 5px 25px;
+            position: relative;
+            font-size: 0.9em;
+        }
+
+        .feature-item::before {
+            content: "✓";
+            position: absolute;
+            left: 5px;
+            color: #4a854c;
+            font-weight: bold;
+        }
+
+        .speed-badge {
+            background: #ff6b35;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: bold;
+            display: inline-block;
+            margin-left: 5px;
+        }
+
+        .footer {
+            text-align: right;
+            padding: 10px 20px;
+            color: white;
+            font-style: italic;
+            font-size: 0.9em;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+	/* 悬停效果单独添加 */
+        .nav-button:hover {
+            background-color: #4a854c !important;
+            transform: scale(1.05);
+        }
+
+        @media screen and (max-width: 1200px) {
+            h1 {
+                font-size: 1.8em;
+            }
+            h2 {
+                font-size: 1.1em;
+            }
+            .section-title {
+                font-size: 1.3em;
+            }
+            .feature-item {
+                font-size: 0.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="header">
+            <h1>NVIDIA 1600G/800G 光收发器系列</h1>
+            <h2>为大规模AI基础设施提供超高速单模光纤连接方案</h2>
+        </div>
+        <div class="content">
+            <div class="left-panel">
+                <div class="section-title">MMS4A00 1600Gb/s 收发器 <span class="speed-badge">1600G</span></div>
+                <div class="product-box">
+                    <div class="product-subtitle">2xDR4 单模光收发器 - XDR 800Gb/s InfiniBand</div>
+
+                    <div class="product-image">
+                        <img src="1600G.png" alt="NVIDIA MMS4A00 1600Gb/s Optical Transceiver" style="max-width: 100%; max-height: 120px; object-fit: contain;">
+                    </div>
+
+                    <div class="product-description">
+                        支持InfiniBand Quantum-X800 QM3400交换机144端口800Gb/s连接。采用8通道200G-PAM4电调制，双MPO-12/APC光连接器，最大传输距离500米。
+                    </div>
+                </div>
+
+                <div class="feature-list">
+                    <div class="feature-title">关键特性</div>
+                    <div class="feature-items">
+                        <div class="feature-item">1600Gb/s单模收发器</div>
+                        <div class="feature-item">8通道200G-PAM4电调制</div>
+                        <div class="feature-item">双端口4通道200G-PAM4光调制</div>
+                        <div class="feature-item">双MPO-12/APC光连接器</div>
+                        <div class="feature-item">1310nm激光器</div>
+                        <div class="feature-item">最大传输距离：500米</div>
+                        <div class="feature-item">33.5W最大功耗</div>
+                        <div class="feature-item">支持CMIS 4.0协议</div>
+                        <div class="feature-item">集成散热片(IHS)鳍片顶部</div>
+                        <div class="feature-item">热插拔，RoHS合规</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="right-panel">
+                <div class="section-title">MMS4A20 800Gb/s 收发器 <span class="speed-badge">800G</span></div>
+                <div class="product-box">
+                    <div class="product-subtitle">单端口OSFP - XDR 800Gb/s InfiniBand</div>
+
+                    <div class="product-image">
+                        <img src="800G.png" alt="NVIDIA MMS4A20 800Gb/s Optical Transceiver" style="max-width: 100%; max-height: 120px; object-fit: contain;">
+                    </div>
+
+                    <div class="product-description">
+                        专为ConnectX-8网卡与Quantum-X800 QM3x00交换机连接设计。采用4通道200G-PAM4调制，单MPO-12/APC连接器，支持500米传输距离。
+                    </div>
+                </div>
+
+                <div class="feature-list">
+                    <div class="feature-title">关键特性</div>
+                    <div class="feature-items">
+                        <div class="feature-item">800G单模收发器</div>
+                        <div class="feature-item">4通道200G-PAM4调制</div>
+                        <div class="feature-item">单端口OSFP外形</div>
+                        <div class="feature-item">平顶OSFP连接器</div>
+                        <div class="feature-item">1310nm激光器</div>
+                        <div class="feature-item">单MPO-12/APC光连接器</div>
+                        <div class="feature-item">最大传输距离：500米</div>
+                        <div class="feature-item">18W最大功耗</div>
+                        <div class="feature-item">2W低功耗模式</div>
+                        <div class="feature-item">OSFPmsa.org标准合规</div>
+                        <div class="feature-item">支持液冷应用</div>
+                        <div class="feature-item">安全固件启动和更新</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            为大规模GPU集群和AI数据中心提供超高速单模光纤连接解决方案
+        </div>
+    </div>
+    <!-- 导航按钮 - 独立于主内容区 -->
+    <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+        <a href="index19.html" class="nav-button" style="display: inline-block; width: 40px; height: 40px; line-height: 40px; text-align: center; background-color: #3e703e; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+        <a href="index.html" class="nav-button" style="display: inline-block; width: 40px; height: 40px; line-height: 40px; text-align: center; background-color: #3e703e; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">🏠</a>
+    </div>
+</body>
+</html>

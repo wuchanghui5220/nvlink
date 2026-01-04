@@ -1,0 +1,57 @@
+ubuntu@server04:~$ sudo cat /etc/netplan/01-netcfg.yaml
+network:
+  version: 2
+  ethernets:
+    eth1:
+      dhcp4: false
+    eth2:
+      dhcp4: false
+  bonds:
+    uplink:
+      interfaces:
+        - eth2
+        - eth1
+      parameters:
+        mode: 802.3ad
+        mii-monitor-interval: 100
+        lacp-rate: fast
+      dhcp4: false
+      addresses: [172.30.1.100/16]  # VLAN 1直接在bond上
+      routes:
+        - to: default
+          via: 172.30.1.1
+      nameservers:
+        addresses:
+          - 8.8.8.8
+          - 1.1.1.1
+  vlans:
+    uplink.10:
+      id: 10
+      link: uplink
+      addresses: [10.1.10.104/24]
+      routes:
+        - to: 10.1.10.0/24
+          via: 10.1.101.1
+        - to: 10.1.20.0/24
+          via: 10.1.101.1
+
+
+## DHCP Server Need install Packages:
+sudo apt install vlan
+sudo apt install isc-dhcp-server
+
+dsdt/
+├── configs/
+│   ├── netplan-server04.yaml          # 服务器网络配置
+│   ├── dhcpd.conf                     # DHCP主配置文件
+│   ├── dhcpd-clients-template.conf    # 客户端数据库模板
+│   └── nginx-netconfig.conf           # nginx配置
+├── templates/
+│   ├── stage1.yaml                    # 阶段1网络模板
+│   ├── stage2.yaml                    # 阶段2网络模板
+│   └── stage3.yaml                    # 阶段3网络模板
+└── scripts/
+    ├── netconfig-manager.sh           # 网络配置管理脚本
+    ├── generate-config.php            # 配置生成API
+    ├── advance-stage.php              # 阶段推进API
+    └── dhcp-config-client-fast.sh     # 客户端部署脚本

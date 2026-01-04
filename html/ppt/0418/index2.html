@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>RDMA：远程直接内存访问技术解析</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="slide-container">
+        <div class="header">
+            <h1>RDMA：远程直接内存访问技术解析</h1>
+            <h2>NVIDIA InfiniBand智算中心组网创新与Quantum-X800高性能交换解决方案</h2>
+        </div>
+        <div class="content">
+            <div class="left-panel">
+                <div class="panel-title">RDMA工作原理</div>
+                <div class="chart-container" id="rdma-flow">
+                    <svg width="100%" height="100%" viewBox="0 0 500 350" preserveAspectRatio="xMidYMid meet">
+                        <!-- Background -->
+                        <rect x="0" y="0" width="500" height="350" fill="rgba(255,255,255,0.3)" rx="10"/>
+                        
+                        <!-- Title labels -->
+                        <circle cx="130" y="30" r="10" fill="#FF6F61" opacity="0.8"/>
+                        <circle cx="370" y="30" r="10" fill="#4CAF50" opacity="0.8"/>
+                        <text x="150" y="35" text-anchor="start" font-size="16" font-weight="bold" fill="#444">传统网络传输</text>
+                        <text x="390" y="35" text-anchor="start" font-size="16" font-weight="bold" fill="#009B77">RDMA传输</text>
+                        
+                        <!-- Dividing line -->
+                        <line x1="250" y1="50" x2="250" y2="330" stroke="#ccc" stroke-width="2" stroke-dasharray="5,5"/>
+                        
+                        <!-- Traditional Network Path -->
+                        <!-- Host A -->
+                        <rect x="80" y="70" width="140" height="60" rx="5" fill="#f5f5f5" stroke="#666"/>
+                        <text x="150" y="100" text-anchor="middle" font-weight="bold" font-size="16">应用程序</text>
+                        <text x="150" y="120" text-anchor="middle" font-size="12">Host A</text>
+                        
+                        <!-- OS Kernel A -->
+                        <rect x="80" y="145" width="140" height="40" rx="5" fill="#e0e0e0" stroke="#666"/>
+                        <text x="150" y="170" text-anchor="middle" font-size="14">操作系统内核</text>
+                        
+                        <!-- Network Stack A -->
+                        <rect x="80" y="200" width="140" height="40" rx="5" fill="#c9c9c9" stroke="#666"/>
+                        <text x="150" y="225" text-anchor="middle" font-size="14">TCP/IP协议栈</text>
+                        
+                        <!-- NIC A -->
+                        <rect x="125" y="255" width="50" height="25" rx="5" fill="#8c8c8c" stroke="#666"/>
+                        <text x="150" y="272" text-anchor="middle" font-size="12" fill="white">NIC</text>
+                        
+                        <!-- Network -->
+                        <rect x="30" y="295" width="440" height="25" rx="5" fill="#6D9EEB" stroke="#666"/>
+                        <text x="250" y="312" text-anchor="middle" font-size="14" fill="white">网络</text>
+                        
+                        <!-- Connection lines -->
+                        <line x1="150" y1="130" x2="150" y2="145" stroke="#666" stroke-width="2"/>
+                        <line x1="150" y1="185" x2="150" y2="200" stroke="#666" stroke-width="2"/>
+                        <line x1="150" y1="240" x2="150" y2="255" stroke="#666" stroke-width="2"/>
+                        <line x1="150" y1="280" x2="150" y2="295" stroke="#666" stroke-width="2"/>
+                        
+                        <!-- Data Copy markers -->
+                        <text x="90" y="140" font-size="12" fill="#FF6F61" font-weight="bold">数据复制</text>
+                        <text x="90" y="190" font-size="12" fill="#FF6F61" font-weight="bold">上下文切换</text>
+                        <text x="90" y="250" font-size="12" fill="#FF6F61" font-weight="bold">多次复制</text>
+                        
+                        <!-- RDMA Network Path -->
+                        <!-- Host A -->
+                        <rect x="280" y="70" width="140" height="60" rx="5" fill="#f5f5f5" stroke="#009B77"/>
+                        <text x="350" y="100" text-anchor="middle" font-weight="bold" font-size="16">应用程序</text>
+                        <text x="350" y="120" text-anchor="middle" font-size="12">Host A</text>
+                        
+                        <!-- RDMA Verbs -->
+                        <rect x="280" y="145" width="140" height="40" rx="5" fill="#c8e6d7" stroke="#009B77" stroke-width="2"/>
+                        <text x="350" y="170" text-anchor="middle" font-size="14" fill="#005741">RDMA Verbs</text>
+                        
+                        <!-- HCA -->
+                        <rect x="325" y="200" width="50" height="40" rx="5" fill="#009B77" stroke="#005741"/>
+                        <text x="350" y="225" text-anchor="middle" font-size="14" fill="white">HCA</text>
+                        
+                        <!-- Connection lines -->
+                        <line x1="350" y1="130" x2="350" y2="145" stroke="#009B77" stroke-width="2"/>
+                        <line x1="350" y1="185" x2="350" y2="200" stroke="#009B77" stroke-width="2"/>
+                        <line x1="350" y1="240" x2="350" y2="295" stroke="#009B77" stroke-width="2"/>
+                        
+                        <!-- Zero Copy highlight -->
+                        <text x="400" y="150" font-size="13" fill="#4CAF50" font-weight="bold">零拷贝</text>
+                        <text x="400" y="170" font-size="13" fill="#4CAF50" font-weight="bold">内核绕过</text>
+                        
+                        <!-- Direct Memory Access -->
+                        <path d="M430,90 L450,90 L450,230 L430,230" stroke="#4CAF50" stroke-width="2" fill="none" stroke-dasharray="2,2"/>
+                        <text x="425" y="200" font-size="13" text-anchor="end" fill="#4CAF50" font-weight="bold">直接内存访问</text>
+                        
+                        <!-- Highlight boxes for key features -->
+                        <rect x="280" y="145" width="10" height="95" rx="2" fill="#4CAF50" opacity="0.2"/>
+                        
+                        <!-- Host B elements (simplified) -->
+                        <rect x="125" y="330" width="50" height="10" rx="3" fill="#8c8c8c" stroke="#666" opacity="0.8"/>
+                        <rect x="325" y="330" width="50" height="10" rx="3" fill="#009B77" stroke="#005741" opacity="0.8"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="right-panel">
+                <div class="panel-title">RDMA核心优势</div>
+                <div class="chart-container">
+                    <div class="advantage-box">
+                        <div class="advantage-title">零拷贝 (Zero-Copy)</div>
+                        <div class="advantage-desc">数据可以直接从发送方的内存传输到接收方的内存，无需经过操作系统缓冲区和多次复制。显著减少了CPU开销和数据传输延迟。</div>
+                    </div>
+                    
+                    <div class="advantage-box">
+                        <div class="advantage-title">内核绕过 (Kernel Bypass)</div>
+                        <div class="advantage-desc">应用程序可以直接访问网络硬件，绕过操作系统内核，避免了系统调用和上下文切换的开销，大幅降低延迟。</div>
+                    </div>
+                    
+                    <div class="advantage-box">
+                        <div class="advantage-title">低延迟、高吞吐量</div>
+                        <div class="advantage-desc">得益于零拷贝和内核绕过技术，RDMA实现了微秒级的端到端延迟和超高带宽利用率，特别适合AI训练、分布式存储和高性能计算场景。</div>
+                    </div>
+                    
+                    <div class="advantage-box">
+                        <div class="advantage-title">CPU负载降低</div>
+                        <div class="advantage-desc">网络数据处理任务从CPU转移到网卡（HCA）上完成，释放CPU资源用于计算任务，提高整体系统效率，降低能耗。</div>
+                    </div>
+                </div>
+                <div class="key-points">
+                    <ul>
+                        <li>NVIDIA ConnectX系列网卡全面支持RDMA协议，实现高效通信</li>
+                        <li>AI训练中，RDMA加速模型参数同步，降低通信开销</li>
+                        <li>大规模集群中，RDMA可减少50%以上的延迟，提高训练速度</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            NVIDIA InfiniBand智算中心组网创新与Quantum-X800高性能交换解决方案
+        </div>
+    </div>
+</body>
+</html>

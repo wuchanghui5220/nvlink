@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IB网络组网及拓扑规划</title>
+  <script>
+    // 确保函数在页面加载前就定义好
+    function showTopologyImage(imageName, title) {
+      console.log('显示拓扑图片:', imageName, title);
+      
+      const modal = document.getElementById('topologyModal');
+      const modalTitle = document.getElementById('modalTitle');
+      const image = document.getElementById('topologyImage');
+      const loading = document.getElementById('imageLoading');
+      const error = document.getElementById('imageError');
+      
+      if (!modal) {
+        console.error('找不到模态框元素');
+        return;
+      }
+      
+      // 设置标题
+      modalTitle.textContent = title;
+      
+      // 重置状态
+      loading.style.display = 'block';
+      image.style.display = 'none';
+      error.style.display = 'none';
+      
+      // 显示模态框
+      modal.style.display = 'block';
+      
+      // 加载图片
+      image.onload = function() {
+        loading.style.display = 'none';
+        image.style.display = 'block';
+      };
+      
+      image.onerror = function() {
+        loading.style.display = 'none';
+        error.style.display = 'block';
+      };
+      
+      // 设置图片源
+      image.src = imageName;
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('topologyModal');
+      if (modal) {
+        modal.style.display = 'none';
+      }
+    }
+
+    // 页面加载完成后的初始化
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('页面加载完成，JavaScript功能已准备就绪');
+      
+      // 检查模态框是否存在
+      const modal = document.getElementById('topologyModal');
+      if (modal) {
+        console.log('模态框元素找到了');
+      } else {
+        console.error('模态框元素未找到');
+      }
+      
+      // 点击模态框外部关闭
+      window.onclick = function(event) {
+        const modal = document.getElementById('topologyModal');
+        if (event.target === modal) {
+          closeModal();
+        }
+      };
+
+      // ESC键关闭模态框
+      document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+          closeModal();
+        }
+      });
+    });
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700;800&display=swap');
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+      font-family: 'Noto Sans SC', sans-serif;
+      overflow: hidden;
+    }
+
+    .slide-container {
+      width: 100vw;
+      height: 56.25vw; /* 16:9 aspect ratio */
+      max-height: 100vh;
+      max-width: 177.78vh; /* 16:9 aspect ratio (reversed) */
+      position: relative;
+      background: #111827;
+      color: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    /* 动态背景元素 */
+    .bg-elements {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    .topology-grid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image:
+        linear-gradient(90deg, rgba(0, 162, 255, 0.04) 1px, transparent 1px),
+        linear-gradient(rgba(0, 162, 255, 0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+      animation: topology-flow 15s linear infinite;
+    }
+
+    @keyframes topology-flow {
+      0% { background-position: 0 0; }
+      100% { background-position: 40px 40px; }
+    }
+
+    /* 主要内容 */
+    .content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    /* 顶部标识栏 */
+    .header {
+      padding: 1.5% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.2));
+      backdrop-filter: blur(15px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      flex-shrink: 0;
+    }
+
+    .day-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .day-badge {
+      width: 35px;
+      height: 35px;
+      background: linear-gradient(135deg, #00a2ff, #0078d4);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+      box-shadow: 0 5px 15px rgba(0, 162, 255, 0.3);
+    }
+
+    .day-text {
+      font-size: clamp(15px, 1.8vw, 18px);
+      font-weight: 600;
+      color: #00a2ff;
+    }
+
+    .section-indicator {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 8px 20px;
+      border-radius: 25px;
+      font-size: clamp(12px, 1.3vw, 14px);
+      font-weight: 500;
+      backdrop-filter: blur(10px);
+    }
+
+    /* 主体内容区域 */
+    .main-content {
+      flex: 1;
+      padding: 2% 4%;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    /* 页面标题 */
+    .page-title {
+      text-align: center;
+      margin-bottom: 2.5%;
+      flex-shrink: 0;
+    }
+
+    .title-main {
+      font-size: clamp(28px, 4vw, 36px);
+      font-weight: 800;
+      background: linear-gradient(135deg, #ffffff 0%, #00a2ff 50%, #4834d4 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 1%;
+      text-shadow: 0 0 30px rgba(0, 162, 255, 0.3);
+    }
+
+    .title-sub {
+      font-size: clamp(13px, 1.5vw, 16px);
+      color: rgba(255, 255, 255, 0.75);
+      font-weight: 300;
+    }
+
+    /* 主要内容布局 - 3+1结构 */
+    .content-layout {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2.5%;
+      min-height: 0;
+    }
+
+    /* 上方3个拓扑板块 */
+    .topology-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2%;
+      flex: 2;
+    }
+
+    .topology-card {
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      padding: 4%;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.4s ease;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .topology-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(0, 162, 255, 0.08), transparent);
+      transition: left 0.8s ease;
+    }
+
+    .topology-card:hover::before {
+      left: 100%;
+    }
+
+    .topology-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(0, 162, 255, 0.4);
+      background: rgba(255, 255, 255, 0.1);
+      box-shadow: 0 15px 35px rgba(0, 162, 255, 0.2);
+    }
+
+    .topology-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4%;
+      flex-shrink: 0;
+    }
+
+    .topology-name {
+      font-size: clamp(16px, 1.8vw, 18px);
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .topology-badge {
+      background: rgba(0, 162, 255, 0.2);
+      border: 1px solid rgba(0, 162, 255, 0.4);
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: clamp(9px, 1vw, 10px);
+      color: #87ceeb;
+      font-weight: 500;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .topology-badge:hover {
+      background: rgba(0, 162, 255, 0.3);
+      transform: scale(1.05);
+      box-shadow: 0 0 10px rgba(0, 162, 255, 0.4);
+    }
+
+    .topology-card:nth-child(1) .topology-badge {
+      background: rgba(255, 107, 107, 0.2);
+      border-color: rgba(255, 107, 107, 0.4);
+      color: #ffb3ba;
+    }
+
+    .topology-card:nth-child(1) .topology-badge:hover {
+      background: rgba(255, 107, 107, 0.3);
+      box-shadow: 0 0 10px rgba(255, 107, 107, 0.4);
+    }
+
+    .topology-card:nth-child(2) .topology-badge {
+      background: rgba(0, 162, 255, 0.2);
+      border-color: rgba(0, 162, 255, 0.4);
+      color: #87ceeb;
+    }
+
+    .topology-card:nth-child(2) .topology-badge:hover {
+      background: rgba(0, 162, 255, 0.3);
+      box-shadow: 0 0 10px rgba(0, 162, 255, 0.4);
+    }
+
+    .topology-card:nth-child(3) .topology-badge {
+      background: rgba(72, 52, 212, 0.2);
+      border-color: rgba(72, 52, 212, 0.4);
+      color: #b39ddb;
+    }
+
+    .topology-card:nth-child(3) .topology-badge:hover {
+      background: rgba(72, 52, 212, 0.3);
+      box-shadow: 0 0 10px rgba(72, 52, 212, 0.4);
+    }
+
+    .topology-description {
+      font-size: clamp(12px, 1.3vw, 14px);
+      color: rgba(255, 255, 255, 0.8);
+      line-height: 1.5;
+      margin-bottom: 4%;
+      flex: 1;
+    }
+
+    .topology-specs {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 3%;
+      margin-bottom: 4%;
+    }
+
+    .spec-item {
+      text-align: center;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 3%;
+    }
+
+    .spec-value {
+      font-size: clamp(13px, 1.5vw, 15px);
+      font-weight: 700;
+      color: #00a2ff;
+      display: block;
+      margin-bottom: 2%;
+    }
+
+    .spec-label {
+      font-size: clamp(9px, 1vw, 10px);
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .topology-features {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2%;
+    }
+
+    .feature-tag {
+      background: rgba(0, 162, 255, 0.15);
+      border: 1px solid rgba(0, 162, 255, 0.3);
+      padding: 1.5% 3%;
+      border-radius: 8px;
+      font-size: clamp(8px, 0.9vw, 9px);
+      color: #87ceeb;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* 下方长方形规划板块 */
+    .planning-panel {
+      background: rgba(255, 255, 255, 0.04);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 3%;
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 3%;
+    }
+
+    .planning-section {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .planning-title {
+      font-size: clamp(15px, 1.7vw, 17px);
+      font-weight: 700;
+      color: #4834d4;
+      margin-bottom: 4%;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .planning-title::before {
+      content: '';
+      width: 3px;
+      height: 16px;
+      background: linear-gradient(180deg, #4834d4, #686de0);
+      border-radius: 2px;
+    }
+
+    .planning-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 3%;
+    }
+
+    /* 设计流程 */
+    .flow-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 3%;
+    }
+
+    .flow-step {
+      display: flex;
+      align-items: center;
+      gap: 3%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 3%;
+      transition: all 0.3s ease;
+    }
+
+    .flow-step:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(72, 52, 212, 0.3);
+    }
+
+    .step-number {
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #4834d4, #686de0);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(10px, 1.1vw, 11px);
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .step-text {
+      font-size: clamp(11px, 1.2vw, 12px);
+      color: rgba(255, 255, 255, 0.9);
+      line-height: 1.3;
+    }
+
+    /* 关键因素网格 */
+    .factors-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+      gap: 2%;
+    }
+
+    .factor-item {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 3%;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .factor-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(0, 162, 255, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .factor-icon {
+      font-size: clamp(14px, 1.6vw, 16px);
+      margin-bottom: 3%;
+    }
+
+    .factor-name {
+      font-size: clamp(10px, 1.1vw, 11px);
+      font-weight: 600;
+      color: #87ceeb;
+      margin-bottom: 2%;
+    }
+
+    .factor-desc {
+      font-size: clamp(9px, 1vw, 10px);
+      color: rgba(255, 255, 255, 0.7);
+      line-height: 1.2;
+    }
+
+    /* 设计原则 */
+    .principles-list {
+      display: flex;
+      flex-direction: column;
+      gap: 3%;
+    }
+
+    .principle-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 3%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 3%;
+      transition: all 0.3s ease;
+    }
+
+    .principle-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 107, 107, 0.3);
+    }
+
+    .principle-icon {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(9px, 1vw, 10px);
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .principle-text {
+      font-size: clamp(10px, 1.1vw, 11px);
+      color: rgba(255, 255, 255, 0.9);
+      line-height: 1.3;
+    }
+
+    /* 底部信息栏 */
+    .footer {
+      padding: 1.5% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.2));
+      backdrop-filter: blur(15px);
+      flex-shrink: 0;
+      min-height: 50px;
+    }
+
+    .footer-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: clamp(12px, 1.3vw, 13px);
+      color: rgba(255, 255, 255, 0.9);
+      font-weight: 500;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: #00a2ff;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(0, 162, 255, 0.7); }
+      70% { box-shadow: 0 0 0 8px rgba(0, 162, 255, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(0, 162, 255, 0); }
+    }
+
+    .footer-badges {
+      display: flex;
+      gap: 10px;
+    }
+
+    .footer-badge {
+      padding: 5px 12px;
+      border-radius: 15px;
+      font-size: clamp(9px, 1vw, 10px);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: white;
+    }
+
+    .badge-topology {
+      background: linear-gradient(90deg, #00a2ff, #0078d4);
+      box-shadow: 0 0 15px rgba(0, 162, 255, 0.3);
+    }
+
+    .badge-planning {
+      background: linear-gradient(90deg, #4834d4, #686de0);
+      box-shadow: 0 0 15px rgba(72, 52, 212, 0.3);
+    }
+
+    /* 模态框样式 */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(5px);
+    }
+
+    .modal-content {
+      position: relative;
+      margin: 5% auto;
+      max-width: 90%;
+      max-height: 80%;
+      background: rgba(17, 24, 39, 0.95);
+      border-radius: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+      animation: modalSlideIn 0.3s ease-out;
+    }
+
+    @keyframes modalSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-50px) scale(0.9);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .modal-header {
+      padding: 3% 4%;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-title {
+      font-size: clamp(18px, 2.5vw, 24px);
+      font-weight: 700;
+      color: #00a2ff;
+      margin: 0;
+    }
+
+    .close {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 35px;
+      height: 35px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .close:hover {
+      color: white;
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(1.1);
+    }
+
+    .modal-body {
+      padding: 4%;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .topology-image {
+      max-width: 100%;
+      max-height: 60vh;
+      border-radius: 10px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: block;
+      margin: 0 auto;
+    }
+
+    .image-loading {
+      font-size: clamp(16px, 2vw, 20px);
+      color: rgba(255, 255, 255, 0.7);
+      padding: 40px;
+    }
+
+    .image-error {
+      font-size: clamp(14px, 1.8vw, 18px);
+      color: rgba(255, 107, 107, 0.8);
+      padding: 40px;
+    }
+
+    /* 响应式调整 */
+    @media (max-height: 600px) {
+      .main-content {
+        padding: 1.5% 4%;
+      }
+      
+      .topology-card, .planning-panel {
+        padding: 3%;
+      }
+      
+      .content-layout {
+        gap: 2%;
+      }
+
+      .factors-grid {
+        gap: 1.5%;
+      }
+
+      .modal-content {
+        margin: 2% auto;
+        max-height: 90%;
+      }
+      
+      .modal-header {
+        padding: 2% 3%;
+      }
+      
+      .modal-body {
+        padding: 3%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <!-- 背景元素 -->
+    <div class="bg-elements">
+      <div class="topology-grid"></div>
+    </div>
+
+    <!-- 主要内容 -->
+    <div class="content">
+      <!-- 顶部标识 -->
+      <div class="header">
+        <div class="day-info">
+          <div class="day-badge">1</div>
+          <div class="day-text">第一天：智算网络组网设计与部署</div>
+        </div>
+        <div class="section-indicator">1.3 拓扑规划-构建高效稳定的智算网络架构基础</div>
+      </div>
+
+      <!-- 主体内容 -->
+      <div class="main-content">
+        <!-- 页面标题 
+        <div class="page-title">
+          <div class="title-main">IB网络组网及拓扑规划</div>
+          <div class="title-sub">构建高效稳定的智算网络架构基础</div>
+	</div>-->
+
+        <!-- 3+1内容布局 -->
+        <div class="content-layout">
+          <!-- 上方：3个拓扑架构并排 -->
+          <div class="topology-row">
+            <!-- Spine-Leaf拓扑 -->
+            <div class="topology-card">
+              <div class="topology-header">
+                <div class="topology-name">Spine-Leaf 拓扑</div>
+                <div class="topology-badge" onclick="showTopologyImage('spine_leaf.png', 'Spine-Leaf拓扑架构图')" title="点击查看拓扑架构图">灵活</div>
+              </div>
+              <div class="topology-description">
+                二层CLOS结构，提供可预测的延迟特性和简化的路由设计，支持水平扩展，运维管理相对简单，部署灵活
+              </div>
+              <div class="topology-specs">
+                <div class="spec-item">
+                  <span class="spec-value">可配</span>
+                  <span class="spec-label">收敛比</span>
+                </div>
+                <div class="spec-item">
+                  <span class="spec-value">3跳</span>
+                  <span class="spec-label">最大跳数</span>
+                </div>
+                <div class="spec-item">
+                  <span class="spec-value">简单</span>
+                  <span class="spec-label">管理</span>
+                </div>
+                <div class="spec-item">
+                  <span class="spec-value">易扩展</span>
+                  <span class="spec-label">部署</span>
+                </div>
+              </div>
+              <div class="topology-features">
+                <div class="feature-tag">易管理</div>
+                <div class="feature-tag">水平扩展</div>
+                <div class="feature-tag">可预测</div>
+              </div>
+            </div>
+
+            <!-- Fat-Tree拓扑 -->
+            <div class="topology-card">
+              <div class="topology-header">
+                <div class="topology-name">Fat-Tree 拓扑</div>
+                <div class="topology-badge" onclick="showTopologyImage('fat-tree.png', 'Fat-Tree拓扑架构图')" title="点击查看拓扑架构图">经典</div>
+              </div>
+              <div class="topology-description">
+                三层CLOS架构，提供1:1收敛比的无阻塞带宽，支持多路径冗余和负载均衡，是大规模AI训练集群的首选网络拓扑
+              </div>
+              <div class="topology-specs">
+                <div class="spec-item">
+                  <span class="spec-value">1:1</span>
+                  <span class="spec-label">收敛比</span>
+                </div>
+                <div class="spec-item">
+                  <span class="spec-value">5跳</span>
+                  <span class="spec-label">最大跳数</span>
+                </div>
+                <div class="spec-item">
+                  <span class="spec-value">线性</span>
+                  <span class="spec-label">扩展性</span>
+                </div>
+                <div class="spec-item">
+                  <span class="spec-value">高</span>
+                  <span class="spec-label">成本</span>
+                </div>
+              </div>
+              <div class="topology-features">
+                <div class="feature-tag">无阻塞</div>
+                <div class="feature-tag">多路径</div>
+                <div class="feature-tag">负载均衡</div>
+              </div>
+            </div>
+
+            <!-- Dragonfly拓扑 -->
+            <div class="topology-card">
+              <div class="topology-header">
+                <div class="topology-name">Dragonfly 拓扑</div>
+                <div class="topology-badge" onclick="showTopologyImage('dragonfly.png', 'Dragonfly拓扑架构图')" title="点击查看拓扑架构图">高效</div>
+              </div>
+              <div class="topology-description">
+                两层结构设计，最大跳数仅为2跳，显著降低端到端延迟，适用于节点间通信密集的HPC应用和AI推理场景
+              </div>
+              <div class="topology-specs">
+                <div class="spec-item">
+                  <span class="spec-value">可变</span>
+                  <span class="spec-label">收敛比</span>
+                </div>
+                <div class="spec-item">
+                  <span class="spec-value">2跳</span>
+                  <span class="spec-label">最大跳数</span>
+                </div>
+                <div class="spec-item">
+                  <span class="spec-value">超低</span>
+                  <span class="spec-label">延迟</span>
+                </div>
+                <div class="spec-item">
+                  <span class="spec-value">复杂</span>
+                  <span class="spec-label">路由</span>
+                </div>
+              </div>
+              <div class="topology-features">
+                <div class="feature-tag">低延迟</div>
+                <div class="feature-tag">高效路由</div>
+                <div class="feature-tag">HPC优化</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 下方：规划指导面板 -->
+          <div class="planning-panel">
+            <!-- 设计流程 -->
+            <div class="planning-section">
+              <div class="planning-title">设计流程</div>
+              <div class="planning-content">
+                <div class="flow-steps">
+                  <div class="flow-step">
+                    <div class="step-number">1</div>
+                    <div class="step-text">需求分析：评估节点规模、带宽需求、延迟要求</div>
+                  </div>
+                  <div class="flow-step">
+                    <div class="step-number">2</div>
+                    <div class="step-text">拓扑选择：基于应用特点选择合适的网络架构</div>
+                  </div>
+                  <div class="flow-step">
+                    <div class="step-number">3</div>
+                    <div class="step-text">容量规划：计算交换机数量和端口配置方案</div>
+                  </div>
+                  <div class="flow-step">
+                    <div class="step-number">4</div>
+                    <div class="step-text">冗余设计：规划故障恢复和负载均衡机制</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 关键因素 -->
+            <div class="planning-section">
+              <div class="planning-title">关键因素</div>
+              <div class="planning-content">
+                <div class="factors-grid">
+                  <div class="factor-item">
+                    <div class="factor-icon">⚡</div>
+                    <div class="factor-name">带宽需求</div>
+                    <div class="factor-desc">集合通信模式<br>峰值流量评估</div>
+                  </div>
+                  <div class="factor-item">
+                    <div class="factor-icon">🕐</div>
+                    <div class="factor-name">延迟约束</div>
+                    <div class="factor-desc">端到端延迟<br>抖动控制</div>
+                  </div>
+                  <div class="factor-item">
+                    <div class="factor-icon">📈</div>
+                    <div class="factor-name">扩展规划</div>
+                    <div class="factor-desc">节点增长路径<br>带宽升级</div>
+                  </div>
+                  <div class="factor-item">
+                    <div class="factor-icon">🔒</div>
+                    <div class="factor-name">可靠性</div>
+                    <div class="factor-desc">故障容错<br>快速恢复</div>
+                  </div>
+                  <div class="factor-item">
+                    <div class="factor-icon">💰</div>
+                    <div class="factor-name">成本控制</div>
+                    <div class="factor-desc">设备成本<br>运维费用</div>
+                  </div>
+                  <div class="factor-item">
+                    <div class="factor-icon">🔧</div>
+                    <div class="factor-name">运维管理</div>
+                    <div class="factor-desc">配置复杂度<br>故障定位</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 设计原则 -->
+            <div class="planning-section">
+              <div class="planning-title">设计原则</div>
+              <div class="planning-content">
+                <div class="principles-list">
+                  <div class="principle-item">
+                    <div class="principle-icon">1</div>
+                    <div class="principle-text">应用驱动：根据AI训练和推理的通信模式选择拓扑</div>
+                  </div>
+                  <div class="principle-item">
+                    <div class="principle-icon">2</div>
+                    <div class="principle-text">预留扩展：考虑未来3-5年的节点和带宽增长需求</div>
+                  </div>
+                  <div class="principle-item">
+                    <div class="principle-icon">3</div>
+                    <div class="principle-text">平衡优化：在满足性能需求前提下优化总体成本</div>
+                  </div>
+                  <div class="principle-item">
+                    <div class="principle-icon">4</div>
+                    <div class="principle-text">简化运维：选择便于管理和故障定位的网络架构</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 底部信息 -->
+      <div class="footer">
+        <div class="footer-left">
+          <div class="status-dot"></div>
+          <span>第一天 - 网络拓扑规划</span>
+        </div>
+        <div class="footer-badges">
+          <div class="footer-badge badge-topology">Topology</div>
+          <div class="footer-badge badge-planning">Planning</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 拓扑图片模态框 -->
+    <div id="topologyModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title" id="modalTitle">拓扑架构图</h2>
+          <span class="close" onclick="closeModal()">&times;</span>
+        </div>
+        <div class="modal-body">
+          <div class="image-loading" id="imageLoading">正在加载图片...</div>
+          <img class="topology-image" id="topologyImage" style="display: none;" alt="拓扑架构图">
+          <div class="image-error" id="imageError" style="display: none;">图片加载失败，请检查图片文件是否存在</div>
+        </div>
+      </div>
+    </div>
+  </div>
+      <!-- 导航按钮 - 独立于主内容区 -->
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+    <a href="index4.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+    <a href="index6.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+  </div>
+</body>
+</html>

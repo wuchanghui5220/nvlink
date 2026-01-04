@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>H100 vs B300 应用场景分析与成本效益</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f0f0f0;
+      font-family: 'Noto Sans SC', sans-serif;
+      overflow: hidden;
+    }
+
+    .slide-container {
+      width: 100vw;
+      height: 56.25vw; /* 16:9 aspect ratio */
+      max-height: 100vh;
+      max-width: 177.78vh; /* 16:9 aspect ratio (reversed) */
+      position: relative;
+      background: linear-gradient(135deg, #0a0e1a 0%, #1a1f2e 50%, #0f1419 100%);
+      color: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    /* 背景图形元素 */
+    .bg-grid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image:
+        linear-gradient(rgba(34, 197, 94, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(34, 197, 94, 0.03) 1px, transparent 1px);
+      background-size: 25px 25px;
+      z-index: 0;
+    }
+
+    .bg-gradient {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 20% 30%, rgba(34, 197, 94, 0.1) 0%, rgba(10, 14, 26, 0) 50%),
+                  radial-gradient(circle at 80% 70%, rgba(168, 85, 247, 0.08) 0%, rgba(10, 14, 26, 0) 50%);
+      z-index: 1;
+    }
+
+    .bg-circle1 {
+      position: absolute;
+      top: -15%;
+      left: -10%;
+      width: 40%;
+      height: 40%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+      filter: blur(80px);
+      opacity: 0.15;
+      z-index: 2;
+    }
+
+    .bg-circle2 {
+      position: absolute;
+      bottom: -10%;
+      right: -15%;
+      width: 35%;
+      height: 35%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #a855f7 0%, #7c3aed 100%);
+      filter: blur(60px);
+      opacity: 0.12;
+      z-index: 2;
+    }
+
+    /* 主要内容 */
+    .content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    .header {
+      padding: 1.8% 3.5%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .nvidia-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-box {
+      width: 8%;
+      min-width: 110px;
+      height: 36px;
+      background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+      border-radius: 6px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 700;
+      font-size: clamp(16px, 2vw, 20px);
+      color: #0a0e1a;
+      box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+    }
+
+    .partner-text {
+      font-size: clamp(12px, 1.5vw, 16px);
+      font-weight: 500;
+      opacity: 0.9;
+      color: #22c55e;
+    }
+
+    .slide-title {
+      font-size: clamp(14px, 1.6vw, 18px);
+      font-weight: 600;
+      padding: 0.5% 1.5%;
+      background: rgba(168, 85, 247, 0.1);
+      backdrop-filter: blur(5px);
+      border-radius: 20px;
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      color: #a855f7;
+    }
+
+    .main-content {
+      flex: 1;
+      padding: 1.5% 3%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .title-section {
+      text-align: center;
+      margin-bottom: 1.5%;
+    }
+
+    .main-title {
+      font-size: clamp(20px, 2.8vw, 32px);
+      font-weight: 700;
+      background: linear-gradient(135deg, #ffffff 0%, #22c55e 50%, #a855f7 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 0.8%;
+    }
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2%;
+      flex: 1;
+    }
+
+    .left-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5%;
+    }
+
+    .scenario-section {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 1.5%;
+      flex: 1;
+    }
+
+    .section-title {
+      font-size: clamp(16px, 1.8vw, 20px);
+      font-weight: 600;
+      color: #22c55e;
+      margin-bottom: 1%;
+      text-align: center;
+    }
+
+    .scenario-item {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 1.2%;
+      margin-bottom: 1%;
+    }
+
+    .scenario-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.8%;
+    }
+
+    .scenario-name {
+      font-size: clamp(12px, 1.4vw, 16px);
+      font-weight: 600;
+      color: #ffffff;
+    }
+
+    .precision-badge {
+      background: linear-gradient(90deg, #3b82f6 0%, #1d4ed8 100%);
+      color: white;
+      padding: 0.3% 0.8%;
+      border-radius: 10px;
+      font-size: clamp(9px, 1vw, 11px);
+      font-weight: 600;
+    }
+
+    .performance-ratio {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5%;
+    }
+
+    .ratio-text {
+      font-size: clamp(11px, 1.2vw, 13px);
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .ratio-badge {
+      background: linear-gradient(90deg, #22c55e 0%, #16a34a 100%);
+      color: white;
+      padding: 0.3% 1%;
+      border-radius: 12px;
+      font-size: clamp(10px, 1.1vw, 12px);
+      font-weight: 700;
+    }
+
+    .scenario-description {
+      font-size: clamp(10px, 1.1vw, 12px);
+      color: rgba(255, 255, 255, 0.7);
+      line-height: 1.4;
+    }
+
+    .cost-analysis {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 1.5%;
+    }
+
+    .cost-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: clamp(10px, 1.1vw, 12px);
+      margin-bottom: 1.5%;
+    }
+
+    .cost-table th {
+      background: rgba(34, 197, 94, 0.15);
+      color: #22c55e;
+      font-weight: 600;
+      padding: 0.8% 0.5%;
+      text-align: center;
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      font-size: clamp(9px, 1vw, 11px);
+    }
+
+    .cost-table td {
+      padding: 0.6% 0.5%;
+      text-align: center;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.9);
+      font-size: clamp(9px, 1vw, 11px);
+    }
+
+    .h100-cell {
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+      font-weight: 500;
+    }
+
+    .b300-cell {
+      background: rgba(59, 130, 246, 0.1);
+      color: #3b82f6;
+      font-weight: 500;
+    }
+
+    .savings-cell {
+      background: rgba(34, 197, 94, 0.15);
+      color: #22c55e;
+      font-weight: 700;
+    }
+
+    .module-row {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .module-name {
+      font-weight: 600;
+      color: #ffffff;
+    }
+
+    .total-summary {
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.2) 0%, rgba(168, 85, 247, 0.1) 100%);
+      border: 2px solid rgba(34, 197, 94, 0.4);
+      border-radius: 12px;
+      padding: 1.5%;
+      margin-top: 1.5%;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1%;
+      text-align: center;
+    }
+
+    .summary-item {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 1%;
+      border-radius: 8px;
+    }
+
+    .summary-number {
+      font-size: clamp(14px, 2vw, 20px);
+      font-weight: 700;
+      color: #22c55e;
+      margin-bottom: 0.5%;
+    }
+
+    .summary-label {
+      font-size: clamp(10px, 1.1vw, 12px);
+      color: rgba(255, 255, 255, 0.8);
+      font-weight: 500;
+    }
+
+    .conclusion-box {
+      background: linear-gradient(135deg, rgba(168, 85, 247, 0.15) 0%, rgba(34, 197, 94, 0.1) 100%);
+      border: 2px solid rgba(168, 85, 247, 0.4);
+      border-radius: 10px;
+      padding: 1.2%;
+      margin-top: 1%;
+    }
+
+    .conclusion-text {
+      font-size: clamp(12px, 1.3vw, 15px);
+      font-weight: 600;
+      color: #a855f7;
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    .footer {
+      padding: 1.2% 3.5%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .company-name {
+      font-weight: 500;
+      font-size: clamp(12px, 1.4vw, 16px);
+    }
+
+    .page-number {
+      font-size: clamp(12px, 1.4vw, 16px);
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    /* 动画效果 */
+    .savings-animation {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 70%;
+      height: 70%;
+      z-index: 3;
+      opacity: 0.06;
+    }
+
+    .savings-icon {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: #22c55e;
+      border-radius: 50%;
+      animation: float 6s ease-in-out infinite;
+    }
+
+    .icon1 { top: 20%; left: 15%; animation-delay: 0s; }
+    .icon2 { top: 30%; left: 70%; animation-delay: 1s; }
+    .icon3 { top: 50%; left: 25%; animation-delay: 2s; }
+    .icon4 { top: 65%; left: 60%; animation-delay: 3s; }
+    .icon5 { top: 40%; left: 80%; animation-delay: 4s; }
+    .icon6 { bottom: 25%; left: 40%; animation-delay: 5s; }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0px) scale(1);
+        opacity: 0.6;
+      }
+      50% {
+        transform: translateY(-20px) scale(1.2);
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <!-- 背景元素 -->
+    <div class="bg-grid"></div>
+    <div class="bg-gradient"></div>
+    <div class="bg-circle1"></div>
+    <div class="bg-circle2"></div>
+
+    <!-- 节省动画 -->
+    <div class="savings-animation">
+      <div class="savings-icon icon1"></div>
+      <div class="savings-icon icon2"></div>
+      <div class="savings-icon icon3"></div>
+      <div class="savings-icon icon4"></div>
+      <div class="savings-icon icon5"></div>
+      <div class="savings-icon icon6"></div>
+    </div>
+
+    <!-- 主要内容 -->
+    <div class="content">
+      <div class="header">
+        <div class="nvidia-logo">
+          <div class="logo-box">NVIDIA</div>
+          <div class="partner-text">Cost Efficiency Analysis</div>
+        </div>
+        <div class="slide-title">应用场景分析与成本效益</div>
+      </div>
+
+      <div class="main-content">
+        <!-- 标题 -->
+        <div class="title-section">
+          <h1 class="main-title">应用场景分析与GPU需求量化对比</h1>
+        </div>
+
+        <!-- 主要内容区域 -->
+        <div class="content-grid">
+          <!-- 左侧：应用场景分析 -->
+          <div class="left-panel">
+            <div class="scenario-section">
+              <h3 class="section-title">三大核心应用场景</h3>
+              
+              <div class="scenario-item">
+                <div class="scenario-header">
+                  <span class="scenario-name">CAD 3D渲染模块</span>
+                  <span class="precision-badge">FP32</span>
+                </div>
+                <div class="performance-ratio">
+                  <span class="ratio-text">性能比较</span>
+                  <span class="ratio-badge">1张B300 = 2.91张H100</span>
+                </div>
+                <div class="scenario-description">
+                  高精度图形渲染应用，需要FP32浮点运算确保渲染质量，B300在保持精度的同时显著提升性能
+                </div>
+              </div>
+
+              <div class="scenario-item">
+                <div class="scenario-header">
+                  <span class="scenario-name">AIGC推理模块</span>
+                  <span class="precision-badge">FP4/FP8</span>
+                </div>
+                <div class="performance-ratio">
+                  <span class="ratio-text">FP8精度</span>
+                  <span class="ratio-badge">1张B300 = 4.5张H100</span>
+                </div>
+                <div class="performance-ratio">
+                  <span class="ratio-text">FP4精度</span>
+                  <span class="ratio-badge">1张B300 = 9张H100</span>
+                </div>
+                <div class="scenario-description">
+                  生成式AI推理服务，可使用低精度加速推理，B300在推理场景中具有压倒性优势
+                </div>
+              </div>
+
+              <div class="scenario-item">
+                <div class="scenario-header">
+                  <span class="scenario-name">DAMS训练模块</span>
+                  <span class="precision-badge">FP16</span>
+                </div>
+                <div class="performance-ratio">
+                  <span class="ratio-text">性能比较</span>
+                  <span class="ratio-badge">1张B300 = 2.91张H100</span>
+                </div>
+                <div class="scenario-description">
+                  深度学习模型训练，使用FP16混合精度训练，B300提供更高训练效率，支持复用
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 右侧：成本效益分析 -->
+          <div class="cost-analysis">
+            <h3 class="section-title">GPU需求量化对比</h3>
+            
+            <table class="cost-table">
+              <thead>
+                <tr>
+                  <th>模块/阶段</th>
+                  <th>H100需求</th>
+                  <th>B300需求</th>
+                  <th>节省数量</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="module-row">
+                  <td class="module-name">CAD 3D渲染</td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td>第一阶段</td>
+                  <td class="h100-cell">4,800张</td>
+                  <td class="b300-cell">1,650张</td>
+                  <td class="savings-cell">3,150张</td>
+                </tr>
+                <tr>
+                  <td>第二阶段</td>
+                  <td class="h100-cell">7,200张</td>
+                  <td class="b300-cell">2,474张</td>
+                  <td class="savings-cell">4,726张</td>
+                </tr>
+                <tr class="module-row">
+                  <td class="module-name">AIGC推理(FP4)</td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td>第一阶段</td>
+                  <td class="h100-cell">700张</td>
+                  <td class="b300-cell">78张</td>
+                  <td class="savings-cell">622张</td>
+                </tr>
+                <tr>
+                  <td>第二阶段</td>
+                  <td class="h100-cell">1,400张</td>
+                  <td class="b300-cell">156张</td>
+                  <td class="savings-cell">1,244张</td>
+                </tr>
+                <tr class="module-row">
+                  <td class="module-name">DAMS训练</td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <td>训练集群</td>
+                  <td class="h100-cell">256张</td>
+                  <td class="b300-cell">88张</td>
+                  <td class="savings-cell">168张</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="total-summary">
+              <div class="summary-grid">
+                <div class="summary-item">
+                  <div class="summary-number">65.6%-88.9%</div>
+                  <div class="summary-label">GPU数量节省</div>
+                </div>
+                <div class="summary-item">
+                  <div class="summary-number">最高9倍</div>
+                  <div class="summary-label">性能提升倍数</div>
+                </div>
+                <div class="summary-item">
+                  <div class="summary-number">3大模块</div>
+                  <div class="summary-label">全面覆盖</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="conclusion-box">
+              <div class="conclusion-text">
+                B300的推理优化架构为未来AI应用提供显著优势<br>
+                在所有测试场景中均可实现大幅GPU数量节省
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="company-name">技术评估</div>
+        <div class="page-number">2 / 2</div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 导航按钮 -->
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+    <a href="index1.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #0a0e1a; color: #22c55e; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s; border: 1px solid rgba(34, 197, 94, 0.3);">&lt;</a>
+    <a href="index3.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #0a0e1a; color: #22c55e; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s; border: 1px solid rgba(34, 197, 94, 0.3);">&gt;</a>
+  </div>
+</body>
+</html>

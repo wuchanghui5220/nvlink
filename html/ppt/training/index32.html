@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UFM软件安装操作文档</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    :root {
+      --primary-blue: #00a2ff;
+      --primary-green: #76b900;
+      --primary-orange: #ffa500;
+      --primary-purple: #4834d4;
+      --text-primary: #ffffff;
+      --text-secondary: rgba(255, 255, 255, 0.87);
+    }
+
+    .main-content {
+      padding: 1% 2%;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .page-title {
+      text-align: center;
+      margin-bottom: 1.5%;
+      flex-shrink: 0;
+    }
+
+    .title-main {
+      font-size: clamp(24px, 3vw, 32px);
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary-orange) 0%, var(--primary-blue) 50%, var(--primary-purple) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 0.8%;
+    }
+
+    .title-sub {
+      font-size: clamp(14px, 1.6vw, 17px);
+      color: rgba(255, 255, 255, 0.85);
+      font-weight: 500;
+    }
+
+    .content-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2%;
+      min-height: 0;
+      overflow-y: auto;
+    }
+
+    /* 安装步骤容器 */
+    .install-section {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04));
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 15px;
+      padding: 2.5%;
+      margin-bottom: 2%;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 2%;
+      padding-bottom: 1.5%;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .section-icon {
+      width: 45px;
+      height: 45px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .prereq-section .section-icon {
+      background: linear-gradient(135deg, var(--primary-blue), #0078d4);
+    }
+
+    .install-section-main .section-icon {
+      background: linear-gradient(135deg, var(--primary-orange), #ff8c00);
+    }
+
+    .ha-section .section-icon {
+      background: linear-gradient(135deg, var(--primary-purple), #6b46c1);
+    }
+
+    .config-section .section-icon {
+      background: linear-gradient(135deg, var(--primary-green), #4caf50);
+    }
+
+    .section-title {
+      font-size: clamp(18px, 2vw, 22px);
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    /* 安装步骤 */
+    .install-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5%;
+    }
+
+    .install-step {
+      background: rgba(255, 255, 255, 0.05);
+      border-left: 4px solid var(--primary-orange);
+      border-radius: 8px;
+      padding: 2%;
+      transition: all 0.3s ease;
+    }
+
+    .install-step:hover {
+      background: rgba(255, 255, 255, 0.08);
+      transform: translateX(5px);
+    }
+
+    .step-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 1.5%;
+    }
+
+    .step-number {
+      width: 30px;
+      height: 30px;
+      background: linear-gradient(135deg, var(--primary-orange), #ff8c00);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .step-title {
+      font-size: clamp(14px, 1.5vw, 16px);
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .step-description {
+      font-size: clamp(12px, 1.3vw, 14px);
+      color: var(--text-secondary);
+      line-height: 1.5;
+      margin-bottom: 1%;
+    }
+
+    /* 命令代码块 */
+    .command-block {
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 1.5%;
+      font-family: 'Courier New', monospace;
+      font-size: clamp(11px, 1.2vw, 13px);
+      color: #00ff88;
+      margin: 1% 0;
+      position: relative;
+      overflow-x: auto;
+    }
+
+    .command-block::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: linear-gradient(180deg, var(--primary-blue), var(--primary-green));
+      border-radius: 2px 0 0 2px;
+    }
+
+    /* 系统命令样式 */
+    .os-commands {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2%;
+      margin: 1.5% 0;
+    }
+
+    .os-command {
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 8px;
+      padding: 2%;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .os-label {
+      font-size: clamp(12px, 1.3vw, 14px);
+      font-weight: 600;
+      color: var(--primary-blue);
+      margin-bottom: 1%;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .os-icon {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      background: var(--primary-blue);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 10px;
+      font-weight: bold;
+    }
+
+    /* 重要提示 */
+    .important-note {
+      background: linear-gradient(135deg, rgba(255, 107, 107, 0.15), rgba(255, 107, 107, 0.08));
+      border: 2px solid rgba(255, 107, 107, 0.4);
+      border-radius: 12px;
+      padding: 2%;
+      margin: 1.5% 0;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .note-icon {
+      width: 35px;
+      height: 35px;
+      background: linear-gradient(135deg, #ff6b6b, #e53e3e);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    .note-content {
+      font-size: clamp(12px, 1.3vw, 14px);
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    .note-title {
+      font-weight: 600;
+      color: #ff6b6b;
+      margin-bottom: 0.5%;
+    }
+
+    @media (max-width: 1200px) {
+      .os-commands {
+        grid-template-columns: 1fr;
+        gap: 1.5%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <div class="bg-elements">
+      <div class="brain-pattern"></div>
+      <div class="network-signals">
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+      </div>
+    </div>
+    
+    <div class="content">
+      <div class="header" style="padding: 0.6% 2%;">
+        <div class="day-info">
+          <div class="day-badge">5</div>
+          <div class="day-text">第五天：UFM培训与总结</div>
+        </div>
+        <div class="section-indicator">UFM安装操作</div>
+      </div>
+      
+      <div class="main-content">
+        <div class="page-title">
+          <div class="title-main">UFM软件安装操作文档</div>
+          <div class="title-sub">Docker容器化安装 · 高可用部署 · 配置管理</div>
+        </div>
+        
+        <div class="content-wrapper">
+          <!-- 预部署要求 -->
+          <div class="install-section prereq-section">
+            <div class="section-header">
+              <div class="section-icon">📋</div>
+              <div class="section-title">预部署要求</div>
+            </div>
+            
+            <div class="install-steps">
+              <div class="install-step">
+                <div class="step-header">
+                  <div class="step-number">1</div>
+                  <div class="step-title">安装基础软件包</div>
+                </div>
+                <div class="step-description">在两台服务器上安装pacemaker、pcs和drbd-utils，对于裸金属服务器需要安装 resource-agents-extra</div>
+                <div class="os-commands">
+                  <div class="os-command">
+                    <div class="os-label">
+                      <div class="os-icon">U</div>
+                      Ubuntu系统
+                    </div>
+                    <div class="command-block">apt install pcs pacemaker drbd-utils</div>
+                  </div>
+                  <div class="os-command">
+                    <div class="os-label">
+                      <div class="os-icon">C</div>
+                      CentOS/Red Hat
+                    </div>
+                    <div class="command-block">yum install pcs pacemaker drbd84-utils kmod-drbd84</div>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="install-step">
+                <div class="step-header">
+                  <div class="step-number">2</div>
+                  <div class="step-title">准备DRBD分区</div>
+                </div>
+                <div class="step-description">在每台服务器上创建同名分区(如/dev/sdb1)，推荐大小10-20GB</div>
+              </div>
+              
+              <div class="install-step">
+                <div class="step-header">
+                  <div class="step-number">3</div>
+                  <div class="step-title">配置主机名解析, 并配置免认证登录</div>
+                </div>
+                <div class="step-description">确保hostname -i命令返回正确的管理接口IP，更新/etc/hosts文件，2台主机root用户免认证登录</div>
+              </div>
+              
+              <div class="install-step">
+                <div class="step-header">
+                  <div class="step-number">4</div>
+                  <div class="step-title">创建UFM目录</div>
+                </div>
+                <div class="step-description">在每台服务器上创建/opt/ufm/files/目录并设置读写权限</div>
+		<div class="command-block">mkdir -p /opt/ufm/files/<br>
+chmod 755 /opt/ufm/files/</div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- UFM容器安装 -->
+          <div class="install-section install-section-main">
+            <div class="section-header">
+              <div class="section-icon">🐳</div>
+              <div class="section-title">UFM容器安装</div>
+            </div>
+            
+            <div class="install-steps">
+              <div class="install-step">
+                <div class="step-header">
+                  <div class="step-number">1</div>
+                  <div class="step-title">主服务器安装</div>
+                </div>
+                <div class="step-description">在主服务器上安装UFM Enterprise容器</div>
+		<div class="command-block">docker run -it --name=ufm_installer --rm \<br>
+			-v /var/run/docker.sock:/var/run/docker.sock \<br>
+			-v /etc/systemd/system/:/etc/systemd_files/ \<br>
+			-v /opt/ufm/files/:/installation/ufm_files/ \<br>
+			-v /tmp/license_file/:/installation/ufm_licenses/ \<br>
+			mellanox/ufm-enterprise:latest \<br>
+--install</div>
+              </div>
+              
+              <div class="install-step">
+                <div class="step-header">
+                  <div class="step-number">2</div>
+                  <div class="step-title">备用服务器安装</div>
+                </div>
+                <div class="step-description">在备用服务器上安装UFM Enterprise容器</div>
+		<div class="command-block">docker run -it --name=ufm_installer --rm \<br>
+			-v /var/run/docker.sock:/var/run/docker.sock \<br>
+			-v /etc/systemd/system/:/etc/systemd_files/ \<br>
+			-v /opt/ufm/files/:/installation/ufm_files/ \<br>
+			mellanox/ufm-enterprise:latest \<br>
+--install</div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- UFM HA安装 -->
+          <div class="install-section ha-section">
+            <div class="section-header">
+              <div class="section-icon">🔄</div>
+              <div class="section-title">UFM高可用安装</div>
+            </div>
+            
+            <div class="install-steps">
+              <div class="install-step">
+                <div class="step-header">
+                  <div class="step-number">1</div>
+                  <div class="step-title">下载HA软件包</div>
+                </div>
+                <div class="step-description">在两台服务器上下载UFM-HA包</div>
+		<div class="command-block">wget https://www.mellanox.com/downloads/ufm/ufm_ha/5.8.0/ufm_ha_5.8.0-4.tgz<br>
+			wget https://www.mellanox.com/downloads/ufm/ufm_ha/5.8.0/ufm_ha_5.8.0-4.sha256<br></div>
+              </div>
+              
+              <div class="install-step">
+                <div class="step-header">
+                  <div class="step-number">2</div>
+                  <div class="step-title">解压并安装</div>
+                </div>
+                <div class="step-description">在两台服务器上解压到/tmp/并运行安装脚本</div>
+		<div class="command-block">cd /tmp/ufm_ha_XXX<br>
+			./install.sh -l /opt/ufm/files/ -d /dev/sdb1 -p enterprise<br></div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 配置和启动 -->
+          <div class="install-section config-section">
+            <div class="section-header">
+              <div class="section-icon">⚙️</div>
+              <div class="section-title">配置与启动</div>
+            </div>
+            
+            <div class="install-steps">
+              <div class="install-step">
+                <div class="step-header">
+                  <div class="step-number">1</div>
+                  <div class="step-title">配置HA集群</div>
+                </div>
+		<div class="step-description">在<font color="red"><strong>主服务器</strong></font>上配置双链路HA节点</div>
+		<div class="command-block">configure_ha_nodes.sh \<br>
+			--cluster-password 12345678 \<br>
+			--master-primary-ip 10.10.50.1 \<br>
+			--standby-primary-ip 10.10.50.2 \<br>
+			--master-secondary-ip 192.168.10.1 \<br>
+			--standby-secondary-ip 192.168.10.2 \<br>
+			--virtual-ip 10.10.50.3<br></div>
+              </div>
+              
+              <div class="install-step">
+                <div class="step-header">
+                  <div class="step-number">2</div>
+                  <div class="step-title">查看DRBD同步状态</div>
+                </div>
+                <div class="step-description">使用drbdadm命令，查看DRBD同步状态，等待同步完成。同步完成状态如下：</div>
+		<div class="command-block">
+			[root@ufm-01 ~]# drbdadm status<br>
+		       	ha_data role:Primary<br>
+			&emsp;&emsp;disk:UpToDate<br>
+			&emsp;&emsp;peer role:Secondary<br>
+			&emsp;&emsp;&emsp;&emsp;replication:Established peer-disk:UpToDate<br>
+			<br>
+			[root@ufm-02 ~]# drbdadm status<br>
+			ha_data role:Secondary<br>
+			&emsp;&emsp;disk:UpToDate<br>
+			&emsp;&emsp;peer role:Primary<br>
+			&emsp;&emsp;&emsp;&emsp;replication:Established peer-disk:UpToDate<br>
+              </div>
+            </div>
+
+              <div class="install-step">
+                <div class="step-header">
+                  <div class="step-number">3</div>
+                  <div class="step-title">启动和管理</div>
+                </div>
+                <div class="step-description">UFM HA集群管理命令</div>
+		<div class="command-block"># 启动集群<br>
+			ufm_ha_cluster start<br>
+			# 查看状态<br>
+			ufm_ha_cluster status<br>
+			# 停止集群<br>
+			ufm_ha_cluster stop<br></div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="important-note">
+            <div class="note-icon">⚠️</div>
+            <div class="note-content">
+              <div class="note-title">重要提示</div>
+              <div>1. 安装前需关闭防火墙或开放必要端口</div>
+              <div>2. 需要禁用SELinux</div>
+              <div>3. 等待DRBD同步完成后再启动集群</div>
+              <div>4. 卸载时先停止集群，再执行/opt/ufm/ufm_ha/uninstall_ha.sh</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="footer" style="padding: 0.6% 2%;">
+        <div class="footer-left">
+          <div class="status-dot"></div>
+          <span>UFM安装部署 - 容器化高可用架构</span>
+        </div>
+        <div class="footer-badges">
+          <div class="footer-badge badge-install">容器部署</div>
+          <div class="footer-badge badge-config">高可用</div>
+          <div class="footer-badge badge-command">集群管理</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+    <a href="index31.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+    <a href="index33.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+  </div>
+</body>
+</html>

@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>合作伙伴与联系我们 - 北京正阳恒卓科技有限公司</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'WenQuanYi Micro Hei', sans-serif;
+            background: linear-gradient(135deg, #0c4a3e 0%, #134e4a 25%, #065f46 50%, #047857 75%, #059669 100%);
+            color: #fff;
+            overflow: hidden;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            background: linear-gradient(135deg, #0c4a3e 0%, #134e4a 25%, #065f46 50%, #047857 75%, #059669 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .slide-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                radial-gradient(circle at 20% 80%, rgba(34, 197, 94, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.12) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(6, 95, 70, 0.2) 0%, transparent 50%);
+            animation: pulseLight 20s ease-in-out infinite;
+            z-index: 1;
+        }
+
+        @keyframes pulseLight {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.8; }
+        }
+
+        .decorative-elements {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .corner-decoration {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            border: 2px solid rgba(34, 197, 94, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .corner-decoration::before {
+            content: '';
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: rgba(34, 197, 94, 0.6);
+            border-radius: 50%;
+            animation: cornerPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes cornerPulse {
+            0%, 100% {
+                transform: scale(0.8);
+                opacity: 0.6;
+            }
+            50% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+        }
+
+        .corner-decoration.top-left {
+            top: 30px;
+            left: 30px;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .corner-decoration.top-left::before {
+            top: -6px;
+            left: -6px;
+        }
+
+        .corner-decoration.top-right {
+            top: 30px;
+            right: 30px;
+            border-left: none;
+            border-bottom: none;
+        }
+
+        .corner-decoration.top-right::before {
+            top: -6px;
+            right: -6px;
+            animation-delay: 0.5s;
+        }
+
+        .corner-decoration.bottom-left {
+            bottom: 30px;
+            left: 30px;
+            border-right: none;
+            border-top: none;
+        }
+
+        .corner-decoration.bottom-left::before {
+            bottom: -6px;
+            left: -6px;
+            animation-delay: 1s;
+        }
+
+        .corner-decoration.bottom-right {
+            bottom: 30px;
+            right: 30px;
+            border-left: none;
+            border-top: none;
+        }
+
+        .corner-decoration.bottom-right::before {
+            bottom: -6px;
+            right: -6px;
+            animation-delay: 1.5s;
+        }
+
+        .tech-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(34, 197, 94, 0.6);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px) rotate(0deg);
+                opacity: 0;
+            }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            50% {
+                transform: translateY(-80px) rotate(180deg);
+            }
+        }
+
+        .main-content {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            padding: 35px 50px;
+        }
+
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .page-title {
+            font-size: clamp(2.2rem, 4vw, 3.2rem);
+            font-weight: 700;
+            background: linear-gradient(135deg, #ffffff 0%, #22c55e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .brand-image {
+            max-height: 50px;
+            height: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 15px rgba(34, 197, 94, 0.3));
+        }
+
+        .content-section {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 30px;
+        }
+
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .partnership-section {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            backdrop-filter: blur(15px);
+            transition: all 0.3s ease;
+        }
+
+        .partnership-section:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(34, 197, 94, 0.4);
+            box-shadow: 0 15px 40px rgba(34, 197, 94, 0.2);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #22c55e, #10b981);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .partnership-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .partner-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .partner-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-3px);
+            border-color: rgba(34, 197, 94, 0.4);
+        }
+
+        /* --- MODIFIED CSS START --- */
+        .partner-logo {
+            height: 48px; /* Set a consistent height for the logo container */
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .partner-logo img {
+            max-height: 100%; /* Ensure image fits within the container height */
+            max-width: 100%;
+            object-fit: contain;
+        }
+        /* --- MODIFIED CSS END --- */
+
+        .partner-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #22c55e;
+            margin-bottom: 8px;
+        }
+
+        .partner-desc {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.4;
+        }
+
+        .certifications {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .cert-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 15px 20px;
+            border-left: 4px solid #22c55e;
+            transition: all 0.3s ease;
+        }
+
+        .cert-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+
+        .cert-title {
+            font-weight: 600;
+            color: #22c55e;
+            margin-bottom: 5px;
+        }
+
+        .cert-desc {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .contact-section {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            backdrop-filter: blur(15px);
+        }
+
+        .contact-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .contact-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+
+        .contact-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #22c55e, #10b981);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .contact-info {
+            flex: 1;
+        }
+
+        .contact-label {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 3px;
+        }
+
+        .contact-value {
+            font-size: 16px;
+            font-weight: 500;
+            color: #fff;
+        }
+
+        .cta-section {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(16, 185, 129, 0.2));
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            text-align: center;
+        }
+
+        .cta-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 15px;
+        }
+
+        .cta-text {
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .cta-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #22c55e, #10b981);
+            border: none;
+            border-radius: 25px;
+            color: #fff;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(34, 197, 94, 0.4);
+        }
+
+        /* QR Code Styles */
+        .qr-code-container {
+            margin-top: 15px;
+        }
+
+        .qr-code-image {
+            width: 90px;
+            height: 90px;
+            border-radius: 8px;
+            border: 2px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .qr-code-text {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 8px;
+        }
+
+        .page-indicator {
+            position: absolute;
+            bottom: 40px;
+            right: 40px;
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.6);
+            z-index: 10;
+        }
+
+        .slide-number {
+            font-weight: 600;
+            color: #22c55e;
+        }
+
+        .nav-controls {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+            font-size: 30px;
+            color: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            user-select: none;
+        }
+
+        .nav-controls:hover {
+            color: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(76, 166, 126, 0.3);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .nav-prev {
+            left: 30px;
+        }
+
+        .nav-next {
+            right: 30px;
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .main-content > * {
+            animation: slideIn 0.8s ease-out forwards;
+        }
+
+        .main-content > *:nth-child(1) { animation-delay: 0.1s; }
+        .main-content > *:nth-child(2) { animation-delay: 0.2s; }
+
+        @media (max-width: 1200px) {
+            .content-section {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .partnership-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .main-content {
+                padding: 40px 50px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 30px 20px;
+            }
+
+            .header-section {
+                flex-direction: column;
+                gap: 20px;
+                margin-bottom: 30px;
+            }
+
+            .partnership-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .corner-decoration {
+                width: 80px;
+                height: 80px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="decorative-elements">
+            <div class="corner-decoration top-left"></div>
+            <div class="corner-decoration top-right"></div>
+            <div class="corner-decoration bottom-left"></div>
+            <div class="corner-decoration bottom-right"></div>
+        </div>
+
+        <div class="tech-particles" id="particles"></div>
+
+        <div class="main-content">
+            <div class="header-section">
+                <h1 class="page-title">合作伙伴与联系我们</h1>
+                <div class="brand-logo">
+                    <img src="zy_elite.png" alt="正阳恒卓科技 NVIDIA Elite Partner" class="brand-image">
+                </div>
+            </div>
+
+            <div class="content-section">
+                <div class="left-column">
+                    <div class="partnership-section">
+                        <h3 class="section-title">
+                            <div class="section-icon">🤝</div>
+                            核心合作伙伴
+                        </h3>
+                        <div class="partnership-grid">
+                            <div class="partner-item">
+                                <!-- --- MODIFIED HTML START --- -->
+                                <div class="partner-logo">
+                                    <img src="zy_elite.png" alt="NVIDIA Elite Partner">
+                                </div>
+                                <!-- --- MODIFIED HTML END --- -->
+                                <div class="partner-title">NVIDIA</div>
+                                <div class="partner-desc">Networking精英级合作伙伴<br>Compute注册级合作伙伴</div>
+                            </div>
+                            <div class="partner-item">
+                                <div class="partner-logo">🏛️</div>
+                                <div class="partner-title">行业协会</div>
+                                <div class="partner-desc">中国投资协会大中型企业投资专业委员会<br>北京自然资源资产协会</div>
+                            </div>
+                        </div>
+
+                        <h4 class="section-title" style="font-size: 1.2rem; margin-top: 20px;">
+                            <div class="section-icon" style="width: 35px; height: 35px; font-size: 16px;">🏆</div>
+                            资质认证
+                        </h4>
+                        <div class="certifications">
+                            <div class="cert-item">
+                                <div class="cert-title">NVIDIA Networking 精英级合作伙伴</div>
+                                <div class="cert-desc">中国区NVIDIA网络产品精英级合作伙伴认证</div>
+                            </div>
+                            <div class="cert-item">
+                                <div class="cert-title">NVIDIA Compute 注册级合作伙伴</div>
+                                <div class="cert-desc">获得最新NVIDIA GPU产品的销售和技术支持资质</div>
+                            </div>
+                            <div class="cert-item">
+                                <div class="cert-title">NVIDIA 认证专家</div>
+                                <div class="cert-desc">拥有专业的NVIDIA认证技术专家团队</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="right-column">
+                    <div class="contact-section">
+                        <h3 class="section-title">
+                            <div class="section-icon">📧</div>
+                            联系我们
+                        </h3>
+                        <div class="contact-grid">
+                            <div class="contact-item">
+                                <div class="contact-icon">🏢</div>
+                                <div class="contact-info">
+                                    <div class="contact-label">公司名称</div>
+                                    <div class="contact-value">北京正阳恒卓科技有限公司</div>
+                                </div>
+                            </div>
+                            <div class="contact-item">
+                                <div class="contact-icon">📍</div>
+                                <div class="contact-info">
+                                    <div class="contact-label">公司地址</div>
+                                    <div class="contact-value">北京市西城区</div>
+                                </div>
+                            </div>
+                            <div class="contact-item">
+                                <div class="contact-icon">📞</div>
+                                <div class="contact-info">
+                                    <div class="contact-label">联系电话</div>
+                                    <div class="contact-value">+86 010-63085531</div>
+                                </div>
+                            </div>
+                            <div class="contact-item">
+                                <div class="contact-icon">📧</div>
+                                <div class="contact-info">
+                                    <div class="contact-label">商务邮箱</div>
+                                    <div class="contact-value">ludan@zhengyang.com</div>
+                                </div>
+                            </div>
+                            <div class="contact-item">
+                                <div class="contact-icon">🌐</div>
+                                <div class="contact-info">
+                                    <div class="contact-label">官方网站</div>
+                                    <div class="contact-value">www.zhengytech.com</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="cta-section">
+                        <h3 class="cta-title">开启合作之旅</h3>
+                        <p class="cta-text">
+                            让我们一起构建智能未来，为您的AI算力需求提供最专业的解决方案
+                        </p>
+                        <div class="qr-code-container">
+                            <img src="gzh.jpg" alt="公众号二维码" class="qr-code-image">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="page-indicator">
+            <span class="slide-number">05</span> / 05
+        </div>
+
+        <div class="nav-controls nav-prev" onclick="window.location.href='page4.html'">‹</div>
+        <div class="nav-controls nav-next">›</div>
+    </div>
+
+    <script>
+        // 创建科技粒子效果
+        function createTechParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 20;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+
+                // 随机大小
+                const size = Math.random() * 3 + 1;
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+
+                // 随机位置
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+
+                // 随机动画延迟
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (Math.random() * 4 + 4) + 's';
+
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            createTechParticles();
+
+            // 添加页面加载动画
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.8s ease';
+
+            setTimeout(() => {
+                document.body.style.opacity = '1';
+            }, 100);
+
+            // 添加交互效果
+            const interactiveElements = document.querySelectorAll('.partner-item, .cert-item, .contact-item');
+            interactiveElements.forEach((element, index) => {
+                element.addEventListener('mouseenter', () => {
+                    if (element.classList.contains('partner-item')) {
+                        element.style.transform = 'translateY(-5px) scale(1.02)';
+                    } else if (element.classList.contains('cert-item')) {
+                        element.style.transform = 'translateX(8px)';
+                    } else {
+                        element.style.transform = 'translateX(8px)';
+                    }
+                });
+
+                element.addEventListener('mouseleave', () => {
+                    element.style.transform = element.classList.contains('partner-item') ? 'translateY(0) scale(1)' : 'translateX(0)';
+                });
+            });
+
+            // CTA按钮特效
+            const ctaButton = document.querySelector('.cta-button');
+            ctaButton.addEventListener('mouseenter', () => {
+                ctaButton.style.transform = 'translateY(-3px) scale(1.05)';
+            });
+
+            ctaButton.addEventListener('mouseleave', () => {
+                ctaButton.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // 添加键盘导航
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                window.location.href = 'index.html';
+            }
+            if (e.key === 'ArrowLeft') {
+                window.location.href = 'page4.html';
+            }
+        });
+    </script>
+</body>
+</html>

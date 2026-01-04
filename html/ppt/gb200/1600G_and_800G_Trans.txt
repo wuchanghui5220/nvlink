@@ -1,0 +1,106 @@
+The NVIDIA MMS4A00 is a 1600Gb/s 2xDR4, single mode optical transceiver supporting the XDR 800Gb/s InfiniBand protocol. The line rate is 200Gb/s using Pulse Amplitude Modulation at 4-channels denoted as 200G-PAM4 enabling two data bits to transfer per clock pulse.
+
+The electrical configuration is 8-channels of 200G-PAM4. Optical configuration is based on two Datacenter Reach, 4-channel (2xDR4), 800Gb/s optical connectors.
+
+Optical connectors are Multiple Push-On 12-fiber, Angled Polished Connector or MPO-12/APC. Two MPO-12/APC optical connectors are used per transceiver.
+
+The 2x800G transceiver engine enables the InfiniBand Quantum-X800 QM3400, 72-cage switch to support 144-ports of 800Gb/s.
+
+Based on 9-um, single mode fibers, the main application is linking two switches together up to 500-meters, or to two 800G links to two switches or network adapters for storage and compute servers. The 500-meter length assumes two optical patch panels or four optical connectors in the link.
+
+NVIDIA’s transceivers guarantee optimal operation in NVIDIA end-to-end InfiniBand systems, and rigorous production testing ensures the lowest bit error rates, low-latency, and best out-of-the-box installation experience, performance, and durability.
+
+Integrated Heat Sink (IHS) Finned Top Transceiver
+
+image-2024-7-1_9-59-50-version-1-modificationdate-1719837674153-api-v2.png
+
+image-2025-2-25_17-29-47-version-1-modificationdate-1740500987603-api-v2.png
+
+Riding Heat Sink (RHS) Flat Top Transceiver (this version is planned for future setups)
+
+image-2024-7-1_14-56-29-1-version-1-modificationdate-1719838589393-api-v2.png
+
+Note
+Images are for illustration purposes only. Product manufacturing sites, labels, colors, and dimensions may vary.
+
+
+Key Features
+1600Gb/s single mode transceiver
+
+8-channels of 200G-PAM4 electrical modulation
+
+Two ports of 4-channel 200G-PAM4 optical modulation
+
+Two MPO-12/APC optical connectors
+
+1310nm laser
+
+Maximum reach: 500-meters
+
+33.5W max power
+
+Single 3V power supply
+
+Class 1 laser safety
+
+Hot pluggable, RoHS compliant
+
+Supports CMIS 4.0
+
+Case temperature range of 20°C to +70°C
+
+Secure Firmware boot and update features
+
+Applications
+Used in Quantum-3 air-cooled and liquid-cooled switch
+
+
+The NVIDIA MMS4A20 is an 800Gb/s single-mode optical transceiver supporting the XDR 800Gb/s InfiniBand protocol. It is used to link the Quantum-X800 QM3x00 switches using Twin-port OSFP 2x800Gb/s transceivers to the dual 800Gb/s ConnectX-8 mezzanine card in liquid cooled system and ConnectX-8 PCIE cards. OSFP cages are located in the compute tray front-panel.
+
+The line rate is 200Gb/s using Pulse Amplitude Modulation of 4- channels denoted as 200G-PAM4, enabling two data bits to be transferred per clock pulse. The electrical configuration is 4-channels of 200G-PAM4. The optical configuration has one, 500-meter, Datacenter Reach, 4-channel (DR4), 800Gb/s optical connector, and is a single Multiple Push-On 12-fiber, Angled Polished Connector or MPO-12/APC. One MPO-12/APC optical connector is used per transceiver.
+
+Based on 9-um, single mode fibers, the 800G transceiver can reach up to 500-meters, supporting large GPU clusters.
+
+The plug formfactor is a single-port OSFP (Octal Small Formfactor Plug) and uses a Riding Heat Sink (RHS) or flat-top OSFP connector with the cooling fins on top of the ConnectX-8 cage. This can also be used in liquid-cooled Riding Heat Sink (RHS) applications.
+
+NVIDIA’s transceivers guarantee optimal operation in NVIDIA end-to- end InfiniBand systems and rigorous production testing ensures the lowest bit error rates, low-latency, and best out-of-the-box installation experience, performance, and durability.
+
+Flat Top Transceiver
+
+image-2024-7-1_11-22-58-version-1-modificationdate-1741799461580-api-v2.png
+
+Note
+Images are for illustration purposes only. Product labels, colors, and lengths may vary.
+
+
+Key Features
+800G single mode transceiver
+
+4-channels and optical modulation
+
+OSFP Riding Heat Sink, flat top connector
+
+1310nm laser
+
+Single MPO-12/APC optical connector
+
+500m max reach
+
+Maximum reach: 500-meters
+
+18W max power2W low-power mode
+
+Single 3V power supply
+
+Class 1 laser safety
+
+Hot pluggable, RoHS compliant
+
+OSFPmsa.org compliant
+
+Supports CMIS 4.0 functions
+
+Secure Firmware boot and update features
+
+Applications
+Linking ConnectX-8 cards with Quantum-X800 QM3x00 Switches

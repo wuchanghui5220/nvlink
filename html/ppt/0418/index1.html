@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>NVIDIA InfiniBand智算中心组网创新与Quantum-X800高性能交换解决方案</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="slide-container">
+        <div class="header">
+            <h1>引言：AI时代的算力挑战与网络需求</h1>
+            <h2>NVIDIA InfiniBand智算中心组网创新与Quantum-X800高性能交换解决方案</h2>
+        </div>
+        <div class="content">
+            <div class="left-panel">
+                <div class="panel-title">AI模型参数规模的指数级增长</div>
+                <div class="chart-container" id="ai-model-growth">
+                    <svg width="100%" height="100%" viewBox="0 0 500 300" preserveAspectRatio="xMidYMid meet">
+                        <!-- X and Y Axes -->
+                        <line x1="50" y1="250" x2="450" y2="250" stroke="#333" stroke-width="2"/>
+                        <line x1="50" y1="50" x2="50" y2="250" stroke="#333" stroke-width="2"/>
+                        
+                        <!-- X Axis Labels (Years) -->
+                        <text x="90" y="270" text-anchor="middle" font-size="12">2018</text>
+                        <text x="170" y="270" text-anchor="middle" font-size="12">2020</text>
+                        <text x="250" y="270" text-anchor="middle" font-size="12">2022</text>
+                        <text x="330" y="270" text-anchor="middle" font-size="12">2023</text>
+                        <text x="410" y="270" text-anchor="middle" font-size="12">2024</text>
+                        
+                        <!-- Y Axis Title -->
+                        <text x="30" y="150" text-anchor="middle" font-size="12" transform="rotate(-90, 30, 150)">参数数量（十亿）</text>
+                        
+                        <!-- Y Axis Labels -->
+                        <text x="40" y="250" text-anchor="end" font-size="12">0.1</text>
+                        <text x="40" y="200" text-anchor="end" font-size="12">1</text>
+                        <text x="40" y="150" text-anchor="end" font-size="12">10</text>
+                        <text x="40" y="100" text-anchor="end" font-size="12">100</text>
+                        <text x="40" y="50" text-anchor="end" font-size="12">1,000</text>
+                        
+                        <!-- Log Scale Grid Lines -->
+                        <line x1="50" y1="200" x2="450" y2="200" stroke="#ccc" stroke-width="1" stroke-dasharray="5,5"/>
+                        <line x1="50" y1="150" x2="450" y2="150" stroke="#ccc" stroke-width="1" stroke-dasharray="5,5"/>
+                        <line x1="50" y1="100" x2="450" y2="100" stroke="#ccc" stroke-width="1" stroke-dasharray="5,5"/>
+                        <line x1="50" y1="50" x2="450" y2="50" stroke="#ccc" stroke-width="1" stroke-dasharray="5,5"/>
+                        
+                        <!-- Model Data Points and Bars -->
+                        <!-- BERT (2018) - 0.34B -->
+                        <rect x="80" y="245" width="20" height="5" fill="#009B77" opacity="0.8"/>
+                        <circle cx="90" cy="245" r="5" fill="#009B77"/>
+                        <text x="90" y="230" text-anchor="middle" font-size="11">BERT</text>
+                        <text x="90" y="242" text-anchor="middle" font-size="10">0.34B</text>
+                        
+                        <!-- GPT-3 (2020) - 175B -->
+                        <rect x="160" y="120" width="20" height="130" fill="#009B77" opacity="0.8"/>
+                        <circle cx="170" cy="120" r="5" fill="#009B77"/>
+                        <text x="170" y="105" text-anchor="middle" font-size="11">GPT-3</text>
+                        <text x="170" y="117" text-anchor="middle" font-size="10">175B</text>
+                        
+                        <!-- GPT-4 (2022) - ~500B (estimated) -->
+                        <rect x="240" y="90" width="20" height="160" fill="#009B77" opacity="0.8"/>
+                        <circle cx="250" cy="90" r="5" fill="#009B77"/>
+                        <text x="250" y="75" text-anchor="middle" font-size="11">GPT-4</text>
+                        <text x="250" y="87" text-anchor="middle" font-size="10">~500B</text>
+                        
+                        <!-- Claude (2023) - ~800B (estimated) -->
+                        <rect x="320" y="70" width="20" height="180" fill="#009B77" opacity="0.8"/>
+                        <circle cx="330" cy="70" r="5" fill="#009B77"/>
+                        <text x="330" y="55" text-anchor="middle" font-size="11">Claude</text>
+                        <text x="330" y="67" text-anchor="middle" font-size="10">~800B</text>
+                        
+                        <!-- Latest (2024) - ~1,000B+ -->
+                        <rect x="400" y="60" width="20" height="190" fill="#009B77" opacity="0.8"/>
+                        <circle cx="410" cy="60" r="5" fill="#009B77"/>
+                        <text x="410" y="45" text-anchor="middle" font-size="11">2024+</text>
+                        <text x="410" y="57" text-anchor="middle" font-size="10">1,000B+</text>
+                        
+                        <!-- Trend Line -->
+                        <path d="M90,245 Q170,160 250,90 T410,60" fill="none" stroke="#FF6F61" stroke-width="2" stroke-dasharray="5,5"/>
+                    </svg>
+                </div>
+                <div class="key-points">
+                    <ul>
+                        <li>AI模型参数规模以平均每18个月增长10倍的速度增长</li>
+                        <li>参数规模扩大需要更强大的算力支持</li>
+                        <li>大规模分布式训练对网络带宽和延迟提出更高要求</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="right-panel">
+                <div class="panel-title">网络技术对比：InfiniBand vs 以太网</div>
+                <div class="chart-container" id="network-comparison">
+                    <svg width="100%" height="100%" viewBox="0 0 500 300" preserveAspectRatio="xMidYMid meet">
+                        <!-- Charts Section -->
+                        <g id="bandwidth-chart" transform="translate(0,0)">
+                            <text x="250" y="30" text-anchor="middle" font-size="14" font-weight="bold">带宽对比 (Gb/s)</text>
+                            
+                            <!-- X Axis -->
+                            <line x1="80" y1="140" x2="420" y2="140" stroke="#333" stroke-width="2"/>
+                            
+                            <!-- Bars for Bandwidth -->
+                            <!-- Ethernet 100G -->
+                            <rect x="120" y="100" width="40" height="40" fill="#6D9EEB" opacity="0.8"/>
+                            <text x="140" y="160" text-anchor="middle" font-size="12">以太网</text>
+                            <text x="140" y="125" text-anchor="middle" font-size="12" fill="white">100G</text>
+                            
+                            <!-- InfiniBand HDR 200G -->
+                            <rect x="190" y="80" width="40" height="60" fill="#009B77" opacity="0.8"/>
+                            <text x="210" y="160" text-anchor="middle" font-size="12">HDR</text>
+                            <text x="210" y="115" text-anchor="middle" font-size="12" fill="white">200G</text>
+                            
+                            <!-- InfiniBand NDR 400G -->
+                            <rect x="260" y="40" width="40" height="100" fill="#009B77" opacity="0.8"/>
+                            <text x="280" y="160" text-anchor="middle" font-size="12">NDR</text>
+                            <text x="280" y="90" text-anchor="middle" font-size="12" fill="white">400G</text>
+                            
+                            <!-- InfiniBand XDR 800G -->
+                            <rect x="330" y="0" width="40" height="140" fill="#009B77" opacity="0.8"/>
+                            <text x="350" y="160" text-anchor="middle" font-size="12">XDR</text>
+                            <text x="350" y="70" text-anchor="middle" font-size="12" fill="white">800G</text>
+                        </g>
+                        
+                        <g id="latency-chart" transform="translate(0,180)">
+                            <text x="250" y="20" text-anchor="middle" font-size="14" font-weight="bold">延迟对比 (µs)</text>
+                            
+                            <!-- X Axis -->
+                            <line x1="80" y1="60" x2="420" y2="60" stroke="#333" stroke-width="2"/>
+                            
+                            <!-- Scales -->
+                            <text x="80" y="75" text-anchor="middle" font-size="10">0</text>
+                            <text x="190" y="75" text-anchor="middle" font-size="10">5</text>
+                            <text x="300" y="75" text-anchor="middle" font-size="10">10</text>
+                            <text x="410" y="75" text-anchor="middle" font-size="10">15</text>
+                            
+                            <!-- Latency Lines -->
+                            <line x1="80" y1="60" x2="420" y2="60" stroke="#ccc" stroke-width="1"/>
+                            
+                            <!-- Ethernet Latency ~10µs -->
+                            <line x1="80" y1="40" x2="300" y2="40" stroke="#6D9EEB" stroke-width="3"/>
+                            <circle cx="80" cy="40" r="4" fill="#6D9EEB"/>
+                            <circle cx="300" cy="40" r="4" fill="#6D9EEB"/>
+                            <text x="170" y="35" text-anchor="middle" font-size="12">以太网 (~10µs)</text>
+                            
+                            <!-- InfiniBand Latency ~0.6µs -->
+                            <line x1="80" y1="50" x2="100" y2="50" stroke="#009B77" stroke-width="3"/>
+                            <circle cx="80" cy="50" r="4" fill="#009B77"/>
+                            <circle cx="100" cy="50" r="4" fill="#009B77"/>
+                            <text x="170" y="55" text-anchor="middle" font-size="12">InfiniBand (~0.6µs)</text>
+                        </g>
+                    </svg>
+                </div>
+                <div class="key-points">
+                    <ul>
+                        <li>InfiniBand技术演进：HDR(200G)→NDR(400G)→XDR(800G)</li>
+                        <li>InfiniBand延迟低至0.6微秒，比以太网低约15倍</li>
+                        <li>NVIDIA Quantum-X800平台为AI智算中心提供最佳网络性能</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            NVIDIA InfiniBand智算中心组网创新与Quantum-X800高性能交换解决方案
+        </div>
+    </div>
+</body>
+</html>

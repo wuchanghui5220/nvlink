@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>InfiniBand 核心优势与定位</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    :root {
+      --primary-blue: #00a2ff;
+      --primary-green: #76b900;
+      --primary-orange: #ffa500;
+      --primary-purple: #4834d4;
+      --primary-red: #ff6b6b;
+      --text-primary: #ffffff;
+      --text-secondary: rgba(255, 255, 255, 0.87);
+    }
+
+    .main-content {
+      padding: 1% 2%;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .page-title {
+      text-align: center;
+      margin-bottom: 2%;
+      flex-shrink: 0;
+    }
+
+    .title-main {
+      font-size: clamp(28px, 3.2vw, 36px);
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-blue) 50%, var(--primary-purple) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 0.8%;
+    }
+
+    .title-sub {
+      font-size: clamp(15px, 1.7vw, 19px);
+      color: rgba(255, 255, 255, 0.85);
+      font-weight: 500;
+      margin-bottom: 1%;
+    }
+
+    .content-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2%;
+      min-height: 0;
+      overflow-y: auto;
+    }
+
+    /* 设计哲学卡片 */
+    .philosophy-section {
+      background: linear-gradient(135deg, rgba(118, 185, 0, 0.15), rgba(118, 185, 0, 0.08));
+      border: 2px solid rgba(118, 185, 0, 0.4);
+      border-radius: 15px;
+      padding: 2.5%;
+      text-align: center;
+      box-shadow: 0 8px 20px rgba(118, 185, 0, 0.15);
+    }
+
+    .philosophy-title {
+      font-size: clamp(20px, 2.2vw, 26px);
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 1.5%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    .philosophy-icon {
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, var(--primary-green), #4caf50);
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .philosophy-text {
+      font-size: clamp(14px, 1.5vw, 17px);
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    /* 核心优势网格 */
+    .advantages-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2%;
+    }
+
+    .advantage-card {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04));
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 15px;
+      padding: 2%;
+      transition: all 0.3s ease;
+      height: fit-content;
+    }
+
+    .advantage-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .advantage-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 1.5%;
+      padding-bottom: 1%;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .advantage-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .offload-card .advantage-icon {
+      background: linear-gradient(135deg, var(--primary-blue), #0078d4);
+    }
+
+    .bypass-card .advantage-icon {
+      background: linear-gradient(135deg, var(--primary-orange), #ff8c00);
+    }
+
+    .rdma-card .advantage-icon {
+      background: linear-gradient(135deg, var(--primary-green), #4caf50);
+    }
+
+    .lossless-card .advantage-icon {
+      background: linear-gradient(135deg, var(--primary-purple), #6b46c1);
+    }
+
+    .throughput-card .advantage-icon {
+      background: linear-gradient(135deg, var(--primary-red), #e53e3e);
+    }
+
+    .management-card .advantage-icon {
+      background: linear-gradient(135deg, #ff9500, #ffb347);
+    }
+
+    .advantage-title {
+      font-size: clamp(15px, 1.6vw, 18px);
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .advantage-subtitle {
+      font-size: clamp(11px, 1.2vw, 13px);
+      color: rgba(255, 255, 255, 0.6);
+      margin-top: 2px;
+    }
+
+    .advantage-description {
+      font-size: clamp(12px, 1.3vw, 14px);
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .advantage-highlight {
+      color: var(--primary-blue);
+      font-weight: 600;
+    }
+
+    /* 技术关键点列表 */
+    .tech-points {
+      background: linear-gradient(135deg, rgba(72, 52, 212, 0.15), rgba(72, 52, 212, 0.08));
+      border: 2px solid rgba(72, 52, 212, 0.4);
+      border-radius: 15px;
+      padding: 2.5%;
+    }
+
+    .points-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 2%;
+    }
+
+    .points-icon {
+      width: 45px;
+      height: 45px;
+      background: linear-gradient(135deg, var(--primary-purple), #6b46c1);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .points-title {
+      font-size: clamp(18px, 2vw, 22px);
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .tech-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5%;
+    }
+
+    .tech-item {
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 10px;
+      padding: 1.5%;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .tech-bullet {
+      width: 20px;
+      height: 20px;
+      background: var(--primary-purple);
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 12px;
+      font-weight: bold;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .tech-text {
+      font-size: clamp(12px, 1.3vw, 14px);
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    .tech-emphasis {
+      color: var(--primary-purple);
+      font-weight: 600;
+    }
+
+    @media (max-width: 1200px) {
+      .advantages-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5%;
+      }
+      
+      .tech-list {
+        grid-template-columns: 1fr;
+        gap: 1%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <div class="bg-elements">
+      <div class="brain-pattern"></div>
+      <div class="network-signals">
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+      </div>
+    </div>
+    
+    <div class="content">
+      <div class="header" style="padding: 0.6% 2%;">
+        <div class="day-info">
+          <div class="day-badge">2</div>
+          <div class="day-text">第二章：核心优势与定位</div>
+        </div>
+        <div class="section-indicator">技术优势分析</div>
+      </div>
+      
+      <div class="main-content">
+        <div class="page-title">
+          <div class="title-main">InfiniBand 核心优势与定位</div>
+          <div class="title-sub">设计哲学 · 技术优势 · 硬件卸载 · 内核旁路</div>
+        </div>
+        
+        <div class="content-wrapper">
+          <!-- 设计哲学 -->
+          <div class="philosophy-section">
+            <div class="philosophy-title">
+              <div class="philosophy-icon">💡</div>
+              <span>独特且强大的设计哲学</span>
+            </div>
+            <div class="philosophy-text">
+              InfiniBand 在高性能网络中的地位源于其独特的设计理念：<strong>将所有通信任务从软件和CPU中剥离，交由高效的专用硬件处理</strong>，从而实现极致的性能和效率。
+            </div>
+          </div>
+          
+          <!-- 核心优势 -->
+          <div class="advantages-grid">
+            <!-- 处理器卸载 -->
+            <div class="advantage-card offload-card">
+              <div class="advantage-header">
+                <div class="advantage-icon">🖥️</div>
+                <div>
+                  <div class="advantage-title">处理器卸载</div>
+                  <div class="advantage-subtitle">CPU Offload</div>
+                </div>
+              </div>
+              <div class="advantage-description">
+                所有消息传递均由<span class="advantage-highlight">通道适配器 (CA)</span> 内的硬件 DMA 引擎处理，CPU 从繁重的通信任务中解放出来，专注于计算任务。
+              </div>
+            </div>
+            
+            <!-- 内核旁路 -->
+            <div class="advantage-card bypass-card">
+              <div class="advantage-header">
+                <div class="advantage-icon">⚡</div>
+                <div>
+                  <div class="advantage-title">内核旁路与直接访问</div>
+                  <div class="advantage-subtitle">Kernel Bypass</div>
+                </div>
+              </div>
+              <div class="advantage-description">
+                <span class="advantage-highlight">非特权应用程序</span>可以直接与硬件交互，极大地减少了上下文切换带来的延迟，实现微秒级的通信延迟。
+              </div>
+            </div>
+            
+            <!-- RDMA -->
+            <div class="advantage-card rdma-card">
+              <div class="advantage-header">
+                <div class="advantage-icon">📡</div>
+                <div>
+                  <div class="advantage-title">远程直接内存访问</div>
+                  <div class="advantage-subtitle">RDMA</div>
+                </div>
+              </div>
+              <div class="advantage-description">
+                支持高效的<span class="advantage-highlight">内存到内存直接传输</span>，是实现极致低延迟数据交换的关键技术，为HPC和AI应用提供强大支撑。
+              </div>
+            </div>
+            
+            <!-- 无损网络 -->
+            <div class="advantage-card lossless-card">
+              <div class="advantage-header">
+                <div class="advantage-icon">🛡️</div>
+                <div>
+                  <div class="advantage-title">原生无损网络</div>
+                  <div class="advantage-subtitle">Lossless Network</div>
+                </div>
+              </div>
+              <div class="advantage-description">
+                通过复杂的<span class="advantage-highlight">基于信用的端到端流量控制机制</span>，从根本上防止数据包丢失，确保确定性性能。
+              </div>
+            </div>
+            
+            <!-- 极高吞吐量 -->
+            <div class="advantage-card throughput-card">
+              <div class="advantage-header">
+                <div class="advantage-icon">🚀</div>
+                <div>
+                  <div class="advantage-title">极高吞吐量与可扩展性</div>
+                  <div class="advantage-subtitle">Ultra-High Performance</div>
+                </div>
+              </div>
+              <div class="advantage-description">
+                链路速率持续演进：<span class="advantage-highlight">HDR (200Gb/s)、NDR (400Gb/s)、XDR (800Gb/s)</span>，满足未来计算需求。
+              </div>
+            </div>
+            
+            <!-- 集中式管理 -->
+            <div class="advantage-card management-card">
+              <div class="advantage-header">
+                <div class="advantage-icon">🎯</div>
+                <div>
+                  <div class="advantage-title">集中式子网管理</div>
+                  <div class="advantage-subtitle">Centralized Management</div>
+                </div>
+              </div>
+              <div class="advantage-description">
+                由<span class="advantage-highlight">子网管理器 (SM)</span> 统一负责网络拓扑发现、LID分配和路由表计算与下发，实现智能化网络管理。
+              </div>
+            </div>
+          </div>
+          
+          <!-- 技术关键点 -->
+          <div class="tech-points">
+            <div class="points-header">
+              <div class="points-icon">🔧</div>
+              <div class="points-title">技术实现关键点</div>
+            </div>
+            
+            <div class="tech-list">
+              <div class="tech-item">
+                <div class="tech-bullet">•</div>
+                <div class="tech-text">
+                  <span class="tech-emphasis">硬件加速</span>：专用芯片和网卡实现所有通信协议栈
+                </div>
+              </div>
+              
+              <div class="tech-item">
+                <div class="tech-bullet">•</div>
+                <div class="tech-text">
+                  <span class="tech-emphasis">零拷贝</span>：数据直接在用户态内存间传输
+                </div>
+              </div>
+              
+              <div class="tech-item">
+                <div class="tech-bullet">•</div>
+                <div class="tech-text">
+                  <span class="tech-emphasis">完整生态</span>：芯片到软件库的端到端解决方案
+                </div>
+              </div>
+              
+              <div class="tech-item">
+                <div class="tech-bullet">•</div>
+                <div class="tech-text">
+                  <span class="tech-emphasis">智能路由</span>：自动拓扑发现和最优路径计算
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="footer" style="padding: 0.6% 2%;">
+        <div class="footer-left">
+          <div class="status-dot"></div>
+          <span>InfiniBand技术优势 - 硬件卸载与内核旁路架构</span>
+        </div>
+        <div class="footer-badges">
+          <div class="footer-badge badge-install">硬件卸载</div>
+          <div class="footer-badge badge-config">内核旁路</div>
+          <div class="footer-badge badge-command">无损网络</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+    <a href="IB_PPT_01.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+    <a href="IB_PPT_03.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+  </div>
+</body>
+</html>

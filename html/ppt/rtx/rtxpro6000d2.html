@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NVIDIA RTX PRO 6000 Blackwell Workstation Edition - Datasheet</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #ffffff;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #2d2d2d 100%);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #76b900 0%, #5a8a00 100%);
+            padding: 50px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="8" height="8" patternUnits="userSpaceOnUse"><path d="M 8 0 L 0 0 0 8" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.4;
+        }
+
+        .nvidia-logo {
+            font-size: 28px;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 25px;
+            position: relative;
+            z-index: 2;
+            letter-spacing: 2px;
+        }
+
+        .header h1 {
+            font-size: 52px;
+            font-weight: 200;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 2;
+            letter-spacing: -1px;
+        }
+
+        .header .subtitle {
+            font-size: 22px;
+            opacity: 0.95;
+            position: relative;
+            z-index: 2;
+            font-weight: 300;
+        }
+
+        .tagline {
+            font-size: 18px;
+            margin-top: 10px;
+            opacity: 0.9;
+            font-style: italic;
+            position: relative;
+            z-index: 2;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .hero-section {
+            padding: 80px 0;
+            background: radial-gradient(ellipse at center, rgba(118, 185, 0, 0.08) 0%, transparent 70%);
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 80px;
+            align-items: center;
+        }
+
+        .hero-content h2 {
+            font-size: 42px;
+            margin-bottom: 30px;
+            color: #76b900;
+            font-weight: 300;
+            line-height: 1.2;
+        }
+
+        .hero-content p {
+            font-size: 17px;
+            margin-bottom: 24px;
+            color: #e0e0e0;
+            line-height: 1.7;
+        }
+
+        .gpu-image {
+            text-align: center;
+            padding: 50px 30px;
+            background: linear-gradient(145deg, rgba(118, 185, 0, 0.1) 0%, rgba(118, 185, 0, 0.05) 50%, transparent 100%);
+            border-radius: 25px;
+            border: 1px solid rgba(118, 185, 0, 0.2);
+        }
+
+        .gpu-placeholder {
+            width: 320px;
+            height: 220px;
+            background: linear-gradient(145deg, #2a2a2a, #404040, #333);
+            border-radius: 20px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid #76b900;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .gpu-placeholder::before {
+            content: 'RTX PRO 6000';
+            color: #76b900;
+            font-weight: bold;
+            font-size: 20px;
+            text-shadow: 0 0 10px rgba(118, 185, 0, 0.5);
+        }
+
+        .features-overview {
+            padding: 80px 0;
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 80px;
+            align-items: start;
+        }
+
+        .features-content h2 {
+            font-size: 42px;
+            margin-bottom: 25px;
+            color: #76b900;
+            font-weight: 300;
+        }
+
+        .features-description {
+            font-size: 17px;
+            color: #e0e0e0;
+            line-height: 1.7;
+            margin-bottom: 40px;
+        }
+
+        .key-features {
+            background: linear-gradient(145deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.2));
+            padding: 40px;
+            border-radius: 15px;
+            border-left: 5px solid #76b900;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .key-features h3 {
+            color: #76b900;
+            margin-bottom: 25px;
+            font-size: 26px;
+            font-weight: 400;
+        }
+
+        .key-features ul {
+            list-style: none;
+        }
+
+        .key-features li {
+            margin-bottom: 14px;
+            padding-left: 25px;
+            position: relative;
+            color: #e0e0e0;
+            font-size: 16px;
+        }
+
+        .key-features li::before {
+            content: '▶';
+            color: #76b900;
+            position: absolute;
+            left: 0;
+            font-size: 12px;
+        }
+
+        .innovations-section {
+            padding: 80px 0;
+        }
+
+        .innovations-section h2 {
+            font-size: 42px;
+            margin-bottom: 50px;
+            color: #76b900;
+            text-align: center;
+            font-weight: 300;
+        }
+
+        .innovation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+
+        .innovation-card {
+            background: linear-gradient(145deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.2));
+            padding: 35px;
+            border-radius: 15px;
+            border: 1px solid rgba(118, 185, 0, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .innovation-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #76b900, #5a8a00);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .innovation-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .innovation-card:hover {
+            transform: translateY(-8px);
+            border-color: #76b900;
+            box-shadow: 0 20px 40px rgba(118, 185, 0, 0.1);
+        }
+
+        .innovation-card h3 {
+            color: #76b900;
+            margin-bottom: 18px;
+            font-size: 22px;
+            font-weight: 500;
+        }
+
+        .innovation-card p {
+            color: #e0e0e0;
+            line-height: 1.7;
+            font-size: 16px;
+        }
+
+        .specs-section {
+            padding: 80px 0;
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .specs-section h2 {
+            font-size: 42px;
+            margin-bottom: 50px;
+            color: #76b900;
+            text-align: center;
+            font-weight: 300;
+        }
+
+        .specs-table {
+            background: linear-gradient(145deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.3));
+            border-radius: 15px;
+            overflow: hidden;
+            border: 1px solid rgba(118, 185, 0, 0.3);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+
+        .specs-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .specs-table th {
+            background: linear-gradient(135deg, #76b900, #5a8a00);
+            color: white;
+            padding: 20px 25px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .specs-table td {
+            padding: 18px 25px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            color: #ffffff;
+            font-size: 15px;
+        }
+
+        .specs-table tr:nth-child(even) {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .specs-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .specs-table .spec-category {
+            font-weight: 600;
+            color: #76b900;
+        }
+
+        .spec-notes {
+            margin-top: 25px;
+            font-size: 14px;
+            color: #aaa;
+            line-height: 1.6;
+        }
+
+        .spec-notes p {
+            margin-bottom: 5px;
+        }
+
+        .reliability-section {
+            padding: 80px 0;
+        }
+
+        .reliability-section h2 {
+            font-size: 42px;
+            margin-bottom: 40px;
+            color: #76b900;
+            text-align: center;
+            font-weight: 300;
+        }
+
+        .reliability-content {
+            text-align: center;
+            max-width: 900px;
+            margin: 0 auto;
+            font-size: 17px;
+            color: #e0e0e0;
+            line-height: 1.8;
+        }
+
+        .footer {
+            background: linear-gradient(135deg, #1a1a1a, #0a0a0a);
+            padding: 60px 0;
+            text-align: center;
+            border-top: 1px solid rgba(118, 185, 0, 0.3);
+        }
+
+        .footer h3 {
+            color: #76b900;
+            margin-bottom: 20px;
+            font-size: 28px;
+            font-weight: 400;
+        }
+
+        .footer p {
+            color: #e0e0e0;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .footer a {
+            color: #76b900;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .footer a:hover {
+            color: #8cc500;
+            text-decoration: underline;
+        }
+
+        .copyright {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 12px;
+            color: #999;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 1024px) {
+            .hero-grid {
+                grid-template-columns: 1fr;
+                gap: 50px;
+                text-align: center;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 50px;
+            }
+
+            .innovation-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 36px;
+            }
+
+            .hero-content h2,
+            .features-content h2,
+            .innovations-section h2,
+            .specs-section h2,
+            .reliability-section h2 {
+                font-size: 32px;
+            }
+
+            .container {
+                padding: 0 15px;
+            }
+
+            .innovation-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .innovation-card {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="nvidia-logo">NVIDIA</div>
+            <h1>NVIDIA RTX PRO 6000</h1>
+            <p class="subtitle">Blackwell Workstation Edition</p>
+            <p class="tagline">Powering the next era of AI.</p>
+        </div>
+    </header>
+
+    <section class="hero-section">
+        <div class="container">
+            <div class="hero-grid">
+                <div class="hero-content">
+                    <h2>Transform Workflows With the Ultimate Single-GPU Powerhouse</h2>
+                    <p>As AI continues to advance at an incredible pace, industries face mounting pressure to harness its transformative power and adopt tools capable of handling generative AI, real-time simulation, and hyper-realistic rendering. Enterprises need solutions that combine breakthrough performance, scalability, and versatility to tackle the rise of increasingly complex workloads—from training domain-specific AI models to rendering billion-polygon engineering designs or simulating real-world physics with higher fidelity and precision.</p>
+                    <p>Experience unparalleled compute power with the NVIDIA RTX PRO™ 6000 Blackwell Workstation Edition—made for professionals who demand peak performance for the most complex workloads. Built on the revolutionary NVIDIA Blackwell architecture, the RTX PRO 6000 delivers up to 4000 TOPS of AI processing power, enabling lightning-fast LLM fine-tuning, real-time rendering, and precision-driven simulations. Equipped with 96 GB of GDDR7 memory it effortlessly handles massive datasets and multi-billion-parameter models while sustaining seamless multi-app workflows, from developing AI assistants and photorealistic visualization to AI-powered engineering simulations.</p>
+                    <p>The RTX PRO 6000 harnesses a 600W power design to fuel the most demanding professional workloads–from fine-tuning trillion-parameter AI models to hyperrealistic cinematic rendering and simulating computational fluid dynamics. Its double-flow-through cooling system channels airflow through dual axial pathways, dissipating heat more efficiently to maintain stability while operating compute-intensive workloads. This thermal innovation ensures engineers can simulate physics models uninterrupted, AI researchers can iterate on neural networks faster, and VFX artists can render complex scenes without performance dips.</p>
+                    <p>Ideal for AI developers, researchers, engineers, and creative professionals, the RTX PRO 6000 unlocks breakthroughs in real-time ray tracing, low-latency AI inference, and scientific modeling. Whether optimizing LLMs, developing agentic AI applications, rendering cinematic-grade assets, or simulating hyperdetailed 3D environments, the RTX PRO 6000 sets a new level of desktop workstation performance.</p>
+                </div>
+                <div class="gpu-image">
+                    <div class="gpu-placeholder"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="features-overview">
+        <div class="container">
+            <div class="features-grid">
+                <div class="features-content">
+                    <h2>Key Features</h2>
+                    <p class="features-description">The RTX PRO 6000 combines breakthrough performance with enterprise reliability, delivering the tools needed for AI development, scientific computing, and creative workflows.</p>
+                </div>
+                <div class="key-features">
+                    <h3>Core Capabilities</h3>
+                    <ul>
+                        <li>Enhanced streaming multiprocessors (SMs) built for neural shaders</li>
+                        <li>5th Gen Tensor Cores support FP4 precision, DLSS 4 multi-frame generation</li>
+                        <li>4th Gen Ray Tracing Cores built for detailed geometry</li>
+                        <li>96 GB of GDDR7 memory</li>
+                        <li>1.8 TB/s of memory bandwidth</li>
+                        <li>9th Gen NVENC and 6th Gen NVDEC with 4:2:2 support</li>
+                        <li>PCIe Gen 5</li>
+                        <li>Four Display Port 2.1b connectors</li>
+                        <li>Multi-instance GPU (MIG) support</li>
+                        <li>AI Management Processor</li>
+                        <li>Double flow through thermal design</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="innovations-section">
+        <div class="container">
+            <h2>Breakthrough Innovations</h2>
+            <div class="innovation-grid">
+                <div class="innovation-card">
+                    <h3>NVIDIA Blackwell Streaming Multiprocessor</h3>
+                    <p>The new SM features increased processing throughput, and new neural shaders that integrate neural networks inside of programmable shaders to drive the next decade of AI-augmented graphics innovations.</p>
+                </div>
+                <div class="innovation-card">
+                    <h3>5th Gen Tensor Cores</h3>
+                    <p>Deliver up to 3X the performance of the previous generation and support for FP4 precision for faster AI model processing times with reduced memory usage, enabling local fine-tuning of LLMs and generative AI.</p>
+                </div>
+                <div class="innovation-card">
+                    <h3>4th Gen Ray Tracing Cores</h3>
+                    <p>Double the ray-triangle intersection rate of the previous generation to create photoreal, physically accurate scenes and immersive 3D designs with RTX Mega Geometry, which enables up to 100X more ray-traced triangles.</p>
+                </div>
+                <div class="innovation-card">
+                    <h3>Next-Gen Video Engines</h3>
+                    <p>Enhance video conferencing, video production, and streaming workflows with real-time AI processing. Ninth-generation NVENC and sixth-generation NVDEC engines provide support for 4:2:2 encoding and decoding to explore a new realm of high-resolution video workflows.</p>
+                </div>
+                <div class="innovation-card">
+                    <h3>GDDR7 Memory</h3>
+                    <p>New and improved GDDR7 memory significantly boosts bandwidth and capacity, empowering your applications to run faster, and work with larger, more complex datasets. With 96 GB of GPU memory and 1.8 TB/s bandwidth, tackle massive 3D and AI projects, fine-tune AI models locally, explore large-scale VR environments, and drive larger multi-app workflows.</p>
+                </div>
+                <div class="innovation-card">
+                    <h3>DLSS 4: Multi Frame Generation</h3>
+                    <p>Multi Frame Generation ensures ultra-smooth frame pacing for lifelike simulations. Experience up to 3X faster frame rates and stunning image quality in supported game engines and 3D rendering applications for smoother, more responsive performance.</p>
+                </div>
+                <div class="innovation-card">
+                    <h3>PCIe Gen 5</h3>
+                    <p>Support for PCIe Gen 5 provides double the bandwidth of PCIe Gen 4, improving data-transfer speeds from CPU memory and unlocking faster performance for data-intensive tasks like AI, data science, and 3D modeling.</p>
+                </div>
+                <div class="innovation-card">
+                    <h3>DisplayPort 2.1</h3>
+                    <p>Achieve unparalleled visual clarity and performance, driving high-resolution displays at up to 8K at 240 Hz and 16K at 60 Hz. Increased bandwidth enables seamless multi-monitor setups, ideal for multitasking and collaboration, while HDR and higher color depth support ensures superior color accuracy for precision work, such as video editing, 3D design, and live broadcasting.</p>
+                </div>
+                <div class="innovation-card">
+                    <h3>Universal MIG</h3>
+                    <p>Divide a single RTX PRO 6000 Blackwell into multiple isolated instances, each with dedicated resources, allowing for concurrent execution of multiple workloads, optimized GPU utilization, and secure isolation of different applications or users.</p>
+                </div>
+                <div class="innovation-card">
+                    <h3>Double-Flow-Through Design</h3>
+                    <p>The RTX PRO 6000 Blackwell features an innovative double-flow-through cooling design, optimizing thermal efficiency and airflow to sustain peak performance under 600W power loads. It operates quietly even during the most demanding tasks, eliminating thermal throttling and maximizing productivity.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="specs-section">
+        <div class="container">
+            <h2>Specifications</h2>
+            <div class="specs-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 40%;">Specification</th>
+                            <th>RTX PRO 6000D</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="spec-category">GPU Architecture</td>
+                            <td>NVIDIA Blackwell</td>
+                        </tr>
+                        <tr>
+                            <td class="spec-category">FP32 </td>
+                            <td>74 TFLOPS</td>
+                        </tr>
+                        <tr>
+                            <td class="spec-category">BF16 | FP16 Tensor Core*</td>
+                            <td>148 | 148 TFLOPS</td>
+                        </tr>
+                        <tr>
+                            <td class="spec-category">FP8 Tensor Core*</td>
+                            <td>296 | 296 TFLOPS</td>
+                        </tr>
+                        <tr>
+                            <td class="spec-category">FP4 Tensor Core*</td>
+                            <td>593 | 593 TFLOPS</td>
+                        </tr>
+                        <tr>
+                            <td class="spec-category">GPU Memory</td>
+                            <td>84 GB GDDR7 w/ECC</td>
+                        </tr>
+                        <tr>
+                            <td class="spec-category">Memory Bandwidth</td>
+                            <td>1398 GB/s</td>
+                        </tr>
+                        <tr>
+                            <td class="spec-category">Graphics & Rendering</td>
+                            <td>Yes</td>
+                        </tr>
+                        <tr>
+                            <td class="spec-category">MIG Support</td>
+                            <td>Up to 2 MIG instances</td>
+                        </tr>
+                        <tr>
+                            <td class="spec-category">Confidential Compute</td>
+                            <td>Yes (TEE)</td>
+                        </tr>
+                        <tr>
+                            <td class="spec-category">L2 Cache</td>
+                            <td>112 MB</td>
+                        </tr>
+                        <tr>
+                            <td class="spec-category">Media Engine</td>
+                            <td>4 Video Encoder (+AV1)<br>4 Video Decoder<br>4 JPEG Decoder</td>
+                        </tr>
+                        <tr>
+                            <td class="spec-category">Power Consumption</td>
+                            <td>600W**</td>
+                        </tr>
+                        <tr>
+                            <td class="spec-category">Form Factor</td>
+                            <td>2-slot FHFL AC | 1-slot LC</td>
+                        </tr>
+                        <tr>
+                            <td class="spec-category">System Interface</td>
+                            <td>PCIe Gen5 x 16: 128 GB/s</td>
+                        </tr>
+                        <tr>
+                            <td class="spec-category">Network Interface</td>
+                            <td>800G CX8 SuperNIC per 2-GPU</td>
+                        </tr>
+                        <tr>
+                            <td class="spec-category">Network Switch</td>
+                            <td>800G SPX Ethernet<br>XDR IB w/SHARP</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="spec-notes">
+                <p>*Dense TFLOPS</p>
+                <p>**Default GEMM power &lt;280W</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="reliability-section">
+        <div class="container">
+            <h2>Enterprise Reliability</h2>
+            <div class="reliability-content">
+                <p>Designed for professionals who demand the best, NVIDIA RTX PRO solutions deliver unparalleled performance, reliability, and support. Every GPU is rigorously tested for a wide range of design, engineering, and AI workflows and is continually optimized through enterprise drivers. With extensive ISV certifications, robust IT management tools, and enterprise-grade support, RTX PRO workstations are the trusted choice for enterprise and mission-critical work.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <h3>Ready to Get Started?</h3>
+            <p>To learn more, visit: <a href="#">nvidia.com/rtx-pro-6000/</a></p>
+
+            <div class="copyright">
+                <p>© 2025 NVIDIA Corporation. All rights reserved. NVIDIA, CUDA, NVIDIA RTX PRO and the NVIDIA logo are trademarks and/or registered trademarks of NVIDIA Corporation in the U.S. and other countries. All other trademarks and copyrights are the property of their respective owners.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

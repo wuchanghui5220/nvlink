@@ -1,0 +1,41 @@
+ubuntu@fw1:~$ sudo cat /etc/netplan/01-netcfg.yaml
+network:
+  version: 2
+  bonds:
+    uplink:
+      interfaces:
+        - eth2
+        - eth1
+      parameters:
+        mode: 802.3ad
+        mii-monitor-interval: 100
+        lacp-rate: fast
+      dhcp4: false
+  ethernets:
+    eth2:
+      dhcp4: false
+    eth1:
+      dhcp4: false
+  vlans:
+    uplink.101:
+      id: 101
+      link: uplink
+      addresses: [10.1.101.4/24]
+      routes:
+        - to: default
+          via: 10.1.101.1
+        - to: 10.1.10.0/24
+          via: 10.1.101.1
+        - to: 10.1.20.0/24
+          via: 10.1.101.1
+    uplink.102:
+      id: 102
+      link: uplink
+      addresses: [10.1.102.4/24]
+      routes:
+        - to: 10.1.30.0/24
+          via: 10.1.102.1
+      nameservers:
+        addresses:
+          - 8.8.8.8
+          - 1.1.1.1

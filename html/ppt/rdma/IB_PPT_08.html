@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>InfiniBand 总结</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    :root {
+      --primary-blue: #00a2ff;
+      --primary-green: #76b900;
+      --primary-orange: #ffa500;
+      --primary-purple: #4834d4;
+      --primary-red: #ff6b6b;
+      --text-primary: #ffffff;
+      --text-secondary: rgba(255, 255, 255, 0.87);
+    }
+
+    .main-content {
+      padding: 1% 2%;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .page-title {
+      text-align: center;
+      margin-bottom: 2%;
+      flex-shrink: 0;
+    }
+
+    .title-main {
+      font-size: clamp(28px, 3.5vw, 38px);
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary-red) 0%, var(--primary-orange) 25%, var(--primary-green) 50%, var(--primary-blue) 75%, var(--primary-purple) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 1%;
+    }
+
+    .title-sub {
+      font-size: clamp(16px, 1.8vw, 20px);
+      color: rgba(255, 255, 255, 0.85);
+      font-weight: 500;
+      margin-bottom: 1%;
+    }
+
+    .content-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2.5%;
+      min-height: 0;
+      overflow-y: auto;
+    }
+
+    /* 核心总结 */
+    .core-summary {
+      background: linear-gradient(135deg, rgba(72, 52, 212, 0.15), rgba(72, 52, 212, 0.08));
+      border: 2px solid rgba(72, 52, 212, 0.4);
+      border-radius: 15px;
+      padding: 3%;
+      text-align: center;
+      box-shadow: 0 8px 20px rgba(72, 52, 212, 0.15);
+    }
+
+    .summary-icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, var(--primary-purple), #6b46c1);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 36px;
+      font-weight: bold;
+      margin: 0 auto 2%;
+    }
+
+    .summary-title {
+      font-size: clamp(22px, 2.4vw, 28px);
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 2%;
+    }
+
+    .summary-description {
+      font-size: clamp(15px, 1.7vw, 19px);
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 2%;
+    }
+
+    .summary-highlight {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 2%;
+      margin-top: 2%;
+    }
+
+    .highlight-text {
+      font-size: clamp(14px, 1.6vw, 17px);
+      color: var(--primary-purple);
+      font-weight: 600;
+      line-height: 1.5;
+    }
+
+    /* 双支柱架构 */
+    .pillars-section {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2.5%;
+    }
+
+    .pillar-card {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04));
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 15px;
+      padding: 3%;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .pillar-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .pillar-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 2.5%;
+      padding-bottom: 2%;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .pillar-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    .data-pillar .pillar-icon {
+      background: linear-gradient(135deg, var(--primary-blue), #0078d4);
+    }
+
+    .control-pillar .pillar-icon {
+      background: linear-gradient(135deg, var(--primary-green), #4caf50);
+    }
+
+    .pillar-title {
+      font-size: clamp(18px, 2vw, 22px);
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .pillar-subtitle {
+      font-size: clamp(13px, 1.4vw, 15px);
+      color: rgba(255, 255, 255, 0.6);
+      margin-top: 3px;
+    }
+
+    .pillar-content {
+      font-size: clamp(14px, 1.5vw, 16px);
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .pillar-highlight {
+      color: var(--primary-blue);
+      font-weight: 600;
+    }
+
+    /* 技术价值 */
+    .value-proposition {
+      background: linear-gradient(135deg, rgba(118, 185, 0, 0.15), rgba(118, 185, 0, 0.08));
+      border: 2px solid rgba(118, 185, 0, 0.4);
+      border-radius: 15px;
+      padding: 2.5%;
+    }
+
+    .value-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 2%;
+    }
+
+    .value-icon {
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, var(--primary-green), #4caf50);
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .value-title {
+      font-size: clamp(18px, 2vw, 22px);
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .value-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2%;
+    }
+
+    .value-item {
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      padding: 2.5%;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .value-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: scale(1.02);
+    }
+
+    .value-emoji {
+      font-size: 32px;
+      margin-bottom: 1.5%;
+    }
+
+    .value-name {
+      font-size: clamp(14px, 1.5vw, 16px);
+      font-weight: 700;
+      color: var(--primary-green);
+      margin-bottom: 1%;
+    }
+
+    .value-desc {
+      font-size: clamp(11.5px, 1.25vw, 13.5px);
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    /* 学习建议 */
+    .learning-advice {
+      background: linear-gradient(135deg, rgba(255, 165, 0, 0.15), rgba(255, 165, 0, 0.08));
+      border: 2px solid rgba(255, 165, 0, 0.4);
+      border-radius: 15px;
+      padding: 2.5%;
+      text-align: center;
+    }
+
+    .advice-title {
+      font-size: clamp(18px, 2vw, 22px);
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 1.5%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .advice-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--primary-orange), #ff8c00);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .advice-text {
+      font-size: clamp(14px, 1.5vw, 16px);
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .advice-tools {
+      display: flex;
+      justify-content: center;
+      gap: 2%;
+      margin-top: 2%;
+    }
+
+    .tool-badge {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      padding: 1% 2%;
+      font-size: clamp(11px, 1.2vw, 13px);
+      color: var(--primary-orange);
+      font-weight: 600;
+    }
+
+    @media (max-width: 1200px) {
+      .pillars-section {
+        grid-template-columns: 1fr;
+        gap: 2%;
+      }
+      
+      .value-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5%;
+      }
+      
+      .advice-tools {
+        flex-direction: column;
+        gap: 1%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <div class="bg-elements">
+      <div class="brain-pattern"></div>
+      <div class="network-signals">
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+      </div>
+    </div>
+    
+    <div class="content">
+      <div class="header" style="padding: 0.6% 2%;">
+        <div class="day-info">
+          <div class="day-badge">8</div>
+          <div class="day-text">第八章：总结</div>
+        </div>
+        <div class="section-indicator">综合总结</div>
+      </div>
+      
+      <div class="main-content">
+        <div class="page-title">
+          <div class="title-main">InfiniBand 网络架构总结</div>
+          <div class="title-sub">软硬结合 · 极致性能 · 完整生态 · 未来展望</div>
+        </div>
+        
+        <div class="content-wrapper">
+          <!-- 核心总结 -->
+          <div class="core-summary">
+            <div class="summary-icon">🏆</div>
+            <div class="summary-title">完整的高性能系统架构</div>
+            <div class="summary-description">
+              InfiniBand 不仅仅是一种高速网络技术，它是一套完整的、软硬结合的、为<strong>极致性能</strong>而生的系统架构。
+            </div>
+            <div class="summary-highlight">
+              <div class="highlight-text">
+                设计核心：最大限度地将通信任务从软件和CPU中剥离，交由高效的专用硬件处理
+              </div>
+            </div>
+          </div>
+          
+          <!-- 成功的双支柱 -->
+          <div class="pillars-section">
+            <!-- 高效数据路径 -->
+            <div class="pillar-card data-pillar">
+              <div class="pillar-header">
+                <div class="pillar-icon">🚀</div>
+                <div>
+                  <div class="pillar-title">高效的数据路径</div>
+                  <div class="pillar-subtitle">Efficient Data Path</div>
+                </div>
+              </div>
+              <div class="pillar-content">
+                以 <span class="pillar-highlight">QP 为核心</span>，通过内核旁路和 RDMA 技术，提供了最直接、最快速的数据通道。<br><br>
+                • <span class="pillar-highlight">零拷贝传输</span>：数据直接在用户态内存间传输<br>
+                • <span class="pillar-highlight">硬件卸载</span>：所有通信协议栈在硬件中实现<br>
+                • <span class="pillar-highlight">内核旁路</span>：避免系统调用和上下文切换开销
+              </div>
+            </div>
+            
+            <!-- 智能管控平面 -->
+            <div class="pillar-card control-pillar">
+              <div class="pillar-header">
+                <div class="pillar-icon">🧠</div>
+                <div>
+                  <div class="pillar-title">智能可靠的管控平面</div>
+                  <div class="pillar-subtitle">Intelligent Control Plane</div>
+                </div>
+              </div>
+              <div class="pillar-content">
+                以 <span class="pillar-highlight">SM 为大脑</span>，通过集中式管理；以<span class="pillar-highlight">基于信用的流量控制</span>为基石，实现主动拥塞预防。<br><br>
+                • <span class="pillar-highlight">集中式管理</span>：拓扑发现、路由计算、配置下发<br>
+                • <span class="pillar-highlight">无损网络</span>：信用机制防止数据包丢失<br>
+                • <span class="pillar-highlight">多层容错</span>：异常处理和路径迁移机制
+              </div>
+            </div>
+          </div>
+          
+          <!-- 技术价值 -->
+          <div class="value-proposition">
+            <div class="value-header">
+              <div class="value-icon">💎</div>
+              <div class="value-title">技术价值与应用场景</div>
+            </div>
+            
+            <div class="value-grid">
+              <div class="value-item">
+                <div class="value-emoji">🔬</div>
+                <div class="value-name">高性能计算</div>
+                <div class="value-desc">
+                  超级计算机互联<br>
+                  科学计算加速<br>
+                  MPI通信优化
+                </div>
+              </div>
+              
+              <div class="value-item">
+                <div class="value-emoji">🤖</div>
+                <div class="value-name">人工智能</div>
+                <div class="value-desc">
+                  AI训练集群<br>
+                  大模型分布式训练<br>
+                  GPU集群互联
+                </div>
+              </div>
+              
+              <div class="value-item">
+                <div class="value-emoji">🏢</div>
+                <div class="value-name">企业数据中心</div>
+                <div class="value-desc">
+                  存储网络<br>
+                  虚拟化平台<br>
+                  关键业务系统
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 学习建议 -->
+          <div class="learning-advice">
+            <div class="advice-title">
+              <div class="advice-icon">📚</div>
+              <span>深化学习建议</span>
+            </div>
+            <div class="advice-text">
+              这份文档为您提供了坚实的知识基础。要进一步深化理解，建议将这些理论与实际的 InfiniBand 工具和应用结合起来，在实践中感受其架构的精妙之处。
+            </div>
+            <div class="advice-tools">
+              <div class="tool-badge">ibnetdiscover</div>
+              <div class="tool-badge">sminfo</div>
+              <div class="tool-badge">MPI</div>
+              <div class="tool-badge">NCCL</div>
+              <div class="tool-badge">OpenSHMEM</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="footer" style="padding: 0.6% 2%;">
+        <div class="footer-left">
+          <div class="status-dot"></div>
+          <span>InfiniBand学习完成 - 软硬结合的极致性能架构</span>
+        </div>
+        <div class="footer-badges">
+          <div class="footer-badge badge-install">架构精髓</div>
+          <div class="footer-badge badge-config">双支柱</div>
+          <div class="footer-badge badge-command">极致性能</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+    <a href="IB_PPT_07.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+    <a href="index.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+  </div>
+</body>
+</html>

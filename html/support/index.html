@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NVIDIA Support - Comments</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #e0e0e0;
+            background: white;
+        }
+
+        .tab {
+            padding: 16px 20px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-size: 16px;
+            font-weight: 500;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .tab.active {
+            color: #76B900;
+            border-bottom-color: #76B900;
+            border-bottom-width: 4px;
+        }
+
+        .comments-section {
+            padding: 20px;
+        }
+
+        .comments-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .comments-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .search-box {
+            position: relative;
+        }
+
+        .search-input {
+            padding: 10px 15px 10px 40px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            width: 250px;
+            font-size: 14px;
+            background: #f8f9fa;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #999;
+        }
+
+        .filter-dropdown {
+            position: relative;
+        }
+
+        .filter-button {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-top: none;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+
+        .dropdown-item {
+            padding: 10px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #333;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .dropdown-item:hover {
+            background: #f8f9fa;
+        }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .add-comment-btn {
+            background: white;
+            color: #333;
+            border: 2px solid #76B900;
+            padding: 10px 20px;
+            border-radius: 0;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .add-comment-btn:hover {
+            background: white;
+            border-color: #333;
+            color: #333;
+        }
+
+        .comment {
+            display: flex;
+            gap: 15px;
+            padding: 20px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .comment:last-child {
+            border-bottom: none;
+        }
+
+        .avatar {
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .user-avatar {
+            /* No background, just the SVG */
+        }
+
+        .nvidia-avatar {
+            /* No background, just the SVG */
+        }
+
+        .comment-content {
+            flex: 1;
+        }
+
+        .comment-header {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .username {
+            font-weight: 400;
+            color: #333;
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        .nvidia-support {
+            color: #333;
+        }
+
+        .timestamp {
+            color: #666;
+            font-size: 16px;
+            display: block;
+        }
+
+        .comment-text {
+            line-height: 1.6;
+            color: #333;
+            margin-bottom: 10px;
+            white-space: pre-line;
+            font-weight: 300;
+        }
+
+        .see-more, .see-less {
+            color: #333;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 300;
+            text-decoration: underline;
+            text-decoration-color: #76B900;
+            text-decoration-thickness: 2px;
+        }
+
+        .see-more:hover, .see-less:hover {
+            color: #333;
+            text-decoration-color: #333;
+            text-decoration-thickness: 2px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .close {
+            font-size: 28px;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .btn-cancel {
+            padding: 10px 20px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .btn-submit {
+            padding: 10px 20px;
+            background: #76B900;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="tabs">
+            <button class="tab active">Comments</button>
+            <button class="tab">Files</button>
+        </div>
+
+        <div class="comments-section">
+            <div class="comments-header">
+                <h1 class="comments-title">Comments (3)</h1>
+                <div class="header-controls">
+                    <div class="search-box">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" class="search-input" placeholder="Search">
+                    </div>
+                    <div class="filter-dropdown">
+                        <button class="filter-button" onclick="toggleDropdown()">
+                            <span id="filter-text">Show All Comments</span>
+                            <span>▼</span>
+                        </button>
+                        <div id="filter-dropdown-menu" class="dropdown-menu" style="display: none;">
+                            <div class="dropdown-item" onclick="filterComments('all')">Show All Comments</div>
+                            <div class="dropdown-item" onclick="filterComments('nvidia')">NVIDIA Agent</div>
+                            <div class="dropdown-item" onclick="filterComments('user')">My Comments</div>
+                        </div>
+                    </div>
+                    <button class="add-comment-btn" onclick="openModal()">Add Comment</button>
+                </div>
+            </div>
+
+            <div class="comments-list">
+                <div class="comment">
+                    <div class="avatar user-avatar">
+                        <svg width="40" height="41" viewBox="0 0 40 41" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M32.5346 36.4801C37.0871 32.8142 40 27.1945 40 20.8945C40 9.84884 31.0457 0.894531 20 0.894531C8.9543 0.894531 0 9.84884 0 20.8945C0 27.0504 2.78111 32.5566 7.15542 36.2254L9.62212 27.0195H29.9996L32.5346 36.4801ZM30.0209 38.2068L27.7936 29.8945H11.8282L9.65277 38.0133C12.6716 39.8419 16.2129 40.8945 20 40.8945C23.6515 40.8945 27.0744 39.916 30.0209 38.2068ZM14.0609 15.5195C14.0609 12.3439 16.6353 9.76953 19.8109 9.76953C22.9865 9.76953 25.5609 12.3439 25.5609 15.5195C25.5609 18.6952 22.9865 21.2695 19.8109 21.2695C16.6353 21.2695 14.0609 18.6952 14.0609 15.5195ZM19.8109 6.89453C15.0474 6.89453 11.1859 10.7561 11.1859 15.5195C11.1859 20.283 15.0474 24.1445 19.8109 24.1445C24.5743 24.1445 28.4359 20.283 28.4359 15.5195C28.4359 10.7561 24.5743 6.89453 19.8109 6.89453Z" fill="#666666"/>
+                        </svg>
+                    </div>
+                    <div class="comment-content">
+                        <div class="comment-header">
+                            <span class="username">vincent wu</span>
+                            <span class="timestamp">August 19, 2025, 01:37 PM</span>
+                        </div>
+                        <div class="comment-text">客户的反馈如下：
+
+没做过配置变更，自己挂了自己又好了，自愈的过程就中断转发了，周六早上7-8点左右。</div>
+                    </div>
+                </div>
+
+                <div class="comment">
+                    <div class="avatar nvidia-avatar">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="32" viewBox="0 0 48 32" fill="none">
+                            <path d="M17.9101 9.54961V6.65962C18.1893 6.64003 18.4704 6.624 18.7567 6.6151C26.6044 6.36581 31.7531 13.4083 31.7531 13.4083C31.7531 13.4083 26.1926 21.1897 20.2308 21.1897C19.3718 21.1897 18.6029 21.0508 17.9101 20.8158V12.0496C20.9661 12.4218 21.5794 13.7804 23.4158 16.8645L27.5005 13.394C27.5005 13.394 24.5188 9.45345 19.492 9.45345C18.9458 9.45345 18.4227 9.49263 17.9083 9.54783L17.9101 9.54961ZM17.9083 0V4.31807C18.1893 4.29492 18.4721 4.27711 18.7549 4.26643C29.6675 3.89606 36.7781 13.2836 36.7781 13.2836C36.7781 13.2836 28.6123 23.2873 20.1035 23.2873C19.3241 23.2873 18.5941 23.2143 17.9083 23.0932V25.7624C18.4951 25.8372 19.1031 25.8817 19.7359 25.8817C27.6525 25.8817 33.3792 21.8094 38.9239 16.9874C39.843 17.7281 43.606 19.5319 44.3802 20.3225C39.1077 24.7688 26.8236 28.3515 19.8579 28.3515C19.1862 28.3515 18.5411 28.3105 17.9083 28.25V32H48V0.00178103H17.9101L17.9083 0ZM17.9083 20.814V23.0932C10.5856 21.7773 8.55293 14.1098 8.55293 14.1098C8.55293 14.1098 12.0685 10.1853 17.9083 9.54961V12.0496C17.9083 12.0496 17.9012 12.0496 17.8977 12.0496C14.8329 11.6793 12.4397 14.5639 12.4397 14.5639C12.4397 14.5639 13.7812 19.4197 17.9101 20.8175L17.9083 20.814ZM4.90481 13.7804C4.90481 13.7804 9.24403 7.32914 17.9101 6.6614V4.32163C8.31255 5.09799 0 13.2872 0 13.2872C0 13.2872 4.70685 26.9982 17.9101 28.2535V25.766C8.22064 24.5373 4.90481 13.7804 4.90481 13.7804Z" fill="#76B900"/>
+                        </svg>
+                    </div>
+                    <div class="comment-content">
+                        <div class="comment-header">
+				<span class="username nvidia-support">NVIDIA Support</span>
+                            <span class="timestamp">August 19, 2025, 01:26 PM</span>
+                        </div>
+                        <div class="comment-text" id="comment-1">尊敬的客户您好，
+
+从什么时间开始流量异常？是否有过配置变更？leaf1到spine的上联接口和链路是否可达？
+
+顺祝商祺！
+
+英伟达技术支持服务</div>
+                        <span class="see-less" onclick="toggleComment('comment-1', this)" style="display: none;">See Less</span>
+                        <span class="see-more" onclick="toggleComment('comment-1', this)">See Less</span>
+                    </div>
+                </div>
+
+                <div class="comment">
+                    <div class="avatar nvidia-avatar">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="32" viewBox="0 0 48 32" fill="none">
+                            <path d="M17.9101 9.54961V6.65962C18.1893 6.64003 18.4704 6.624 18.7567 6.6151C26.6044 6.36581 31.7531 13.4083 31.7531 13.4083C31.7531 13.4083 26.1926 21.1897 20.2308 21.1897C19.3718 21.1897 18.6029 21.0508 17.9101 20.8158V12.0496C20.9661 12.4218 21.5794 13.7804 23.4158 16.8645L27.5005 13.394C27.5005 13.394 24.5188 9.45345 19.492 9.45345C18.9458 9.45345 18.4227 9.49263 17.9083 9.54783L17.9101 9.54961ZM17.9083 0V4.31807C18.1893 4.29492 18.4721 4.27711 18.7549 4.26643C29.6675 3.89606 36.7781 13.2836 36.7781 13.2836C36.7781 13.2836 28.6123 23.2873 20.1035 23.2873C19.3241 23.2873 18.5941 23.2143 17.9083 23.0932V25.7624C18.4951 25.8372 19.1031 25.8817 19.7359 25.8817C27.6525 25.8817 33.3792 21.8094 38.9239 16.9874C39.843 17.7281 43.606 19.5319 44.3802 20.3225C39.1077 24.7688 26.8236 28.3515 19.8579 28.3515C19.1862 28.3515 18.5411 28.3105 17.9083 28.25V32H48V0.00178103H17.9101L17.9083 0ZM17.9083 20.814V23.0932C10.5856 21.7773 8.55293 14.1098 8.55293 14.1098C8.55293 14.1098 12.0685 10.1853 17.9083 9.54961V12.0496C17.9083 12.0496 17.9012 12.0496 17.8977 12.0496C14.8329 11.6793 12.4397 14.5639 12.4397 14.5639C12.4397 14.5639 13.7812 19.4197 17.9101 20.8175L17.9083 20.814ZM4.90481 13.7804C4.90481 13.7804 9.24403 7.32914 17.9101 6.6614V4.32163C8.31255 5.09799 0 13.2872 0 13.2872C0 13.2872 4.70685 26.9982 17.9101 28.2535V25.766C8.22064 24.5373 4.90481 13.7804 4.90481 13.7804Z" fill="#76B900"/>
+                        </svg>
+                    </div>
+                    <div class="comment-content">
+                        <div class="comment-header">
+                            <span class="username nvidia-support">NVIDIA Support</span>
+                            <span class="timestamp">August 19, 2025, 01:08 PM</span>
+                        </div>
+                        <div class="comment-text" id="comment-2-short">尊敬的客户您好，
+
+感谢您联系英伟达技术支持。
+...
+</div>
+                        <div class="comment-text" id="comment-2-full" style="display: none;">尊敬的客户您好，
+
+感谢您联系英伟达技术支持。
+
+为了更好地为您提供技术支持服务，我们需要了解更多详细信息。请您提供以下信息：
+1. 具体的错误现象和错误信息
+2. 问题发生的时间和频率
+3. 系统配置信息
+4. 相关的日志文件
+
+我们将根据您提供的信息为您制定详细的解决方案。
+
+感谢您的耐心配合！
+
+英伟达技术支持团队</div>
+                        <span class="see-more" onclick="toggleComment('comment-2', this)">See More</span>
+                        <span class="see-less" onclick="toggleComment('comment-2', this)" style="display: none;">See Less</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="commentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Add Comment</h2>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <form id="commentForm">
+                <div class="form-group">
+                    <label class="form-label" for="username">Name</label>
+                    <input type="text" id="username" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="comment">Comment</label>
+                    <textarea id="comment" class="form-input form-textarea" required></textarea>
+                </div>
+                <div class="form-buttons">
+                    <button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn-submit">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let currentFilter = 'all';
+
+        function toggleDropdown() {
+            const dropdown = document.getElementById('filter-dropdown-menu');
+            dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function filterComments(filterType) {
+            currentFilter = filterType;
+            const comments = document.querySelectorAll('.comment');
+            const filterText = document.getElementById('filter-text');
+            
+            // Update button text
+            switch(filterType) {
+                case 'all':
+                    filterText.textContent = 'Show All Comments';
+                    break;
+                case 'nvidia':
+                    filterText.textContent = 'NVIDIA Agent';
+                    break;
+                case 'user':
+                    filterText.textContent = 'My Comments';
+                    break;
+            }
+            
+            // Filter comments
+            comments.forEach(comment => {
+                const username = comment.querySelector('.username').textContent.toLowerCase();
+                let shouldShow = false;
+                
+                switch(filterType) {
+                    case 'all':
+                        shouldShow = true;
+                        break;
+                    case 'nvidia':
+                        shouldShow = username.includes('nvidia') || username.includes('support');
+                        break;
+                    case 'user':
+                        shouldShow = !username.includes('nvidia') && !username.includes('support');
+                        break;
+                }
+                
+                comment.style.display = shouldShow ? 'flex' : 'none';
+            });
+            
+            // Update comment count
+            updateCommentCount();
+            
+            // Hide dropdown
+            document.getElementById('filter-dropdown-menu').style.display = 'none';
+        }
+
+        function updateCommentCount() {
+            const visibleComments = document.querySelectorAll('.comment[style*="flex"], .comment:not([style*="none"])');
+            const actualCount = Array.from(visibleComments).filter(comment => 
+                !comment.style.display || comment.style.display === 'flex'
+            ).length;
+            
+            const title = document.querySelector('.comments-title');
+            title.textContent = `Comments (${actualCount})`;
+        }
+
+        function openModal() {
+            document.getElementById('commentModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('commentModal').style.display = 'none';
+            document.getElementById('commentForm').reset();
+        }
+
+        function toggleComment(commentId, element) {
+            const shortVersion = document.getElementById(commentId + '-short');
+            const fullVersion = document.getElementById(commentId + '-full');
+            const seeMore = element.classList.contains('see-more');
+            
+            if (seeMore) {
+                shortVersion.style.display = 'none';
+                fullVersion.style.display = 'block';
+                element.style.display = 'none';
+                element.nextElementSibling.style.display = 'inline';
+            } else {
+                shortVersion.style.display = 'block';
+                fullVersion.style.display = 'none';
+                element.style.display = 'none';
+                element.previousElementSibling.style.display = 'inline';
+            }
+        }
+
+        // Handle form submission
+        document.getElementById('commentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const commentText = document.getElementById('comment').value;
+            
+            // Create new comment element
+            const commentsList = document.querySelector('.comments-list');
+            const newComment = document.createElement('div');
+            newComment.className = 'comment';
+            
+            const now = new Date();
+            const timestamp = now.toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            }) + ', ' + now.toLocaleTimeString('en-US', { 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                hour12: true 
+            });
+            
+            // Determine avatar and username class based on username
+            let avatarHTML = '';
+            let usernameClass = '';
+            
+            if (username.toLowerCase().includes('nvidia') || username.toLowerCase().includes('support')) {
+                // NVIDIA Support avatar
+                avatarHTML = `
+                    <div class="avatar nvidia-avatar">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="32" viewBox="0 0 48 32" fill="none">
+                            <path d="M17.9101 9.54961V6.65962C18.1893 6.64003 18.4704 6.624 18.7567 6.6151C26.6044 6.36581 31.7531 13.4083 31.7531 13.4083C31.7531 13.4083 26.1926 21.1897 20.2308 21.1897C19.3718 21.1897 18.6029 21.0508 17.9101 20.8158V12.0496C20.9661 12.4218 21.5794 13.7804 23.4158 16.8645L27.5005 13.394C27.5005 13.394 24.5188 9.45345 19.492 9.45345C18.9458 9.45345 18.4227 9.49263 17.9083 9.54783L17.9101 9.54961ZM17.9083 0V4.31807C18.1893 4.29492 18.4721 4.27711 18.7549 4.26643C29.6675 3.89606 36.7781 13.2836 36.7781 13.2836C36.7781 13.2836 28.6123 23.2873 20.1035 23.2873C19.3241 23.2873 18.5941 23.2143 17.9083 23.0932V25.7624C18.4951 25.8372 19.1031 25.8817 19.7359 25.8817C27.6525 25.8817 33.3792 21.8094 38.9239 16.9874C39.843 17.7281 43.606 19.5319 44.3802 20.3225C39.1077 24.7688 26.8236 28.3515 19.8579 28.3515C19.1862 28.3515 18.5411 28.3105 17.9083 28.25V32H48V0.00178103H17.9101L17.9083 0ZM17.9083 20.814V23.0932C10.5856 21.7773 8.55293 14.1098 8.55293 14.1098C8.55293 14.1098 12.0685 10.1853 17.9083 9.54961V12.0496C17.9083 12.0496 17.9012 12.0496 17.8977 12.0496C14.8329 11.6793 12.4397 14.5639 12.4397 14.5639C12.4397 14.5639 13.7812 19.4197 17.9101 20.8175L17.9083 20.814ZM4.90481 13.7804C4.90481 13.7804 9.24403 7.32914 17.9101 6.6614V4.32163C8.31255 5.09799 0 13.2872 0 13.2872C0 13.2872 4.70685 26.9982 17.9101 28.2535V25.766C8.22064 24.5373 4.90481 13.7804 4.90481 13.7804Z" fill="#76B900"/>
+                        </svg>
+                    </div>`;
+                usernameClass = '';
+            } else {
+                // User avatar
+                avatarHTML = `
+                    <div class="avatar user-avatar">
+                        <svg width="40" height="41" viewBox="0 0 40 41" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd" d="M32.5346 36.4801C37.0871 32.8142 40 27.1945 40 20.8945C40 9.84884 31.0457 0.894531 20 0.894531C8.9543 0.894531 0 9.84884 0 20.8945C0 27.0504 2.78111 32.5566 7.15542 36.2254L9.62212 27.0195H29.9996L32.5346 36.4801ZM30.0209 38.2068L27.7936 29.8945H11.8282L9.65277 38.0133C12.6716 39.8419 16.2129 40.8945 20 40.8945C23.6515 40.8945 27.0744 39.916 30.0209 38.2068ZM14.0609 15.5195C14.0609 12.3439 16.6353 9.76953 19.8109 9.76953C22.9865 9.76953 25.5609 12.3439 25.5609 15.5195C25.5609 18.6952 22.9865 21.2695 19.8109 21.2695C16.6353 21.2695 14.0609 18.6952 14.0609 15.5195ZM19.8109 6.89453C15.0474 6.89453 11.1859 10.7561 11.1859 15.5195C11.1859 20.283 15.0474 24.1445 19.8109 24.1445C24.5743 24.1445 28.4359 20.283 28.4359 15.5195C28.4359 10.7561 24.5743 6.89453 19.8109 6.89453Z" fill="#666666"/>
+                        </svg>
+                    </div>`;
+                usernameClass = '';
+            }
+            
+            // Generate unique ID for this comment
+            const commentId = 'comment-new-' + Date.now();
+            
+            // Check if comment is long (more than 200 characters)
+            const isLongComment = commentText.length > 200;
+            let commentHTML = '';
+            
+            if (isLongComment) {
+                const shortText = commentText.substring(0, 200) + '\n...';
+                commentHTML = `
+                    <div class="comment-text" id="${commentId}-short">${shortText}</div>
+                    <div class="comment-text" id="${commentId}-full" style="display: none;">${commentText}</div>
+                    <span class="see-more" onclick="toggleComment('${commentId}', this)">See More</span>
+                    <span class="see-less" onclick="toggleComment('${commentId}', this)" style="display: none;">See Less</span>
+                `;
+            } else {
+                commentHTML = `<div class="comment-text">${commentText}</div>`;
+            }
+            
+            newComment.innerHTML = `
+                ${avatarHTML}
+                <div class="comment-content">
+                    <div class="comment-header">
+                        <span class="username ${usernameClass}">${username}</span>
+                        <span class="timestamp">${timestamp}</span>
+                    </div>
+                    ${commentHTML}
+                </div>
+            `;
+            
+            // Insert at the top of comments list
+            commentsList.insertBefore(newComment, commentsList.firstChild);
+            
+            // Apply current filter to the new comment
+            filterComments(currentFilter);
+            
+            closeModal();
+        });
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('commentModal');
+            const dropdown = document.getElementById('filter-dropdown-menu');
+            
+            if (event.target === modal) {
+                closeModal();
+            }
+            
+            // Close dropdown if clicking outside
+            if (!event.target.closest('.filter-dropdown')) {
+                dropdown.style.display = 'none';
+            }
+        }
+
+        // Tab functionality
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Search functionality
+        document.querySelector('.search-input').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const comments = document.querySelectorAll('.comment');
+            
+            comments.forEach(comment => {
+                const text = comment.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    comment.style.display = 'flex';
+                } else {
+                    comment.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

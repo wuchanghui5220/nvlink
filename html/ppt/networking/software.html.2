@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>网络软件生态 - NVIDIA Networking 培训</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f8fafb;
+            color: #2c3e50;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+        .ppt-background {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, #ffffff 0%, #f1f8ff 50%, #f0f9f4 100%);
+            overflow: hidden;
+        }
+        .ppt-background::before {
+            content: ''; position: absolute; top: 0; right: 0; width: 60%; height: 100%;
+            background: linear-gradient(45deg, #3b82f6 0%, #1e40af 30%, #22c55e 70%, #76b900 100%);
+            clip-path: polygon(30% 0%, 100% 0%, 100% 100%, 0% 100%);
+            opacity: 0.12;
+        }
+        .decoration-lines { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+        .decoration-lines::before {
+            content: ''; position: absolute; top: 50px; left: 50px; width: 200px; height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #22c55e); border-radius: 2px;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+        }
+        .decoration-lines::after {
+            content: ''; position: absolute; bottom: 50px; right: 50px; width: 150px; height: 4px;
+            background: linear-gradient(90deg, #76b900, #3b82f6); border-radius: 2px;
+            box-shadow: 0 2px 8px rgba(118, 185, 0, 0.3);
+        }
+        .slide-container {
+            position: relative; z-index: 10; width: 100%; height: 100vh;
+            display: flex; flex-direction: column; padding: 50px 70px; /* 减少了垂直内边距 */
+        }
+        .slide-header {
+            display: flex; justify-content: space-between; align-items: flex-start;
+            margin-bottom: 20px; /* 减少了下边距 */
+        }
+        .nvidia-logo svg { height: 35px; width: auto; }
+        .breadcrumb { font-size: 0.9rem; color: #64748b; display: flex; align-items: center; gap: 8px; }
+        .breadcrumb a { color: #3b82f6; text-decoration: none; }
+        .slide-title { text-align: center; margin-bottom: 30px; /* 减少了下边距 */ }
+        .module-icon {
+            width: 60px; height: 60px; border-radius: 14px;
+            background: linear-gradient(45deg, #3b82f6, #1e40af);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2rem; color: white; margin: 0 auto 15px;
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+        }
+        .main-title {
+            font-size: 2.8rem; font-weight: 700; line-height: 1.1; margin-bottom: 10px;
+            background: linear-gradient(90deg, #3b82f6 0%, #1e40af 40%, #22c55e 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .subtitle { font-size: 1.1rem; color: #475569; font-weight: 300; }
+        .content-main {
+            flex: 1; display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+        }
+        .pillar-card {
+            background: rgba(255, 255, 255, 0.9); border-radius: 16px; padding: 25px;
+            backdrop-filter: blur(10px); border: 1px solid rgba(59, 130, 246, 0.1);
+            transition: all 0.3s ease; display: flex; flex-direction: column;
+            animation: fadeInUp 0.6s ease forwards;
+        }
+        .pillar-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 35px rgba(59, 130, 246, 0.15);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+        .pillar-card:nth-child(1) { animation-delay: 0.1s; }
+        .pillar-card:nth-child(2) { animation-delay: 0.2s; }
+        .pillar-card:nth-child(3) { animation-delay: 0.3s; }
+        .pillar-header { text-align: center; margin-bottom: 18px; }
+        .pillar-icon { font-size: 2rem; margin-bottom: 10px; }
+        .pillar-title { font-size: 1.25rem; font-weight: 600; color: #1e293b; }
+        .pillar-description {
+            font-size: 0.88rem; color: #64748b; line-height: 1.6;
+            margin-bottom: 18px;
+        }
+        .tech-list { list-style: none; }
+        .tech-list-title {
+            font-size: 0.9rem; font-weight: 600; color: #3b82f6;
+            margin-bottom: 10px; border-top: 1px solid rgba(59, 130, 246, 0.15);
+            padding-top: 15px;
+        }
+        .tech-list li {
+            position: relative; padding-left: 20px; margin-bottom: 8px;
+            font-size: 0.82rem; color: #475569; line-height: 1.5;
+        }
+        .tech-list li::before {
+            content: '›'; position: absolute; left: 5px; top: -1px;
+            color: #22c55e; font-weight: bold; font-size: 1.2rem;
+        }
+        .tech-list strong { color: #1e293b; font-weight: 500; }
+        .pillar-footer {
+            margin-top: auto; padding-top: 15px; font-size: 0.8rem;
+            color: #64748b; text-align: center; font-style: italic;
+            border-top: 1px solid rgba(0,0,0,0.05);
+        }
+        /* Footer and Navigation styles */
+        .slide-footer { margin-top: 25px; display: flex; justify-content: space-between; align-items: center; }
+        .presenter-info { display: flex; align-items: center; gap: 15px; }
+        .presenter-name { font-size: 1rem; font-weight: 600; color: #1e293b; }
+        .presenter-title { font-size: 0.9rem; background: linear-gradient(90deg, #3b82f6, #22c55e); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 500; }
+        .slide-number { background: linear-gradient(45deg, rgba(59, 130, 246, 0.1), rgba(34, 197, 94, 0.1)); border: 1px solid rgba(59, 130, 246, 0.2); padding: 8px 16px; border-radius: 20px; font-size: 0.9rem; color: #475569; }
+        .navigation-controls { position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); display: flex; gap: 15px; align-items: center; }
+        .nav-button { background: linear-gradient(45deg, rgba(59, 130, 246, 0.1), rgba(34, 197, 94, 0.1)); border: 1px solid transparent; color: #3b82f6; padding: 10px 20px; border-radius: 25px; font-size: 0.85rem; cursor: pointer; transition: all 0.3s ease; text-decoration: none; position: relative; overflow: hidden; }
+        .nav-button::before { content: ''; position: absolute; inset: 0; padding: 1px; background: linear-gradient(45deg, #3b82f6, #22c55e); border-radius: inherit; mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0); mask-composite: xor; -webkit-mask-composite: xor; }
+        .nav-button:hover { background: linear-gradient(45deg, #3b82f6, #22c55e); color: #ffffff; transform: translateY(-2px); box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3); }
+        .nav-hint { color: #64748b; font-size: 0.8rem; }
+        
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        
+        @media (max-width: 1200px) {
+            .slide-container { padding: 40px; overflow: auto; }
+            body { overflow: auto; }
+            .content-main { grid-template-columns: 1fr; gap: 20px; }
+        }
+        @media (max-width: 768px) {
+            .slide-container { padding: 20px; }
+            .navigation-controls { position: relative; bottom: auto; left: auto; transform: none; margin-top: 20px; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+    <div class="ppt-background"></div>
+    <div class="decoration-lines"></div>
+
+    <div class="slide-container">
+        <header class="slide-header">
+            <div class="nvidia-logo">
+                <!-- SVG Logo -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="100" height="67" viewBox="0 0 48 32" fill="none"><path d="M17.9101 9.54961V6.65962C18.1893 6.64003 18.4704 6.624 18.7567 6.6151C26.6044 6.36581 31.7531 13.4083 31.7531 13.4083C31.7531 13.4083 26.1926 21.1897 20.2308 21.1897C19.3718 21.1897 18.6029 21.0508 17.9101 20.8158V12.0496C20.9661 12.4218 21.5794 13.7804 23.4158 16.8645L27.5005 13.394C27.5005 13.394 24.5188 9.45345 19.492 9.45345C18.9458 9.45345 18.4227 9.49263 17.9083 9.54783L17.9101 9.54961ZM17.9083 0V4.31807C18.1893 4.29492 18.4721 4.27711 18.7549 4.26643C29.6675 3.89606 36.7781 13.2836 36.7781 13.2836C36.7781 13.2836 28.6123 23.2873 20.1035 23.2873C19.3241 23.2873 18.5941 23.2143 17.9083 23.0932V25.7624C18.4951 25.8372 19.1031 25.8817 19.7359 25.8817C27.6525 25.8817 33.3792 21.8094 38.9239 16.9874C39.843 17.7281 43.606 19.5319 44.3802 20.3225C39.1077 24.7688 26.8236 28.3515 19.8579 28.3515C19.1862 28.3515 18.5411 28.3105 17.9083 28.25V32H48V0.00178103H17.9101L17.9083 0ZM17.9083 20.814V23.0932C10.5856 21.7773 8.55293 14.1098 8.55293 14.1098C8.55293 14.1098 12.0685 10.1853 17.9083 9.54961V12.0496C17.9083 12.0496 17.9012 12.0496 17.8977 12.0496C14.8329 11.6793 12.4397 14.5639 12.4397 14.5639C12.4397 14.5639 13.7812 19.4197 17.9101 20.8175L17.9083 20.814ZM4.90481 13.7804C4.90481 13.7804 9.24403 7.32914 17.9101 6.6614V4.32163C8.31255 5.09799 0 13.2872 0 13.2872C0 13.2872 4.70685 26.9982 17.9101 28.2535V25.766C8.22064 24.5373 4.90481 13.7804 4.90481 13.7804Z" fill="#76B900"/></svg>
+            </div>
+            <div class="breadcrumb">
+                <a href="catalog.html">培训目录</a>
+                <span>></span>
+                <span>网络软件生态</span>
+            </div>
+        </header>
+
+        <div class="slide-title">
+            <div class="module-icon">🧩</div>
+            <h1 class="main-title">统一的软件定义基础设施</h1>
+            <p class="subtitle">全面、开放、可编程的 NVIDIA 网络软件生态系统</p>
+        </div>
+
+        <main class="content-main">
+            <div class="pillar-card">
+                <div class="pillar-header">
+                    <div class="pillar-icon">🛠️</div>
+                    <h3 class="pillar-title">基础软件与驱动</h3>
+                </div>
+                <p class="pillar-description">为 NVIDIA 网络硬件提供稳定、高性能的底层支持。这一层是发挥硬件全部潜能的基石，确保最高的吞吐量和最低的延迟。</p>
+                <ul class="tech-list">
+                    <h4 class="tech-list-title">核心组件</h4>
+                    <li><strong>MLNX_OFED:</strong> 包含适配器所需的所有驱动、固件工具和库的官方软件包。</li>
+                    <li><strong>Adapter Firmware:</strong> 提供最新的固件版本以启用新功能、修复错误并优化性能。</li>
+                    <li><strong>Switch Firmware:</strong> 针对 Spectrum 系列交换机的固件映像，确保交换机高效稳定运行。</li>
+                </ul>
+                <div class="pillar-footer">构筑了高性能网络的坚实地基。</div>
+            </div>
+
+            <div class="pillar-card">
+                <div class="pillar-header">
+                    <div class="pillar-icon">🌐</div>
+                    <h3 class="pillar-title">网络操作系统与管理</h3>
+                </div>
+                <p class="pillar-description">提供开放、灵活的网络操作系统和强大的集中管理平台，通过自动化和深度可视性，极大简化数据中心网络的运维复杂度。</p>
+                 <ul class="tech-list">
+                    <h4 class="tech-list-title">核心组件</h4>
+                    <li><strong>NVIDIA Cumulus Linux:</strong> 业界领先的开放式网络操作系统，让交换机像服务器一样易于管理。</li>
+                    <li><strong>SONiC:</strong> 贡献并支持微软主导的开源云网络操作系统 SONiC。</li>
+                    <li><strong>NetQ:</strong> 提供实时的网络状态验证与故障排查，贯穿网络部署全生命周期。</li>
+                    <li><strong>UFM Platform:</strong> 强大的 InfiniBand 集群管理平台，用于监控、配置和优化集群网络。</li>
+                </ul>
+                <div class="pillar-footer">实现了网络管理的自动化与智能化。</div>
+            </div>
+
+            <div class="pillar-card">
+                <div class="pillar-header">
+                    <div class="pillar-icon">🚀</div>
+                    <h3 class="pillar-title">加速与卸载平台</h3>
+                </div>
+                <p class="pillar-description">通过革命性的 DPU 硬件和 DOCA 软件开发套件，将网络、存储、安全等基础设施任务从 CPU 卸载，释放宝贵的计算资源以加速应用。</p>
+                 <ul class="tech-list">
+                    <h4 class="tech-list-title">核心组件</h4>
+                    <li><strong>NVIDIA DOCA:</strong> 一站式软件开发框架，解锁 BlueField DPU 的强大功能，赋能开发者构建高性能应用。</li>
+                    <li><strong>BlueField DPU:</strong> 数据中心基础设施处理器，在单一芯片上集成了强大的计算、网络和可编程性。</li>
+                    <li><strong>Acceleration Software:</strong> 包括 RDMA、DPDK 等一系列技术，为各类应用提供极致网络加速。</li>
+                </ul>
+                <div class="pillar-footer">重新定义了数据中心的基础架构。</div>
+            </div>
+        </main>
+
+        <footer class="slide-footer">
+            <div class="presenter-info">
+                <div class="presenter-name">Vincent</div>
+                <div class="presenter-title">技术总监</div>
+            </div>
+            <div class="slide-number">4 / 9</div>
+        </footer>
+    </div>
+
+    <div class="navigation-controls">
+        <button class="nav-button" onclick="goBack()">← 上一模块</button>
+        <button class="nav-button" onclick="nextModule()">下一模块 →</button>
+        <div class="nav-hint">使用左右箭头键导航</div>
+    </div>
+
+    <script>
+        function goBack() { window.location.href = 'nvlink.html'; }
+        function nextModule() { alert('下一模块：网络适配器'); }
+        document.addEventListener('keydown', function(e) {
+            if (e.code === 'ArrowLeft') { goBack(); } 
+            else if (e.code === 'ArrowRight' || e.code === 'Space') { nextModule(); } 
+            else if (e.code === 'Escape') { window.location.href = 'catalog.html'; }
+        });
+        document.querySelector('.breadcrumb a').addEventListener('click', function(e) {
+            e.preventDefault();
+            window.location.href = 'catalog.html';
+        });
+    </script>
+</body>
+</html>

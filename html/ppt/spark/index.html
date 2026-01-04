@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>现代生命科学研究的应用场景</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #4a90e2, #357abd);
+            margin: 0;
+            padding: 20px;
+            color: white;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 30px;
+            color: white;
+        }
+        .section-header {
+            background: rgba(0, 100, 0, 0.8);
+            color: white;
+            padding: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .content-row {
+            display: flex;
+            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 20px;
+        }
+        .left-section {
+            flex: 1;
+            margin-right: 30px;
+        }
+        .right-section {
+            flex: 1;
+        }
+        .category {
+            background: rgba(0, 50, 100, 0.8);
+            color: white;
+            padding: 8px 12px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .application-item {
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+        .application-title {
+            font-weight: bold;
+            color: #ffffff;
+            margin-bottom: 5px;
+        }
+        .application-desc {
+            color: #e6f3ff;
+            font-size: 14px;
+        }
+        .pain-point {
+            margin-bottom: 10px;
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .pain-point::before {
+            content: "• ";
+            color: #ffff00;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>现代生命科学研究的应用场景</h1>
+        
+        <div class="section-header">
+            <span>AI应用场景</span>
+            <span>Pain</span>
+        </div>
+
+        <div class="content-row">
+            <div class="left-section">
+                <div class="category">生物信息学</div>
+                <div class="application-item">
+                    <div class="application-title">基因组分析：</div>
+                    <div class="application-desc">利用AI加速基因组测序数据的分析，识别基因变异和功能。</div>
+                </div>
+                <div class="application-item">
+                    <div class="application-title">蛋白识别：</div>
+                    <div class="application-desc">利用AI分析基因组、蛋白质结构等代谢组数据，识别潜在的药物靶点。</div>
+                </div>
+                <div class="application-item">
+                    <div class="application-title">代谢组学分析：</div>
+                    <div class="application-desc">利用AI分析代谢组数据，识别代谢通路和生物标志物。</div>
+                </div>
+            </div>
+            <div class="right-section">
+                <div class="pain-point">推理时，长序列的基因组数据需要更大的存储容量</div>
+                <div class="pain-point">长序列的基因组数据比对需要更大的存储容量</div>
+                <div class="pain-point">需要尝试多种模型架构和超参数的重新分析</div>
+                <div class="pain-point">在数据比对时需要更大的存储和模拟</div>
+            </div>
+        </div>
+
+        <div class="content-row">
+            <div class="left-section">
+                <div class="category">药物发现与开发</div>
+                <div class="application-item">
+                    <div class="application-title">蛋白质结构预测：</div>
+                    <div class="application-desc">利用AI预测蛋白质的三维结构，帮助理解蛋白质功能。</div>
+                </div>
+                <div class="application-item">
+                    <div class="application-title">先导化合物发现：</div>
+                    <div class="application-desc">通过AI驱动的虚拟筛选和分子设计，推进先导化合物的发现过程。</div>
+                </div>
+                <div class="application-item">
+                    <div class="application-title">临床试验优化：</div>
+                    <div class="application-desc">利用AI分析临床试验数据，优化试验设计，提高试验成功率。</div>
+                </div>
+            </div>
+            <div class="right-section">
+                <div class="pain-point">Openfold 推理容器需求：推理超过4000个氨基酸的蛋白复合结构需求GPU显存>=80GB</div>
+                <div class="pain-point">AI模型常用于分子的设计和生成，药物筛选需要docking模型，而且需要可视化docking的结果；</div>
+                <div class="pain-point">类器官的模拟，需要基因多组学比对</div>
+            </div>
+        </div>
+
+        <div class="content-row">
+            <div class="left-section">
+                <div class="category">医疗器械与诊断</div>
+                <div class="application-item">
+                    <div class="application-title">智能影像诊断：</div>
+                    <div class="application-desc">利用AI分析医学影像（如CT、MRI），辅助医生进行诊断。</div>
+                </div>
+                <div class="application-item">
+                    <div class="application-title">可穿戴设备：</div>
+                    <div class="application-desc">利用AI分析可穿戴设备收集的数据，监测患者健康状况。</div>
+                </div>
+                <div class="application-item">
+                    <div class="application-title">自动化实验室：</div>
+                    <div class="application-desc">利用AI控制自动化实验室设备，提高实验效率和准确性。</div>
+                </div>
+            </div>
+            <div class="right-section">
+                <div class="pain-point">实验/生产环境的限制，例如：电/空间/可移动</div>
+                <div class="pain-point">数据安全性要求</div>
+                <div class="pain-point">模型设计/验证阶段，研究者开发软硬件环境（要求提供可交互式通道环境，更倾向于个人独占使用/可移动使用）</div>
+            </div>
+        </div>
+
+        <div class="content-row">
+            <div class="left-section">
+                <div class="category">精准医疗</div>
+                <div class="application-item">
+                    <div class="application-title">疾病诊断：</div>
+                    <div class="application-desc">基于医学影像、基因组数据和临床记录，利用AI进行疾病的早期诊断和精准分类。</div>
+                </div>
+                <div class="application-item">
+                    <div class="application-title">个性化治疗：</div>
+                    <div class="application-desc">根据患者的基因组、生活方式和疾病特征，利用AI制定个性化的治疗方案。</div>
+                </div>
+                <div class="application-item">
+                    <div class="application-title">预测性健康管理：</div>
+                    <div class="application-desc">利用AI分析患者数据，预测疾病风险，提前进行干预。</div>
+                </div>
+            </div>
+            <div class="right-section">
+                <div class="pain-point">数据安全性要求，需要模型具备联邦学习能力；</div>
+                <div class="pain-point">多模态模型推理需求，而且需要有本地数据作为辅助诊断参考；</div>
+                <div class="pain-point">模型适配，有展示/可移动要求；</div>
+                <div class="pain-point">量化推理模型的介入，产品FP4的需求</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

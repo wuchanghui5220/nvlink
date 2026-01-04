@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>核心组件：Spectrum-4交换机与BlueField-3 SuperNIC - NVIDIA网络研讨会</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: 
+                radial-gradient(circle at 15% 85%, #0a0a2e 0%, #001122 40%, #000610 100%),
+                linear-gradient(135deg, rgba(0, 150, 255, 0.08), rgba(76, 175, 80, 0.06));
+            height: 100vh;
+            color: #fff;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* 动态科技背景 */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(0, 150, 255, 0.05) 1px, transparent 2px),
+                radial-gradient(circle at 70% 80%, rgba(76, 175, 80, 0.05) 1px, transparent 2px),
+                radial-gradient(circle at 85% 20%, rgba(255, 193, 7, 0.04) 1px, transparent 2px);
+            background-size: 60px 60px, 80px 80px, 100px 100px;
+            animation: dotFlow 25s linear infinite;
+            z-index: 1;
+        }
+
+        @keyframes dotFlow {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(100px, 100px) rotate(360deg); }
+        }
+
+        /* 主容器 */
+        .container {
+            position: relative;
+            z-index: 10;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 25px;
+        }
+
+        /* 页面标题 */
+        .page-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .page-title {
+            font-size: 2.8rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #0096FF 0%, #4CAF50 50%, #FFC107 100%);
+            background-size: 200% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+            animation: titleShimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes titleShimmer {
+            0%, 100% { background-position: -200% center; }
+            50% { background-position: 200% center; }
+        }
+
+        .page-subtitle {
+            font-size: 1.1rem;
+            color: #B0BEC5;
+            margin-bottom: 5px;
+        }
+
+        /* 主内容区域 - 全新布局 */
+        .components-showcase {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto 1fr auto;
+            gap: 20px;
+            height: 100%;
+        }
+
+        /* 顶部亮点统计 */
+        .highlights-bar {
+            grid-column: span 2;
+            display: flex;
+            justify-content: space-around;
+            background: rgba(15, 25, 45, 0.6);
+            border-radius: 15px;
+            padding: 12px 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .highlight-item {
+            text-align: center;
+            flex: 1;
+        }
+
+        .highlight-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 2px;
+        }
+
+        .highlight-item:nth-child(1) .highlight-value { color: #0096FF; }
+        .highlight-item:nth-child(2) .highlight-value { color: #4CAF50; }
+        .highlight-item:nth-child(3) .highlight-value { color: #FFC107; }
+        .highlight-item:nth-child(4) .highlight-value { color: #FF5722; }
+
+        .highlight-label {
+            font-size: 0.8rem;
+            color: #B0BEC5;
+        }
+
+        /* 组件展示卡片 - 更大更突出 */
+        .component-section {
+            background: rgba(15, 25, 45, 0.85);
+            border-radius: 25px;
+            padding: 25px;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(15px);
+            border: 2px solid;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .component-section:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Spectrum-4交换机 - 左侧 */
+        .spectrum-section {
+            border-color: rgba(0, 150, 255, 0.4);
+            background: linear-gradient(135deg, rgba(0, 150, 255, 0.15), rgba(30, 144, 255, 0.08));
+        }
+
+        /* BlueField-3 - 右侧 */
+        .bluefield-section {
+            border-color: rgba(76, 175, 80, 0.4);
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.15), rgba(46, 125, 50, 0.08));
+        }
+
+        /* 组件标题区域 */
+        .component-header {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .component-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .spectrum-section .component-title { color: #0096FF; }
+        .bluefield-section .component-title { color: #4CAF50; }
+
+        .component-subtitle {
+            font-size: 1rem;
+            color: #B0BEC5;
+            margin-bottom: 15px;
+        }
+
+        /* 产品图片区域 - 调整为适中显示 */
+        .product-showcase {
+            text-align: center;
+            margin-bottom: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            padding: 15px;
+            position: relative;
+            flex: 1; /* 调整弹性空间占比 */
+            height: 180px; /* 限制高度避免溢出 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .product-showcase::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, currentColor, transparent, currentColor);
+            border-radius: 15px;
+            z-index: -1;
+            opacity: 0.3;
+        }
+
+        .spectrum-section .product-showcase::before { color: #0096FF; }
+        .bluefield-section .product-showcase::before { color: #4CAF50; }
+
+        .product-showcase img {
+            width: 80%;
+            height: 80%;
+            max-width: 80%; /* 占满容器的80% */
+            max-height: 80%; /* 占满容器的80% */
+            object-fit: contain; /* 保持比例完整显示 */
+            border-radius: 10px;
+            filter: brightness(1.1) contrast(1.1) drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3));
+            transition: all 0.4s ease;
+        }
+
+        .product-showcase:hover img {
+            transform: scale(1.08);
+            filter: brightness(1.3) contrast(1.2) drop-shadow(0 12px 24px rgba(0, 0, 0, 0.4));
+        }
+
+        /* 图片占位符增强 */
+        .image-placeholder {
+            width: 80%;
+            height: 80%; /* 与图片尺寸匹配 */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            border: 2px dashed currentColor;
+            border-radius: 10px;
+            opacity: 0.6;
+        }
+
+        .image-placeholder::before {
+            content: '📷';
+            font-size: 2.5rem;
+            margin-bottom: 8px;
+            opacity: 0.5;
+        }
+
+        .placeholder-text {
+            font-size: 0.9rem;
+            color: #888;
+            margin-bottom: 5px;
+        }
+
+        .placeholder-filename {
+            font-size: 0.8rem;
+            color: #666;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* 规格列表 - 更紧凑布局，给图像更多空间 */
+        .spec-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px; /* 从8px减少到6px */
+            flex: 1; /* 调整为标准弹性占比 */
+        }
+
+        .spec-item {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 8px; /* 从10px减少到8px */
+            padding: 8px 10px; /* 从10px 12px减少到8px 10px */
+            border-left: 4px solid currentColor;
+            transition: all 0.3s ease;
+            font-size: 0.8rem; /* 从0.85rem减少到0.8rem */
+        }
+
+        .spec-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateX(4px) scale(1.02);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .spec-title {
+            font-weight: 600;
+            color: #E0E0E0;
+            margin-bottom: 2px; /* 从3px减少到2px */
+            font-size: 0.75rem; /* 从0.8rem减少到0.75rem */
+        }
+
+        .spec-value {
+            color: #B0BEC5;
+            font-size: 0.7rem; /* 从0.75rem减少到0.7rem */
+            line-height: 1.1; /* 从1.2减少到1.1 */
+        }
+
+        .spec-highlight {
+            color: currentColor;
+            font-weight: 700;
+        }
+
+        /* 底部协同说明 - 更丰富 */
+        .collaboration-footer {
+            grid-column: span 2;
+            background: rgba(15, 25, 45, 0.7);
+            border-radius: 20px;
+            padding: 20px 30px;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .collaboration-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #FFC107;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .collaboration-content {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .collaboration-desc {
+            font-size: 0.9rem;
+            color: #B0BEC5;
+            line-height: 1.4;
+        }
+
+        .connection-visual {
+            font-size: 2rem;
+            color: #FFC107;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 1; }
+        }
+
+        /* 状态指示器增强 */
+        .status-indicator {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 12px;
+            height: 12px;
+            background: currentColor;
+            border-radius: 50%;
+            animation: statusPulse 2s ease-in-out infinite;
+            box-shadow: 0 0 0 0 currentColor;
+        }
+
+        @keyframes statusPulse {
+            0%, 100% { 
+                opacity: 0.6; 
+                transform: scale(1);
+                box-shadow: 0 0 0 0 currentColor;
+            }
+            50% { 
+                opacity: 1; 
+                transform: scale(1);
+                box-shadow: 0 0 0 6px transparent;
+            }
+        }
+
+        /* 性能徽章 */
+        .performance-badge {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 193, 7, 0.2);
+            color: #FFC107;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            border: 1px solid rgba(255, 193, 7, 0.3);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .components-showcase {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto auto auto;
+                gap: 15px;
+            }
+
+            .highlights-bar {
+                grid-column: span 1;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .collaboration-footer {
+                grid-column: span 1;
+            }
+
+            .collaboration-content {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .spec-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page-title {
+                font-size: 2.2rem;
+            }
+        }
+
+        /* 键盘提示 */
+        .keyboard-hint {
+            position: fixed;
+            bottom: 15px;
+            left: 15px;
+            font-size: 0.75rem;
+            color: #666;
+            background: rgba(25, 25, 35, 0.9);
+            padding: 6px 10px;
+            border-radius: 6px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(118, 185, 0, 0.2);
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- PPT页面标题 -->
+        <div class="page-header">
+            <h1 class="page-title">🔧 核心组件协同架构</h1>
+            <p class="page-subtitle">Spectrum-4交换机与BlueField-3 SuperNIC构建AI网络基石</p>
+        </div>
+
+        <!-- 主组件展示区域 -->
+        <div class="components-showcase">
+            <!-- 顶部亮点数据 -->
+            <div class="highlights-bar">
+                <div class="highlight-item">
+                    <div class="highlight-value">51.2T</div>
+                    <div class="highlight-label">聚合带宽</div>
+                </div>
+                <div class="highlight-item">
+                    <div class="highlight-value">400G</div>
+                    <div class="highlight-label">网络带宽</div>
+                </div>
+                <div class="highlight-item">
+                    <div class="highlight-value">1:1</div>
+                    <div class="highlight-label">GPU配比</div>
+                </div>
+                <div class="highlight-item">
+                    <div class="highlight-value">75W</div>
+                    <div class="highlight-label">功耗设计</div>
+                </div>
+            </div>
+
+            <!-- Spectrum-4交换机展示 -->
+            <div class="component-section spectrum-section">
+                <div class="performance-badge">AI专用交换机</div>
+                <div class="status-indicator"></div>
+                
+                <div class="component-header">
+                    <div class="component-title">🌐 NVIDIA Spectrum SN5610</div>
+                    <div class="component-subtitle">基于Spectrum-4 ASIC的AI以太网交换机</div>
+                </div>
+                
+                <div class="product-showcase">
+                    <img src="sn5600-product.png" alt="NVIDIA Spectrum SN5600交换机" />
+                </div>
+                
+                <div class="spec-grid">
+                    <div class="spec-item">
+                        <div class="spec-title">🚀 聚合带宽</div>
+                        <div class="spec-value"><span class="spec-highlight">51.2Tbps</span> 超高网络容量</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-title">⚡ SerDes技术</div>
+                        <div class="spec-value"><span class="spec-highlight">100G SerDes</span> 下一代高速</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-title">📡 端口配置</div>
+                        <div class="spec-value"><span class="spec-highlight">64x800G</span> 或128x400G</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-title">🛠️ 开放生态</div>
+                        <div class="spec-value">支持<span class="spec-highlight">开放NOSes</span></div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-title">🎯 AI优化</div>
+                        <div class="spec-value">专为<span class="spec-highlight">AI工作负载</span>设计</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-title">📊 智能路由</div>
+                        <div class="spec-value"><span class="spec-highlight">自适应路由</span>算法</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BlueField-3 SuperNIC展示 -->
+            <div class="component-section bluefield-section">
+                <div class="performance-badge">AI加速DPU</div>
+                <div class="status-indicator"></div>
+                
+                <div class="component-header">
+                    <div class="component-title">🚀 BlueField-3 SuperNIC</div>
+                    <div class="component-subtitle">AI加速的数据处理单元与网络卸载引擎</div>
+                </div>
+                
+                <div class="product-showcase">
+                    <img src="bf3-supernic.png" alt="NVIDIA BlueField-3 SuperNIC" />
+                </div>
+                
+                <div class="spec-grid">
+                    <div class="spec-item">
+                        <div class="spec-title">🌐 网络带宽</div>
+                        <div class="spec-value"><span class="spec-highlight">400Gb/s</span> 以太网带宽</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-title">🖥️ 处理核心</div>
+                        <div class="spec-value"><span class="spec-highlight">16个Arm</span> 64位核心</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-title">⚡ 数据加速</div>
+                        <div class="spec-value"><span class="spec-highlight">256线程</span> 加速器</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-title">📊 完美配比</div>
+                        <div class="spec-value"><span class="spec-highlight">1:1 GPU</span> 配比设计</div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-title">🔋 绿色节能</div>
+                        <div class="spec-value">功耗<span class="spec-highlight">&lt;75W</span></div>
+                    </div>
+                    <div class="spec-item">
+                        <div class="spec-title">🛡️ RDMA卸载</div>
+                        <div class="spec-value"><span class="spec-highlight">硬件级</span> 网络加速</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 底部协同工作说明 -->
+            <div class="collaboration-footer">
+                <div class="collaboration-title">🤝 端到端协同优化架构</div>
+                <div class="collaboration-content">
+                    <div class="collaboration-desc">
+                        <strong>Spectrum-4交换机</strong>提供51.2Tbps聚合带宽，支持64个800G端口，
+                        通过AI优化的自适应路由和拥塞控制算法，实现网络层面的智能调度
+                    </div>
+                    <div class="connection-visual">⚡</div>
+                    <div class="collaboration-desc">
+                        <strong>BlueField-3 SuperNIC</strong>提供400Gb/s网络带宽，16个Arm核心处理，
+                        256线程数据路径加速器，实现GPU端的RDMA卸载和网络协议栈加速
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="keyboard-hint">
+        ← 返回上页 • → 下一页 • 核心组件协同展示
+    </div>
+
+    <script>
+        // 页面加载动画
+        document.addEventListener('DOMContentLoaded', () => {
+            // 图片加载错误处理
+            document.querySelectorAll('.product-showcase img').forEach(img => {
+                img.addEventListener('error', function() {
+                    const showcase = this.parentElement;
+                    this.style.display = 'none';
+                    showcase.innerHTML = `
+                        <div class="image-placeholder">
+                            <div class="placeholder-text">图片加载失败</div>
+                            <div class="placeholder-filename">${this.src.split('/').pop()}</div>
+                        </div>
+                    `;
+                });
+
+                img.addEventListener('load', function() {
+                    this.style.opacity = '0';
+                    this.style.transition = 'opacity 0.6s ease';
+                    setTimeout(() => {
+                        this.style.opacity = '1';
+                    }, 200);
+                });
+            });
+
+            // 亮点数据动画
+            document.querySelectorAll('.highlight-value').forEach((el, index) => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(-20px)';
+                setTimeout(() => {
+                    el.style.transition = 'all 0.6s ease';
+                    el.style.opacity = '1';
+                    el.style.transform = 'translateY(0)';
+                }, index * 150);
+            });
+
+            // 组件卡片入场动画
+            document.querySelectorAll('.component-section').forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(40px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.8s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 300 + (index * 200));
+            });
+
+            // 底部协同说明延迟显示
+            setTimeout(() => {
+                const footer = document.querySelector('.collaboration-footer');
+                footer.style.opacity = '0';
+                footer.style.transform = 'translateY(30px)';
+                footer.style.transition = 'all 1s ease';
+                footer.style.opacity = '1';
+                footer.style.transform = 'translateY(0)';
+            }, 1000);
+        });
+
+        // 键盘导航
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') {
+                window.location.href = 'spectrum-infrastructure.html';
+            } else if (e.key === 'ArrowRight') {
+                window.location.href = 'dpu-acceleration.html';
+            }
+        });
+
+        // 交互增强
+        document.querySelectorAll('.spec-item').forEach(item => {
+            item.addEventListener('mouseenter', () => {
+                item.style.transform = 'translateX(6px) scale(1.02)';
+                item.style.boxShadow = '0 6px 20px rgba(0, 0, 0, 0.3)';
+            });
+            
+            item.addEventListener('mouseleave', () => {
+                item.style.transform = 'translateX(0) scale(1)';
+                item.style.boxShadow = 'none';
+            });
+        });
+
+        // 产品展示悬停效果增强
+        document.querySelectorAll('.product-showcase').forEach(showcase => {
+            showcase.addEventListener('mouseenter', () => {
+                showcase.style.transform = 'scale(1.02)';
+            });
+            
+            showcase.addEventListener('mouseleave', () => {
+                showcase.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body>
+</html>

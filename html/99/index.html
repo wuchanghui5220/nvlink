@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>九九乘法表 - 宽屏沉浸版</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;600;700;800&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: 16px;
+        }
+        
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background: linear-gradient(135deg, #e3f2fd 0%, #f8bbd9 50%, #e1f5fe 100%);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            padding: 1.5vh 1.5vw;
+        }
+        
+        .header {
+            text-align: center;
+            flex-shrink: 0;
+            margin-bottom: 1.5vh;
+        }
+        
+        .title {
+            font-size: clamp(2em, 4vw, 2.8em);
+            font-weight: 800;
+            color: #e91e63;
+            text-shadow: 2px 2px 4px rgba(233, 30, 99, 0.2);
+        }
+        
+        .subtitle {
+            font-size: clamp(1em, 2vw, 1.2em);
+            color: #666;
+        }
+
+        .table-container {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 0;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .multiplication-table {
+            display: grid;
+            grid-template-columns: repeat(9, 1fr);
+            grid-template-rows: repeat(9, 1fr);
+            gap: 1vmin;
+            width: 100%;
+            height: 100%;
+            aspect-ratio: 16 / 9;
+            object-fit: contain;
+            container-type: inline-size;
+            container-name: table;
+            background: rgba(250, 250, 250, 0.8);
+            padding: 1.5vmin;
+            border-radius: 15px;
+            border: 2px solid #e0e0e0;
+        }
+        
+        .cell {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+            padding: 0.2em;
+        }
+
+        .cell-empty {
+            background: transparent;
+            border: none;
+        }
+        
+        .equation {
+            font-size: 1.5em; 
+            font-weight: 700;
+            color: #333;
+            white-space: nowrap;
+        }
+
+        .result-span {
+            font-weight: 800;
+            transition: opacity 0.3s ease;
+        }
+
+        @container table (max-width: 800px) {
+            .equation {
+                font-size: 1.2em;
+            }
+        }
+        
+        .cell[data-row="1"] .result-span { color: #d32f2f; }
+        .cell[data-row="2"] .result-span { color: #f57c00; }
+        .cell[data-row="3"] .result-span { color: #689f38; }
+        .cell[data-row="4"] .result-span { color: #388e3c; }
+        .cell[data-row="5"] .result-span { color: #1976d2; }
+        .cell[data-row="6"] .result-span { color: #7b1fa2; }
+        .cell[data-row="7"] .result-span { color: #00695c; }
+        .cell[data-row="8"] .result-span { color: #c2185b; }
+        .cell[data-row="9"] .result-span { color: #512da8; }
+
+        .cell:hover {
+            transform: scale(1.08);
+            border-color: #4caf50; 
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+            z-index: 10;
+        }
+        
+        .cell.clicked {
+            background: #c8e6c9;
+            border-color: #4caf50;
+            transform: scale(1.1);
+        }
+        
+        .bottom-controls {
+            flex-shrink: 0;
+            width: 100%;
+            max-width: 1000px;
+            margin: 1.5vh auto 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5vh;
+        }
+
+        .learning-tips { background: #fff3e0; border: 2px solid #ffcc02; border-radius: 12px; padding: 8px 12px; text-align: center; }
+        .tip-text { color: #e65100; font-weight: 600; font-size: clamp(0.8em, 1.8vmin, 1em); }
+        .controls { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
+        .btn { padding: 8px 18px; background: #4caf50; color: white; border: none; border-radius: 20px; font-size: clamp(0.8em, 1.8vmin, 1em); font-weight: 600; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3); }
+        .btn:hover { background: #45a049; transform: translateY(-2px); box-shadow: 0 6px 12px rgba(76, 175, 80, 0.4); }
+        .btn.secondary { background: #2196f3; box-shadow: 0 4px 8px rgba(33, 150, 243, 0.3); }
+        .btn.secondary:hover { background: #1976d2; box-shadow: 0 6px 12px rgba(33, 150, 243, 0.4); }
+        
+        .progress-container { width: 100%; max-width: 600px; }
+        .progress-bar { width: 100%; height: 15px; background: #f0f0f0; border-radius: 10px; overflow: hidden; border: 1px solid #ddd; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #4caf50, #8bc34a); width: 0%; transition: width 0.3s ease; border-radius: 8px; }
+        .progress-text { text-align: center; margin-top: 5px; font-weight: 600; color: #666; font-size: clamp(0.75em, 1.6vmin, 0.9em); }
+        
+        .visual-tooltip { position: fixed; background: rgba(255, 255, 255, 0.98); border: 3px solid #4caf50; border-radius: 15px; padding: 20px; box-shadow: 0 8px 25px rgba(0,0,0,0.2); z-index: 1000; pointer-events: none; opacity: 0; text-align: center; left: 50%; transform: translateX(-50%) scale(0.8); transform-origin: center bottom; transition: opacity 0.3s ease, transform 0.3s ease; }
+        .visual-tooltip.show { opacity: 1; transform: translateX(-50%) scale(1); }
+        .tooltip-title, .visual-grid, .tooltip-explanation { max-width: 90vw; }
+        .tooltip-title { font-size: 1.2em; font-weight: 700; color: #2e7d32; margin-bottom: 15px; }
+        .visual-grid { display: inline-grid; gap: 12px; margin: 15px 0; justify-content: center; }
+        
+        /* [新增] 组和编号的包装器样式 */
+        .group-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .group { border: 2px solid #ff9800; border-radius: 8px; padding: 8px; background: rgba(255, 152, 0, 0.1); display: inline-grid; gap: 6px; justify-content: center; }
+        .visual-item { font-size: 1.8em; text-align: center; animation: popIn 0.15s ease-out both; }
+        
+        /* [新增] 组编号样式 */
+        .group-number {
+            font-size: 1em;
+            font-weight: 600;
+            color: #333;
+            background-color: #e0e0e0;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .visual-tooltip.is-large .visual-item { font-size: 1.4em; }
+        .visual-tooltip.is-large .group { padding: 5px; gap: 4px; }
+        .visual-tooltip.is-large .visual-grid { gap: 8px; }
+
+        /* [新增] 紧凑模式下的编号样式 */
+        .visual-tooltip.is-large .group-number {
+            font-size: 0.8em;
+            width: 20px;
+            height: 20px;
+        }
+
+        @keyframes popIn { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        .tooltip-explanation { font-size: 1em; color: #666; margin-top: 10px; line-height: 1.4; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1 class="title">九九乘法表</h1>
+        <p class="subtitle">教学沉浸版 📚</p>
+    </header>
+
+    <main class="table-container">
+        <div class="multiplication-table" id="table">
+            <!-- JavaScript will populate this -->
+        </div>
+    </main>
+    
+    <footer class="bottom-controls">
+        <div class="learning-tips">
+            <p class="tip-text">
+                🌟 提示：点击格子互动，完成所有格子就是乘法小达人！
+            </p>
+        </div>
+        <div class="controls">
+            <button class="btn" onclick="startLearning()">🎯 开始学习</button>
+            <button class="btn secondary" onclick="checkAll()">👁️ 显示所有答案</button>
+            <button class="btn secondary" onclick="hideAll()">❓ 隐藏答案练习</button>
+            <button class="btn" onclick="resetProgress()">🔄 重新开始</button>
+        </div>
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-text" id="progressText">学习进度：0/45 (0%)</div>
+        </div>
+    </footer>
+    
+    <div class="visual-tooltip" id="visualTooltip">
+        <div class="tooltip-title" id="tooltipTitle"></div>
+        <div class="visual-grid" id="visualGrid"></div>
+        <div class="tooltip-explanation" id="tooltipExplanation"></div>
+    </div>
+
+    <script>
+        const table = document.getElementById('table');
+        let clickedCells = new Set();
+        let hiddenMode = false;
+        
+        const patterns = [ '🌟', '❄️', '🌸', '🍎', '🎈', '🎯', '🌈', '🦋', '🌺', '🍓', '🎪', '🎨', '🌙', '⭐', '🎁', '🌻', '🍊', '🎵', '🦄', '🌊', '🍇', '🎲', '🌷', '🎭' ];
+        
+        function getRandomPattern() { return patterns[Math.floor(Math.random() * patterns.length)]; }
+        
+        function showVisualTooltip(event, numGroups, itemsPerGroup, result) {
+            const tooltip = document.getElementById('visualTooltip');
+            const title = document.getElementById('tooltipTitle');
+            const grid = document.getElementById('visualGrid');
+            const explanation = document.getElementById('tooltipExplanation');
+
+            tooltip.classList.remove('is-large');
+            if (numGroups >= 8 && itemsPerGroup >= 8) { tooltip.classList.add('is-large'); }
+            
+            const pattern = getRandomPattern();
+            title.textContent = `${itemsPerGroup} × ${numGroups} = ${result}`;
+            grid.innerHTML = '';
+            grid.style.gridTemplateColumns = `repeat(${numGroups}, 1fr)`;
+			    explanation.innerHTML = `一组 <strong>${itemsPerGroup}</strong> 个 ${pattern}，有 <strong>${numGroups}</strong> 组<br><strong>${numGroups}</strong> 个 <strong>${itemsPerGroup}</strong> 相加, 总共有 <strong>${result}</strong> 个 ${pattern}`;
+            let itemIndex = 0;
+            for (let group = 0; group < numGroups; group++) {
+                // [核心修改] 创建包装器
+                const wrapper = document.createElement('div');
+                wrapper.className = 'group-wrapper';
+
+                const groupDiv = document.createElement('div');
+                groupDiv.className = 'group';
+                let columnsInGroup = (itemsPerGroup > 3) ? Math.ceil(itemsPerGroup / 2) : itemsPerGroup;
+                groupDiv.style.gridTemplateColumns = `repeat(${columnsInGroup}, 1fr)`;
+                
+                for (let item = 0; item < itemsPerGroup; item++) {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'visual-item';
+                    itemDiv.textContent = pattern;
+                    itemDiv.style.animationDelay = `${itemIndex * 0.08}s`;
+                    groupDiv.appendChild(itemDiv);
+                    itemIndex++;
+                }
+                
+                // [核心修改] 创建编号
+                const numberDiv = document.createElement('div');
+                numberDiv.className = 'group-number';
+                numberDiv.textContent = group + 1; // 编号从1开始
+
+                // [核心修改] 将组和编号都添加到包装器
+                wrapper.appendChild(groupDiv);
+                wrapper.appendChild(numberDiv);
+
+                // [核心修改] 将包装器添加到网格
+                grid.appendChild(wrapper);
+            }
+            
+            const rect = event.target.closest('.cell').getBoundingClientRect();
+
+            tooltip.style.visibility = 'hidden';
+            tooltip.classList.add('show');
+            const tooltipHeight = tooltip.offsetHeight;
+            tooltip.style.visibility = '';
+            tooltip.classList.remove('show');
+            
+            let top = rect.top - tooltipHeight - 15;
+            if (top < 10) {
+                top = rect.bottom + 15;
+                tooltip.style.transformOrigin = 'center top';
+            } else {
+                tooltip.style.transformOrigin = 'center bottom';
+            }
+            
+            tooltip.style.top = top + 'px';
+            tooltip.classList.add('show');
+        }
+        
+        function hideVisualTooltip() {
+            document.getElementById('visualTooltip').classList.remove('show');
+        }
+        
+        function generateTable() {
+            table.innerHTML = '';
+            for (let i = 1; i <= 9; i++) {
+                for (let j = 1; j <= 9; j++) {
+                    if (j <= i) {
+                        const cell = document.createElement('div');
+                        cell.className = 'cell';
+                        cell.setAttribute('data-row', i);
+                        cell.setAttribute('data-result', i * j);
+                        cell.setAttribute('data-id', `${i}-${j}`);
+                        
+                        const equationDiv = document.createElement('div');
+                        equationDiv.className = 'equation';
+                        equationDiv.innerHTML = `${j} × ${i} = <span class="result-span">${i * j}</span>`;
+                        cell.appendChild(equationDiv);
+                        
+                        cell.addEventListener('mouseenter', (e) => showVisualTooltip(e, i, j, i * j));
+                        cell.addEventListener('mouseleave', hideVisualTooltip);
+                        
+                        cell.addEventListener('click', function() {
+                            const cellId = this.getAttribute('data-id');
+                            if (!clickedCells.has(cellId)) {
+                                clickedCells.add(cellId);
+                                this.classList.add('clicked', 'bounce');
+                                if (hiddenMode) {
+                                    this.querySelector('.result-span').style.opacity = '1';
+                                }
+                                setTimeout(() => this.classList.remove('bounce'), 600);
+                                updateProgress();
+                                if (clickedCells.size === 45) {
+                                    setTimeout(() => alert('🎉 太棒了！你已经掌握了九九乘法表！你是小小数学家！🌟'), 500);
+                                }
+                            }
+                        });
+                        
+                        table.appendChild(cell);
+                    } else {
+                        const emptyCell = document.createElement('div');
+                        emptyCell.className = 'cell-empty';
+                        table.appendChild(emptyCell);
+                    }
+                }
+            }
+        }
+        
+        function updateProgress() {
+            const total = 45;
+            const completed = clickedCells.size;
+            const percentage = Math.round((completed / total) * 100);
+            
+            document.getElementById('progressFill').style.width = percentage + '%';
+            document.getElementById('progressText').textContent = `学习进度：${completed}/${total} (${percentage}%)`;
+        }
+        
+        function startLearning() {
+            document.querySelectorAll('.cell').forEach((cell, index) => {
+                setTimeout(() => {
+                    cell.classList.add('bounce');
+                    setTimeout(() => cell.classList.remove('bounce'), 600);
+                }, index * 20);
+            });
+        }
+        
+        function checkAll() {
+            hiddenMode = false;
+            document.querySelectorAll('.result-span').forEach(span => span.style.opacity = '1');
+        }
+        
+        function hideAll() {
+            hiddenMode = true;
+            document.querySelectorAll('.cell').forEach(cell => {
+                if (!clickedCells.has(cell.getAttribute('data-id'))) {
+                    const span = cell.querySelector('.result-span');
+                    if (span) span.style.opacity = '0';
+                }
+            });
+        }
+        
+        function resetProgress() {
+            clickedCells.clear();
+            hiddenMode = false;
+            document.querySelectorAll('.cell').forEach(cell => {
+                cell.classList.remove('clicked');
+                const span = cell.querySelector('.result-span');
+                if(span) span.style.opacity = '1';
+            });
+            updateProgress();
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            generateTable();
+            hideAll();
+        });
+        
+        document.body.addEventListener('mouseleave', hideVisualTooltip);
+    </script>
+</body>
+</html>

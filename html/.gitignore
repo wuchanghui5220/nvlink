@@ -1,0 +1,15 @@
+# 系统文件
+.DS_Store
+Thumbs.db
+*.tmp
+*.temp
+.htaccess
+
+# 日志文件
+*.log
+logs/
+
+# 临时文件
+tmp/
+temp/
+certs/

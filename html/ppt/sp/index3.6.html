@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NVIDIA NPN SP技术大比武 - 网络架构设计</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f0f0f0;
+      font-family: 'Noto Sans SC', sans-serif;
+      overflow: hidden;
+    }
+
+    .slide-container {
+      width: 100vw;
+      height: 56.25vw; /* 16:9 aspect ratio */
+      max-height: 100vh;
+      max-width: 177.78vh; /* 16:9 aspect ratio (reversed) */
+      position: relative;
+      background: #111827;
+      color: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    /* 背景图形元素 */
+    .bg-grid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image:
+        linear-gradient(rgba(24, 92, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(24, 92, 255, 0.05) 1px, transparent 1px);
+      background-size: 20px 20px;
+      z-index: 0;
+    }
+
+    .bg-gradient {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 120% 45%, rgba(76, 29, 149, 0.7) 0%, rgba(17, 24, 39, 0) 50%);
+      z-index: 1;
+    }
+
+    .bg-circle1 {
+      position: absolute;
+      top: -15%;
+      right: -15%;
+      width: 40%;
+      height: 40%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #76b900 0%, #1a4163 100%);
+      filter: blur(80px);
+      opacity: 0.6;
+      z-index: 2;
+    }
+
+    .bg-circle2 {
+      position: absolute;
+      bottom: -10%;
+      left: -10%;
+      width: 30%;
+      height: 30%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0099da 0%, #1e40af 100%);
+      filter: blur(60px);
+      opacity: 0.5;
+      z-index: 2;
+    }
+
+    /* 主要内容 */
+    .content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    .header {
+      padding: 2.5% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .nvidia-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-box {
+      width: 8%;
+      min-width: 100px;
+      height: 36px;
+      background: #76b900;
+      border-radius: 4px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 700;
+      font-size: clamp(16px, 2vw, 22px);
+      transform: skew(-10deg);
+    }
+
+    .partner-text {
+      font-size: clamp(12px, 1.5vw, 16px);
+      font-weight: 500;
+      opacity: 0.9;
+    }
+
+    .slide-title {
+      font-size: clamp(16px, 1.8vw, 20px);
+      font-weight: 600;
+      padding: 0.5% 4%;
+      background: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(5px);
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      padding: 2% 4%;
+      overflow: hidden;
+    }
+
+    .left-content {
+      flex: 1;
+      padding-right: 20px;
+    }
+
+    .right-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .section-title {
+      font-size: clamp(18px, 2.2vw, 24px);
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: #76b900;
+      border-bottom: 1px solid rgba(118, 185, 0, 0.3);
+      padding-bottom: 8px;
+    }
+
+    .network-description {
+      margin-bottom: 25px;
+    }
+
+    .network-description p {
+      margin: 0 0 12px 0;
+      line-height: 1.6;
+      font-size: clamp(14px, 1.2vw, 16px);
+    }
+
+    .highlight {
+      color: #76b900;
+      font-weight: 600;
+    }
+
+    .network-diagram {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 15px;
+      height: 300px;
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    .network-diagram svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .bom-table {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 15px;
+      overflow-y: auto;
+      height: 420px;
+      flex: 1;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: clamp(13px, 1.2vw, 16px);
+    }
+
+    th {
+      background: rgba(118, 185, 0, 0.2);
+      text-align: left;
+      padding: 10px 12px;
+      font-weight: 600;
+      color: #76b900;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    td {
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .advantages-list {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 12px 15px 3px 15px;
+      flex: 1;
+    }
+
+    .advantages-list h3 {
+      font-size: clamp(14px, 1.1vw, 15px);
+      font-weight: 600;
+      margin-top: 0;
+      margin-bottom: 8px;
+      color: #76b900;
+    }
+
+    .advantages-list ul {
+      margin: 0;
+      padding-left: 20px;
+      list-style-type: none;
+    }
+
+    .advantages-list li {
+      position: relative;
+      padding-left: 15px;
+      margin-bottom: 6px;
+      font-size: clamp(12px, 1vw, 14px);
+      line-height: 1.4;
+    }
+
+    .advantages-list li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 6px;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #76b900;
+    }
+
+    .footer {
+      padding: 1.5% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .company-name {
+      font-weight: 500;
+    }
+
+    .page-number {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .rotating-lines {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 50%;
+      height: 50%;
+      z-index: 5;
+      opacity: 0.15;
+      animation: rotate 60s linear infinite;
+    }
+
+    @keyframes rotate {
+      from {
+        transform: translate(-50%, -50%) rotate(0deg);
+      }
+      to {
+        transform: translate(-50%, -50%) rotate(360deg);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <!-- 背景元素 -->
+    <div class="bg-grid"></div>
+    <div class="bg-gradient"></div>
+    <div class="bg-circle1"></div>
+    <div class="bg-circle2"></div>
+
+    <!-- 旋转线框背景 -->
+    <svg class="rotating-lines" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+      <path d="M250,10 L490,250 L250,490 L10,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,50 L450,250 L250,450 L50,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,90 L410,250 L250,410 L90,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,130 L370,250 L250,370 L130,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,170 L330,250 L250,330 L170,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,210 L290,250 L250,290 L210,250 Z" fill="none" stroke="white" stroke-width="1" />
+    </svg>
+
+    <!-- 主要内容 -->
+    <div class="content">
+      <div class="header">
+        <div class="nvidia-logo">
+          <div class="logo-box">NVIDIA</div>
+          <div class="partner-text">Networking NPN Elite Partner</div>
+        </div>
+        <div class="slide-title">3. 客户需求方案汇报 - 网络架构设计</div>
+      </div>
+
+      <div class="main-content">
+        <div class="left-content">
+          <div class="section-title">NVIDIA Quantum-2 NDR 400G 网络架构</div>
+          
+          <div class="network-description">
+		  <p>基于<span class="highlight">NVIDIA SuperPOD</span>参考架构，我们采用InfiniBand交换机构建三层胖树拓扑，为<span class="highlight">300</span>节点HGX集群提供高带宽低延迟的节点间通信。使用<span class="highlight">NVIDIA Quantum-2 QM9790</span>智能交换机构建无阻塞网络，为每台H100服务器提供<span class="highlight">8</span>条独立的<span class="highlight">NDR 400Gb/s</span> InfiniBand链路。</p>
+		  <p>这种三层交换机连接提供完整的胖树拓扑，保证<span class="highlight"> Compute Fabric </span>的无堵塞转发，最大化满足AI训练的通信需求。同时，该设计也提供了一定的硬件冗余能力，确保任意节点间最大<span class="highlight">5</span>跳可达，优化跨机房的通信性能。</p>
+          </div>
+          
+          <div class="network-diagram">
+            <svg viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg">
+              <!-- 网络拓扑图 - 基于白色背景草图 -->
+              
+              <!-- Core层交换机组 -->
+              <rect x="150" y="30" width="100" height="30" rx="5" fill="#0099da" stroke="#fff" stroke-width="1"></rect>
+              <text x="200" y="50" font-size="14" text-anchor="middle" fill="white">Core1-Core8</text>
+              
+              <text x="350" y="45" font-size="12" text-anchor="middle" fill="white">........</text>
+              
+              <rect x="550" y="30" width="100" height="30" rx="5" fill="#0099da" stroke="#fff" stroke-width="1"></rect>
+              <text x="600" y="50" font-size="14" text-anchor="middle" fill="white">Core57-Core64</text>
+              
+              <text x="150" y="20" font-size="12" text-anchor="middle" fill="white">CG1</text>
+              <text x="550" y="20" font-size="12" text-anchor="middle" fill="white">CG8</text>
+              
+              <!-- Spine层交换机组 -->
+              <rect x="100" y="120" width="100" height="30" rx="5" fill="#1e40af" stroke="#fff" stroke-width="1"></rect>
+              <text x="150" y="140" font-size="14" text-anchor="middle" fill="white">Spine1-8</text>
+              
+              <text x="240" y="135" font-size="12" text-anchor="middle" fill="white">........</text>
+              
+              <rect x="320" y="120" width="100" height="30" rx="5" fill="#1e40af" stroke="#fff" stroke-width="1"></rect>
+              <text x="370" y="140" font-size="14" text-anchor="middle" fill="white">Spine57-64</text>
+              
+              <rect x="460" y="120" width="100" height="30" rx="5" fill="#1e40af" stroke="#fff" stroke-width="1"></rect>
+              <text x="510" y="140" font-size="14" text-anchor="middle" fill="white">Spine65-72</text>
+              
+              <rect x="600" y="120" width="100" height="30" rx="5" fill="#1e40af" stroke="#fff" stroke-width="1"></rect>
+              <text x="650" y="140" font-size="14" text-anchor="middle" fill="white">Spine73-80</text>
+              
+              <text x="100" y="110" font-size="12" text-anchor="middle" fill="white">SG1</text>
+              <text x="320" y="110" font-size="12" text-anchor="middle" fill="white">SG8</text>
+              <text x="460" y="110" font-size="12" text-anchor="middle" fill="white">SG9</text>
+              <text x="600" y="110" font-size="12" text-anchor="middle" fill="white">SG10</text>
+              
+              <!-- Leaf层交换机组 -->
+              <rect x="100" y="210" width="100" height="30" rx="5" fill="#3730a3" stroke="#fff" stroke-width="1"></rect>
+              <text x="150" y="230" font-size="14" text-anchor="middle" fill="white">Leaf1-8</text>
+              
+              <text x="240" y="225" font-size="12" text-anchor="middle" fill="white">........</text>
+              
+              <rect x="320" y="210" width="100" height="30" rx="5" fill="#3730a3" stroke="#fff" stroke-width="1"></rect>
+              <text x="370" y="230" font-size="14" text-anchor="middle" fill="white">Leaf57-64</text>
+              
+              <rect x="460" y="210" width="100" height="30" rx="5" fill="#3730a3" stroke="#fff" stroke-width="1"></rect>
+              <text x="510" y="230" font-size="14" text-anchor="middle" fill="white">Leaf65-72</text>
+              
+              <rect x="600" y="210" width="100" height="30" rx="5" fill="#3730a3" stroke="#fff" stroke-width="1"></rect>
+              <text x="650" y="230" font-size="14" text-anchor="middle" fill="white">Leaf73-80</text>
+              
+              <text x="100" y="200" font-size="12" text-anchor="middle" fill="white">LG1</text>
+              <text x="320" y="200" font-size="12" text-anchor="middle" fill="white">LG8</text>
+              <text x="460" y="200" font-size="12" text-anchor="middle" fill="white">LG9</text>
+              <text x="600" y="200" font-size="12" text-anchor="middle" fill="white">LG10</text>
+              
+              <!-- HGX节点 -->
+              <rect x="100" y="300" width="100" height="30" rx="5" fill="#4c1d95" stroke="#fff" stroke-width="1"></rect>
+              <text x="150" y="320" font-size="14" text-anchor="middle" fill="white">HGX</text>
+              
+              <rect x="320" y="300" width="100" height="30" rx="5" fill="#4c1d95" stroke="#fff" stroke-width="1"></rect>
+              <text x="370" y="320" font-size="14" text-anchor="middle" fill="white">HGX</text>
+              
+              <rect x="460" y="300" width="100" height="30" rx="5" fill="#4c1d95" stroke="#fff" stroke-width="1"></rect>
+              <text x="510" y="320" font-size="14" text-anchor="middle" fill="white">HGX</text>
+              
+              <rect x="600" y="300" width="100" height="30" rx="5" fill="#4c1d95" stroke="#fff" stroke-width="1"></rect>
+              <text x="650" y="320" font-size="14" text-anchor="middle" fill="white">HGX</text>
+              
+              <!-- 连接线 Core到Spine -->
+              <!-- CG1到各Spine组 -->
+              <path d="M170,60 Q150,90 120,120" stroke="#76b900" stroke-width="1" fill="none"></path>
+              <path d="M190,60 Q270,90 330,120" stroke="#76b900" stroke-width="1" fill="none"></path>
+              <path d="M190,60 Q290,90 470,120" stroke="#76b900" stroke-width="1" fill="none"></path>
+              <path d="M190,60 Q310,90 610,120" stroke="#76b900" stroke-width="1" fill="none"></path>
+              
+              <!-- CG8到各Spine组 -->
+              <path d="M570,60 Q500,90 120,120" stroke="#76b900" stroke-width="1" fill="none"></path>
+              <path d="M580,60 Q480,90 330,120" stroke="#76b900" stroke-width="1" fill="none"></path>
+              <path d="M610,60 Q550,90 470,120" stroke="#76b900" stroke-width="1" fill="none"></path>
+              <path d="M630,60 Q630,90 630,120" stroke="#76b900" stroke-width="1" fill="none"></path>
+              
+              <!-- 连接线 Spine到Leaf -->
+              <!-- SG1到各Leaf组 -->
+              <path d="M150,150 L150,210" stroke="#76b900" stroke-width="1"></path>
+              <path d="M150,150 Q230,180 370,210" stroke="#76b900" stroke-width="1" fill="none"></path>
+              
+              
+              
+              <!-- SG8到各Leaf组 -->
+              <path d="M370,150 Q290,180 150,210" stroke="#76b900" stroke-width="1" fill="none"></path>
+              <path d="M370,150 L370,210" stroke="#76b900" stroke-width="1"></path>
+              
+              
+              
+              <!-- SG9到各Leaf组 -->
+              
+              
+              <path d="M510,150 L510,210" stroke="#76b900" stroke-width="1"></path>
+              <path d="M510,150 Q550,180 650,210" stroke="#76b900" stroke-width="1" fill="none"></path>
+              
+              <!-- SG10到各Leaf组 -->
+              
+              
+              <path d="M650,150 Q600,180 510,210" stroke="#76b900" stroke-width="1" fill="none"></path>
+              <path d="M650,150 L650,210" stroke="#76b900" stroke-width="1"></path>
+              
+              <!-- 连接线 Leaf到HGX -->
+              <line x1="150" y1="240" x2="150" y2="300" stroke="#76b900" stroke-width="1"></line>
+              <line x1="370" y1="240" x2="370" y2="300" stroke="#76b900" stroke-width="1"></line>
+              <line x1="510" y1="240" x2="510" y2="300" stroke="#76b900" stroke-width="1"></line>
+              <line x1="650" y1="240" x2="650" y2="300" stroke="#76b900" stroke-width="1"></line>
+              
+              <!-- 机房标记 -->
+              <rect x="100" y="360" width="220" height="30" rx="5" fill="rgba(255,255,255,0.1)" stroke="#76b900" stroke-width="1"></rect>
+              <text x="210" y="380" font-size="14" text-anchor="middle" fill="white">机房1: 150节点</text>
+              
+              <rect x="480" y="360" width="220" height="30" rx="5" fill="rgba(255,255,255,0.1)" stroke="#76b900" stroke-width="1"></rect>
+              <text x="590" y="380" font-size="14" text-anchor="middle" fill="white">机房2: 150节点</text>
+            </svg>
+          </div>
+        </div>
+        
+        <div class="right-content">
+          <div class="section-title">Compute Fabric 设备清单 (BOM)</div>
+          <div class="bom-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>类型</th>
+                  <th>型号</th>
+                  <th>数量</th>
+                  <th>用途</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>IB交换机</td>
+                  <td>NVIDIA QM9790-NS2R</td>
+                  <td>64</td>
+                  <td>Core层交换机</td>
+                </tr>
+                <tr>
+                  <td>IB交换机</td>
+                  <td>NVIDIA QM9790-NS2R</td>
+                  <td>80</td>
+                  <td>Spine层交换机</td>
+                </tr>
+                <tr>
+                  <td>IB交换机</td>
+                  <td>NVIDIA QM9790-NS2R</td>
+                  <td>80</td>
+                  <td>Leaf层交换机</td>
+                </tr>
+                <tr>
+                  <td>MPO光纤</td>
+                  <td>MFP7E10-N050</td>
+                  <td>2560</td>
+                  <td>Core至Spine连接</td>
+                </tr>
+                <tr>
+                  <td>MPO光纤</td>
+                  <td>MFP7E10-N030</td>
+                  <td>2560</td>
+                  <td>Spine至Leaf连接</td>
+                </tr>
+                <tr>
+                  <td>MPO光纤</td>
+                  <td>MFP7E10-N030</td>
+                  <td>2404</td>
+                  <td>Leaf至服务器连接</td>
+                </tr>
+                <tr>
+                  <td>800G光模块</td>
+                  <td>MMA4Z00-NS</td>
+                  <td>1280</td>
+                  <td>Core交换机模块</td>
+                </tr>
+                <tr>
+                  <td>800G光模块</td>
+                  <td>MMA4Z00-NS</td>
+                  <td>2560</td>
+                  <td>Spine交换机模块</td>
+                </tr>
+                <tr>
+                  <td>800G光模块</td>
+                  <td>MMA4Z00-NS</td>
+                  <td>2560*</td>
+                  <td>Leaf交换机模块</td>
+                </tr>
+                <tr>
+                  <td>400G光模块</td>
+                  <td>MMA4Z00-NS400</td>
+                  <td>2404</td>
+                  <td>服务器网卡模块</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="company-name">北京正阳恒卓科技有限公司</div>
+        <div class="page-number">19</div>
+      </div>
+    </div>
+  </div>
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+        <a href="index3.5.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+        <a href="index3.7.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+    </div>
+</body>
+</html>

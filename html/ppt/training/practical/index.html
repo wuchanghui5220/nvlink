@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>宁夏培训实操总结 - 目录</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700;800&display=swap');
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 30%, #16213e 70%, #0f3460 100%);
+      font-family: 'Noto Sans SC', sans-serif;
+      overflow: hidden;
+    }
+
+    .slide-container {
+      width: 100vw;
+      height: 56.25vw;
+      max-height: 100vh;
+      max-width: 177.78vh;
+      position: relative;
+      background: #111827;
+      color: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    .animated-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(0, 162, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 162, 255, 0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      animation: grid-move 20s linear infinite;
+      z-index: 1;
+    }
+
+    @keyframes grid-move {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(40px, 40px); }
+    }
+
+    .content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    .header {
+      padding: 2% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(10px);
+      flex-shrink: 0;
+    }
+
+    .mobile-icon {
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(45deg, #00a2ff, #0078d4);
+      border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 700;
+      font-size: 18px;
+      transform: rotate(-5deg);
+    }
+
+    .company-text {
+      font-size: clamp(16px, 2vw, 20px);
+      font-weight: 600;
+      color: #00a2ff;
+    }
+
+    .project-badge {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 8px 20px;
+      border-radius: 25px;
+      font-size: clamp(12px, 1.4vw, 14px);
+      font-weight: 500;
+      backdrop-filter: blur(10px);
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 4%;
+      overflow-y: auto;
+      min-height: 0;
+    }
+
+    .page-title {
+      font-size: clamp(28px, 4vw, 36px);
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 4%;
+      background: linear-gradient(135deg, #ffffff 0%, #00a2ff 50%, #4834d4 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .subtitle {
+      font-size: clamp(16px, 2vw, 20px);
+      text-align: center;
+      color: rgba(255, 255, 255, 0.8);
+      margin-bottom: 5%;
+      line-height: 1.4;
+    }
+
+    .toc-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .toc-item {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 20px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .toc-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: #00a2ff;
+      transform: translateY(-5px);
+      box-shadow: 0 10px 30px rgba(0, 162, 255, 0.2);
+    }
+
+    .toc-item::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: linear-gradient(135deg, #00a2ff, #4834d4);
+      transition: width 0.3s ease;
+    }
+
+    .toc-item:hover::before {
+      width: 8px;
+    }
+
+    .toc-number {
+      font-size: clamp(14px, 1.8vw, 18px);
+      font-weight: 600;
+      color: #00a2ff;
+      margin-bottom: 10px;
+    }
+
+    .toc-title {
+      font-size: clamp(16px, 2vw, 20px);
+      font-weight: 600;
+      color: white;
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+
+    .toc-desc {
+      font-size: clamp(12px, 1.4vw, 14px);
+      color: rgba(255, 255, 255, 0.7);
+      line-height: 1.4;
+    }
+
+    .toc-link {
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+
+    .footer {
+      padding: 2% 4%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+      flex-shrink: 0;
+    }
+
+    .footer-text {
+      font-size: clamp(12px, 1.4vw, 14px);
+      color: rgba(255, 255, 255, 0.6);
+      text-align: center;
+    }
+
+    @media (max-width: 768px) {
+      .toc-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+      }
+      
+      .main-content {
+        padding: 3%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <div class="animated-bg"></div>
+    
+    <div class="content">
+      <div class="header">
+        <div style="display: flex; align-items: center; gap: 20px;">
+          <div class="mobile-icon">移动</div>
+          <div class="company-text">中国移动宁夏公司</div>
+        </div>
+        <div class="project-badge">实操培训资料</div>
+      </div>
+
+      <div class="main-content">
+        <div class="page-title">宁夏培训实操总结</div>
+        <div class="subtitle">IB网络、GPU计算、系统配置完整实操指南</div>
+        
+        <div class="toc-grid">
+          <a href="Practical_01.html" class="toc-link">
+            <div class="toc-item">
+              <div class="toc-number">第 1 页</div>
+              <div class="toc-title">链接资源总结</div>
+              <div class="toc-desc">系统下载、IB驱动、GPU驱动、CUDA包等官方下载链接汇总</div>
+            </div>
+          </a>
+
+          <a href="Practical_02.html" class="toc-link">
+            <div class="toc-item">
+              <div class="toc-number">第 2 页</div>
+              <div class="toc-title">操作系统基础配置</div>
+              <div class="toc-desc">系统安装、内核更新、软件源配置、自动更新关闭</div>
+            </div>
+          </a>
+
+          <a href="Practical_03.html" class="toc-link">
+            <div class="toc-item">
+              <div class="toc-number">第 3 页</div>
+              <div class="toc-title">BIOS设置配置</div>
+              <div class="toc-desc">IOMMU/VT-d启用、CPU性能模式、ACS关闭等重要设置</div>
+            </div>
+          </a>
+
+          <a href="Practical_04.html" class="toc-link">
+            <div class="toc-item">
+              <div class="toc-number">第 4 页</div>
+              <div class="toc-title">IB网卡驱动安装</div>
+              <div class="toc-desc">OFED驱动安装、网卡固件更新、驱动验证</div>
+            </div>
+          </a>
+
+          <a href="Practical_05.html" class="toc-link">
+            <div class="toc-item">
+              <div class="toc-number">第 5 页</div>
+              <div class="toc-title">IB交换机固件升级</div>
+              <div class="toc-desc">交换机固件检查、升级步骤、重启生效</div>
+            </div>
+          </a>
+
+          <a href="Practical_06.html" class="toc-link">
+            <div class="toc-item">
+              <div class="toc-number">第 6 页</div>
+              <div class="toc-title">GPU驱动和CUDA</div>
+              <div class="toc-desc">CUDA下载安装、环境变量配置、GPU持久化设置</div>
+            </div>
+          </a>
+
+          <a href="Practical_07.html" class="toc-link">
+            <div class="toc-item">
+              <div class="toc-number">第 7 页</div>
+              <div class="toc-title">NVSwitch和Docker</div>
+              <div class="toc-desc">Fabric Manager安装、NVSwitch验证、Docker GPU支持</div>
+            </div>
+          </a>
+
+          <a href="Practical_08.html" class="toc-link">
+            <div class="toc-item">
+              <div class="toc-number">第 8 页</div>
+              <div class="toc-title">网络性能测试</div>
+              <div class="toc-desc">IB带宽延时测试、以太网性能测试、测试注意事项</div>
+            </div>
+          </a>
+
+          <a href="Practical_09.html" class="toc-link">
+            <div class="toc-item">
+              <div class="toc-number">第 9 页</div>
+              <div class="toc-title">GPU和NCCL测试</div>
+              <div class="toc-desc">GPU burn压力测试、NCCL安装编译、多节点通信测试</div>
+            </div>
+          </a>
+
+          <a href="Practical_10.html" class="toc-link">
+            <div class="toc-item">
+              <div class="toc-number">第 10 页</div>
+              <div class="toc-title">网卡对应关系</div>
+              <div class="toc-desc">PCI插槽映射、网卡接口对应、IP与IB模式说明</div>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="footer-text">
+          中国移动宁夏公司 · 实操培训资料 · 共10页内容
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>正阳恒卓面试考题</title>
+    <script>
+        // 禁用右键菜单
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+        });
+
+        // 禁用F12键
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F12') {
+                e.preventDefault();
+            }
+        });
+    </script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f2f5;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+        h1, h2 {
+            color: #2c3e50;
+        }
+        #timer {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            background-color: #3498db;
+            color: #fff;
+            padding: 10px 15px;
+            border-radius: 5px;
+        }
+        .question {
+            margin-bottom: 30px;
+            padding: 15px;
+            background-color: #ecf0f1;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #27ae60;
+        }
+        input[type="text"], textarea {
+            width: 96%;
+            padding: 10px;
+/*            margin: 0px;*/
+            margin-right: -20px;
+            margin-bottom: 10px;
+            border: 1px solid #bdc3c7;
+            border-radius: 5px;
+        }
+        textarea {
+            height: 100px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        #result-page, #review-exam {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .grade {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        .correct {
+            color: #2ecc71;
+        }
+        .incorrect {
+            color: #e74c3c;
+        }
+        .nav-buttons {
+            margin: 0 20px; /* 左右各20像素的边距 */
+        }
+
+                @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+            20%, 40%, 60%, 80% { transform: translateX(10px); }
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-30px); }
+            60% { transform: translateY(-15px); }
+        }
+
+        .grade {
+            font-size: 36px;
+            font-weight: bold;
+            margin: 20px 0;
+            padding: 10px 20px;
+            border-radius: 10px;
+            display: inline-block;
+            animation-duration: 1s;
+            animation-fill-mode: both;
+        }
+
+        .grade-xueba { background-color: #FFD700; color: #000; animation-name: rotate, pulse; }
+        .grade-excellent { background-color: #4CAF50; color: #FFF; animation-name: pulse; }
+        .grade-good { background-color: #2196F3; color: #FFF; animation-name: bounce; }
+        .grade-pass { background-color: #FF9800; color: #FFF; animation-name: shake; }
+        .grade-fail { background-color: #F44336; color: #FFF; animation-name: shake; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>正阳恒卓- Networking Sales Curriculum (2024)</h1>
+        
+        <div id="timer"></div>
+
+        <div id="login-form">
+            <h2>请输入考生信息</h2>
+            <input type="text" id="student-name" placeholder="姓名" required>
+            <input type="text" id="student-id" placeholder="面试编号" required>
+            <button onclick="startExam()">进入考试</button>
+        </div>
+
+        <div id="exam-page" style="display:none;">
+            <h2>考试题目</h2>
+            <div id="questions"></div>
+            <!-- <button onclick="submitExam()">提交考卷</button> -->
+        </div>
+
+        <div id="result-page" style="display:none;">
+            <h2>考试结果</h2>
+            <p>考试名称：<span id="exam-name"></span></p>
+            <p>姓名：<span id="result-student-name"></span></p>
+            <p>编号：<span id="result-student-id"></span></p>
+            <p>得分：<span id="score"></span></p>
+            <div id="grade" class="grade"></div>
+            <p>请描述一个你在工作或生活中遇到的复杂问题，并详细解释你是如何解决这个问题的？</p>
+            <div id="extra-answer-display"></div>
+            <p>考试时间：<span id="exam-time"></span></p>
+            <button onclick="showReview()">查看考卷</button>
+        </div>
+
+        <div id="review-exam" style="display:none;">
+            <h2>考卷回顾</h2>
+            <div id="exam-review-content"></div>
+            <button onclick="showResult()">返回结果页面</button>
+        </div>
+    </div>
+
+    <!-- <script type="module"> -->
+<!--         //import questions from './questions.js';
+        
+        // 如果你的环境不支持 ES6 模块，请使用下面的方式： -->
+        <script src="questions-2023nsc.js"></script>
+        <script>
+        const questions = window.questions;
+    </script>
+
+    <script>
+        const extraQuestion = {
+            question: "请描述一个你在工作或生活中遇到的复杂问题，并详细解释你是如何解决这个问题的？",
+            type: "extra"
+        };
+
+        let selectedQuestions = [];
+        let answers = [];
+        let extraAnswer = "";
+        let timeLeft = 45 * 60; // 45 minutes in seconds
+        let timerInterval;
+
+        function startExam() {
+            const studentName = document.getElementById('student-name').value;
+            const studentId = document.getElementById('student-id').value;
+
+            if (!studentName || !studentId) {
+                alert('请填写姓名和编号');
+                return;
+            }
+
+            document.getElementById('login-form').style.display = 'none';
+            document.getElementById('exam-page').style.display = 'block';
+
+            selectedQuestions = getRandomQuestions(questions, 20);
+            selectedQuestions.push(extraQuestion);
+            displayQuestions();
+            startTimer();
+        }
+
+        function getRandomQuestions(allQuestions, count) {
+            const shuffled = allQuestions.sort(() => 0.5 - Math.random());
+            return shuffled.slice(0, count);
+        }
+
+        let currentQuestionIndex = 0; // 当前问题的索引
+
+        function displayQuestions() {
+            const questionsDiv = document.getElementById('questions');
+            questionsDiv.innerHTML = '';
+
+            const q = selectedQuestions[currentQuestionIndex];
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question';
+            if (q.type === "extra") {
+                questionDiv.innerHTML = `
+                    <p>${q.question}</p>
+                    <textarea id="extra-answer" oninput="updateExtraAnswer(this.value)"></textarea>
+                `;
+            } else {
+                questionDiv.innerHTML = `
+                    <p>${currentQuestionIndex + 1}. ${q.question}</p>
+                    ${q.options.map((option, i) => `
+                        <label>
+                            <input type="${q.type === 'multiple' ? 'checkbox' : 'radio'}" 
+                                   name="q${currentQuestionIndex}" 
+                                   value="${i}"
+                                   onchange="updateAnswer(${currentQuestionIndex}, ${i}, this.checked)">
+                            ${option}
+                        </label>
+                    `).join('<br>')}
+                `;
+            }
+            questionsDiv.appendChild(questionDiv);
+
+            // 如果不是第一题，添加“上一题”按钮
+            if (currentQuestionIndex > 0) {
+                const prevButton = document.createElement('button');
+                prevButton.textContent = '上一题';
+                prevButton.className = 'nav-buttons';
+                prevButton.onclick = showPreviousQuestion;
+                questionsDiv.appendChild(prevButton);
+            }
+
+            // 如果不是最后一题，添加“下一题”按钮
+            if (currentQuestionIndex < selectedQuestions.length - 1) {
+                const nextButton = document.createElement('button');
+                nextButton.textContent = '下一题';
+                nextButton.className = 'nav-buttons';
+                nextButton.onclick = showNextQuestion;
+                questionsDiv.appendChild(nextButton);
+            } else {
+                // 如果是最后一题，添加“提交考卷”按钮
+                const submitButton = document.createElement('button');
+                submitButton.textContent = '提交考卷';
+                submitButton.className = 'nav-buttons';
+                submitButton.onclick = submitExam;
+                questionsDiv.appendChild(submitButton);
+            }
+        }
+
+        function showNextQuestion() {
+            if (currentQuestionIndex < selectedQuestions.length - 1) {
+                currentQuestionIndex++;
+                displayQuestions();
+            }
+        }
+
+        function showPreviousQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                displayQuestions();
+            }
+        }
+
+        // 请确保其他函数（如 submitExam() 和 updateAnswer()）能够处理当前问题索引的逻辑。
+
+
+        // function updateAnswer(questionIndex, optionIndex, isChecked) {
+        //     if (!answers[questionIndex]) {
+        //         answers[questionIndex] = [];
+        //     }
+
+        //     if (selectedQuestions[questionIndex].type === 'single') {
+        //         answers[questionIndex] = [optionIndex];
+        //     } else {
+        //         if (isChecked) {
+        //             answers[questionIndex].push(optionIndex);
+        //         } else {
+        //             answers[questionIndex] = answers[questionIndex].filter(i => i !== optionIndex);
+        //         }
+        //     }
+        // }
+
+        function updateAnswer(questionIndex, optionIndex, isChecked) {
+            // 如果是单选题，只保存选中的选项
+            if (selectedQuestions[questionIndex].type === 'single') {
+                answers[questionIndex] = [optionIndex];
+            } else {
+                // 如果是复选题，需要处理多个选项
+                if (!answers[questionIndex]) {
+                    answers[questionIndex] = [];
+                }
+
+                if (isChecked) {
+                    // 如果选项被选中，添加到答案数组中
+                    if (!answers[questionIndex].includes(optionIndex)) {
+                        answers[questionIndex].push(optionIndex);
+                    }
+                } else {
+                    // 如果选项被取消选中，从答案数组中移除
+                    answers[questionIndex] = answers[questionIndex].filter(i => i !== optionIndex);
+                }
+            }
+        }
+
+        function updateExtraAnswer(value) {
+            extraAnswer = value;
+        }
+
+        function startTimer() {
+            updateTimerDisplay();
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    submitExam();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            document.getElementById('timer').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        // function submitExam() {
+        //     clearInterval(timerInterval);
+        //     const score = calculateScore();
+        //     displayResult(score);
+        // }
+
+        function submitExam() {
+            clearInterval(timerInterval);
+
+            // 在提交前，确保最后一题的答案已更新
+            if (selectedQuestions[currentQuestionIndex].type !== "extra") {
+                const inputs = document.querySelectorAll(`input[name="q${currentQuestionIndex}"]:checked`);
+                const userAnswers = Array.from(inputs).map(input => parseInt(input.value));
+                updateAnswer(currentQuestionIndex, userAnswers, true);
+            }
+
+            // 计算总分
+            const score = calculateScore();
+            displayResult(score);
+
+            // 显示结果页面
+            document.getElementById('exam-page').style.display = 'none';
+            document.getElementById('result-page').style.display = 'block';
+        }
+
+
+
+        function calculateScore() {
+            let score = 0;
+            selectedQuestions.forEach((q, index) => {
+                if (q.type !== "extra") {
+                    const userAnswer = answers[index] || [];
+                    if (JSON.stringify(userAnswer.sort()) === JSON.stringify(q.answer.sort())) {
+                        score += 5;  // Each question is worth 5 points
+                    }
+                }
+            });
+            return score;
+        }
+
+        function displayResult(score) {
+            document.getElementById('exam-page').style.display = 'none';
+            document.getElementById('result-page').style.display = 'block';
+
+            document.getElementById('exam-name').textContent = 'Networking Sales Curriculum (2023)';
+            document.getElementById('result-student-name').textContent = document.getElementById('student-name').value;
+            document.getElementById('result-student-id').textContent = document.getElementById('student-id').value;
+            document.getElementById('score').textContent = `${score} / 100`;
+            document.getElementById('grade').textContent = getGrade(score);
+            document.getElementById('extra-answer-display').textContent = extraAnswer;
+            document.getElementById('exam-time').textContent = `${45 - Math.floor(timeLeft / 60)}分钟`;
+        }
+
+        function getGrade(score) {
+            if (score >= 90) return '学霸';
+            if (score >= 80) return '优秀';
+            if (score >= 70) return '良好';
+            if (score >= 60) return '合格';
+            return '不合格';
+        }
+
+        function showReview() {
+            document.getElementById('result-page').style.display = 'none';
+            document.getElementById('review-exam').style.display = 'block';
+            displayReview();
+        }
+
+        function displayReview() {
+            const reviewContent = document.getElementById('exam-review-content');
+            reviewContent.innerHTML = '';
+
+            selectedQuestions.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question';
+                if (q.type === "extra") {
+                    questionDiv.innerHTML = `
+                        <p>${q.question}</p>
+                        <p>你的回答：${extraAnswer}</p>
+                    `;
+                } else {
+                    const userAnswer = answers[index] || [];
+                    const isCorrect = JSON.stringify(userAnswer.sort()) === JSON.stringify(q.answer.sort());
+
+                    questionDiv.innerHTML = `
+                        <p>${index + 1}. ${q.question}</p>
+                        ${q.options.map((option, i) => `
+                            <label class="${q.answer.includes(i) ? 'correct' : ''} ${userAnswer.includes(i) && !q.answer.includes(i) ? 'incorrect' : ''}">
+                                <input type="${q.type === 'multiple' ? 'checkbox' : 'radio'}" 
+                                       disabled 
+                                       ${userAnswer.includes(i) ? 'checked' : ''}>
+                                ${option}
+                            </label>
+                        `).join('<br>')}
+                        <p>正确答案: ${q.answer.map(i => q.options[i]).join(', ')}</p>
+                        <p class="${isCorrect ? 'correct' : 'incorrect'}">
+                            ${isCorrect ? '回答正确' : '回答错误'}
+                        </p>
+                    `;
+                }
+                reviewContent.appendChild(questionDiv);
+            });
+        }
+
+        function showResult() {
+            document.getElementById('review-exam').style.display = 'none';
+            document.getElementById('result-page').style.display = 'block';
+        }
+
+                function getGrade(score) {
+            if (score >= 90) return { text: '学霸', class: 'grade-xueba' };
+            if (score >= 80) return { text: '优秀', class: 'grade-excellent' };
+            if (score >= 70) return { text: '良好', class: 'grade-good' };
+            if (score >= 60) return { text: '合格', class: 'grade-pass' };
+            return { text: '不合格', class: 'grade-fail' };
+        }
+
+        function displayResult(score) {
+            document.getElementById('exam-page').style.display = 'none';
+            document.getElementById('result-page').style.display = 'block';
+
+            document.getElementById('exam-name').textContent = '正阳恒卓面试考题';
+            document.getElementById('result-student-name').textContent = document.getElementById('student-name').value;
+            document.getElementById('result-student-id').textContent = document.getElementById('student-id').value;
+            document.getElementById('score').textContent = `${score} / 100`;
+            
+            const grade = getGrade(score);
+            const gradeElement = document.getElementById('grade');
+            gradeElement.textContent = grade.text;
+            gradeElement.className = `grade ${grade.class}`;
+            
+            // 触发动画重新开始
+            gradeElement.style.animation = 'none';
+            gradeElement.offsetHeight; // 触发重排
+            gradeElement.style.animation = null;
+
+            document.getElementById('extra-answer-display').textContent = extraAnswer;
+            document.getElementById('exam-time').textContent = `${45 - Math.floor(timeLeft / 60)}分钟`;
+        }
+    </script>
+</body>
+</html>

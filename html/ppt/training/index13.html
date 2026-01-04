@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IB网络带宽与延迟检查</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    /* 优化样式 */
+    .main-content {
+      padding: 1% 2%;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+      max-width: 1500px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .page-title {
+      text-align: center;
+      margin-bottom: 1.2%;
+      flex-shrink: 0;
+    }
+
+    .title-main {
+      font-size: clamp(24px, 2.8vw, 30px);
+      font-weight: 800;
+      background: linear-gradient(135deg, #4834d4 0%, #ff6b6b 50%, #00a2ff 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 0.6%;
+    }
+
+    .title-sub {
+      font-size: clamp(14px, 1.6vw, 18px);
+      color: rgba(255, 255, 255, 0.8);
+      font-weight: 400;
+      margin-bottom: 0.6%;
+    }
+
+    .content-grid {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2%;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .content-section {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5%;
+      min-height: 0;
+      overflow-y: auto;
+    }
+
+    .section-title {
+      font-size: clamp(16px, 1.8vw, 20px);
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 1%;
+      padding: 1.5%;
+      border-radius: 8px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .section-title.bandwidth {
+      background: linear-gradient(135deg, rgba(72, 52, 212, 0.25), rgba(72, 52, 212, 0.15));
+      border: 2px solid rgba(72, 52, 212, 0.4);
+      box-shadow: 0 4px 12px rgba(72, 52, 212, 0.2);
+    }
+
+    .section-title.latency {
+      background: linear-gradient(135deg, rgba(255, 107, 107, 0.25), rgba(255, 107, 107, 0.15));
+      border: 2px solid rgba(255, 107, 107, 0.4);
+      box-shadow: 0 4px 12px rgba(255, 107, 107, 0.2);
+    }
+
+    .content-item {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04));
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      padding: 2%;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: visible;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .content-item:hover {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06));
+      border-color: rgba(255, 255, 255, 0.35);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    .item-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 1%;
+    }
+
+    .item-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(14px, 1.4vw, 16px);
+      color: white;
+      flex-shrink: 0;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .bandwidth .item-icon { background: linear-gradient(135deg, #4834d4, #686de0); }
+    .latency .item-icon { background: linear-gradient(135deg, #ff6b6b, #ee5a24); }
+    .tools .item-icon { background: linear-gradient(135deg, #76b900, #3e703e); }
+    .analysis .item-icon { background: linear-gradient(135deg, #8a2be2, #9370db); }
+
+    .item-title {
+      font-size: clamp(15px, 1.7vw, 18px);
+      font-weight: 700;
+      color: #ffffff;
+      flex: 1;
+      line-height: 1.3;
+    }
+
+    .item-content {
+      font-size: clamp(12px, 1.4vw, 15px);
+      color: rgba(255, 255, 255, 0.87);
+      line-height: 1.5;
+      margin-bottom: 1%;
+      font-weight: 400;
+    }
+
+    .cmd-example {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-left: 3px solid;
+      padding: 1.5%;
+      border-radius: 0 6px 6px 0;
+      font-family: 'Courier New', monospace;
+      font-size: clamp(11px, 1.2vw, 13px);
+      color: #e8f4fd;
+      line-height: 1.4;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+      margin-bottom: 0.5%;
+      box-shadow: inset 2px 0 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .bandwidth .cmd-example { border-left-color: #4834d4; }
+    .latency .cmd-example { border-left-color: #ff6b6b; }
+    .tools .cmd-example { border-left-color: #76b900; }
+    .analysis .cmd-example { border-left-color: #8a2be2; }
+
+    .cmd-example::before {
+      content: '$ ';
+      font-weight: bold;
+    }
+
+    .bandwidth .cmd-example::before { color: #4834d4; }
+    .latency .cmd-example::before { color: #ff6b6b; }
+    .tools .cmd-example::before { color: #76b900; }
+    .analysis .cmd-example::before { color: #8a2be2; }
+
+    .performance-note {
+      background: linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(76, 175, 80, 0.1));
+      border: 2px solid rgba(76, 175, 80, 0.4);
+      border-radius: 8px;
+      padding: 2%;
+      margin-top: 1.5%;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
+    }
+
+    .performance-text {
+      font-size: clamp(14px, 1.6vw, 17px);
+      color: rgba(255, 255, 255, 0.9);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .highlight {
+      color: #4caf50;
+      font-weight: 600;
+    }
+
+    /* 响应式设计 */
+    @media (max-width: 1200px) {
+      .content-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5%;
+      }
+    }
+
+    @media (max-height: 700px) {
+      .main-content {
+        padding: 0.8% 1.5%;
+      }
+      
+      .content-item {
+        padding: 1.8%;
+      }
+      
+      .content-section {
+        gap: 1.2%;
+      }
+      
+      .performance-note {
+        padding: 1.8%;
+        margin-top: 1.2%;
+      }
+    }
+
+    @media (max-height: 600px) {
+      .main-content {
+        padding: 0.6% 1.2%;
+      }
+      
+      .page-title {
+        margin-bottom: 1%;
+      }
+      
+      .content-item {
+        padding: 1.5%;
+      }
+      
+      .item-header {
+        margin-bottom: 0.8%;
+        gap: 10px;
+      }
+      
+      .item-icon {
+        width: 22px;
+        height: 22px;
+        font-size: clamp(13px, 1.3vw, 15px);
+      }
+      
+      .item-title {
+        font-size: clamp(14px, 1.6vw, 17px);
+      }
+      
+      .item-content {
+        font-size: clamp(11px, 1.3vw, 14px);
+      }
+      
+      .cmd-example {
+        font-size: clamp(10px, 1.1vw, 12px);
+        padding: 1.2%;
+      }
+      
+      .content-section {
+        gap: 1%;
+      }
+      
+      .performance-note {
+        padding: 1.5%;
+        margin-top: 1%;
+      }
+      
+      .performance-text {
+        font-size: clamp(13px, 1.5vw, 16px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <!-- 背景元素 -->
+    <div class="bg-elements">
+      <div class="brain-pattern"></div>
+      <div class="network-signals">
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+      </div>
+    </div>
+
+    <!-- 主要内容 -->
+    <div class="content">
+      <!-- 顶部标识 -->
+      <div class="header" style="padding: 0.6% 2%;">
+        <div class="day-info">
+          <div class="day-badge">2</div>
+          <div class="day-text">第二天：IB网络测试与优化</div>
+        </div>
+        <div class="section-indicator">带宽延迟检查</div>
+      </div>
+
+      <!-- 主体内容 -->
+      <div class="main-content">
+        <!-- 页面标题 -->
+        <div class="page-title">
+          <div class="title-main">IB网络带宽与延迟检查</div>
+          <div class="title-sub">性能测试工具与评估方法</div>
+        </div>
+
+        <!-- 内容网格 -->
+        <div class="content-grid">
+          <!-- 左侧：带宽测试 -->
+          <div class="content-section">
+            <div class="section-title bandwidth">带宽性能测试</div>
+            
+            <div class="content-item bandwidth">
+              <div class="item-header">
+                <div class="item-icon">🚀</div>
+                <div class="item-title">ib_write_bw测试</div>
+              </div>
+              <div class="item-content">
+                专门测试RDMA写操作的最大带宽吞吐量，评估单向数据传输的最优性能。<br>
+                支持不同数据块大小的测试，可以发现网络在各种负载模式下的表现。<br>
+                通过连续测试可以评估网络稳定性和可靠性，为应用优化提供数据支持。
+              </div>
+              <div class="cmd-example">ib_write_bw -D 10</div>
+              <div class="cmd-example">ib_write_bw &lt;server_ip&gt;</div>
+            </div>
+
+            <div class="content-item bandwidth">
+              <div class="item-header">
+                <div class="item-icon">📊</div>
+                <div class="item-title">ib_read_bw测试</div>
+              </div>
+              <div class="item-content">
+                测试RDMA读操作的带宽性能表现，验证远端内存访问的效率。<br>
+                Read操作通常比Write操作具有更高的延迟，但能够提供出色的带宽性能。<br>
+                该测试对于并行计算和大数据处理应用的性能评估非常重要。
+              </div>
+              <div class="cmd-example">ib_read_bw -D 10</div>
+              <div class="cmd-example">ib_read_bw &lt;server_ip&gt;</div>
+            </div>
+
+            <div class="content-item bandwidth">
+              <div class="item-header">
+                <div class="item-icon">🔄</div>
+                <div class="item-title">ib_send_bw测试</div>
+              </div>
+              <div class="item-content">
+                测试传统Send/Recv模式的带宽性能，适用于消息传递和数据交换应用。<br>
+                这种模式需要两端协调配合，对CPU占用率相对较高，但灵活性更好。<br>
+                通过与纯RDMA操作的对比测试，可以选择最适合的数据传输模式。
+              </div>
+              <div class="cmd-example">ib_send_bw -D 10</div>
+              <div class="cmd-example">ib_send_bw &lt;server_ip&gt;</div>
+            </div>
+
+            <div class="content-item tools">
+              <div class="item-header">
+                <div class="item-icon">🛠️</div>
+                <div class="item-title">qperf带宽测试</div>
+              </div>
+              <div class="item-content">
+                多功能网络性能测试工具，提供更丰富的测试选项和统计信息，支持多种协议和测试模式。<br>
+                能够同时进行带宽和延迟测试，提供更全面的网络性能画像和详细的测试报告。<br>
+                支持自定义测试参数，可以模拟不同的应用场景和负载模式，适合深度性能分析。
+              </div>
+              <div class="cmd-example">qperf &lt;server_ip&gt; ib_write_bw</div>
+            </div>
+          </div>
+
+          <!-- 右侧：延迟测试 -->
+          <div class="content-section">
+            <div class="section-title latency">延迟性能测试</div>
+            
+            <div class="content-item latency">
+              <div class="item-header">
+                <div class="item-icon">⚡</div>
+                <div class="item-title">ib_write_lat测试</div>
+              </div>
+              <div class="item-content">
+                精确测量RDMA写操作的延迟特性，评估从发起写请求到完成的平均响应时间。<br>
+                对于对延迟敏感的应用（如HPC和金融交易）至关重要。<br>
+                通过统计分析可以获取最小、最大、平均和99%百分位的延迟指标。
+              </div>
+              <div class="cmd-example">ib_write_lat -D 10</div>
+              <div class="cmd-example">ib_write_lat &lt;server_ip&gt;</div>
+            </div>
+
+            <div class="content-item latency">
+              <div class="item-header">
+                <div class="item-icon">🎯</div>
+                <div class="item-title">ib_read_lat测试</div>
+              </div>
+              <div class="item-content">
+                测量RDMA读操作的延迟性能，包括远端内存访问的完整往返时间。<br>
+                Read操作的延迟通常比Write操作略高，因为需要等待数据返回。<br>
+                该指标对随机访问模式和分布式数据结构的性能评估具有重要意义。
+              </div>
+              <div class="cmd-example">ib_read_lat -D 10</div>
+              <div class="cmd-example">ib_read_lat &lt;server_ip&gt;</div>
+            </div>
+
+            <div class="content-item latency">
+              <div class="item-header">
+                <div class="item-icon">📈</div>
+                <div class="item-title">ib_send_lat测试</div>
+              </div>
+              <div class="item-content">
+                测试双向通信模式Send/Recv操作的延迟特性，评估消息传递的响应时间。<br>
+                该模式需要两端协调配合，延迟受网络拥塞和CPU负载影响较大。<br>
+                适用于评估集群通信库（如MPI）的延迟性能和应用优化效果。
+              </div>
+              <div class="cmd-example">ib_send_lat -D 10</div>
+              <div class="cmd-example">ib_send_lat &lt;server_ip&gt;</div>
+            </div>
+
+            <div class="content-item analysis">
+              <div class="item-header">
+                <div class="item-icon">📋</div>
+                <div class="item-title">性能数据分析</div>
+              </div>
+              <div class="item-content">
+                综合分析各种性能测试数据，识别网络性能瓶颈和优化机会。<br>
+                包括带宽利用率、延迟分布、系统资源消耗和可扩展性分析。<br>
+                为网络优化和容量规划提供科学的决策依据和具体的改进建议。
+              </div>
+              <div class="cmd-example">qperf &lt;server_ip&gt; ib_write_lat</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 性能要点 -->
+        <div class="performance-note">
+          <div class="performance-text">
+            <div>📏</div>
+            <span><span class="highlight">性能标准：</span>InfiniBand网络应达到100Gbps带宽和亚微秒级延迟性能</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 底部信息 -->
+      <div class="footer" style="padding: 0.6% 2%;">
+        <div class="footer-left">
+          <div class="status-dot"></div>
+          <span>第二天 - 带宽延迟检查</span>
+        </div>
+        <div class="footer-badges">
+          <div class="footer-badge badge-install">BANDWIDTH</div>
+          <div class="footer-badge badge-config">LATENCY</div>
+          <div class="footer-badge badge-command">PERFORMANCE</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 导航按钮 -->
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+    <a href="index12.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+    <a href="index14.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+  </div>
+</body>
+</html>

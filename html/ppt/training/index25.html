@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>第四天：基础运维培训</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    :root { --primary-green: #76b900; --primary-orange: #ffa500; --primary-blue: #00a2ff; --primary-red: #ff6b6b; --primary-purple: #4834d4; --text-primary: #ffffff; --text-secondary: rgba(255, 255, 255, 0.87); --glass-light: rgba(255, 255, 255, 0.08); --glass-border: rgba(255, 255, 255, 0.2); --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .main-content { padding: 1% 2%; flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden; max-width: 1400px; margin: 0 auto; width: 100%; }
+    .page-title { text-align: center; margin-bottom: 2%; flex-shrink: 0; }
+    .title-main { font-size: clamp(28px, 3.2vw, 36px); font-weight: 800; background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-orange) 50%, var(--primary-blue) 100%); -webkit-background-clip: text; background-clip: text; color: transparent; margin-bottom: 0.8%; }
+    .title-sub { font-size: clamp(15px, 1.7vw, 19px); color: rgba(255, 255, 255, 0.85); font-weight: 500; margin-bottom: 1%; }
+    .content-wrapper { flex: 1; display: flex; flex-direction: column; gap: 2%; min-height: 0; overflow-y: auto; }
+    
+    /* 集群概述样式 */
+    .cluster-overview { background: linear-gradient(135deg, rgba(118, 185, 0, 0.15), rgba(118, 185, 0, 0.08)); border: 2px solid rgba(118, 185, 0, 0.4); border-radius: 15px; padding: 2.5%; margin-bottom: 2%; box-shadow: 0 8px 20px rgba(118, 185, 0, 0.15); }
+    .overview-header { display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 2%; }
+    .overview-icon { width: 50px; height: 50px; background: linear-gradient(135deg, var(--primary-green), #4caf50); border-radius: 15px; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; font-weight: bold; }
+    .overview-title { font-size: clamp(20px, 2.2vw, 26px); font-weight: 700; color: var(--text-primary); }
+    .cluster-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5%; margin-bottom: 2%; }
+    .stat-card { background: rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 2%; text-align: center; border: 1px solid rgba(255, 255, 255, 0.2); }
+    .stat-number { font-size: clamp(22px, 2.5vw, 28px); font-weight: 700; color: #76b900; margin-bottom: 0.5%; }
+    .stat-label { font-size: clamp(13px, 1.4vw, 15px); color: var(--text-secondary); }
+    .cluster-description { font-size: clamp(14px, 1.5vw, 16px); color: var(--text-secondary); line-height: 1.6; text-align: center; }
+    
+    /* 培训模块样式 */
+    .training-modules { display: grid; grid-template-columns: 1fr 1fr; gap: 2%; margin-bottom: 2%; }
+    .module-card { background: linear-gradient(135deg, var(--glass-light), rgba(255, 255, 255, 0.04)); border: 1px solid var(--glass-border); border-radius: 15px; padding: 2.5%; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); transition: var(--transition-smooth); position: relative; overflow: hidden; }
+    .module-card:hover { transform: translateY(-3px); box-shadow: 0 12px 25px rgba(0, 0, 0, 0.3); border-color: rgba(255, 255, 255, 0.3); }
+    .module-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; border-radius: 15px 15px 0 0; }
+    .module-1::before { background: linear-gradient(90deg, var(--primary-blue), #0078d4); }
+    .module-2::before { background: linear-gradient(90deg, var(--primary-green), #4caf50); }
+    .module-3::before { background: linear-gradient(90deg, var(--primary-orange), #ff8c00); }
+    .module-4::before { background: linear-gradient(90deg, var(--primary-red), #e53e3e); }
+    
+    .module-header { display: flex; align-items: center; gap: 15px; margin-bottom: 2%; }
+    .module-icon { width: 45px; height: 45px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px; font-weight: 700; }
+    .module-1 .module-icon { background: linear-gradient(135deg, var(--primary-blue), #0078d4); }
+    .module-2 .module-icon { background: linear-gradient(135deg, var(--primary-green), #4caf50); }
+    .module-3 .module-icon { background: linear-gradient(135deg, var(--primary-orange), #ff8c00); }
+    .module-4 .module-icon { background: linear-gradient(135deg, var(--primary-red), #e53e3e); }
+    .module-title { font-size: clamp(16px, 1.8vw, 20px); font-weight: 700; color: var(--text-primary); }
+    .module-description { font-size: clamp(13px, 1.4vw, 15px); color: var(--text-secondary); line-height: 1.6; margin-bottom: 1.5%; }
+    .module-topics { }
+    .module-topics h4 { font-size: clamp(13px, 1.4vw, 15px); font-weight: 600; color: var(--text-primary); margin-bottom: 1%; }
+    .topic-list { list-style: none; padding: 0; margin: 0; }
+    .topic-list li { padding: 4px 0; position: relative; padding-left: 20px; font-size: clamp(12px, 1.3vw, 14px); color: var(--text-secondary); }
+    .topic-list li::before { content: '▪'; position: absolute; left: 0; color: rgba(255, 255, 255, 0.6); }
+    
+    /* 网络架构样式 */
+    .network-section { margin-bottom: 2%; }
+    .section-title { text-align: center; margin-bottom: 1.5%; }
+    .section-title-text { font-size: clamp(20px, 2.2vw, 26px); font-weight: 800; color: var(--text-primary); margin-bottom: 0.5%; }
+    .section-subtitle { font-size: clamp(14px, 1.5vw, 16px); color: rgba(255, 255, 255, 0.8); }
+    .network-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 2%; }
+    .network-card { background: linear-gradient(135deg, var(--glass-light), rgba(255, 255, 255, 0.04)); border: 1px solid var(--glass-border); border-radius: 12px; padding: 2%; box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15); }
+    .network-header { display: flex; align-items: center; gap: 12px; margin-bottom: 1.5%; }
+    .network-icon { width: 35px; height: 35px; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: white; font-size: 16px; font-weight: bold; }
+    .compute-net .network-icon { background: linear-gradient(135deg, #ff6b6b, #e53e3e); }
+    .storage-net .network-icon { background: linear-gradient(135deg, #4834d4, #6b46c1); }
+    .inband-net .network-icon { background: linear-gradient(135deg, #00a2ff, #0078d4); }
+    .mgmt-net .network-icon { background: linear-gradient(135deg, #76b900, #4caf50); }
+    .network-name { font-size: clamp(15px, 1.6vw, 18px); font-weight: 700; color: var(--text-primary); }
+    .network-specs { font-size: clamp(13px, 1.4vw, 15px); color: var(--text-secondary); line-height: 1.5; }
+    .spec-highlight { color: #ffa500; font-weight: 600; }
+    
+    .summary-note { background: linear-gradient(135deg, rgba(255, 165, 0, 0.2), rgba(255, 165, 0, 0.1)); border: 2px solid rgba(255, 165, 0, 0.4); border-radius: 12px; padding: 2%; text-align: center; box-shadow: 0 6px 15px rgba(255, 165, 0, 0.15); margin-top: 2%; }
+    .summary-text { font-size: clamp(15px, 1.6vw, 18px); color: rgba(255, 255, 255, 0.9); font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 12px; }
+    .highlight { color: #ffa500; font-weight: 700; }
+    
+    @media (max-width: 1200px) { .training-modules { grid-template-columns: 1fr; } .network-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 768px) { .cluster-stats { grid-template-columns: repeat(2, 1fr); } }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <div class="bg-elements"><div class="brain-pattern"></div><div class="network-signals"><div class="signal-dot"></div><div class="signal-dot"></div><div class="signal-dot"></div><div class="signal-dot"></div><div class="signal-dot"></div></div></div>
+    <div class="content">
+      <div class="header" style="padding: 0.6% 2%;">
+        <div class="day-info"><div class="day-badge">4</div><div class="day-text">第四天：基础运维培训</div></div>
+        <div class="section-indicator">培训概述</div>
+      </div>
+      <div class="main-content">
+        <div class="page-title">
+          <div class="title-main">基础运维培训计划</div>
+          <div class="title-sub">128台H200集群运维 · 产品认知 · 操作实践 · 故障处理</div>
+        </div>
+        
+        <div class="content-wrapper">
+          <!-- 集群概述 -->
+          <div class="cluster-overview">
+            <div class="overview-header">
+              <div class="overview-icon">🏗️</div>
+              <div class="overview-title">128台H200超算集群基础架构</div>
+            </div>
+            <div class="cluster-stats">
+              <div class="stat-card">
+                <div class="stat-number">128</div>
+                <div class="stat-label">H200服务器</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-number">1024</div>
+                <div class="stat-label">GPU总数</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-number">400G</div>
+                <div class="stat-label">IB计算网络</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-number">200G</div>
+                <div class="stat-label">存储网络</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-number">25G</div>
+                <div class="stat-label">IN-BAND网络</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-number">1G</div>
+                <div class="stat-label">带外管理网络</div>
+              </div>
+            </div>
+            <div class="cluster-description">
+              企业级GPU超算集群，采用多层网络架构设计，支持大规模AI训练和高性能计算任务，需要专业的运维团队进行日常管理和维护
+            </div>
+          </div>
+          
+          <!-- 培训模块 -->
+          <div class="training-modules">
+            <!-- 模块1：产品介绍 -->
+            <div class="module-card module-1">
+              <div class="module-header">
+                <div class="module-icon">📋</div>
+                <div class="module-title">模块一：集群产品介绍</div>
+              </div>
+              <div class="module-description">
+                全面介绍集群涉及的硬件产品和软件组件，确保团队对整体架构有清晰认知
+              </div>
+              <div class="module-topics">
+                <h4>核心内容：</h4>
+                <ul class="topic-list">
+                  <li>H200 GPU服务器硬件规格详解</li>
+                  <li>InfiniBand网络设备介绍</li>
+                  <li>存储系统架构与配置</li>
+                  <li>网络交换机和管理设备</li>
+                  <li>监控和管理软件平台</li>
+                  <li>集群整体拓扑结构分析</li>
+                </ul>
+              </div>
+            </div>
+            
+            <!-- 模块2：运维知识 -->
+            <div class="module-card module-2">
+              <div class="module-header">
+                <div class="module-icon">⚙️</div>
+                <div class="module-title">模块二：基础运维知识</div>
+              </div>
+              <div class="module-description">
+                系统讲解集群运维的核心理念、标准流程和最佳实践，建立运维规范意识
+              </div>
+              <div class="module-topics">
+                <h4>核心内容：</h4>
+                <ul class="topic-list">
+                  <li>集群运维管理体系</li>
+                  <li>日常巡检和健康监控</li>
+                  <li>变更管理和发布流程</li>
+                  <li>备份和恢复策略</li>
+                  <li>安全管理和权限控制</li>
+                  <li>性能优化和容量规划</li>
+                </ul>
+              </div>
+            </div>
+            
+            <!-- 模块3：操作命令 -->
+            <div class="module-card module-3">
+              <div class="module-header">
+                <div class="module-icon">💻</div>
+                <div class="module-title">模块三：运维操作命令</div>
+              </div>
+              <div class="module-description">
+                详细讲解集群运维中的常用命令，通过实际操作演练掌握核心技能
+              </div>
+              <div class="module-topics">
+                <h4>核心内容：</h4>
+                <ul class="topic-list">
+                  <li>系统状态查询和监控命令</li>
+                  <li>GPU设备管理和诊断</li>
+                  <li>网络配置和故障排查</li>
+                  <li>存储管理和数据操作</li>
+                  <li>作业调度和资源管理</li>
+                  <li>日志分析和问题定位</li>
+                </ul>
+              </div>
+            </div>
+            
+            <!-- 模块4：故障处理 -->
+            <div class="module-card module-4">
+              <div class="module-header">
+                <div class="module-icon">🚨</div>
+                <div class="module-title">模块四：故障处理方法</div>
+              </div>
+              <div class="module-description">
+                培训常见故障的识别、诊断和处理方法，提升团队应急响应能力
+              </div>
+              <div class="module-topics">
+                <h4>核心内容：</h4>
+                <ul class="topic-list">
+                  <li>硬件故障识别和处理</li>
+                  <li>网络连接问题排查</li>
+                  <li>GPU设备异常处理</li>
+                  <li>存储访问故障恢复</li>
+                  <li>系统性能问题优化</li>
+                  <li>应急预案和升级流程</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 网络架构详解 -->
+          <div class="network-section">
+            <div class="section-title">
+              <div class="section-title-text">🌐 多层网络架构概览</div>
+              <div class="section-subtitle">专业级高性能网络设计，支撑大规模并行计算需求</div>
+            </div>
+            
+            <div class="network-grid">
+              <!-- 计算网络 -->
+              <div class="network-card compute-net">
+                <div class="network-header">
+                  <div class="network-icon">🚀</div>
+                  <div class="network-name">400G IB计算网络</div>
+                </div>
+                <div class="network-specs">
+                  • 高速计算通信专用网络<br>
+                  • 支持<span class="spec-highlight">RDMA</span>零拷贝技术<br>
+                  • <span class="spec-highlight">超低延迟</span>节点间数据传输<br>
+                  • 专为AI训练优化的通信拓扑
+                </div>
+              </div>
+              
+              <!-- 存储网络 -->
+              <div class="network-card storage-net">
+                <div class="network-header">
+                  <div class="network-icon">💾</div>
+                  <div class="network-name">200G存储网络</div>
+                </div>
+                <div class="network-specs">
+                  • 专用高速存储访问通道<br>
+                  • 支持<span class="spec-highlight">并行文件系统</span><br>
+                  • 大容量数据<span class="spec-highlight">高吞吐</span>传输<br>
+                  • 分离式存储架构设计
+                </div>
+              </div>
+              
+              <!-- IN-BAND网络 -->
+              <div class="network-card inband-net">
+                <div class="network-header">
+                  <div class="network-icon">🔗</div>
+                  <div class="network-name">25G IN-BAND网络</div>
+                </div>
+                <div class="network-specs">
+                  • 集群内部<span class="spec-highlight">通用通信</span>网络<br>
+                  • 支持服务发现和配置管理<br>
+                  • 应用层<span class="spec-highlight">负载均衡</span>和路由<br>
+                  • 系统监控数据传输通道
+                </div>
+              </div>
+              
+              <!-- 管理网络 -->
+              <div class="network-card mgmt-net">
+                <div class="network-header">
+                  <div class="network-icon">⚙️</div>
+                  <div class="network-name">1G带外管理网络</div>
+                </div>
+                <div class="network-specs">
+                  • 独立的<span class="spec-highlight">运维管理</span>通道<br>
+                  • 远程访问和故障诊断<br>
+                  • <span class="spec-highlight">BMC/IPMI</span>硬件管理<br>
+                  • 安全隔离的管理接口
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="summary-note">
+          <div class="summary-text"><div>📚</div><span><span class="highlight">培训目标：</span>通过系统化培训，确保运维团队全面掌握128台H200集群的管理技能，具备独立运维大规模GPU集群的专业能力</span></div>
+        </div>
+      </div>
+      <div class="footer" style="padding: 0.6% 2%;">
+        <div class="footer-left"><div class="status-dot"></div><span>第四天 - 基础运维培训</span></div>
+        <div class="footer-badges"><div class="footer-badge badge-install">培训</div><div class="footer-badge badge-config">运维</div><div class="footer-badge badge-command">H200集群</div></div>
+      </div>
+    </div>
+  </div>
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+    <a href="index24.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+    <a href="index26.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+  </div>
+</body>
+</html>

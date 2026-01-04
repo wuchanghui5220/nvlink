@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>统一运营管理平台 - NVIDIA Spectrum-X网络研讨会</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: 
+                radial-gradient(circle at 20% 20%, #0a0a2e 0%, #001122 40%, #000610 100%),
+                linear-gradient(135deg, rgba(0, 150, 255, 0.08), rgba(76, 175, 80, 0.06));
+            height: 100vh;
+            color: #fff;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* 动态背景效果 */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 25% 30%, rgba(76, 175, 80, 0.06) 1px, transparent 2px),
+                radial-gradient(circle at 75% 70%, rgba(0, 150, 255, 0.06) 1px, transparent 2px),
+                radial-gradient(circle at 90% 25%, rgba(255, 193, 7, 0.05) 1px, transparent 2px),
+                radial-gradient(circle at 10% 80%, rgba(138, 43, 226, 0.05) 1px, transparent 2px);
+            background-size: 80px 80px, 100px 100px, 120px 120px, 90px 90px;
+            animation: backgroundFlow 30s linear infinite;
+            z-index: 1;
+        }
+
+        @keyframes backgroundFlow {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(150px, 150px) rotate(360deg); }
+        }
+
+        /* 主容器 */
+        .container {
+            position: relative;
+            z-index: 10;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 25px;
+        }
+
+        /* 页面标题 */
+        .page-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .page-title {
+            font-size: 2.6rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #4CAF50 0%, #0096FF 35%, #8A2BE2 65%, #FFC107 100%);
+            background-size: 300% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+            animation: titleFlow 4s ease-in-out infinite;
+        }
+
+        @keyframes titleFlow {
+            0%, 100% { background-position: 0% center; }
+            50% { background-position: 100% center; }
+        }
+
+        .page-subtitle {
+            font-size: 1.1rem;
+            color: #B0BEC5;
+            margin-bottom: 5px;
+        }
+
+        /* 主布局 - 创新的管道式设计 */
+        .operations-pipeline {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 2fr 1fr;
+            grid-template-rows: auto 1fr auto;
+            gap: 20px;
+            height: 100%;
+        }
+
+        /* 顶部统计概览 */
+        .overview-bar {
+            grid-column: span 3;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            background: rgba(15, 25, 45, 0.7);
+            border-radius: 20px;
+            padding: 20px;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .overview-item {
+            text-align: center;
+            position: relative;
+        }
+
+        .overview-item::after {
+            content: '';
+            position: absolute;
+            right: -8px;
+            top: 20%;
+            bottom: 20%;
+            width: 2px;
+            background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.2), transparent);
+        }
+
+        .overview-item:last-child::after {
+            display: none;
+        }
+
+        .overview-icon {
+            font-size: 2.2rem;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .overview-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 4px;
+        }
+
+        .overview-label {
+            font-size: 0.85rem;
+            color: #B0BEC5;
+        }
+
+        /* 颜色主题 */
+        .overview-item:nth-child(1) .overview-icon,
+        .overview-item:nth-child(1) .overview-value { color: #4CAF50; }
+        .overview-item:nth-child(2) .overview-icon,
+        .overview-item:nth-child(2) .overview-value { color: #0096FF; }
+        .overview-item:nth-child(3) .overview-icon,
+        .overview-item:nth-child(3) .overview-value { color: #8A2BE2; }
+        .overview-item:nth-child(4) .overview-icon,
+        .overview-item:nth-child(4) .overview-value { color: #FFC107; }
+
+        /* 左侧：OS & 监控平台 */
+        .left-platforms {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* 中央：核心工作流 */
+        .central-workflow {
+            background: rgba(15, 25, 45, 0.8);
+            border-radius: 25px;
+            padding: 25px;
+            backdrop-filter: blur(20px);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .workflow-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .workflow-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #FFC107;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .workflow-subtitle {
+            font-size: 1rem;
+            color: #B0BEC5;
+        }
+
+        /* 工作流程步骤 */
+        .workflow-steps {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .workflow-step {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 15px 20px;
+            position: relative;
+            transition: all 0.3s ease;
+            border-left: 4px solid;
+        }
+
+        .workflow-step:nth-child(1) { border-left-color: #4CAF50; }
+        .workflow-step:nth-child(2) { border-left-color: #0096FF; }
+        .workflow-step:nth-child(3) { border-left-color: #8A2BE2; }
+        .workflow-step:nth-child(4) { border-left-color: #FFC107; }
+
+        .workflow-step:hover {
+            transform: translateX(8px) scale(1.02);
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .step-number {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1rem;
+            margin-right: 15px;
+            color: #000;
+        }
+
+        .workflow-step:nth-child(1) .step-number { background: #4CAF50; }
+        .workflow-step:nth-child(2) .step-number { background: #0096FF; }
+        .workflow-step:nth-child(3) .step-number { background: #8A2BE2; }
+        .workflow-step:nth-child(4) .step-number { background: #FFC107; color: #000; }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #E0E0E0;
+        }
+
+        .step-desc {
+            font-size: 0.9rem;
+            color: #B0BEC5;
+            line-height: 1.3;
+        }
+
+        /* 右侧：自动化平台 */
+        .right-platforms {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* 平台卡片通用样式 */
+        .platform-card {
+            background: rgba(15, 25, 45, 0.85);
+            border-radius: 20px;
+            padding: 20px;
+            backdrop-filter: blur(15px);
+            border: 2px solid;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            flex: 1;
+        }
+
+        .platform-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        }
+
+        /* 各平台特色边框 */
+        .cumulus-card {
+            border-color: rgba(76, 175, 80, 0.4);
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.12), rgba(46, 125, 50, 0.06));
+        }
+
+        .netq-card {
+            border-color: rgba(0, 150, 255, 0.4);
+            background: linear-gradient(135deg, rgba(0, 150, 255, 0.12), rgba(30, 144, 255, 0.06));
+        }
+
+        .air-card {
+            border-color: rgba(138, 43, 226, 0.4);
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.12), rgba(123, 31, 162, 0.06));
+        }
+
+        .rcp-card {
+            border-color: rgba(255, 193, 7, 0.4);
+            background: linear-gradient(135deg, rgba(255, 193, 7, 0.12), rgba(255, 152, 0, 0.06));
+        }
+
+        .platform-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .platform-icon {
+            font-size: 2rem;
+            margin-right: 10px;
+        }
+
+        .cumulus-card .platform-icon { color: #4CAF50; }
+        .netq-card .platform-icon { color: #0096FF; }
+        .air-card .platform-icon { color: #8A2BE2; }
+        .rcp-card .platform-icon { color: #FFC107; }
+
+        .platform-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .cumulus-card .platform-title { color: #4CAF50; }
+        .netq-card .platform-title { color: #0096FF; }
+        .air-card .platform-title { color: #8A2BE2; }
+        .rcp-card .platform-title { color: #FFC107; }
+
+        .platform-subtitle {
+            font-size: 0.8rem;
+            color: #B0BEC5;
+        }
+
+        .platform-features {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: #E0E0E0;
+            line-height: 1.3;
+        }
+
+        .feature-bullet {
+            color: currentColor;
+            font-weight: 700;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+
+        /* 底部数据统计 */
+        .bottom-summary {
+            grid-column: span 3;
+            background: rgba(15, 25, 45, 0.6);
+            border-radius: 15px;
+            padding: 15px 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .summary-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #FFC107;
+            margin-bottom: 8px;
+        }
+
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .stat-item {
+            font-size: 0.9rem;
+            color: #B0BEC5;
+        }
+
+        .stat-value {
+            font-weight: 700;
+            color: #fff;
+        }
+
+        /* 状态指示器 */
+        .status-indicator {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: currentColor;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .operations-pipeline {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto 1fr auto auto;
+            }
+
+            .overview-bar {
+                grid-template-columns: repeat(2, 1fr);
+                grid-rows: repeat(2, 1fr);
+            }
+
+            .left-platforms, .right-platforms {
+                flex-direction: row;
+                gap: 15px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .page-title {
+                font-size: 2.2rem;
+            }
+
+            .overview-bar {
+                grid-template-columns: 1fr;
+            }
+
+            .left-platforms, .right-platforms {
+                flex-direction: column;
+            }
+
+            .summary-stats {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+        }
+
+        /* 键盘提示 */
+        .keyboard-hint {
+            position: fixed;
+            bottom: 15px;
+            left: 15px;
+            font-size: 0.75rem;
+            color: #666;
+            background: rgba(25, 25, 35, 0.9);
+            padding: 6px 10px;
+            border-radius: 6px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(118, 185, 0, 0.2);
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 页面标题 -->
+        <div class="page-header">
+            <h1 class="page-title">🎛️ 统一运营管理平台</h1>
+            <p class="page-subtitle">Cumulus Linux、NetQ、Air、RCP四大软件平台协同管理</p>
+        </div>
+
+        <!-- 运营管理管道布局 -->
+        <div class="operations-pipeline">
+            <!-- 顶部概览统计 -->
+            <div class="overview-bar">
+                <div class="overview-item">
+                    <span class="overview-icon">🐧</span>
+                    <div class="overview-value">Linux</div>
+                    <div class="overview-label">原生网络OS</div>
+                </div>
+                <div class="overview-item">
+                    <span class="overview-icon">📊</span>
+                    <div class="overview-value">实时</div>
+                    <div class="overview-label">网络监控</div>
+                </div>
+                <div class="overview-item">
+                    <span class="overview-icon">☁️</span>
+                    <div class="overview-value">数字</div>
+                    <div class="overview-label">孪生仿真</div>
+                </div>
+                <div class="overview-item">
+                    <span class="overview-icon">⚙️</span>
+                    <div class="overview-value">512K</div>
+                    <div class="overview-label">GPU自动化</div>
+                </div>
+            </div>
+
+            <!-- 左侧：操作系统与监控平台 -->
+            <div class="left-platforms">
+                <div class="platform-card cumulus-card">
+                    <div class="status-indicator"></div>
+                    <div class="platform-header">
+                        <div class="platform-icon">🐧</div>
+                        <div>
+                            <div class="platform-title">Cumulus Linux</div>
+                            <div class="platform-subtitle">原生Linux网络操作系统</div>
+                        </div>
+                    </div>
+                    <div class="platform-features">
+                        <div class="feature-item">
+                            <span class="feature-bullet">•</span>
+                            <span>加速RoCE、自适应路由等AI网络优化</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-bullet">•</span>
+                            <span>数字孪生技术、内置自动化和开放API</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-bullet">•</span>
+                            <span>轻松启用RoCE、EVPN协议支持</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="platform-card netq-card">
+                    <div class="status-indicator"></div>
+                    <div class="platform-header">
+                        <div class="platform-icon">📊</div>
+                        <div>
+                            <div class="platform-title">NVIDIA NetQ</div>
+                            <div class="platform-subtitle">实时网络运营监控工具</div>
+                        </div>
+                    </div>
+                    <div class="platform-features">
+                        <div class="feature-item">
+                            <span class="feature-bullet">•</span>
+                            <span>硬件监控、拓扑验证、链路健康</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-bullet">•</span>
+                            <span>What Just Happened™ 事件聚合</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-bullet">•</span>
+                            <span>AI性能监控：ASIC、BGP、RoCE</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 中央：统一管理工作流 -->
+            <div class="central-workflow">
+                <div class="workflow-header">
+                    <div class="workflow-title">🔄 运营管理工作流</div>
+                    <div class="workflow-subtitle">从部署到监控的端到端自动化流程</div>
+                </div>
+
+                <div class="workflow-steps">
+                    <div class="workflow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <div class="step-title">架构设计与仿真</div>
+                            <div class="step-desc">通过NVIDIA Air创建数字孪生，验证网络架构和配置</div>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <div class="step-title">自动化部署配置</div>
+                            <div class="step-desc">使用RCP工具自动化生成Cumulus Linux和BlueField配置</div>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <div class="step-title">实时监控运营</div>
+                            <div class="step-desc">NetQ持续监控网络健康、性能指标和RoCE状态</div>
+                        </div>
+                    </div>
+
+                    <div class="workflow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <div class="step-title">问题预测与优化</div>
+                            <div class="step-desc">基于历史数据和AI分析，预测性维护和性能调优</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧：仿真与自动化平台 -->
+            <div class="right-platforms">
+                <div class="platform-card air-card">
+                    <div class="status-indicator"></div>
+                    <div class="platform-header">
+                        <div class="platform-icon">☁️</div>
+                        <div>
+                            <div class="platform-title">NVIDIA Air</div>
+                            <div class="platform-subtitle">数据中心数字孪生平台</div>
+                        </div>
+                    </div>
+                    <div class="platform-features">
+                        <div class="feature-item">
+                            <span class="feature-bullet">•</span>
+                            <span>创建多个数字孪生进行并行测试</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-bullet">•</span>
+                            <span>全尺寸虚拟数据中心，完整数据路径</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-bullet">•</span>
+                            <span>支持以色列-1数据中心数字孪生</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="platform-card rcp-card">
+                    <div class="status-indicator"></div>
+                    <div class="platform-header">
+                        <div class="platform-icon">⚙️</div>
+                        <div>
+                            <div class="platform-title">RCP配置工具</div>
+                            <div class="platform-subtitle">E-W网络自动化配置</div>
+                        </div>
+                    </div>
+                    <div class="platform-features">
+                        <div class="feature-item">
+                            <span class="feature-bullet">•</span>
+                            <span>遵循Spectrum-X参考架构配置</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-bullet">•</span>
+                            <span>基于Ansible容器化部署</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-bullet">•</span>
+                            <span>支持最大512K GPU规模集群</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 底部统计摘要 -->
+            <div class="bottom-summary">
+                <div class="summary-title">🎯 统一平台管理效益</div>
+                <div class="summary-stats">
+                    <div class="stat-item">
+                        部署效率提升：<span class="stat-value">80%+</span>
+                    </div>
+                    <div class="stat-item">
+                        故障检测时间：<span class="stat-value">&lt;1分钟</span>
+                    </div>
+                    <div class="stat-item">
+                        运维成本降低：<span class="stat-value">60%+</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="keyboard-hint">
+        ← 返回上页 • → 下一页 • 统一运营管理展示
+    </div>
+
+    <script>
+        // 页面加载动画
+        document.addEventListener('DOMContentLoaded', () => {
+            // 概览统计动画
+            document.querySelectorAll('.overview-item').forEach((item, index) => {
+                item.style.opacity = '0';
+                item.style.transform = 'translateY(-30px)';
+                setTimeout(() => {
+                    item.style.transition = 'all 0.6s ease';
+                    item.style.opacity = '1';
+                    item.style.transform = 'translateY(0)';
+                }, index * 150);
+            });
+
+            // 工作流步骤动画
+            document.querySelectorAll('.workflow-step').forEach((step, index) => {
+                step.style.opacity = '0';
+                step.style.transform = 'translateX(-50px)';
+                setTimeout(() => {
+                    step.style.transition = 'all 0.8s ease';
+                    step.style.opacity = '1';
+                    step.style.transform = 'translateX(0)';
+                }, 500 + (index * 200));
+            });
+
+            // 平台卡片动画
+            document.querySelectorAll('.platform-card').forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'scale(0.9) translateY(30px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.8s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'scale(1) translateY(0)';
+                }, 300 + (index * 150));
+            });
+        });
+
+        // 键盘导航
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') {
+                window.location.href = 'performance-benefits.html';
+            } else if (e.key === 'ArrowRight') {
+                window.location.href = 'customer-success.html';
+            }
+        });
+
+        // 工作流步骤交互
+        document.querySelectorAll('.workflow-step').forEach(step => {
+            step.addEventListener('mouseenter', () => {
+                step.style.transform = 'translateX(12px) scale(1.02)';
+            });
+            
+            step.addEventListener('mouseleave', () => {
+                step.style.transform = 'translateX(0) scale(1)';
+            });
+        });
+
+        // 平台卡片悬停效果
+        document.querySelectorAll('.platform-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-8px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // 状态指示器颜色循环
+        document.querySelectorAll('.status-indicator').forEach(indicator => {
+            const card = indicator.closest('.platform-card');
+            if (card.classList.contains('cumulus-card')) indicator.style.color = '#4CAF50';
+            else if (card.classList.contains('netq-card')) indicator.style.color = '#0096FF';
+            else if (card.classList.contains('air-card')) indicator.style.color = '#8A2BE2';
+            else if (card.classList.contains('rcp-card')) indicator.style.color = '#FFC107';
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>InfiniBand组网案例展示</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* 针对本页面的特定样式 */
+        .image-container {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0 20px 0;
+            flex: 1;
+        }
+        
+        .network-example {
+            flex: 1;
+            margin: 0 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        /* 修改图片容器样式，保证图片不会溢出 */
+        .image-placeholder {
+            width: 100%;
+            height: 230px;
+            background: rgba(255, 255, 255, 0.7);
+            border: 2px solid #009B77;
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 15px;
+            overflow: hidden; /* 防止内容溢出 */
+            position: relative; /* 设置为相对定位，便于子元素绝对定位 */
+        }
+        
+        /* 移除占位文字，因为已有图片 */
+        .image-placeholder p {
+            display: none;
+        }
+        
+        /* 调整图片样式，确保图片适应容器 */
+        .image-placeholder img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* 保持图片比例并完整显示 */
+            max-width: 100%;
+            max-height: 100%;
+        }
+        
+        .network-title {
+            font-weight: bold;
+            color: #005741;
+            margin-bottom: 10px;
+            font-size: 1.4em;
+            text-align: center;
+        }
+        
+        .network-description {
+            font-size: 1em;
+            color: #333;
+            text-align: center;
+            margin-top: 5px;
+            line-height: 1.5;
+        }
+        
+        .case-study-box {
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 8px;
+            margin: 10px 0;
+            padding: 15px;
+            border-left: 4px solid #009B77;
+        }
+        
+        .case-study-title {
+            font-weight: bold;
+            color: #005741;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+        
+        .notes {
+            font-size: 0.9em;
+            font-style: italic;
+            color: #666;
+            margin-top: 10px;
+            text-align: center;
+        }
+        
+        .content-wrapper {
+            display: flex;
+            flex-direction: column;
+            padding: 10px 30px;
+            flex: 1;
+        }
+        
+        .main-title {
+            font-size: 1.8em;
+            color: #005741;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        /* 确保表格正确显示 */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: left;
+            vertical-align: middle;
+        }
+        
+        th {
+            background-color: rgba(0, 118, 82, 0.1);
+            font-weight: bold;
+        }
+        
+        tr:nth-child(even) {
+            background-color: rgba(0, 118, 82, 0.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="header">
+            <h1>InfiniBand组网案例展示</h1>
+            <h2>NVIDIA InfiniBand智算中心组网创新与Quantum-X800高性能交换解决方案</h2>
+        </div>
+        <div class="content">
+            <div class="content-wrapper">
+                <div class="image-container">
+                    <!-- HDR组网案例 -->
+                    <div class="network-example">
+                        <div class="image-placeholder">
+                            <img src="hdrtopo.png" alt="HDR 200Gb/s组网案例">
+                        </div>
+                        <div class="network-description">
+                            2层HDR组网：60台 40端口/交换机<br>
+                            支持最多100台服务器
+                        </div>
+                    </div>
+                    
+                    <!-- NDR组网案例 -->
+                    <div class="network-example">
+                        <div class="image-placeholder">
+                            <img src="ndrtopo.png" alt="NDR 400Gb/s组网案例">
+                        </div>
+                        <div class="network-description">
+                            2层NDR组网：96台 64端口/交换机<br>
+                            支持最多256台服务器
+                        </div>
+                    </div>
+                    
+                    <!-- XDR组网案例 -->
+                    <div class="network-example">
+                        <div class="image-placeholder">
+                            <img src="xdrtopo.png" alt="XDR 800Gb/s组网案例">
+                        </div>
+                        <div class="network-description">
+                            2层XDR组网：216台 144端口/交换机<br>
+                            支持最多1296台服务器
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="case-study-box">
+                    <div class="case-study-title">实际部署要点</div>
+                    <table>
+                        <tr>
+                            <th>网络类型</th>
+                            <th>速率</th>
+                            <th>适用GPU服务器</th>
+                            <th>2层胖树最大组网规模</th>
+                        </tr>
+                        <tr>
+                            <td style="font-weight:bold;">HDR网络</td>
+                            <td>200Gb/s</td>
+                            <td>适合早期A100 GPU服务器组网</td>
+                            <td>最大支持800端口</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight:bold;">NDR网络</td>
+                            <td>400Gb/s</td>
+                            <td>适合目前H100/200/800/B200 GPU服务器组网</td>
+                            <td>最大支持2048端口</td>
+                        </tr>
+                        <tr>
+                            <td style="font-weight:bold;">XDR网络</td>
+                            <td>800Gb/s</td>
+                            <td>最新B300 GPU服务器组网</td>
+                            <td>最大支持10368端口</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <p class="notes">注：以上组网图为典型部署案例，实际部署需根据具体环境和需求定制</p>
+            </div>
+        </div>
+        <div class="footer">
+            NVIDIA InfiniBand智算中心组网创新与Quantum-X800高性能交换解决方案
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NVIDIA高性能光纤收发器详解</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f0f0f0;
+      font-family: 'Noto Sans SC', sans-serif;
+      overflow: hidden;
+    }
+
+    .slide-container {
+      width: 100vw;
+      height: 56.25vw; /* 16:9 aspect ratio */
+      max-height: 100vh;
+      max-width: 177.78vh; /* 16:9 aspect ratio (reversed) */
+      position: relative;
+      background: #111827;
+      color: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    /* 背景图形元素 */
+    .bg-grid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image:
+        linear-gradient(rgba(24, 92, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(24, 92, 255, 0.05) 1px, transparent 1px);
+      background-size: 20px 20px;
+      z-index: 0;
+    }
+
+    .bg-gradient {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 120% 45%, rgba(76, 29, 149, 0.7) 0%, rgba(17, 24, 39, 0) 50%);
+      z-index: 1;
+    }
+
+    .bg-circle1 {
+      position: absolute;
+      top: -15%;
+      right: -15%;
+      width: 40%;
+      height: 40%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #76b900 0%, #1a4163 100%);
+      filter: blur(80px);
+      opacity: 0.6;
+      z-index: 2;
+    }
+
+    .bg-circle2 {
+      position: absolute;
+      bottom: -10%;
+      left: -10%;
+      width: 30%;
+      height: 30%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0099da 0%, #1e40af 100%);
+      filter: blur(60px);
+      opacity: 0.5;
+      z-index: 2;
+    }
+
+    /* 主要内容 */
+    .content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    .header {
+      padding: 1.8% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .nvidia-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-box {
+      width: 8%;
+      min-width: 100px;
+      height: 36px;
+      background: #76b900;
+      border-radius: 4px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 700;
+      font-size: clamp(16px, 2vw, 22px);
+      transform: skew(-10deg);
+    }
+
+    .partner-text {
+      font-size: clamp(12px, 1.5vw, 16px);
+      font-weight: 500;
+      opacity: 0.9;
+    }
+
+    .slide-title {
+      font-size: clamp(16px, 1.8vw, 20px);
+      font-weight: 600;
+      padding: 0.5% 2%;
+      background: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(5px);
+      border-radius: 20px;
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 1.5% 3%;
+      overflow: hidden;
+    }
+
+    .solution-container {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      width: 100%;
+    }
+
+    .solution-title {
+      text-align: center;
+      font-size: clamp(20px, 2.5vw, 28px);
+      font-weight: 700;
+      color: #76b900;
+      margin-bottom: 20px;
+      margin-top: 0;
+      background: linear-gradient(135deg, #76b900 0%, #a5b4fc 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .solution-content {
+      display: flex;
+      gap: 25px;
+      height: 100%;
+    }
+
+    .left-panel, .right-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .section-title {
+      font-size: clamp(16px, 1.8vw, 20px);
+      font-weight: 600;
+      color: #76b900;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .product-box {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 15px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.3s ease;
+    }
+
+    .product-box:hover {
+      background: rgba(255, 255, 255, 0.08);
+      transform: translateY(-2px);
+    }
+
+    .product-subtitle {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.8);
+      text-align: center;
+      margin-bottom: 15px;
+      font-style: italic;
+    }
+
+    .product-image {
+      text-align: center;
+      margin: 15px 0;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 15px;
+      border-radius: 8px;
+      min-height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .product-image img {
+      max-width: 100%;
+      max-height: 80px;
+      object-fit: contain;
+      border-radius: 4px;
+    }
+
+    .product-description {
+      padding: 12px;
+      background: rgba(118, 185, 0, 0.1);
+      border-radius: 8px;
+      border-left: 4px solid #76b900;
+      font-size: 13px;
+      line-height: 1.4;
+      color: rgba(255, 255, 255, 0.9);
+      margin-bottom: 15px;
+    }
+
+    .feature-list {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      padding: 15px;
+      flex: 1;
+    }
+
+    .feature-title {
+      font-size: 16px;
+      color: #76b900;
+      margin-bottom: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .feature-items {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .feature-item {
+      padding: 8px 12px 8px 28px;
+      position: relative;
+      font-size: 12px;
+      line-height: 1.3;
+      color: rgba(255, 255, 255, 0.9);
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 6px;
+      transition: all 0.3s ease;
+    }
+
+    .feature-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateX(2px);
+    }
+
+    .feature-item::before {
+      content: "✓";
+      position: absolute;
+      left: 8px;
+      top: 8px;
+      color: #76b900;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .footer {
+      padding: 1.5% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .company-name {
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    .page-number {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .rotating-lines {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 50%;
+      height: 50%;
+      z-index: 5;
+      opacity: 0.15;
+      animation: rotate 60s linear infinite;
+    }
+
+    @keyframes rotate {
+      from {
+        transform: translate(-50%, -50%) rotate(0deg);
+      }
+      to {
+        transform: translate(-50%, -50%) rotate(360deg);
+      }
+    }
+
+    /* 动画效果 */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .left-panel, .right-panel {
+      animation: fadeIn 0.8s ease-out forwards;
+    }
+
+    .right-panel {
+      animation-delay: 0.3s;
+    }
+
+    /* 产品比较样式 */
+    .vs-divider {
+      width: 2px;
+      background: linear-gradient(to bottom, transparent, #76b900, transparent);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .vs-badge {
+      background: #76b900;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 12px;
+      position: absolute;
+    }
+
+    /* 图片占位符样式 */
+    .image-placeholder {
+      background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
+      border: 2px dashed #76b900;
+      color: #76b900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      text-align: center;
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <!-- 背景元素 -->
+    <div class="bg-grid"></div>
+    <div class="bg-gradient"></div>
+    <div class="bg-circle1"></div>
+    <div class="bg-circle2"></div>
+
+    <!-- 旋转线框背景 -->
+    <svg class="rotating-lines" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+      <path d="M250,10 L490,250 L250,490 L10,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,50 L450,250 L250,450 L50,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,90 L410,250 L250,410 L90,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,130 L370,250 L250,370 L130,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,170 L330,250 L250,330 L170,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,210 L290,250 L250,290 L210,250 Z" fill="none" stroke="white" stroke-width="1" />
+    </svg>
+
+    <!-- 主要内容 -->
+    <div class="content">
+      <div class="header">
+        <div class="nvidia-logo">
+          <div class="logo-box">NVIDIA</div>
+          <div class="partner-text">High-Performance Fiber Transceivers</div>
+        </div>
+        <div class="slide-title">光纤连接解决方案</div>
+      </div>
+
+      <div class="main-content">
+        <div class="solution-container">
+          <h3 class="solution-title">NVIDIA高性能光纤收发器详解</h3>
+          
+          <div class="solution-content">
+            <div class="left-panel">
+              <div class="section-title">🔗 MFP7E30-Nxxx 单模光纤线缆</div>
+              <div class="product-box">
+                <div class="product-subtitle">MPO12/APC to MPO12/APC 单模光纤线缆</div>
+                
+                <div class="product-image">
+                  <img src="7e30.png" alt="NVIDIA MFP7E30-Nxxx单模光纤线缆" onerror="this.parentElement.innerHTML='<div class=\'image-placeholder\'>🔌<br>MFP7E30<br>单模光纤线缆<br>图片待加载</div>'">
+                </div>
+                
+                <div class="product-description">
+                  高性能单模光纤线缆，专为连接InfiniBand和以太网多模双端口OSFP和单端口OSFP/QSFP112收发器而设计，确保数据中心长距离可靠连接。
+                </div>
+                
+                <div class="feature-list">
+                  <div class="feature-title">🎯 关键特性</div>
+                  <div class="feature-items">
+                    <div class="feature-item">支持InfiniBand和以太网协议</div>
+                    <div class="feature-item">Type-B交叉线缆设计</div>
+                    <div class="feature-item">9/125 μm单模光纤</div>
+                    <div class="feature-item">8度角抛光MPO-12/APC连接器</div>
+                    <div class="feature-item">长达150米的传输距离</div>
+                    <div class="feature-item">符合Telcordia GR-1435标准</div>
+                    <div class="feature-item">LSZH(低烟无卤)外壳</div>
+                    <div class="feature-item">推拉式锁定机制</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="vs-divider">
+              <div class="vs-badge">VS</div>
+            </div>
+            
+            <div class="right-panel">
+              <div class="section-title">🌐 MFP7E40-Nxxx 单模分支光纤线缆</div>
+              <div class="product-box">
+                <div class="product-subtitle">MPO12/APC to 2xMPO12/APC 单模分支光纤线缆</div>
+                
+                <div class="product-image">
+                  <img src="7e40.png" alt="NVIDIA MFP7E40-Nxxx单模分支光纤线缆" onerror="this.parentElement.innerHTML='<div class=\'image-placeholder\'>🔀<br>MFP7E40<br>分支光纤线缆<br>图片待加载</div>'">
+                </div>
+                
+                <div class="product-description">
+                  单模4通道到2通道分支光纤线缆，2通道端连接两个单端口400Gb/s OSFP或QSFP112收发器，实现每端200Gb/s传输速率。
+                </div>
+                
+                <div class="feature-list">
+                  <div class="feature-title">⚡ 关键特性</div>
+                  <div class="feature-items">
+                    <div class="feature-item">4通道到2通道分支设计</div>
+                    <div class="feature-item">9/125 μm单模光纤</div>
+                    <div class="feature-item">NVIDIA绿色MPO/APC连接器外壳</div>
+                    <div class="feature-item">黄色外包层标识单模光纤</div>
+                    <div class="feature-item">长达50米的传输距离</div>
+                    <div class="feature-item">支持NVLink协议</div>
+                    <div class="feature-item">灵活圆形外包层设计</div>
+                    <div class="feature-item">适用于服务器/存储到交换机连接</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="company-name">为数据中心提供高性能连接解决方案</div>
+        <div class="page-number">光纤收发器详解</div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 导航按钮 -->
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+    <a href="index9.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+    <a href="index11.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+  </div>
+
+  <!-- JavaScript交互效果 -->
+  <script>
+    // 鼠标悬停效果
+    const navButtons = document.querySelectorAll('.nav-button');
+    navButtons.forEach(button => {
+      button.addEventListener('mouseenter', function() {
+        this.style.backgroundColor = '#4a854c';
+        this.style.transform = 'scale(1.05)';
+      });
+      
+      button.addEventListener('mouseleave', function() {
+        this.style.backgroundColor = '#111827';
+        this.style.transform = 'scale(1)';
+      });
+    });
+
+    // 产品框悬停效果增强
+    const productBoxes = document.querySelectorAll('.product-box');
+    productBoxes.forEach(box => {
+      box.addEventListener('mouseenter', function() {
+        this.style.borderColor = 'rgba(118, 185, 0, 0.3)';
+      });
+      
+      box.addEventListener('mouseleave', function() {
+        this.style.borderColor = 'rgba(255, 255, 255, 0.1)';
+      });
+    });
+
+    // 特性项点击效果
+    const featureItems = document.querySelectorAll('.feature-item');
+    featureItems.forEach(item => {
+      item.addEventListener('click', function() {
+        this.style.background = 'rgba(118, 185, 0, 0.2)';
+        setTimeout(() => {
+          this.style.background = 'rgba(255, 255, 255, 0.05)';
+        }, 300);
+      });
+    });
+  </script>
+</body>
+</html>
