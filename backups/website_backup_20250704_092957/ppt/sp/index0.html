@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NVIDIA NPN SP技术大比武 - 目录页</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f0f0f0;
+      font-family: 'Noto Sans SC', sans-serif;
+      overflow: hidden;
+    }
+
+    .slide-container {
+      width: 100vw;
+      height: 56.25vw; /* 16:9 aspect ratio */
+      max-height: 100vh;
+      max-width: 177.78vh; /* 16:9 aspect ratio (reversed) */
+      position: relative;
+      background: #111827;
+      color: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    /* 背景图形元素 */
+    .bg-grid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image:
+        linear-gradient(rgba(24, 92, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(24, 92, 255, 0.05) 1px, transparent 1px);
+      background-size: 20px 20px;
+      z-index: 0;
+    }
+
+    .bg-gradient {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 120% 45%, rgba(76, 29, 149, 0.7) 0%, rgba(17, 24, 39, 0) 50%);
+      z-index: 1;
+    }
+
+    .bg-circle1 {
+      position: absolute;
+      top: -15%;
+      right: -15%;
+      width: 40%;
+      height: 40%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #76b900 0%, #1a4163 100%);
+      filter: blur(80px);
+      opacity: 0.6;
+      z-index: 2;
+    }
+
+    .bg-circle2 {
+      position: absolute;
+      bottom: -10%;
+      left: -10%;
+      width: 30%;
+      height: 30%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0099da 0%, #1e40af 100%);
+      filter: blur(60px);
+      opacity: 0.5;
+      z-index: 2;
+    }
+
+    /* 主要内容 */
+    .content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    .header {
+      padding: 2.5% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .nvidia-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-box {
+      width: 8%;
+      min-width: 100px;
+      height: 36px;
+      background: #76b900;
+      border-radius: 4px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 700;
+      font-size: clamp(16px, 2vw, 22px);
+      transform: skew(-10deg);
+    }
+
+    .partner-text {
+      font-size: clamp(12px, 1.5vw, 16px);
+      font-weight: 500;
+      opacity: 0.9;
+    }
+
+    .date-badge {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 0.8% 1.6%;
+      border-radius: 30px;
+      font-size: clamp(12px, 1.4vw, 14px);
+      font-weight: 500;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 2% 6%;
+    }
+
+    .title {
+      font-size: clamp(28px, 5vw, 48px);
+      font-weight: 600;
+      line-height: 1.2;
+      margin-bottom: 5%;
+      background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      align-self: center;
+    }
+
+    .table-of-contents {
+      width: 70%;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 3% 5%;
+      border-radius: 12px;
+      box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .toc-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 24px;
+      position: relative;
+    }
+
+    .toc-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .toc-number {
+      width: 40px;
+      height: 40px;
+      background: rgba(118, 185, 0, 0.2);
+      border: 1px solid #76b900;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 600;
+      font-size: 18px;
+      margin-right: 20px;
+      flex-shrink: 0;
+    }
+
+    .toc-content {
+      flex: 1;
+    }
+
+    .toc-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: #ffffff;
+    }
+
+    .toc-description {
+      font-size: 16px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .footer {
+      padding: 1.5% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .company-name {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 500;
+    }
+
+    .location-text {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .location-dot {
+      width: 12px;
+      height: 12px;
+      background: #76b900;
+      border-radius: 50%;
+    }
+
+    .rotating-lines {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 50%;
+      height: 50%;
+      z-index: 5;
+      opacity: 0.15;
+      animation: rotate 60s linear infinite;
+    }
+
+    @keyframes rotate {
+      from {
+        transform: translate(-50%, -50%) rotate(0deg);
+      }
+      to {
+        transform: translate(-50%, -50%) rotate(360deg);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <!-- 背景元素 -->
+    <div class="bg-grid"></div>
+    <div class="bg-gradient"></div>
+    <div class="bg-circle1"></div>
+    <div class="bg-circle2"></div>
+
+    <!-- 旋转线框背景 -->
+    <svg class="rotating-lines" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+      <path d="M250,10 L490,250 L250,490 L10,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,50 L450,250 L250,450 L50,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,90 L410,250 L250,410 L90,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,130 L370,250 L250,370 L130,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,170 L330,250 L250,330 L170,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,210 L290,250 L250,290 L210,250 Z" fill="none" stroke="white" stroke-width="1" />
+    </svg>
+
+    <!-- 主要内容 -->
+    <div class="content">
+      <div class="header">
+        <div class="nvidia-logo">
+          <div class="logo-box">NVIDIA</div>
+          <div class="partner-text">Networking NPN Elite Partner</div>
+        </div>
+        <div class="date-badge">2025年5月9日</div>
+      </div>
+
+      <div class="main-content">
+        <!-- 主标题 -->
+        <div class="title">目 录</div>
+
+        <!-- 目录内容 -->
+        <div class="table-of-contents">
+          <div class="toc-item">
+            <div class="toc-number">1</div>
+            <div class="toc-content">
+              <div class="toc-title">技术团队架构介绍</div>
+              <div class="toc-description">团队结构、成员履历及项目经验 (5分钟)</div>
+            </div>
+          </div>
+          
+          <div class="toc-item">
+            <div class="toc-number">2</div>
+            <div class="toc-content">
+              <div class="toc-title">实际项目案例分享</div>
+              <div class="toc-description">国家超级计算济南中心1000P AI算力集群建设项目 (10分钟)</div>
+            </div>
+          </div>
+          
+          <div class="toc-item">
+            <div class="toc-number">3</div>
+            <div class="toc-content">
+              <div class="toc-title">客户需求方案汇报</div>
+              <div class="toc-description">题目A - 300x HGX集群设计与建设方案 (10分钟)</div>
+            </div>
+          </div>
+          
+          <div class="toc-item">
+            <div class="toc-number">4</div>
+            <div class="toc-content">
+              <div class="toc-title">问答环节</div>
+              <div class="toc-description">评委提问与解答 (5分钟)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="company-name">北京正阳恒卓科技有限公司</div>
+        <div class="location-text">
+          <div class="location-dot"></div>
+          <div>北京站</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+        <a href="index.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+        <a href="index1.1.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+    </div>
+</body>
+</html>

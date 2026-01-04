@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NVIDIA DGX GB300 NVL72 组网拓扑架构</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f0f0f0;
+      font-family: 'Noto Sans SC', sans-serif;
+      overflow: hidden;
+    }
+
+    .slide-container {
+      width: 100vw;
+      height: 56.25vw; /* 16:9 aspect ratio */
+      max-height: 100vh;
+      max-width: 177.78vh; /* 16:9 aspect ratio (reversed) */
+      position: relative;
+      background: linear-gradient(135deg, #0c1015 0%, #1a2332 40%, #0f1419 100%);
+      color: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    /* 背景图形元素 */
+    .bg-grid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image:
+        linear-gradient(rgba(118, 185, 0, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(118, 185, 0, 0.04) 1px, transparent 1px);
+      background-size: 20px 20px;
+      z-index: 0;
+    }
+
+    .bg-gradient {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 85% 15%, rgba(118, 185, 0, 0.12) 0%, rgba(12, 16, 21, 0) 50%),
+                  radial-gradient(circle at 15% 85%, rgba(16, 185, 129, 0.08) 0%, rgba(12, 16, 21, 0) 50%);
+      z-index: 1;
+    }
+
+    .bg-circle1 {
+      position: absolute;
+      top: -25%;
+      right: -20%;
+      width: 60%;
+      height: 60%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #76b900 0%, #10b981 100%);
+      filter: blur(120px);
+      opacity: 0.15;
+      z-index: 2;
+    }
+
+    .bg-circle2 {
+      position: absolute;
+      bottom: -20%;
+      left: -25%;
+      width: 50%;
+      height: 50%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      filter: blur(100px);
+      opacity: 0.12;
+      z-index: 2;
+    }
+
+    /* 主要内容 */
+    .content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    .header {
+      padding: 1.8% 3.5%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .nvidia-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-box {
+      width: 8%;
+      min-width: 110px;
+      height: 36px;
+      background: linear-gradient(135deg, #76b900 0%, #10b981 100%);
+      border-radius: 6px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 700;
+      font-size: clamp(16px, 2vw, 20px);
+      color: #0c1015;
+      box-shadow: 0 4px 15px rgba(118, 185, 0, 0.3);
+    }
+
+    .partner-text {
+      font-size: clamp(12px, 1.5vw, 16px);
+      font-weight: 500;
+      opacity: 0.9;
+      color: #76b900;
+    }
+
+    .slide-title {
+      font-size: clamp(14px, 1.6vw, 18px);
+      font-weight: 600;
+      padding: 0.5% 1.5%;
+      background: rgba(16, 185, 129, 0.1);
+      backdrop-filter: blur(5px);
+      border-radius: 20px;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #10b981;
+    }
+
+    .main-content {
+      flex: 1;
+      padding: 1.2% 3%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .title-section {
+      text-align: center;
+      margin-bottom: 1%;
+    }
+
+    .main-title {
+      font-size: clamp(18px, 2.2vw, 26px);
+      font-weight: 700;
+      background: linear-gradient(135deg, #ffffff 0%, #76b900 50%, #10b981 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 0.3%;
+      line-height: 1.1;
+    }
+
+    .layout-container {
+      display: flex;
+      flex: 1;
+      gap: 2%;
+    }
+
+    /* 左侧拓扑图区域 */
+    .topology-section {
+      flex: 3;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 1.2%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .topology-title {
+      font-size: clamp(14px, 1.6vw, 18px);
+      font-weight: 600;
+      color: #76b900;
+      margin-bottom: 1%;
+      text-align: center;
+    }
+
+    .topology-diagram {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 8px;
+      padding: 1%;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .topology-diagram svg {
+      width: 100%;
+      height: 100%;
+      max-height: 350px;
+    }
+
+    /* 右侧信息区域 */
+    .info-section {
+      flex: 2;
+      display: flex;
+      flex-direction: column;
+      gap: 1%;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1%;
+      flex: 1;
+    }
+
+    .info-column {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 1%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .column-title {
+      font-size: clamp(12px, 1.4vw, 16px);
+      font-weight: 600;
+      color: #76b900;
+      margin-bottom: 0.8%;
+      text-align: center;
+      padding: 0.5%;
+      background: rgba(118, 185, 0, 0.1);
+      border-radius: 6px;
+    }
+
+    .info-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.3% 0.6%;
+      margin-bottom: 0.3%;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 4px;
+      font-size: clamp(9px, 1vw, 11px);
+      transition: all 0.3s ease;
+    }
+
+    .info-item:hover {
+      background: rgba(118, 185, 0, 0.08);
+    }
+
+    .info-label {
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .info-value {
+      color: #10b981;
+      font-weight: 600;
+      text-align: right;
+    }
+
+    .highlight-item {
+      background: linear-gradient(135deg, rgba(118, 185, 0, 0.15) 0%, rgba(16, 185, 129, 0.1) 100%);
+      border: 1px solid rgba(118, 185, 0, 0.3);
+    }
+
+    .highlight-item .info-value {
+      color: #76b900;
+      font-weight: 700;
+    }
+
+    /* 存储架构总览 */
+    .storage-overview {
+      grid-column: 1 / -1;
+      background: linear-gradient(135deg, rgba(118, 185, 0, 0.1) 0%, rgba(16, 185, 129, 0.08) 100%);
+      border: 2px solid rgba(118, 185, 0, 0.3);
+      border-radius: 10px;
+      padding: 1%;
+      margin-top: 1%;
+    }
+
+    .overview-title {
+      font-size: clamp(12px, 1.4vw, 16px);
+      font-weight: 700;
+      color: #76b900;
+      text-align: center;
+      margin-bottom: 0.8%;
+    }
+
+    .storage-stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1%;
+    }
+
+    .stat-item {
+      text-align: center;
+      padding: 0.5%;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 6px;
+    }
+
+    .stat-value {
+      font-size: clamp(14px, 1.6vw, 18px);
+      font-weight: 700;
+      color: #76b900;
+      display: block;
+    }
+
+    .stat-label {
+      font-size: clamp(9px, 1vw, 11px);
+      color: rgba(255, 255, 255, 0.8);
+      margin-top: 0.2%;
+    }
+
+    .footer {
+      padding: 1.2% 3.5%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .company-name {
+      font-weight: 500;
+      font-size: clamp(12px, 1.4vw, 16px);
+    }
+
+    .page-number {
+      font-size: clamp(12px, 1.4vw, 16px);
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    /* 数据流动画 */
+    .data-flow {
+      position: absolute;
+      width: 3px;
+      height: 30px;
+      background: linear-gradient(0deg, transparent, #76b900, transparent);
+      animation: dataFlow 4s ease-in-out infinite;
+      opacity: 0.6;
+    }
+
+    .flow1 { top: 15%; left: 20%; animation-delay: 0s; }
+    .flow2 { top: 25%; right: 25%; animation-delay: 1s; }
+    .flow3 { bottom: 30%; left: 35%; animation-delay: 2s; }
+    .flow4 { top: 40%; right: 15%; animation-delay: 3s; }
+
+    @keyframes dataFlow {
+      0% { opacity: 0; transform: translateY(0) scaleY(0); }
+      50% { opacity: 0.8; transform: translateY(-15px) scaleY(1); }
+      100% { opacity: 0; transform: translateY(-30px) scaleY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <!-- 背景元素 -->
+    <div class="bg-grid"></div>
+    <div class="bg-gradient"></div>
+    <div class="bg-circle1"></div>
+    <div class="bg-circle2"></div>
+
+    <!-- 主要内容 -->
+    <div class="content">
+      <div class="header">
+        <div class="nvidia-logo">
+          <div class="logo-box">NVIDIA</div>
+          <div class="partner-text">DGX SuperPOD Infrastructure</div>
+        </div>
+        <div class="slide-title">统一命名空间存储架构</div>
+      </div>
+
+      <div class="main-content">
+        <!-- 标题 -->
+        <div class="title-section">
+          <h1 class="main-title">DGX GB300 NVL72 组网拓扑架构与存储解决方案</h1>
+        </div>
+
+        <!-- 主要布局 -->
+        <div class="layout-container">
+          <!-- 左侧拓扑图 -->
+          <div class="topology-section">
+            <h3 class="topology-title">存储网络拓扑架构图</h3>
+            
+            <div class="topology-diagram">
+              <!-- 数据流动画 -->
+              <div class="data-flow flow1"></div>
+              <div class="data-flow flow2"></div>
+              <div class="data-flow flow3"></div>
+              <div class="data-flow flow4"></div>
+<svg viewBox="0 0 600 350" xmlns="http://www.w3.org/2000/svg">
+                <!-- 计算集群 -->
+                <rect x="20" y="220" width="100" height="35" rx="8" fill="#333" stroke="#76b900" stroke-width="2"></rect>
+                <text x="70" y="243" font-size="12" text-anchor="middle" fill="white" font-weight="600">GB300 集群</text>
+                <text x="70" y="270" font-size="10" text-anchor="middle" fill="#76b900">GB300 NVL72 * 40</text>
+
+                <!-- 计算网络交换机 -->
+                <rect x="150" y="20" width="80" height="25" rx="5" fill="#333" stroke="#10b981" stroke-width="2"></rect>
+                <rect x="360" y="20" width="80" height="25" rx="5" fill="#333" stroke="#10b981" stroke-width="2"></rect><text x="190" y="37" font-size="10" text-anchor="middle" fill="white" font-weight="600">Spine01</text>
+                
+                <text x="400" y="37" font-size="10" text-anchor="middle" fill="white" font-weight="600">Spine32</text><rect x="20" y="120" width="80" height="25" rx="5" fill="#333" stroke="#10b981" stroke-width="2"></rect>
+                <rect x="180" y="120" width="80" height="25" rx="5" fill="#333" stroke="#10b981" stroke-width="2"></rect><rect x="340" y="120" width="80" height="25" rx="5" fill="#333" stroke="#10b981" stroke-width="2"></rect><rect x="500" y="120" width="80" height="25" rx="5" fill="#333" stroke="#10b981" stroke-width="2"></rect><text x="60" y="137" font-size="10" text-anchor="middle" fill="white" font-weight="600">Leaf01-12</text>
+
+                <text x="220" y="137" font-size="10" text-anchor="middle" fill="white" font-weight="600">Leaf13-18</text><text x="380" y="137" font-size="10" text-anchor="middle" fill="white" font-weight="600">Leaf19-38</text><text x="540" y="137" font-size="10" text-anchor="middle" fill="white" font-weight="600">Leaf39-44</text><!-- 存储网络交换机 -->
+                
+                
+
+                <!-- 全闪加速存储 -->
+                <rect x="170" y="220" width="100" height="35" rx="8" fill="#333" stroke="#ef4444" stroke-width="2"></rect>
+                <text x="220" y="243" font-size="11" text-anchor="middle" fill="white" font-weight="600">全闪加速存储</text>
+                <text x="220" y="270" font-size="9" text-anchor="middle" fill="#ef4444">235PB | 40套 AI400X3</text>
+
+                <!-- 温存储 -->
+                <rect x="330" y="220" width="100" height="35" rx="8" fill="#333" stroke="#fbbf24" stroke-width="2"></rect>
+                <text x="380" y="243" font-size="11" text-anchor="middle" fill="white" font-weight="600">温存储</text>
+                <text x="380" y="270" font-size="9" text-anchor="middle" fill="#fbbf24">800PB | 320台 AI3000</text>
+
+                <!-- 冷存储 -->
+                <rect x="490" y="220" width="100" height="35" rx="8" fill="#333" stroke="#8b5cf6" stroke-width="2"></rect>
+                <text x="540" y="243" font-size="11" text-anchor="middle" fill="white" font-weight="600">冷存储</text>
+                <text x="540" y="270" font-size="9" text-anchor="middle" fill="#8b5cf6">1614PB | 89台控制器</text>
+
+                <!-- 管理和监控 -->
+                
+                
+                
+
+                <!-- 连接线 -->
+                <!-- 计算集群到交换机 -->
+                <line x1="190" y1="45" x2="60" y2="120" stroke="#76b900" stroke-width="2"></line>
+                <line x1="190" y1="45" x2="220" y2="120" stroke="#76b900" stroke-width="2"></line>
+                <line x1="190" y1="45" x2="380" y2="120" stroke="#76b900" stroke-width="2"></line>
+
+                <line x1="190" y1="45" x2="540" y2="120" stroke="#76b900" stroke-width="2"></line><line x1="400" y1="45" x2="540" y2="120" stroke="#76b900" stroke-width="2"></line><line x1="400" y1="45" x2="380" y2="120" stroke="#76b900" stroke-width="2"></line><line x1="400" y1="45" x2="220" y2="120" stroke="#76b900" stroke-width="2"></line><line x1="400" y1="45" x2="60" y2="120" stroke="#76b900" stroke-width="2"></line><!-- 交换机到存储 -->
+                <line x1="60" y1="145" x2="60" y2="221" stroke="#10b981" stroke-width="2"></line>
+                <line x1="210" y1="145" x2="210" y2="221" stroke="#10b981" stroke-width="2"></line>
+                
+                
+
+                <line x1="230" y1="145" x2="230" y2="221" stroke="#10b981" stroke-width="2"></line><line x1="370" y1="145" x2="370" y2="221" stroke="#10b981" stroke-width="2"></line><line x1="390" y1="145" x2="390" y2="221" stroke="#10b981" stroke-width="2"></line><line x1="530" y1="145" x2="530" y2="221" stroke="#10b981" stroke-width="2"></line><line x1="550" y1="145" x2="550" y2="221" stroke="#10b981" stroke-width="2"></line><!-- 存储间连接 -->
+                <line x1="260" y1="35" x2="320" y2="35" stroke="#76b900" stroke-width="2" stroke-dasharray="5,5"></line>
+                
+
+                <!-- 管理连接 -->
+                
+                
+                
+
+                <!-- 性能指标标注 -->
+                
+                
+                
+
+                <!-- 网络带宽标注 -->
+                <text x="50" y="15" font-size="9" fill="#76b900" font-weight="600">NDR InfiniBand</text>
+                
+              </svg>
+            </div>
+          </div>
+
+          <!-- 右侧信息面板 -->
+          <div class="info-section">
+            <div class="info-grid">
+              <!-- DGX GB300 NVL72 -->
+              <div class="info-column">
+                <div class="column-title">DGX GB300 NVL72</div>
+                <div class="info-item highlight-item">
+                  <span class="info-label">GPU:</span>
+                  <span class="info-value">72×Blackwell Ultra</span>
+                </div>
+                <div class="info-item highlight-item">
+                  <span class="info-label">CPU核心:</span>
+                  <span class="info-value">2,592</span>
+                </div>
+                <div class="info-item highlight-item">
+                  <span class="info-label">GPU内存:</span>
+                  <span class="info-value">20.1TB HBM3e</span>
+                </div>
+                <div class="info-item highlight-item">
+                  <span class="info-label">AI性能:</span>
+                  <span class="info-value">1,400 petaFLOPS</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">网络:</span>
+                  <span class="info-value">72×800Gb/s ConnectX-8</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">管理:</span>
+                  <span class="info-value">18×BlueField-3 200Gb/s</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">NVLink:</span>
+                  <span class="info-value">9×L1 NVLink交换机</span>
+                </div>
+              </div>
+
+              <!-- 全闪加速存储 -->
+              <div class="info-column">
+                <div class="column-title">全闪加速存储 (235PB)</div>
+                <div class="info-item highlight-item">
+                  <span class="info-label">主机数量:</span>
+                  <span class="info-value">40套</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">型号:</span>
+                  <span class="info-value">2U AI400X3双控</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">接口:</span>
+                  <span class="info-value">NDR200 320个</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">硬盘:</span>
+                  <span class="info-value">3840个61.44TB NVMe</span>
+                </div>
+                <div class="info-item highlight-item">
+                  <span class="info-label">读性能:</span>
+                  <span class="info-value">>3600 GB/s</span>
+                </div>
+                <div class="info-item highlight-item">
+                  <span class="info-label">写性能:</span>
+                  <span class="info-value">>2600 GB/s</span>
+                </div>
+                <div class="info-item highlight-item">
+                  <span class="info-label">IOPS:</span>
+                  <span class="info-value">120M</span>
+                </div>
+              </div>
+
+              <!-- 温存储 -->
+              <div class="info-column">
+                <div class="column-title">温存储 (800PB)</div>
+                <div class="info-item highlight-item">
+                  <span class="info-label">主机数量:</span>
+                  <span class="info-value">320台</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">型号:</span>
+                  <span class="info-value">1U AI3000</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">接口:</span>
+                  <span class="info-value">NDR400GbE 640个</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">管理口:</span>
+                  <span class="info-value">1Gb Ethernet 640个</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">硬盘:</span>
+                  <span class="info-value">6400个122TB NVMe</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">软件:</span>
+                  <span class="info-value">DDN Infinia平台</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">机柜:</span>
+                  <span class="info-value">8个42U 240KW</span>
+                </div>
+              </div>
+
+              <!-- 冷存储 -->
+              <div class="info-column">
+                <div class="column-title">冷存储 (1614PB)</div>
+                <div class="info-item highlight-item">
+                  <span class="info-label">主机数量:</span>
+                  <span class="info-value">89台</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">控制器:</span>
+                  <span class="info-value">2U SFA400NVX2</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">扩展柜:</span>
+                  <span class="info-value">690台 4U SS9024</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">接口:</span>
+                  <span class="info-value">200GB >356个</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">NVMe:</span>
+                  <span class="info-value">480块3.84TB</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">HDD:</span>
+                  <span class="info-value">62100块26TB SAS</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">文件系统:</span>
+                  <span class="info-value">EXAScaler 6</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">机柜:</span>
+                  <span class="info-value">71个42U</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 存储架构总览 -->
+            <div class="storage-overview">
+              <div class="overview-title">统一命名空间存储架构总览</div>
+              <div class="storage-stats">
+                <div class="stat-item">
+                  <span class="stat-value">2649PB</span>
+                  <div class="stat-label">总存储容量</div>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-value">489台</span>
+                  <div class="stat-label">存储设备总数</div>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-value">3600GB/s</span>
+                  <div class="stat-label">峰值读取带宽</div>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-value">120M</span>
+                  <div class="stat-label">峰值IOPS</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="company-name">技术评估</div>
+        <div class="page-number">3 / 3</div>
+      </div>
+    </div>
+  </div>
+    <!-- 导航按钮 -->
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+    <a href="index4.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #0c1015; color: #76b900; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s; border: 1px solid rgba(118, 185, 0, 0.3);">&lt;</a>
+    <a href="index6.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #0c1015; color: #76b900; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s; border: 1px solid rgba(118, 185, 0, 0.3);">&gt;</a>
+  </div>
+</body>
+</html>

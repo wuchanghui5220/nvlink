@@ -1,0 +1,50 @@
+{
+  "products": [
+    {
+      "id": "sample_001",
+      "model": "iPhone 15 Pro",
+      "description": "苹果旗舰手机，钛金属材质，A17 Pro芯片",
+      "createDate": "2024-01-15T08:30:00.000Z",
+      "updateDate": "2024-01-15T08:30:00.000Z"
+    },
+    {
+      "id": "sample_002",
+      "model": "MacBook Pro 14",
+      "description": "专业笔记本电脑，M3芯片，16GB内存",
+      "createDate": "2024-01-16T09:15:00.000Z",
+      "updateDate": "2024-01-16T09:15:00.000Z"
+    }
+  ],
+  "quotes": [
+    {
+      "id": "quote_001",
+      "productId": "sample_001",
+      "customer": "张先生",
+      "price": "8999.00",
+      "date": "2024-01-20",
+      "notes": "首批订购优惠价",
+      "createDate": "2024-01-20T10:30:00.000Z",
+      "updateDate": "2024-01-20T10:30:00.000Z"
+    },
+    {
+      "id": "quote_002",
+      "productId": "sample_001",
+      "customer": "李女士",
+      "price": "9299.00",
+      "date": "2024-01-25",
+      "notes": "标准零售价",
+      "createDate": "2024-01-25T14:20:00.000Z",
+      "updateDate": "2024-01-25T14:20:00.000Z"
+    },
+    {
+      "id": "quote_003",
+      "productId": "sample_002",
+      "customer": "王总",
+      "price": "16999.00",
+      "date": "2024-02-01",
+      "notes": "企业采购价格",
+      "createDate": "2024-02-01T11:45:00.000Z",
+      "updateDate": "2024-02-01T11:45:00.000Z"
+    }
+  ]
+}

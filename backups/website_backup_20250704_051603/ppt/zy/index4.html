@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>北京正阳恒卓科技有限公司 - 替代设计</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(220, 240, 230, 0.8);
+            font-family: 'Arial', sans-serif;
+            overflow-x: hidden;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .slide-container {
+            width: 96%;
+            max-width: 1600px;
+            aspect-ratio: 16/9;
+            background: #f5f5f5;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2);
+            display: flex;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .left-panel {
+            width: 40%;
+            background: linear-gradient(135deg, #2e5f2f 0%, #3e8941 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .right-panel {
+            width: 60%;
+            padding: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+        }
+
+        .logo-container {
+            width: 180px;
+            height: 180px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .company-name-chinese {
+            color: white;
+            font-size: 2em;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 15px;
+            line-height: 1.4;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .company-name-english {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1em;
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 300;
+        }
+
+        .left-footer {
+            position: absolute;
+            bottom: 30px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9em;
+            text-align: center;
+        }
+
+        .presentation-title {
+            font-size: 2.6em;
+            color: #2e5f2f;
+            margin-bottom: 30px;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .presentation-subtitle {
+            font-size: 1.6em;
+            color: #555;
+            margin-bottom: 40px;
+            font-weight: 300;
+        }
+
+        .company-description {
+            color: #444;
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin-bottom: 40px;
+            max-width: 600px;
+        }
+
+        .badges-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .badge {
+            display: flex;
+            align-items: center;
+            background: #f0f7f0;
+            border-left: 4px solid #2e5f2f;
+            padding: 10px 15px;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .badge-icon {
+            margin-right: 10px;
+            color: #2e5f2f;
+            font-size: 1.2em;
+        }
+
+        .badge-text {
+            color: #2e5f2f;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        .year-badge {
+            position: absolute;
+            bottom: 30px;
+            right: 60px;
+            background: rgba(46, 95, 47, 0.1);
+            color: #2e5f2f;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+        }
+
+        /* Decorative elements */
+        .pattern {
+            position: absolute;
+            opacity: 0.1;
+            z-index: 0;
+        }
+
+        .pattern-1 {
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                45deg,
+                #ffffff,
+                #ffffff 10px,
+                transparent 10px,
+                transparent 20px
+            );
+        }
+
+        .floating-dots {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            z-index: 0;
+        }
+
+        .dots-1 {
+            top: 10%;
+            right: 10%;
+            background-image: radial-gradient(circle, #2e5f2f 2px, transparent 2px);
+            background-size: 20px 20px;
+            opacity: 0.1;
+        }
+
+        .dots-2 {
+            bottom: 10%;
+            right: 40%;
+            background-image: radial-gradient(circle, #2e5f2f 3px, transparent 3px);
+            background-size: 30px 30px;
+            opacity: 0.1;
+        }
+
+        @media screen and (max-width: 1200px) {
+            .left-panel {
+                padding: 30px;
+            }
+            .right-panel {
+                padding: 40px;
+            }
+            .presentation-title {
+                font-size: 2em;
+            }
+            .presentation-subtitle {
+                font-size: 1.3em;
+            }
+            .company-description {
+                font-size: 1em;
+            }
+            .logo-container {
+                width: 140px;
+                height: 140px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <!-- Left side panel with logo and company name -->
+        <div class="left-panel">
+            <!-- Decorative pattern -->
+            <div class="pattern pattern-1"></div>
+            
+            <!-- Logo container -->
+            <div class="logo-container">
+                <img src="logo.png" alt="北京正阳恒卓科技有限公司" style="max-width: 80%; max-height: 80%;">
+            </div>
+            
+            <!-- Company name in Chinese and English -->
+            <div class="company-name-chinese">北京正阳恒卓<br>科技有限公司</div>
+            <div class="company-name-english">BEIJING ZHENGYANG HENGZHUO TECHNOLOGY CO., LTD.</div>
+            
+            <!-- Established year -->
+            <div class="left-footer">Est. 2015</div>
+        </div>
+        
+        <!-- Right side panel with presentation information -->
+        <div class="right-panel">
+            <!-- Decorative dots -->
+            <div class="floating-dots dots-1"></div>
+            <div class="floating-dots dots-2"></div>
+            
+            <!-- Presentation title and subtitle -->
+            <h1 class="presentation-title">企业简介与<br>技术解决方案</h1>
+            <div class="presentation-subtitle">深度技术 · 智慧赋能 · 数字转型</div>
+            
+            <!-- Company brief description -->
+            <div class="company-description">
+                我们是NVIDIA networking精英级合作伙伴、compute注册级合作伙伴，拥有一支实力雄厚的工程师团队，专注于高性能计算、深度学习和数据中心网络等领域。致力于提供定制化的技术解决方案，助力客户实现数字化转型。
+            </div>
+            
+            <!-- Partner badges -->
+            <div class="badges-container">
+                <div class="badge">
+                    <div class="badge-icon">★</div>
+                    <div class="badge-text">NVIDIA Networking Elite Partner</div>
+                </div>
+                <div class="badge">
+                    <div class="badge-icon">✓</div>
+                    <div class="badge-text">NVIDIA Compute Registered Partner</div>
+                </div>
+            </div>
+            
+            <!-- Year badge -->
+            <div class="year-badge">© 2024</div>
+        </div>
+    </div>
+</body>
+</html>

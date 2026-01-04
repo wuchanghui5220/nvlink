@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL 工具箱</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .header {
+            padding: 30px 30px 0 30px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 26px;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #888;
+            margin-bottom: 20px;
+            font-size: 13px;
+        }
+
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #f0f0f0;
+            padding: 0 30px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px 20px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            color: #888;
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            position: relative;
+            bottom: -2px;
+        }
+
+        .tab:hover {
+            color: #667eea;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 25px 30px 30px 30px;
+            animation: fadeIn 0.3s;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section {
+            margin-bottom: 18px;
+        }
+
+        .section:last-child {
+            margin-bottom: 0;
+        }
+
+        label {
+            display: block;
+            color: #555;
+            font-weight: 500;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 13px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            resize: vertical;
+            min-height: 100px;
+            transition: border-color 0.3s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 8px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .url-preset-group {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .url-preset {
+            padding: 8px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            background: white;
+            color: #666;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .url-preset:hover {
+            border-color: #667eea;
+            color: #667eea;
+        }
+
+        .url-preset.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: transparent;
+        }
+
+        .base-url-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 13px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            transition: border-color 0.3s;
+        }
+
+        .base-url-input:read-only {
+            background: #f8f8f8;
+            color: #666;
+        }
+
+        .base-url-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button:not(.tab):not(.url-preset) {
+            flex: 1;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-width: 120px;
+        }
+
+        .btn-encode {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-encode:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-decode {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .btn-decode:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(245, 87, 108, 0.4);
+        }
+
+        .btn-clear {
+            background: #f5f5f5;
+            color: #666;
+        }
+
+        .btn-clear:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-copy {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .btn-copy:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(79, 172, 254, 0.4);
+        }
+
+        .btn-copy:disabled {
+            background: #ddd;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-generate {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            color: white;
+        }
+
+        .btn-generate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(250, 112, 154, 0.4);
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .input-group input {
+            flex: 1;
+            padding: 10px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 13px;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .hint {
+            font-size: 11px;
+            color: #999;
+            margin-top: 4px;
+        }
+
+        .qr-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 15px 0;
+        }
+
+        .qr-container:has(> div:empty) {
+            margin: 0;
+        }
+
+        #subscriptionQRCode {
+            padding: 15px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            display: inline-block;
+            min-height: 200px;
+            min-width: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #subscriptionQRCode:empty {
+            display: none;
+        }
+
+        #subscriptionQRCode canvas,
+        #subscriptionQRCode img {
+            border-radius: 4px;
+        }
+
+        .btn-download {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            color: white;
+        }
+
+        .btn-download:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 233, 123, 0.4);
+        }
+
+        .btn-download:disabled {
+            background: #ddd;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #333;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.3s;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                margin: 10px;
+            }
+
+            .header {
+                padding: 20px 20px 0 20px;
+            }
+
+            .tabs {
+                padding: 0 20px;
+            }
+
+            .tab-content {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 22px;
+            }
+
+            .subtitle {
+                font-size: 12px;
+                margin-bottom: 15px;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            button:not(.tab):not(.url-preset) {
+                width: 100%;
+            }
+
+            .tab {
+                font-size: 12px;
+                padding: 10px 8px;
+            }
+
+            textarea {
+                min-height: 80px;
+            }
+
+            .url-preset-group {
+                gap: 6px;
+            }
+
+            .url-preset {
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>URL 工具箱</h1>
+            <p class="subtitle">简洁优雅的在线工具</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('subscription')">生成订阅链接</button>
+            <button class="tab" onclick="switchTab('codec')">URL 编解码</button>
+        </div>
+
+        <!-- 生成订阅链接标签页 -->
+        <div id="subscription" class="tab-content active">
+            <div class="section">
+                <label>基础 URL</label>
+                <div class="url-preset-group">
+                    <button class="url-preset active" onclick="selectBaseURL(this, 'https://nvlink.vip/sub/sub?target=clash&url=')">NvLink</button>
+                    <button class="url-preset" onclick="selectBaseURL(this, 'https://api.dler.io/sub?target=clash&url=')">Dler</button>
+                    <button class="url-preset" onclick="selectBaseURL(this, 'https://sub.xeton.dev/sub?target=clash&url=')">Xeton</button>
+                    <button class="url-preset" onclick="selectBaseURL(this, 'https://api.wcc.best/sub?target=clash&url=')">WCC</button>
+                    <button class="url-preset" onclick="selectBaseURL(this, 'custom')">自定义</button>
+                </div>
+                <input type="text" id="baseUrl" class="base-url-input" value="https://nvlink.vip/sub/sub?target=clash&url=" readonly />
+            </div>
+
+            <div class="section">
+                <label for="subscriptionLinks">原始订阅链接（每行一个）</label>
+                <textarea id="subscriptionLinks" placeholder="请输入订阅链接，每行一个&#10;例如：&#10;https://example1.com/sub&#10;https://example2.com/sub"></textarea>
+                <p class="hint">支持多个订阅链接，每行一个链接，将自动编码并用 | 分隔符拼接</p>
+            </div>
+
+            <div class="section">
+                <label for="subscriptionResult">生成的订阅链接(YAML格式）</label>
+                <textarea id="subscriptionResult" placeholder="生成的订阅链接将显示在这里..." readonly></textarea>
+            </div>
+
+            <div class="qr-container">
+                <div id="subscriptionQRCode"></div>
+            </div>
+
+            <div class="button-group">
+                <button class="btn-generate" onclick="generateSubscription()">生成订阅链接</button>
+                <button class="btn-copy" onclick="copySubscription()" id="copySubBtn" disabled>复制订阅链接</button>
+                <button class="btn-download" onclick="downloadSubscriptionQR()" id="downloadSubQRBtn" disabled>下载二维码</button>
+                <button class="btn-clear" onclick="clearSubscription()">清空</button>
+            </div>
+        </div>
+
+        <!-- URL 编解码标签页 -->
+        <div id="codec" class="tab-content">
+            <div class="section">
+                <label for="input">输入文本</label>
+                <textarea id="input" placeholder="请输入需要编码或解码的文本..."></textarea>
+            </div>
+
+            <div class="section">
+                <label for="output">输出结果</label>
+                <textarea id="output" placeholder="结果将显示在这里..." readonly></textarea>
+            </div>
+
+            <div class="button-group">
+                <button class="btn-encode" onclick="encodeText()">编码</button>
+                <button class="btn-decode" onclick="decodeText()">解码</button>
+                <button class="btn-copy" onclick="copyResult()" id="copyBtn" disabled>复制结果</button>
+                <button class="btn-clear" onclick="clearAll()">清空</button>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // 标签页切换
+        function switchTab(tabName) {
+            // 隐藏所有标签内容
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // 移除所有标签的激活状态
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // 显示选中的标签内容
+            document.getElementById(tabName).classList.add('active');
+
+            // 激活对应的标签
+            event.target.classList.add('active');
+        }
+
+        // Toast 提示
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2000);
+        }
+
+        // ==================== URL 编解码功能 ====================
+        const inputEl = document.getElementById('input');
+        const outputEl = document.getElementById('output');
+        const copyBtn = document.getElementById('copyBtn');
+
+        function encodeText() {
+            const text = inputEl.value;
+            if (!text) {
+                showToast('请输入要编码的文本');
+                return;
+            }
+            outputEl.value = encodeURIComponent(text);
+            copyBtn.disabled = false;
+            showToast('编码完成');
+        }
+
+        function decodeText() {
+            const text = inputEl.value;
+            if (!text) {
+                showToast('请输入要解码的文本');
+                return;
+            }
+            try {
+                outputEl.value = decodeURIComponent(text);
+                copyBtn.disabled = false;
+                showToast('解码完成');
+            } catch (e) {
+                showToast('解码失败，请检查输入格式');
+            }
+        }
+
+        function copyResult() {
+            const text = outputEl.value;
+            if (!text) {
+                showToast('没有可复制的内容');
+                return;
+            }
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('已复制到剪贴板');
+            }).catch(() => {
+                outputEl.select();
+                document.execCommand('copy');
+                showToast('已复制到剪贴板');
+            });
+        }
+
+        function clearAll() {
+            inputEl.value = '';
+            outputEl.value = '';
+            copyBtn.disabled = true;
+            showToast('已清空');
+        }
+
+        // 支持 Ctrl+Enter 快捷键编码
+        inputEl.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && e.ctrlKey) {
+                encodeText();
+            }
+        });
+
+        // ==================== 订阅链接拼接功能 ====================
+        const baseUrlEl = document.getElementById('baseUrl');
+        const subscriptionLinksEl = document.getElementById('subscriptionLinks');
+        const subscriptionResultEl = document.getElementById('subscriptionResult');
+        const copySubBtn = document.getElementById('copySubBtn');
+        const subscriptionQRCodeEl = document.getElementById('subscriptionQRCode');
+        const downloadSubQRBtn = document.getElementById('downloadSubQRBtn');
+        let subscriptionQRInstance = null;
+
+        function generateSubscription() {
+            const baseUrl = baseUrlEl.value.trim();
+            const links = subscriptionLinksEl.value.trim();
+
+            if (!baseUrl) {
+                showToast('请输入基础 URL');
+                return;
+            }
+
+            if (!links) {
+                showToast('请输入至少一个订阅链接');
+                return;
+            }
+
+            // 分割链接（按行）
+            const linkArray = links.split('\n')
+                .map(link => link.trim())
+                .filter(link => link.length > 0);
+
+            if (linkArray.length === 0) {
+                showToast('请输入有效的订阅链接');
+                return;
+            }
+
+            // 对每个链接进行 URL 编码
+            const encodedLinks = linkArray.map(link => encodeURIComponent(link));
+
+            // 用 | 连接所有编码后的链接
+            const joinedLinks = encodedLinks.join('|');
+
+            // 拼接最终的订阅链接
+            const finalUrl = baseUrl + joinedLinks;
+
+            subscriptionResultEl.value = finalUrl;
+            copySubBtn.disabled = false;
+
+            // 生成二维码
+            subscriptionQRCodeEl.innerHTML = '';
+            try {
+                subscriptionQRInstance = new QRCode(subscriptionQRCodeEl, {
+                    text: finalUrl,
+                    width: 256,
+                    height: 256,
+                    colorDark: '#000000',
+                    colorLight: '#ffffff',
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+                downloadSubQRBtn.disabled = false;
+                showToast(`已生成订阅链接和二维码（包含 ${linkArray.length} 个源）`);
+            } catch (e) {
+                showToast(`已生成订阅链接（包含 ${linkArray.length} 个源）`);
+                console.error('二维码生成失败:', e);
+            }
+        }
+
+        function copySubscription() {
+            const text = subscriptionResultEl.value;
+            if (!text) {
+                showToast('没有可复制的订阅链接');
+                return;
+            }
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('订阅链接已复制到剪贴板');
+            }).catch(() => {
+                subscriptionResultEl.select();
+                document.execCommand('copy');
+                showToast('订阅链接已复制到剪贴板');
+            });
+        }
+
+        function downloadSubscriptionQR() {
+            const canvas = subscriptionQRCodeEl.querySelector('canvas');
+            if (!canvas) {
+                showToast('请先生成订阅链接');
+                return;
+            }
+
+            try {
+                canvas.toBlob(function(blob) {
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.download = 'subscription-qrcode.png';
+                    link.href = url;
+                    link.click();
+                    URL.revokeObjectURL(url);
+                    showToast('二维码已下载');
+                });
+            } catch (e) {
+                showToast('下载失败');
+                console.error(e);
+            }
+        }
+
+        function clearSubscription() {
+            subscriptionLinksEl.value = '';
+            subscriptionResultEl.value = '';
+            subscriptionQRCodeEl.innerHTML = '';
+            copySubBtn.disabled = true;
+            downloadSubQRBtn.disabled = true;
+            subscriptionQRInstance = null;
+            showToast('已清空订阅链接');
+        }
+
+        // 基础 URL 选择功能
+        const baseUrlInput = document.getElementById('baseUrl');
+
+        function selectBaseURL(button, url) {
+            // 移除所有按钮的激活状态
+            document.querySelectorAll('.url-preset').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // 激活当前按钮
+            button.classList.add('active');
+
+            if (url === 'custom') {
+                // 自定义模式：清空输入框并允许编辑
+                baseUrlInput.value = '';
+                baseUrlInput.readOnly = false;
+                baseUrlInput.focus();
+            } else {
+                // 预设模式：设置URL并设为只读
+                baseUrlInput.value = url;
+                baseUrlInput.readOnly = true;
+            }
+        }
+    </script>
+</body>
+</html>

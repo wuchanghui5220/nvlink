@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>InfiniBand 子网管理器</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    :root {
+      --primary-blue: #00a2ff;
+      --primary-green: #76b900;
+      --primary-orange: #ffa500;
+      --primary-purple: #4834d4;
+      --primary-red: #ff6b6b;
+      --text-primary: #ffffff;
+      --text-secondary: rgba(255, 255, 255, 0.87);
+    }
+
+    .main-content {
+      padding: 1% 2%;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .page-title {
+      text-align: center;
+      margin-bottom: 1.5%;
+      flex-shrink: 0;
+    }
+
+    .title-main {
+      font-size: clamp(26px, 3vw, 34px);
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary-purple) 0%, var(--primary-blue) 50%, var(--primary-red) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 0.8%;
+    }
+
+    .title-sub {
+      font-size: clamp(14px, 1.6vw, 18px);
+      color: rgba(255, 255, 255, 0.85);
+      font-weight: 500;
+      margin-bottom: 1%;
+    }
+
+    .content-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2%;
+      min-height: 0;
+      overflow-y: auto;
+    }
+
+    /* SM 介绍 */
+    .sm-intro {
+      background: linear-gradient(135deg, rgba(72, 52, 212, 0.15), rgba(72, 52, 212, 0.08));
+      border: 2px solid rgba(72, 52, 212, 0.4);
+      border-radius: 15px;
+      padding: 3%;
+      text-align: center;
+    }
+
+    .sm-icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, var(--primary-purple), #6b46c1);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 36px;
+      font-weight: bold;
+      margin: 0 auto 2%;
+    }
+
+    .sm-title {
+      font-size: clamp(22px, 2.4vw, 28px);
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 1.5%;
+    }
+
+    .sm-description {
+      font-size: clamp(14.5px, 1.6vw, 18px);
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 2%;
+    }
+
+    .sm-highlight {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 2%;
+      margin-top: 2%;
+    }
+
+    .highlight-text {
+      font-size: clamp(14px, 1.5vw, 16px);
+      color: var(--primary-purple);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    /* SM 功能网格 */
+    .functions-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2%;
+    }
+
+    .function-card {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04));
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 15px;
+      padding: 2.5%;
+      transition: all 0.3s ease;
+      height: fit-content;
+    }
+
+    .function-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .function-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 2%;
+      padding-bottom: 1.5%;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .function-icon {
+      width: 45px;
+      height: 45px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .discovery-func .function-icon {
+      background: linear-gradient(135deg, var(--primary-blue), #0078d4);
+    }
+
+    .routing-func .function-icon {
+      background: linear-gradient(135deg, var(--primary-green), #4caf50);
+    }
+
+    .management-func .function-icon {
+      background: linear-gradient(135deg, var(--primary-orange), #ff8c00);
+    }
+
+    .monitoring-func .function-icon {
+      background: linear-gradient(135deg, var(--primary-red), #e53e3e);
+    }
+
+    .function-title {
+      font-size: clamp(16px, 1.7vw, 19px);
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .function-subtitle {
+      font-size: clamp(12px, 1.2vw, 14px);
+      color: rgba(255, 255, 255, 0.6);
+      margin-top: 3px;
+    }
+
+    .function-description {
+      font-size: clamp(13px, 1.4vw, 15px);
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .function-highlight {
+      color: var(--primary-blue);
+      font-weight: 600;
+    }
+
+    /* 高可用架构 */
+    .ha-section {
+      background: linear-gradient(135deg, rgba(118, 185, 0, 0.15), rgba(118, 185, 0, 0.08));
+      border: 2px solid rgba(118, 185, 0, 0.4);
+      border-radius: 15px;
+      padding: 2.5%;
+    }
+
+    .ha-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 2%;
+    }
+
+    .ha-icon {
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, var(--primary-green), #4caf50);
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .ha-title {
+      font-size: clamp(18px, 2vw, 22px);
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .ha-diagram {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 3%;
+      margin: 2% 0;
+    }
+
+    .sm-node {
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid var(--primary-green);
+      border-radius: 12px;
+      padding: 2%;
+      text-align: center;
+      flex: 1;
+      max-width: 150px;
+    }
+
+    .master-sm {
+      border-color: var(--primary-blue);
+      background: rgba(0, 162, 255, 0.1);
+    }
+
+    .standby-sm {
+      border-color: var(--primary-orange);
+      background: rgba(255, 165, 0, 0.1);
+    }
+
+    .sm-status {
+      font-size: clamp(14px, 1.5vw, 16px);
+      font-weight: 700;
+      margin-bottom: 1%;
+    }
+
+    .master-status {
+      color: var(--primary-blue);
+    }
+
+    .standby-status {
+      color: var(--primary-orange);
+    }
+
+    .sm-desc {
+      font-size: clamp(11px, 1.2vw, 13px);
+      color: var(--text-secondary);
+    }
+
+    .arrow {
+      font-size: 24px;
+      color: var(--primary-green);
+    }
+
+    /* 管理框架 */
+    .mgmt-framework {
+      background: linear-gradient(135deg, rgba(255, 107, 107, 0.15), rgba(255, 107, 107, 0.08));
+      border: 2px solid rgba(255, 107, 107, 0.4);
+      border-radius: 15px;
+      padding: 2.5%;
+    }
+
+    .mgmt-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 2%;
+    }
+
+    .mgmt-icon {
+      width: 45px;
+      height: 45px;
+      background: linear-gradient(135deg, var(--primary-red), #e53e3e);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .mgmt-title {
+      font-size: clamp(18px, 2vw, 22px);
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .qp-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2%;
+    }
+
+    .qp-item {
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 10px;
+      padding: 2%;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .qp-number {
+      width: 30px;
+      height: 30px;
+      background: var(--primary-red);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+
+    .qp-content {
+      flex: 1;
+    }
+
+    .qp-name {
+      font-size: clamp(13px, 1.4vw, 15px);
+      color: var(--primary-red);
+      font-weight: 600;
+      margin-bottom: 0.5%;
+    }
+
+    .qp-desc {
+      font-size: clamp(11px, 1.2vw, 13px);
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    @media (max-width: 1200px) {
+      .functions-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5%;
+      }
+      
+      .ha-diagram {
+        flex-direction: column;
+        gap: 2%;
+      }
+      
+      .sm-node {
+        max-width: none;
+      }
+      
+      .qp-list {
+        grid-template-columns: 1fr;
+        gap: 1.5%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <div class="bg-elements">
+      <div class="brain-pattern"></div>
+      <div class="network-signals">
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+      </div>
+    </div>
+    
+    <div class="content">
+      <div class="header" style="padding: 0.6% 2%;">
+        <div class="day-info">
+          <div class="day-badge">5</div>
+          <div class="day-text">第五章：网络大脑 - 子网管理器</div>
+        </div>
+        <div class="section-indicator">SM管理架构</div>
+      </div>
+      
+      <div class="main-content">
+        <div class="page-title">
+          <div class="title-main">网络大脑 - 子网管理器 (SM)</div>
+          <div class="title-sub">集中管理 · 拓扑发现 · 路由计算 · 高可用性</div>
+        </div>
+        
+        <div class="content-wrapper">
+          <!-- SM 介绍 -->
+          <div class="sm-intro">
+            <div class="sm-icon">🧠</div>
+            <div class="sm-title">子网管理器 - 网络指挥官</div>
+            <div class="sm-description">
+              SM 是子网的<strong>"指挥官"</strong>，负责网络的发现、配置、路由计算和健康监控。它维护着一个<strong>子网管理员 (SA)</strong> 数据库，存储网络的所有关键信息。
+            </div>
+            <div class="sm-highlight">
+              <div class="highlight-text">
+                <span>⚡</span>
+                <span>通过主/备 (Master/Standby) 模式实现高可用性</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- SM 核心功能 -->
+          <div class="functions-grid">
+            <!-- 拓扑发现 -->
+            <div class="function-card discovery-func">
+              <div class="function-header">
+                <div class="function-icon">🔍</div>
+                <div>
+                  <div class="function-title">拓扑发现与配置</div>
+                  <div class="function-subtitle">Topology Discovery</div>
+                </div>
+              </div>
+              <div class="function-description">
+                自动发现网络中的所有设备，构建完整的<span class="function-highlight">拓扑图</span>。分配和管理<span class="function-highlight">LID地址</span>，确保子网内地址唯一性。
+              </div>
+            </div>
+            
+            <!-- 路由计算 -->
+            <div class="function-card routing-func">
+              <div class="function-header">
+                <div class="function-icon">🗺️</div>
+                <div>
+                  <div class="function-title">路由表计算与下发</div>
+                  <div class="function-subtitle">Routing Calculation</div>
+                </div>
+              </div>
+              <div class="function-description">
+                基于网络拓扑计算<span class="function-highlight">最优路径</span>，生成并下发路由表到各个交换机。支持多种路由算法和负载均衡策略。
+              </div>
+            </div>
+            
+            <!-- 配置管理 -->
+            <div class="function-card management-func">
+              <div class="function-header">
+                <div class="function-icon">⚙️</div>
+                <div>
+                  <div class="function-title">设备配置管理</div>
+                  <div class="function-subtitle">Device Configuration</div>
+                </div>
+              </div>
+              <div class="function-description">
+                配置网络设备的各种参数，包括<span class="function-highlight">虚拟通道 (VL)</span> 设置、QoS 参数和分区密钥等。
+              </div>
+            </div>
+            
+            <!-- 健康监控 -->
+            <div class="function-card monitoring-func">
+              <div class="function-header">
+                <div class="function-icon">📊</div>
+                <div>
+                  <div class="function-title">网络健康监控</div>
+                  <div class="function-subtitle">Health Monitoring</div>
+                </div>
+              </div>
+              <div class="function-description">
+                持续监控网络状态，检测链路故障和设备异常。触发<span class="function-highlight">重路由</span>和故障恢复机制。
+              </div>
+            </div>
+          </div>
+          
+          <!-- 高可用架构 -->
+          <div class="ha-section">
+            <div class="ha-header">
+              <div class="ha-icon">🔄</div>
+              <div class="ha-title">主/备高可用架构</div>
+            </div>
+            
+            <div class="ha-diagram">
+              <div class="sm-node master-sm">
+                <div class="sm-status master-status">主 SM (Master)</div>
+                <div class="sm-desc">
+                  • 活跃管理网络<br>
+                  • 处理所有管理请求<br>
+                  • 定期发送心跳
+                </div>
+              </div>
+              
+              <div class="arrow">⟷</div>
+              
+              <div class="sm-node standby-sm">
+                <div class="sm-status standby-status">备 SM (Standby)</div>
+                <div class="sm-desc">
+                  • 监听主SM状态<br>
+                  • 同步网络信息<br>
+                  • 故障时自动接管
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 管理框架 -->
+          <div class="mgmt-framework">
+            <div class="mgmt-header">
+              <div class="mgmt-icon">📡</div>
+              <div class="mgmt-title">管理通信框架</div>
+            </div>
+            
+            <div class="qp-list">
+              <div class="qp-item">
+                <div class="qp-number">QP0</div>
+                <div class="qp-content">
+                  <div class="qp-name">子网管理接口 (SMI)</div>
+                  <div class="qp-desc">用于SM与网络设备之间的管理通信，处理配置和控制消息</div>
+                </div>
+              </div>
+              
+              <div class="qp-item">
+                <div class="qp-number">QP1</div>
+                <div class="qp-content">
+                  <div class="qp-name">通用服务接口 (GSI)</div>
+                  <div class="qp-desc">用于节点与SA数据库通信，查询网络信息和服务发现</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="footer" style="padding: 0.6% 2%;">
+        <div class="footer-left">
+          <div class="status-dot"></div>
+          <span>子网管理器 - 集中式网络大脑与高可用架构</span>
+        </div>
+        <div class="footer-badges">
+          <div class="footer-badge badge-install">拓扑发现</div>
+          <div class="footer-badge badge-config">路由计算</div>
+          <div class="footer-badge badge-command">高可用</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+    <a href="IB_PPT_04.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+    <a href="IB_PPT_06.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+  </div>
+</body>
+</html>

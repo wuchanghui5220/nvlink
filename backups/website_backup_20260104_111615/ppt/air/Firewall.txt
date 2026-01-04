@@ -1,0 +1,62 @@
+ubuntu@fw1:~$ sudo cat /etc/netplan/01-netcfg.yaml
+network:
+  version: 2
+  bonds:
+    uplink:
+      interfaces:
+        - eth2
+        - eth1
+      parameters:
+        mode: 802.3ad
+        mii-monitor-interval: 100
+        lacp-rate: fast
+      dhcp4: false
+  ethernets:
+    eth2:
+      dhcp4: false
+    eth1:
+      dhcp4: false
+  vlans:
+    uplink.101:
+      id: 101
+      link: uplink
+      addresses: [10.1.101.4/24]
+      routes:
+        - to: default
+          via: 10.1.101.1
+        - to: 10.1.10.0/24
+          via: 10.1.101.1
+        - to: 10.1.20.0/24
+          via: 10.1.101.1
+    uplink.102:
+      id: 102
+      link: uplink
+      addresses: [10.1.102.4/24]
+      routes:
+        - to: 10.1.30.0/24
+          via: 10.1.102.1
+      nameservers:
+        addresses:
+          - 8.8.8.8
+          - 1.1.1.1
+
+#sudo apt update
+#sudo apt install vlan net-tools
+#sudo modprobe 8021q
+#echo '8021q' | sudo tee -a /etc/modules
+
+#临时开启路由转发功能
+#sudo sysctl net.ipv4.ip_forward=1
+#sudo sysctl net.ipv6.conf.all.forwarding=1
+
+#永久开启路由转发
+#编辑sysctl配置文件：
+#sudo nano /etc/sysctl.conf
+#取消注释或添加以下行：
+#net.ipv4.ip_forward=1
+#net.ipv6.conf.all.forwarding=1
+#应用配置：
+#sudo sysctl -p
+
+#临时删除带外管理默认路由, 使路由转发功能正常工作
+sudo ip route del default via 192.168.200.1

@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>简易图表测试数据展示</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 40px;
+            font-size: 2.5em;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .chart-container {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .chart-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+        
+        .chart-title {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .chart-canvas {
+            position: relative;
+            height: 350px;
+        }
+        
+        .data-table {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        th {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            font-weight: bold;
+        }
+        
+        tr:hover {
+            background-color: #f8f9ff;
+        }
+        
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 简易图表测试数据展示</h1>
+        
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-number">4</div>
+                <div class="stat-label">数据集</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">6</div>
+                <div class="stat-label">图表类型</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">100</div>
+                <div class="stat-label">数据点</div>
+            </div>
+        </div>
+        
+        <div class="charts-grid">
+            <!-- 销售数据柱状图 -->
+            <div class="chart-container">
+                <div class="chart-title">📈 基础销售数据 - 柱状图</div>
+                <div class="chart-canvas">
+                    <canvas id="salesBarChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- 销售数据折线图 -->
+            <div class="chart-container">
+                <div class="chart-title">📉 基础销售数据 - 折线图</div>
+                <div class="chart-canvas">
+                    <canvas id="salesLineChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- 产品对比柱状图 -->
+            <div class="chart-container">
+                <div class="chart-title">🏆 产品对比 - 柱状图</div>
+                <div class="chart-canvas">
+                    <canvas id="productChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- 市场份额饼图 -->
+            <div class="chart-container">
+                <div class="chart-title">🥧 市场份额 - 饼图</div>
+                <div class="chart-canvas">
+                    <canvas id="marketShareChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- 极简数据圆环图 -->
+            <div class="chart-container">
+                <div class="chart-title">⭕ 极简测试数据 - 圆环图</div>
+                <div class="chart-canvas">
+                    <canvas id="simpleDataChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- 综合对比雷达图 -->
+            <div class="chart-container">
+                <div class="chart-title">🎯 产品性能雷达图</div>
+                <div class="chart-canvas">
+                    <canvas id="radarChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 数据表格 -->
+        <div class="data-table">
+            <div class="chart-title">📋 原始数据表格</div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
+                <div>
+                    <h3>销售数据</h3>
+                    <table>
+                        <thead>
+                            <tr><th>月份</th><th>销量</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>1月</td><td>120</td></tr>
+                            <tr><td>2月</td><td>135</td></tr>
+                            <tr><td>3月</td><td>158</td></tr>
+                            <tr><td>4月</td><td>142</td></tr>
+                            <tr><td>5月</td><td>168</td></tr>
+                            <tr><td>6月</td><td>175</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div>
+                    <h3>产品对比</h3>
+                    <table>
+                        <thead>
+                            <tr><th>产品</th><th>数值</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>产品A</td><td>85</td></tr>
+                            <tr><td>产品B</td><td>92</td></tr>
+                            <tr><td>产品C</td><td>78</td></tr>
+                            <tr><td>产品D</td><td>95</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div>
+                    <h3>市场份额</h3>
+                    <table>
+                        <thead>
+                            <tr><th>公司</th><th>份额</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>公司A</td><td>35%</td></tr>
+                            <tr><td>公司B</td><td>28%</td></tr>
+                            <tr><td>公司C</td><td>20%</td></tr>
+                            <tr><td>公司D</td><td>17%</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div>
+                    <h3>极简数据</h3>
+                    <table>
+                        <thead>
+                            <tr><th>类别</th><th>值</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>A</td><td>10</td></tr>
+                            <tr><td>B</td><td>15</td></tr>
+                            <tr><td>C</td><td>8</td></tr>
+                            <tr><td>D</td><td>12</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 图表配置
+        Chart.defaults.font.family = 'Segoe UI';
+        Chart.defaults.color = '#333';
+        
+        // 颜色配置
+        const colors = {
+            primary: ['#667eea', '#764ba2', '#f093fb', '#f5576c', '#4facfe', '#00f2fe'],
+            gradients: [
+                'linear-gradient(45deg, #667eea, #764ba2)',
+                'linear-gradient(45deg, #f093fb, #f5576c)',
+                'linear-gradient(45deg, #4facfe, #00f2fe)',
+                'linear-gradient(45deg, #43e97b, #38f9d7)',
+                'linear-gradient(45deg, #fa709a, #fee140)',
+                'linear-gradient(45deg, #a8edea, #fed6e3)'
+            ]
+        };
+
+        // 1. 销售数据柱状图
+        const salesBarCtx = document.getElementById('salesBarChart').getContext('2d');
+        new Chart(salesBarCtx, {
+            type: 'bar',
+            data: {
+                labels: ['1月', '2月', '3月', '4月', '5月', '6月'],
+                datasets: [{
+                    label: '销量',
+                    data: [120, 135, 158, 142, 168, 175],
+                    backgroundColor: colors.primary.slice(0, 6),
+                    borderColor: colors.primary.slice(0, 6),
+                    borderWidth: 2,
+                    borderRadius: 8,
+                    borderSkipped: false,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(0,0,0,0.8)',
+                        titleColor: 'white',
+                        bodyColor: 'white',
+                        cornerRadius: 8
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(0,0,0,0.1)' }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+
+        // 2. 销售数据折线图
+        const salesLineCtx = document.getElementById('salesLineChart').getContext('2d');
+        new Chart(salesLineCtx, {
+            type: 'line',
+            data: {
+                labels: ['1月', '2月', '3月', '4月', '5月', '6月'],
+                datasets: [{
+                    label: '销量趋势',
+                    data: [120, 135, 158, 142, 168, 175],
+                    borderColor: '#667eea',
+                    backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#667eea',
+                    pointBorderColor: 'white',
+                    pointBorderWidth: 2,
+                    pointRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(0,0,0,0.8)',
+                        titleColor: 'white',
+                        bodyColor: 'white',
+                        cornerRadius: 8
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(0,0,0,0.1)' }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+
+        // 3. 产品对比柱状图
+        const productCtx = document.getElementById('productChart').getContext('2d');
+        new Chart(productCtx, {
+            type: 'bar',
+            data: {
+                labels: ['产品A', '产品B', '产品C', '产品D'],
+                datasets: [{
+                    label: '产品数值',
+                    data: [85, 92, 78, 95],
+                    backgroundColor: ['#f093fb', '#f5576c', '#4facfe', '#43e97b'],
+                    borderColor: ['#f093fb', '#f5576c', '#4facfe', '#43e97b'],
+                    borderWidth: 2,
+                    borderRadius: 8,
+                    borderSkipped: false,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(0,0,0,0.8)',
+                        titleColor: 'white',
+                        bodyColor: 'white',
+                        cornerRadius: 8
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(0,0,0,0.1)' }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+
+        // 4. 市场份额饼图
+        const marketCtx = document.getElementById('marketShareChart').getContext('2d');
+        new Chart(marketCtx, {
+            type: 'pie',
+            data: {
+                labels: ['公司A', '公司B', '公司C', '公司D'],
+                datasets: [{
+                    data: [35, 28, 20, 17],
+                    backgroundColor: ['#667eea', '#764ba2', '#f093fb', '#f5576c'],
+                    borderColor: 'white',
+                    borderWidth: 3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true,
+                            font: { size: 12 }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0,0,0,0.8)',
+                        titleColor: 'white',
+                        bodyColor: 'white',
+                        cornerRadius: 8,
+                        callbacks: {
+                            label: function(context) {
+                                return context.label + ': ' + context.parsed + '%';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // 5. 极简数据圆环图
+        const simpleCtx = document.getElementById('simpleDataChart').getContext('2d');
+        new Chart(simpleCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['A', 'B', 'C', 'D'],
+                datasets: [{
+                    data: [10, 15, 8, 12],
+                    backgroundColor: ['#4facfe', '#00f2fe', '#43e97b', '#38f9d7'],
+                    borderColor: 'white',
+                    borderWidth: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '60%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true,
+                            font: { size: 12 }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0,0,0,0.8)',
+                        titleColor: 'white',
+                        bodyColor: 'white',
+                        cornerRadius: 8
+                    }
+                }
+            }
+        });
+
+        // 6. 雷达图
+        const radarCtx = document.getElementById('radarChart').getContext('2d');
+        new Chart(radarCtx, {
+            type: 'radar',
+            data: {
+                labels: ['性能', '价格', '质量', '服务', '创新'],
+                datasets: [
+                    {
+                        label: '产品A',
+                        data: [85, 75, 90, 80, 70],
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.2)',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#667eea'
+                    },
+                    {
+                        label: '产品B',
+                        data: [92, 85, 88, 90, 85],
+                        borderColor: '#f093fb',
+                        backgroundColor: 'rgba(240, 147, 251, 0.2)',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#f093fb'
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true,
+                            font: { size: 12 }
+                        }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0,0,0,0.8)',
+                        titleColor: 'white',
+                        bodyColor: 'white',
+                        cornerRadius: 8
+                    }
+                },
+                scales: {
+                    r: {
+                        beginAtZero: true,
+                        max: 100,
+                        grid: { color: 'rgba(0,0,0,0.1)' },
+                        angleLines: { color: 'rgba(0,0,0,0.1)' },
+                        pointLabels: { font: { size: 12 } }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

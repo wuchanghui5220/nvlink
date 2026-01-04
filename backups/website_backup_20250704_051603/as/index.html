@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NVIDIA网络解决方案应急响应预案</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.6.1/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', 'SimHei', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background-color: #76b900; /* NVIDIA绿色 */
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px 5px 0 0;
+        }
+        .content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 0 0 5px 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        h2 {
+            color: #333;
+            border-bottom: 2px solid #76b900;
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+        .flowchart {
+            margin: 30px 0;
+            overflow: auto;
+        }
+        .legend {
+            margin-top: 40px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            border-left: 4px solid #76b900;
+        }
+        .legend h3 {
+            margin-top: 0;
+            color: #555;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            border-radius: 3px;
+        }
+        .priority-1 { background-color: #ff5252; }
+        .priority-2 { background-color: #ffb142; }
+        .priority-3 { background-color: #2ed573; }
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #666;
+            font-size: 14px;
+        }
+        @media print {
+            body {
+                background-color: white;
+            }
+            .container {
+                max-width: 100%;
+                padding: 0;
+            }
+            .content {
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>NVIDIA网络解决方案应急响应预案流程图</h1>
+        </header>
+        
+        <div class="content">
+            <div class="introduction">
+                <p>本流程图详细说明了北京正阳恒卓科技有限公司作为NVIDIA精英合作伙伴在处理网络解决方案故障时的标准应急响应流程。该流程确保在发生故障时能够迅速、有效地恢复系统运行，将业务中断影响降至最低。</p>
+            </div>
+            
+            <h2>标准应急响应流程</h2>
+            <div class="flowchart">
+                <div class="mermaid">
+flowchart TD
+    A[故障/事件发生] --> B{故障级别评估}
+    
+    B -->|优先级1: 紧急| C[启动24/7紧急响应]
+    B -->|优先级2: 高级| D[启动标准响应流程]
+    B -->|优先级3: 常规| E[计划性维护]
+    
+    C --> F[第一阶段: 1小时内响应]
+    F --> F1[客户专线接入]
+    F1 --> F2[NVIDIA专家组远程诊断]
+    F2 --> F3[初步故障定位]
+    
+    F3 --> G[第二阶段: 2小时内现场支持]
+    G --> G1[本地团队紧急出动]
+    G1 --> G2[携带预配置备件]
+    G2 --> G3[远程专家组同步会诊]
+    
+    G3 --> H{硬件故障判断}
+    H -->|是| I[第三阶段: 4小时内硬件更换]
+    H -->|否| J[软件/配置调整]
+    
+    I --> I1[从本地备件库调配]
+    I1 --> I2[预配置与现场安装]
+    I2 --> I3[功能与稳定性测试]
+    
+    J --> J1[版本回退/配置恢复]
+    J1 --> J2[应用补丁/参数优化]
+    J2 --> J3[系统重启与验证]
+    
+    I3 --> K[第四阶段: 恢复确认]
+    J3 --> K
+    
+    K --> K1[服务恢复验证测试]
+    K1 --> K2[客户确认签字]
+    K2 --> K3[事件记录与归档]
+    
+    K3 --> L[第五阶段: 后续跟进]
+    L --> L1[72小时内提交RCA报告]
+    L1 --> L2[30天脆弱性监测]
+    L2 --> L3[预防性系统加固建议]
+    
+    subgraph 升级路径
+    M[团队级别解决失败] --> N[区域专家组介入]
+    N --> O[全球NVIDIA总部支持]
+    end
+    
+    F3 -.-> M
+    G3 -.-> M
+    H -.-> M
+    
+    subgraph 并行通告机制
+    P[客户关键联系人通知] 
+    Q[管理层定时状态播报]
+    R[指挥中心协调资源]
+    end
+    
+    C -.-> P
+    C -.-> Q
+    C -.-> R
+    
+    classDef priority1 fill:#ff5252,stroke:#ff0000,color:white;
+    classDef priority2 fill:#ffb142,stroke:#ff9a00,color:white;
+    classDef priority3 fill:#2ed573,stroke:#26ab5b,color:white;
+    classDef normal fill:#f5f5f5,stroke:#ddd,color:black;
+    classDef action fill:#ecf0f1,stroke:#bdc3c7,color:black;
+    classDef decision fill:#74b9ff,stroke:#0984e3,color:white;
+    
+    class C priority1;
+    class D priority2;
+    class E priority3;
+    class B,H decision;
+    class F,G,I,J,K,L normal;
+    class F1,F2,F3,G1,G2,G3,I1,I2,I3,J1,J2,J3,K1,K2,K3,L1,L2,L3,M,N,O,P,Q,R action;
+                </div>
+            </div>
+            
+            <div class="legend">
+                <h3>图例说明</h3>
+                <div class="legend-item">
+                    <div class="legend-color priority-1"></div>
+                    <div>优先级1：紧急 - 系统完全无法使用或严重性能下降，需要立即响应</div>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color priority-2"></div>
+                    <div>优先级2：高级 - 系统功能部分受损，但仍可运行，需要快速响应</div>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color priority-3"></div>
+                    <div>优先级3：常规 - 非关键功能问题，可在正常工作时间内解决</div>
+                </div>
+            </div>
+            
+            <h2>关键响应时间承诺</h2>
+            <table border="1" cellspacing="0" cellpadding="8" style="width:100%; border-collapse:collapse; margin:20px 0;">
+                <tr style="background-color:#76b900; color:white;">
+                    <th>优先级</th>
+                    <th>初始响应</th>
+                    <th>现场支持</th>
+                    <th>解决方案实施</th>
+                    <th>后续RCA报告</th>
+                </tr>
+                <tr>
+                    <td><strong>优先级1：紧急</strong></td>
+                    <td>1小时内</td>
+                    <td>2小时内</td>
+                    <td>4小时内</td>
+                    <td>72小时内</td>
+                </tr>
+                <tr style="background-color:#f9f9f9;">
+                    <td><strong>优先级2：高级</strong></td>
+                    <td>2小时内</td>
+                    <td>4小时内</td>
+                    <td>8小时内</td>
+                    <td>5个工作日内</td>
+                </tr>
+                <tr>
+                    <td><strong>优先级3：常规</strong></td>
+                    <td>4小时内</td>
+                    <td>下一工作日</td>
+                    <td>两个工作日内</td>
+                    <td>10个工作日内</td>
+                </tr>
+            </table>
+            
+            <h2>联系方式</h2>
+            <p>24/7紧急响应热线：<strong>010-63085531</strong></p>
+            <p>技术支持邮箱：<strong>support@zhengytech.com</strong></p>
+            <p>客户门户：<strong>http://zhengytech.com/</strong></p>
+        </div>
+        
+        <footer>
+            <p>© 2025 北京正阳恒卓科技有限公司 - NVIDIA精英合作伙伴</p>
+            <p>文档编号：ER-NVIDIA-2025-03-27</p>
+        </footer>
+    </div>
+
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+    </script>
+</body>
+</html>

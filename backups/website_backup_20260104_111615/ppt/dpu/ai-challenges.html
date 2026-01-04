@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生成式AI数据中心的网络挑战 - NVIDIA Spectrum-X</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Microsoft YaHei", sans-serif;
+            background: #000;
+            color: white;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 复用背景效果 */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(ellipse at top left, rgba(118, 185, 0, 0.15) 0%, transparent 60%),
+                radial-gradient(ellipse at bottom right, rgba(255, 69, 0, 0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at center, rgba(0, 100, 200, 0.05) 0%, transparent 70%),
+                linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 25%, #0f0f0f 50%, #1a1a1a 75%, #0a0a0a 100%);
+            animation: backgroundFlow 12s ease-in-out infinite;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(rgba(118, 185, 0, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(118, 185, 0, 0.03) 1px, transparent 1px);
+            background-size: 100px 100px, 100px 100px;
+            animation: gridShift 25s linear infinite;
+        }
+
+        .data-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #76B900;
+            border-radius: 50%;
+            opacity: 0;
+            animation: particleFloat 8s infinite;
+        }
+
+        .particle:nth-child(2n) {
+            background: rgba(255, 69, 0, 0.6);
+            animation-duration: 12s;
+        }
+
+        /* 主内容容器 */
+        .slide-container {
+            width: 100%;
+            max-width: 1200px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 页面标题 */
+        .page-title {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 40px;
+            background: linear-gradient(135deg, #FF4500, #76B900);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(255, 69, 0, 0.3);
+            animation: fadeInDown 1s ease-out;
+        }
+
+        /* 主要内容区域 */
+        .content-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            width: 100%;
+            max-width: 1100px;
+            animation: fadeInUp 1.2s ease-out 0.3s both;
+        }
+
+        /* 问题列表 */
+        .challenges-section {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 69, 0, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #FF4500;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .challenge-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(255, 69, 0, 0.05);
+            border-radius: 8px;
+            border-left: 4px solid #FF4500;
+        }
+
+        .challenge-icon {
+            color: #FF4500;
+            font-size: 1.2rem;
+            margin-right: 15px;
+            margin-top: 2px;
+        }
+
+        .challenge-content {
+            flex: 1;
+            text-align: left;
+        }
+
+        .challenge-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+
+        .challenge-desc {
+            font-size: 0.95rem;
+            color: #ddd;
+            line-height: 1.4;
+        }
+
+        /* AI工厂需求 */
+        .requirements-section {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(118, 185, 0, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .requirements-section .section-title {
+            color: #76B900;
+        }
+
+        .requirement-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(118, 185, 0, 0.05);
+            border-radius: 8px;
+            border-left: 4px solid #76B900;
+        }
+
+        .requirement-icon {
+            color: #76B900;
+            font-size: 1.2rem;
+            margin-right: 15px;
+            margin-top: 2px;
+        }
+
+        .requirement-content {
+            flex: 1;
+            text-align: left;
+        }
+
+        .requirement-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+
+        .requirement-desc {
+            font-size: 0.95rem;
+            color: #ddd;
+            line-height: 1.4;
+        }
+
+        /* 核心统计数据 */
+        .key-stats {
+            position: absolute;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 40px;
+            animation: fadeIn 1.5s ease-out 1s both;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 15px 25px;
+            background: rgba(118, 185, 0, 0.1);
+            border: 1px solid rgba(118, 185, 0, 0.3);
+            border-radius: 8px;
+        }
+
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #76B900;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #ccc;
+        }
+
+        /* 导航提示 */
+        .navigation-hint {
+            position: absolute;
+            top: 30px;
+            right: 40px;
+            display: flex;
+            gap: 20px;
+            font-size: 0.9rem;
+            color: #888;
+            animation: fadeIn 1.5s ease-out 1.2s both;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-key {
+            background: rgba(118, 185, 0, 0.2);
+            color: #76B900;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-weight: 600;
+        }
+
+        /* 动画定义 */
+        @keyframes backgroundFlow {
+            0%, 100% { 
+                filter: hue-rotate(0deg) brightness(1);
+            }
+            50% { 
+                filter: hue-rotate(10deg) brightness(1.1);
+            }
+        }
+
+        @keyframes gridShift {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(100px, 100px); }
+        }
+
+        @keyframes particleFloat {
+            0% { 
+                opacity: 0;
+                transform: translateY(100vh) translateX(0px) scale(0);
+            }
+            10% {
+                opacity: 1;
+                transform: translateY(90vh) translateX(10px) scale(1);
+            }
+            90% {
+                opacity: 1;
+                transform: translateY(-10vh) translateX(-10px) scale(1);
+            }
+            100% { 
+                opacity: 0;
+                transform: translateY(-20vh) translateX(-20px) scale(0);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .content-container {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            
+            .page-title {
+                font-size: 2.2rem;
+            }
+            
+            .key-stats {
+                flex-direction: column;
+                gap: 15px;
+                bottom: 40px;
+            }
+            
+            .navigation-hint {
+                top: 20px;
+                right: 20px;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 动态背景元素 -->
+    <div class="data-particles" id="particles"></div>
+    
+    <div class="slide-container">
+        <h1 class="page-title">生成式AI数据中心的网络挑战</h1>
+        
+        <div class="content-container">
+            <!-- 左侧：挑战问题 -->
+            <div class="challenges-section">
+                <h2 class="section-title">核心挑战</h2>
+                
+                <div class="challenge-item">
+                    <div class="challenge-icon">⚡</div>
+                    <div class="challenge-content">
+                        <div class="challenge-title">数据中心规模计算问题</div>
+                        <div class="challenge-desc">生成式AI对计算能力和网络性能提出前所未有的要求</div>
+                    </div>
+                </div>
+
+                <div class="challenge-item">
+                    <div class="challenge-icon">🚀</div>
+                    <div class="challenge-content">
+                        <div class="challenge-title">高性能网络扩展需求</div>
+                        <div class="challenge-desc">传统网络解决方案难以满足海量GPU高速、低延迟通信</div>
+                    </div>
+                </div>
+
+                <div class="challenge-item">
+                    <div class="challenge-icon">🏭</div>
+                    <div class="challenge-content">
+                        <div class="challenge-title">AI工厂基础设施</div>
+                        <div class="challenge-desc">新型生成式AI数据中心需要专门设计的基础设施</div>
+                    </div>
+                </div>
+
+                <div class="challenge-item">
+                    <div class="challenge-icon">📊</div>
+                    <div class="challenge-content">
+                        <div class="challenge-title">传统以太网瓶颈</div>
+                        <div class="challenge-desc">在10万+GPU规模下，有效带宽、延迟和稳定性存在局限</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧：AI Fabric需求 -->
+            <div class="requirements-section">
+                <h2 class="section-title">AI Fabric关键需求</h2>
+                
+                <div class="requirement-item">
+                    <div class="requirement-icon">🔒</div>
+                    <div class="requirement-content">
+                        <div class="requirement-title">租户隔离</div>
+                        <div class="requirement-desc">紧密耦合的进程，确保不同AI任务或租户间互不干扰</div>
+                    </div>
+                </div>
+
+                <div class="requirement-item">
+                    <div class="requirement-icon">⚡</div>
+                    <div class="requirement-content">
+                        <div class="requirement-title">RDMA高带宽利用率</div>
+                        <div class="requirement-desc">绕过CPU直接内存传输，显著降低延迟vs传统TCP</div>
+                    </div>
+                </div>
+
+                <div class="requirement-item">
+                    <div class="requirement-icon">📈</div>
+                    <div class="requirement-content">
+                        <div class="requirement-title">低抖动容忍度</div>
+                        <div class="requirement-desc">P99性能至关重要，AI训练收敛时间对网络抖动极其敏感</div>
+                    </div>
+                </div>
+
+                <div class="requirement-item">
+                    <div class="requirement-icon">🎯</div>
+                    <div class="requirement-content">
+                        <div class="requirement-title">预测性性能</div>
+                        <div class="requirement-desc">突发网络容量，AI流量高度突发性需要稳定预测性能</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 关键统计数据 -->
+    <div class="key-stats">
+        <div class="stat-item">
+            <div class="stat-number">10万+</div>
+            <div class="stat-label">GPU规模</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">P99</div>
+            <div class="stat-label">性能指标</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-number">RDMA</div>
+            <div class="stat-label">vs TCP</div>
+        </div>
+    </div>
+
+    <!-- 导航提示 -->
+    <div class="navigation-hint">
+        <div class="nav-item">
+            <span class="nav-key">←</span>
+            <span>议程</span>
+        </div>
+        <div class="nav-item">
+            <span class="nav-key">→</span>
+            <span>Spectrum-X</span>
+        </div>
+    </div>
+
+    <script>
+        // 创建动态粒子效果
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 25;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 8 + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // 鼠标跟踪光效
+        function createMouseGlow() {
+            let mouseGlow = document.createElement('div');
+            mouseGlow.style.cssText = `
+                position: fixed;
+                width: 200px;
+                height: 200px;
+                background: radial-gradient(circle, rgba(118, 185, 0, 0.08) 0%, transparent 70%);
+                border-radius: 50%;
+                pointer-events: none;
+                z-index: 0;
+                transition: all 0.1s ease;
+                transform: translate(-50%, -50%);
+            `;
+            document.body.appendChild(mouseGlow);
+
+            document.addEventListener('mousemove', function(e) {
+                mouseGlow.style.left = e.clientX + 'px';
+                mouseGlow.style.top = e.clientY + 'px';
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            createParticles();
+            createMouseGlow();
+            
+            // 键盘导航
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'ArrowRight' || e.key === ' ') {
+                    window.location.href = 'solution-overview.html';
+                } else if (e.key === 'ArrowLeft') {
+                    window.location.href = 'contents.html';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

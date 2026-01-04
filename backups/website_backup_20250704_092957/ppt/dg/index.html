@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>鼎亘集团智能体及垂直应用项目算力需求评估</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f0f0f0;
+      font-family: 'Noto Sans SC', sans-serif;
+      overflow: hidden;
+    }
+
+    .slide-container {
+      width: 100vw;
+      height: 56.25vw; /* 16:9 aspect ratio */
+      max-height: 100vh;
+      max-width: 177.78vh; /* 16:9 aspect ratio (reversed) */
+      position: relative;
+      background: linear-gradient(135deg, #0f1419 0%, #1a2332 50%, #0f1419 100%);
+      color: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    /* 背景图形元素 */
+    .bg-grid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image:
+        linear-gradient(rgba(0, 255, 157, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 255, 157, 0.05) 1px, transparent 1px);
+      background-size: 30px 30px;
+      z-index: 0;
+    }
+
+    .bg-gradient {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 85% 20%, rgba(0, 255, 157, 0.15) 0%, rgba(15, 20, 25, 0) 50%),
+                  radial-gradient(circle at 15% 80%, rgba(34, 197, 94, 0.1) 0%, rgba(15, 20, 25, 0) 50%);
+      z-index: 1;
+    }
+
+    .bg-circle1 {
+      position: absolute;
+      top: -20%;
+      right: -15%;
+      width: 50%;
+      height: 50%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #00ff9d 0%, #22c55e 50%, #059669 100%);
+      filter: blur(100px);
+      opacity: 0.3;
+      z-index: 2;
+    }
+
+    .bg-circle2 {
+      position: absolute;
+      bottom: -15%;
+      left: -20%;
+      width: 40%;
+      height: 40%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+      filter: blur(80px);
+      opacity: 0.25;
+      z-index: 2;
+    }
+
+    .bg-circle3 {
+      position: absolute;
+      top: 30%;
+      left: 60%;
+      width: 25%;
+      height: 25%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+      filter: blur(60px);
+      opacity: 0.2;
+      z-index: 2;
+    }
+
+    /* 主要内容 */
+    .content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    .header {
+      padding: 2.5% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .company-logo {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .logo-box {
+      width: 8%;
+      min-width: 120px;
+      height: 40px;
+      background: linear-gradient(135deg, #00ff9d 0%, #22c55e 100%);
+      border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 700;
+      font-size: clamp(16px, 2vw, 22px);
+      color: #0f1419;
+      box-shadow: 0 4px 15px rgba(0, 255, 157, 0.3);
+    }
+
+    .company-text {
+      font-size: clamp(12px, 1.5vw, 16px);
+      font-weight: 500;
+      opacity: 0.9;
+      color: #00ff9d;
+    }
+
+    .date-badge {
+      background: rgba(0, 255, 157, 0.1);
+      padding: 0.8% 2%;
+      border-radius: 25px;
+      font-size: clamp(12px, 1.4vw, 14px);
+      font-weight: 500;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(0, 255, 157, 0.3);
+      color: #00ff9d;
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 2% 6%;
+      text-align: center;
+    }
+
+    .project-badge {
+      background: linear-gradient(135deg, #00ff9d 0%, #22c55e 100%);
+      border-radius: 12px;
+      padding: 1.2% 3%;
+      margin-bottom: 3%;
+      box-shadow: 0 10px 30px rgba(0, 255, 157, 0.4);
+      transform: perspective(400px) rotateX(8deg);
+    }
+
+    .project-text {
+      font-size: clamp(18px, 3vw, 32px);
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: #0f1419;
+      text-transform: uppercase;
+    }
+
+    .title {
+      font-size: clamp(28px, 4.8vw, 48px);
+      font-weight: 700;
+      line-height: 1.3;
+      margin-bottom: 2%;
+      background: linear-gradient(135deg, #ffffff 0%, #00ff9d 50%, #22c55e 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      max-width: 90%;
+    }
+
+    .subtitle-container {
+      background: rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(8px);
+      border-radius: 30px;
+      padding: 1% 3%;
+      margin-bottom: 3%;
+      border: 1px solid rgba(0, 255, 157, 0.2);
+      max-width: 75%;
+    }
+
+    .subtitle {
+      font-size: clamp(16px, 2.5vw, 28px);
+      font-weight: 400;
+      color: rgba(255, 255, 255, 0.9);
+      line-height: 1.4;
+    }
+
+    .stats-container {
+      display: flex;
+      gap: 2%;
+      justify-content: center;
+      margin: 3% 0;
+      width: 100%;
+      max-width: 80%;
+    }
+
+    .stat-item {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(0, 255, 157, 0.2);
+      padding: 1.5% 2%;
+      border-radius: 15px;
+      flex: 1;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .stat-item:hover {
+      background: rgba(0, 255, 157, 0.1);
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0, 255, 157, 0.2);
+    }
+
+    .stat-number {
+      font-size: clamp(20px, 3vw, 32px);
+      font-weight: 700;
+      color: #00ff9d;
+      margin-bottom: 5px;
+    }
+
+    .stat-label {
+      font-size: clamp(10px, 1.2vw, 14px);
+      color: rgba(255, 255, 255, 0.8);
+      font-weight: 500;
+    }
+
+    .tech-tags {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      margin-top: 3%;
+      flex-wrap: wrap;
+    }
+
+    .tech-tag {
+      background: rgba(0, 255, 157, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(0, 255, 157, 0.3);
+      padding: 8px 18px;
+      border-radius: 20px;
+      font-size: clamp(11px, 1.3vw, 13px);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.3s ease;
+      color: #00ff9d;
+    }
+
+    .tech-tag:hover {
+      background: rgba(0, 255, 157, 0.2);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 255, 157, 0.3);
+    }
+
+    .footer {
+      padding: 1.5% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .footer-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .status-dot {
+      width: 12px;
+      height: 12px;
+      background: #00ff9d;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(0, 255, 157, 0.7);
+      }
+      70% {
+        box-shadow: 0 0 0 10px rgba(0, 255, 157, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(0, 255, 157, 0);
+      }
+    }
+
+    .footer-text {
+      font-weight: 500;
+    }
+
+    .badges {
+      display: flex;
+      gap: 15px;
+    }
+
+    .badge {
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: clamp(10px, 1.2vw, 12px);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .badge-ai {
+      background: linear-gradient(90deg, #00ff9d 0%, #22c55e 100%);
+      color: #0f1419;
+      box-shadow: 0 0 15px rgba(0, 255, 157, 0.4);
+    }
+
+    .badge-gpu {
+      background: linear-gradient(90deg, #3b82f6 0%, #1d4ed8 100%);
+      box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+    }
+
+    .badge-datacenter {
+      background: linear-gradient(90deg, #8b5cf6 0%, #6366f1 100%);
+      box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
+    }
+
+    /* GPU集群动画 */
+    .gpu-animation {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 70%;
+      height: 70%;
+      z-index: 3;
+      opacity: 0.08;
+    }
+
+    .gpu-node {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: #00ff9d;
+      border-radius: 2px;
+      box-shadow: 0 0 15px rgba(0, 255, 157, 0.6);
+      animation: gpuPulse 3s ease-in-out infinite;
+    }
+
+    @keyframes gpuPulse {
+      0%, 100% { opacity: 0.3; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.2); }
+    }
+
+    .node-1 { top: 20%; left: 10%; animation-delay: 0s; }
+    .node-2 { top: 20%; left: 30%; animation-delay: 0.2s; }
+    .node-3 { top: 20%; left: 50%; animation-delay: 0.4s; }
+    .node-4 { top: 20%; left: 70%; animation-delay: 0.6s; }
+    .node-5 { top: 20%; right: 10%; animation-delay: 0.8s; }
+    .node-6 { top: 40%; left: 15%; animation-delay: 1s; }
+    .node-7 { top: 40%; left: 35%; animation-delay: 1.2s; }
+    .node-8 { top: 40%; left: 55%; animation-delay: 1.4s; }
+    .node-9 { top: 40%; right: 15%; animation-delay: 1.6s; }
+    .node-10 { top: 60%; left: 10%; animation-delay: 1.8s; }
+    .node-11 { top: 60%; left: 30%; animation-delay: 2s; }
+    .node-12 { top: 60%; left: 50%; animation-delay: 2.2s; }
+    .node-13 { top: 60%; left: 70%; animation-delay: 2.4s; }
+    .node-14 { top: 60%; right: 10%; animation-delay: 2.6s; }
+    .node-15 { bottom: 20%; left: 15%; animation-delay: 2.8s; }
+    .node-16 { bottom: 20%; left: 35%; animation-delay: 3s; }
+    .node-17 { bottom: 20%; left: 55%; animation-delay: 0.5s; }
+    .node-18 { bottom: 20%; right: 15%; animation-delay: 1.5s; }
+
+    .rotating-frame {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 60%;
+      height: 60%;
+      z-index: 4;
+      opacity: 0.1;
+      animation: rotate 90s linear infinite;
+    }
+
+    @keyframes rotate {
+      from {
+        transform: translate(-50%, -50%) rotate(0deg);
+      }
+      to {
+        transform: translate(-50%, -50%) rotate(360deg);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <!-- 背景元素 -->
+    <div class="bg-grid"></div>
+    <div class="bg-gradient"></div>
+    <div class="bg-circle1"></div>
+    <div class="bg-circle2"></div>
+    <div class="bg-circle3"></div>
+
+    <!-- GPU集群动画 -->
+    <div class="gpu-animation">
+      <div class="gpu-node node-1"></div>
+      <div class="gpu-node node-2"></div>
+      <div class="gpu-node node-3"></div>
+      <div class="gpu-node node-4"></div>
+      <div class="gpu-node node-5"></div>
+      <div class="gpu-node node-6"></div>
+      <div class="gpu-node node-7"></div>
+      <div class="gpu-node node-8"></div>
+      <div class="gpu-node node-9"></div>
+      <div class="gpu-node node-10"></div>
+      <div class="gpu-node node-11"></div>
+      <div class="gpu-node node-12"></div>
+      <div class="gpu-node node-13"></div>
+      <div class="gpu-node node-14"></div>
+      <div class="gpu-node node-15"></div>
+      <div class="gpu-node node-16"></div>
+      <div class="gpu-node node-17"></div>
+      <div class="gpu-node node-18"></div>
+    </div>
+
+    <!-- 旋转边框 -->
+    <svg class="rotating-frame" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+      <rect x="20" y="20" width="360" height="360" fill="none" stroke="#00ff9d" stroke-width="1" rx="10" />
+      <rect x="40" y="40" width="320" height="320" fill="none" stroke="#00ff9d" stroke-width="1" rx="8" />
+      <rect x="60" y="60" width="280" height="280" fill="none" stroke="#00ff9d" stroke-width="1" rx="6" />
+      <rect x="80" y="80" width="240" height="240" fill="none" stroke="#00ff9d" stroke-width="1" rx="4" />
+    </svg>
+
+    <!-- 主要内容 -->
+    <div class="content">
+      <div class="header">
+        <div class="company-logo">
+          <div class="logo-box">鼎亘集团</div>
+          <div class="company-text">智能体及垂直应用项目</div>
+        </div>
+        <div class="date-badge">2025年6月</div>
+      </div>
+
+      <div class="main-content">
+        <!-- 项目标识 -->
+        <div class="project-badge">
+          <div class="project-text">AI Infrastructure Assessment</div>
+        </div>
+
+        <!-- 主标题 -->
+        <div class="title">鼎亘集团智能体及垂直应用项目<br>算力需求综合评估报告</div>
+
+        <!-- 副标题 -->
+        <div class="subtitle-container">
+          <div class="subtitle">基于100万用户规模的GPU集群架构设计与存储规划</div>
+        </div>
+
+        <!-- 核心数据展示 -->
+        <div class="stats-container">
+          <div class="stat-item">
+            <div class="stat-number">5,756-8,856</div>
+            <div class="stat-label">H100 GPU总需求</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">100万</div>
+            <div class="stat-label">目标用户规模</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">1,000PB</div>
+            <div class="stat-label">存储集群容量</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">3大模块</div>
+            <div class="stat-label">核心服务体系</div>
+          </div>
+        </div>
+
+        <!-- 技术标签 -->
+        <div class="tech-tags">
+          <div class="tech-tag">CAD 3D渲染</div>
+          <div class="tech-tag">AIGC大模型</div>
+          <div class="tech-tag">DAMS训练</div>
+          <div class="tech-tag">云原生架构</div>
+          <div class="tech-tag">多租户隔离</div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="footer-left">
+          <div class="status-dot"></div>
+          <div class="footer-text">鼎亘集团技术评估中心</div>
+        </div>
+        <div class="badges">
+          <div class="badge badge-ai">AI PLATFORM</div>
+          <div class="badge badge-gpu">GPU CLUSTER</div>
+          <div class="badge badge-datacenter">DATA CENTER</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 导航按钮 -->
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+    <a href="#" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #0f1419; color: #00ff9d; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s; border: 1px solid rgba(0, 255, 157, 0.3);">&lt;</a>
+    <a href="index1.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #0f1419; color: #00ff9d; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s; border: 1px solid rgba(0, 255, 157, 0.3);">&gt;</a>
+  </div>
+</body>
+</html>

@@ -1,0 +1,36 @@
+# 阶段3网络配置 - 最终VLAN配置
+network:
+  version: 2
+  ethernets:
+    eth0:
+      dhcp4: true
+      dhcp6: false
+    eth1:
+      dhcp4: false
+      dhcp6: false
+    eth2:
+      dhcp4: false
+      dhcp6: false
+  bonds:
+    uplink:
+      interfaces:
+        - eth1
+        - eth2
+      parameters:
+        mode: 802.3ad
+        mii-monitor-interval: 100
+        lacp-rate: fast
+        transmit-hash-policy: layer3+4
+      dhcp4: false
+      dhcp6: false
+      addresses: [172.30.1.{IP}/16]  # 将被动态替换
+  vlans:
+    uplink.10:
+      id: 10
+      link: uplink
+      addresses: [10.1.10.{VLAN10_IP}/24]  # 将被动态替换
+      routes:
+        - to: 10.1.10.0/24
+          via: 10.1.10.1
+        - to: 10.1.20.0/24
+          via: 10.1.10.1

@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EVPN Symmetric Routing - 技术概述</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f0f0f0;
+      font-family: 'Noto Sans SC', sans-serif;
+      overflow: hidden;
+    }
+
+    .slide-container {
+      width: 100vw;
+      height: 56.25vw; /* 16:9 aspect ratio */
+      max-height: 100vh;
+      max-width: 177.78vh; /* 16:9 aspect ratio (reversed) */
+      position: relative;
+      background: #111827;
+      color: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    /* 背景图形元素 */
+    .bg-grid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image:
+        linear-gradient(rgba(24, 92, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(24, 92, 255, 0.05) 1px, transparent 1px);
+      background-size: 20px 20px;
+      z-index: 0;
+    }
+
+    .bg-gradient {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 120% 45%, rgba(76, 29, 149, 0.7) 0%, rgba(17, 24, 39, 0) 50%);
+      z-index: 1;
+    }
+
+    .bg-circle1 {
+      position: absolute;
+      top: -15%;
+      right: -15%;
+      width: 40%;
+      height: 40%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #76b900 0%, #1a4163 100%);
+      filter: blur(80px);
+      opacity: 0.6;
+      z-index: 2;
+    }
+
+    .bg-circle2 {
+      position: absolute;
+      bottom: -10%;
+      left: -10%;
+      width: 30%;
+      height: 30%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0099da 0%, #1e40af 100%);
+      filter: blur(60px);
+      opacity: 0.5;
+      z-index: 2;
+    }
+
+    /* 主要内容 */
+    .content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    .header {
+      padding: 2.5% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .nvidia-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-box {
+      width: 8%;
+      min-width: 100px;
+      height: 36px;
+      background: #76b900;
+      border-radius: 4px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 700;
+      font-size: clamp(16px, 2vw, 22px);
+      transform: skew(-10deg);
+    }
+
+    .partner-text {
+      font-size: clamp(12px, 1.5vw, 16px);
+      font-weight: 500;
+      opacity: 0.9;
+    }
+
+    .slide-title {
+      font-size: clamp(16px, 1.8vw, 20px);
+      font-weight: 600;
+      padding: 0.5% 2%;
+      background: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(5px);
+      border-radius: 20px;
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 1.5% 3%;
+      overflow: hidden;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      font-size: clamp(22px, 3vw, 32px);
+      font-weight: 700;
+      margin-bottom: 8px;
+      background: linear-gradient(90deg, #ffffff, #76b900);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      display: inline-block;
+    }
+
+    .section-subtitle {
+      font-size: clamp(13px, 1.6vw, 16px);
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .overview-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+      height: 60%;
+    }
+
+    .overview-card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(12px);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 8px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .overview-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .card-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-right: 12px;
+      flex-shrink: 0;
+    }
+
+    .icon-green {
+      background: linear-gradient(135deg, #76b900 0%, #3e703e 100%);
+      box-shadow: 0 5px 15px rgba(118, 185, 0, 0.3);
+    }
+
+    .icon-blue {
+      background: linear-gradient(135deg, #0099da 0%, #1e40af 100%);
+      box-shadow: 0 5px 15px rgba(0, 153, 218, 0.3);
+    }
+
+    .card-icon svg {
+      width: 24px;
+      height: 24px;
+      fill: white;
+    }
+
+    .card-title {
+      font-size: clamp(16px, 2vw, 20px);
+      font-weight: 600;
+    }
+
+    .card-content {
+      flex: 1;
+      font-size: clamp(13px, 1.4vw, 15px);
+      line-height: 1.5;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .card-content ul {
+      margin: 8px 0;
+      padding-left: 20px;
+      list-style: none;
+    }
+
+    .card-content li {
+      margin-bottom: 8px;
+      position: relative;
+      padding-left: 18px;
+    }
+
+    .card-content li::before {
+      content: "▸";
+      position: absolute;
+      left: 0;
+      color: #76b900;
+      font-weight: bold;
+    }
+
+    .icon-blue + .card-title + .card-content li::before {
+      color: #0099da;
+    }
+
+    .highlight {
+      color: #76b900;
+      font-weight: 500;
+    }
+
+    .blue-highlight {
+      color: #0099da;
+      font-weight: 500;
+    }
+
+    /* 装饰性背景图案 */
+    .card-decoration {
+      position: absolute;
+      bottom: -50px;
+      right: -50px;
+      width: 150px;
+      height: 150px;
+      opacity: 0.05;
+      pointer-events: none;
+    }
+
+    .footer {
+      padding: 1.5% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .page-number {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .company-name {
+      font-weight: 500;
+    }
+
+    .rotating-lines {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 50%;
+      height: 50%;
+      z-index: 5;
+      opacity: 0.15;
+      animation: rotate 60s linear infinite;
+    }
+
+    @keyframes rotate {
+      from {
+        transform: translate(-50%, -50%) rotate(0deg);
+      }
+      to {
+        transform: translate(-50%, -50%) rotate(360deg);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <!-- 背景元素 -->
+    <div class="bg-grid"></div>
+    <div class="bg-gradient"></div>
+    <div class="bg-circle1"></div>
+    <div class="bg-circle2"></div>
+
+    <!-- 旋转线框背景 -->
+    <svg class="rotating-lines" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+      <path d="M250,10 L490,250 L250,490 L10,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,50 L450,250 L250,450 L50,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,90 L410,250 L250,410 L90,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,130 L370,250 L250,370 L130,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,170 L330,250 L250,330 L170,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,210 L290,250 L250,290 L210,250 Z" fill="none" stroke="white" stroke-width="1" />
+    </svg>
+
+    <!-- 主要内容 -->
+    <div class="content">
+      <div class="header">
+        <div class="nvidia-logo">
+          <div class="logo-box">NVIDIA</div>
+          <div class="partner-text">Networking NPN Elite Partner</div>
+        </div>
+        <div class="slide-title">技术概述</div>
+      </div>
+
+      <div class="main-content">
+        <div class="section-header">
+          <div class="section-title">NVIDIA Cumulus BGP EVPN For VXLAN</div>
+          <div class="section-subtitle">现代数据中心网络的标准架构选择</div>
+        </div>
+        
+        <div class="overview-grid">
+          <!-- 第一张卡片：什么是EVPN -->
+          <div class="overview-card">
+            <div class="card-header">
+              <div class="card-icon icon-green">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                </svg>
+              </div>
+              <div class="card-title">什么是EVPN？</div>
+            </div>
+            <div class="card-content">
+              <p>EVPN (Ethernet VPN) 是基于BGP的控制平面：</p>
+              <ul>
+                <li>统一的<span class="highlight">L2/L3控制平面</span></li>
+                <li>基于<span class="highlight">MP-BGP</span>传递MAC/IP</li>
+                <li>支持<span class="highlight">多租户隔离</span></li>
+              </ul>
+              <ul>
+                <li>提供<span class="highlight">分布式网关</span>功能</li>
+                <li>实现<span class="highlight">主动-主动冗余</span></li>
+              </ul>
+            </div>
+            <svg class="card-decoration" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="100" cy="100" r="80" stroke="#76b900" stroke-width="2" fill="none"/>
+              <circle cx="100" cy="100" r="60" stroke="#76b900" stroke-width="1.5" fill="none"/>
+              <circle cx="100" cy="100" r="40" stroke="#76b900" stroke-width="1" fill="none"/>
+            </svg>
+          </div>
+
+          <!-- 第二张卡片：Symmetric Routing特点 -->
+          <div class="overview-card">
+            <div class="card-header">
+              <div class="card-icon icon-blue">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+              </div>
+              <div class="card-title">Symmetric Routing 优势</div>
+            </div>
+            <div class="card-content">
+              <p>相比Asymmetric Routing的显著优势：</p>
+              <ul>
+                <li><span class="blue-highlight">路径对称</span> - 进出流量经过相同VTEP</li>
+                <li><span class="blue-highlight">更好的扩展性</span> - 只需L3 VNI互通</li>
+                <li><span class="blue-highlight">简化故障排查</span> - 流量路径可预测</li>
+                <li><span class="blue-highlight">减少ARP广播</span> - 仅在本地VTEP</li>
+                <li><span class="blue-highlight">支持大规模部署</span> - 适合企业级DC</li>
+              </ul>
+            </div>
+            <svg class="card-decoration" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+              <rect x="40" y="40" width="120" height="120" rx="10" stroke="#0099da" stroke-width="2" fill="none"/>
+              <rect x="60" y="60" width="80" height="80" rx="8" stroke="#0099da" stroke-width="1.5" fill="none"/>
+              <rect x="80" y="80" width="40" height="40" rx="6" stroke="#0099da" stroke-width="1" fill="none"/>
+            </svg>
+          </div>
+
+          <!-- 第三张卡片：关键组件 -->
+          <div class="overview-card">
+            <div class="card-header">
+              <div class="card-icon icon-green">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+                </svg>
+              </div>
+              <div class="card-title">关键技术组件</div>
+            </div>
+            <div class="card-content">
+              <ul>
+                <li><span class="highlight">VXLAN</span> - Overlay网络封装</li>
+                <li><span class="highlight">L2 VNI</span> - 二层网络扩展</li>
+                <li><span class="highlight">L3 VNI</span> - 三层路由互通</li>
+                <li><span class="highlight">VRF</span> - 租户隔离</li>
+                <li><span class="highlight">Anycast Gateway</span> - 分布式网关</li>
+                <li><span class="highlight">BGP Route Types</span> - 控制平面信息</li>
+              </ul>
+            </div>
+            <svg class="card-decoration" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+              <path d="M100,20 L180,100 L100,180 L20,100 Z" stroke="#76b900" stroke-width="2" fill="none"/>
+              <path d="M100,40 L160,100 L100,160 L40,100 Z" stroke="#76b900" stroke-width="1.5" fill="none"/>
+              <path d="M100,60 L140,100 L100,140 L60,100 Z" stroke="#76b900" stroke-width="1" fill="none"/>
+            </svg>
+          </div>
+
+          <!-- 第四张卡片：应用场景 -->
+          <div class="overview-card">
+            <div class="card-header">
+              <div class="card-icon icon-blue">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/>
+                </svg>
+              </div>
+              <div class="card-title">典型应用场景</div>
+            </div>
+            <div class="card-content">
+              <ul>
+                <li><span class="blue-highlight">多租户数据中心</span> - 云服务提供商</li>
+                <li><span class="blue-highlight">企业私有云</span> - 部门级隔离</li>
+                <li><span class="blue-highlight">混合云连接</span> - DCI互联</li>
+                <li><span class="blue-highlight">容器网络</span> - K8s集成</li>
+                <li><span class="blue-highlight">边缘计算</span> - 分布式架构</li>
+                <li><span class="blue-highlight">AI/HPC集群</span> - 高性能网络</li>
+              </ul>
+            </div>
+            <svg class="card-decoration" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+              <polygon points="100,20 150,50 150,100 100,130 50,100 50,50" stroke="#0099da" stroke-width="2" fill="none"/>
+              <polygon points="100,40 130,60 130,90 100,110 70,90 70,60" stroke="#0099da" stroke-width="1.5" fill="none"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="company-name">北京正阳恒卓科技有限公司</div>
+        <div class="page-number">2</div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 导航按钮 -->
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+    <a href="index.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+    <a href="index2.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+  </div>
+</body>
+</html>

@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的学习与分享空间 - 解决方案</title>
+    <style>
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #2c3e50;
+            --background-color: #f0f4f8;
+            --card-background: #ffffff;
+            --text-color: #333333;
+        }
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background: linear-gradient(45deg, #4a90e2, #2c3e50);
+            color: white;
+            padding: 20px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        .banner {
+            position: relative;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .banner h1 {
+            font-size: 2.5em;
+            text-align: center;
+            z-index: 2;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        .tech-circles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+        .tech-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            animation: float 10s infinite ease-in-out;
+        }
+        .tech-circle:nth-child(1) {
+            width: 100px;
+            height: 100px;
+            left: 10%;
+            top: 20%;
+        }
+        .tech-circle:nth-child(2) {
+            width: 150px;
+            height: 150px;
+            right: 20%;
+            bottom: 10%;
+            animation-delay: -5s;
+        }
+        .tech-circle:nth-child(3) {
+            width: 80px;
+            height: 80px;
+            left: 50%;
+            top: 50%;
+            animation-delay: -7s;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .fade-module {
+            opacity: 0;
+        }
+
+        .fade-module.show {
+            animation: fadeIn 1s ease-in forwards;
+        }
+
+        header {
+            background: linear-gradient(45deg, #4a90e2, #2c3e50, #4a90e2, #2c3e50);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: white;
+            padding: 20px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+
+
+        .avatar {
+            position: absolute;
+            bottom: -30px;
+            left: 50px;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 4px solid white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 3;
+            transition: transform 0.3s ease;
+        }
+        .avatar:hover {
+            transform: scale(1.1);
+        }
+        .content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 20px 0;
+        }
+        .card {
+            background-color: var(--card-background);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .card-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        .card-content {
+            padding: 20px;
+        }
+        h2 {
+            color: var(--primary-color);
+            margin-top: 0;
+        }
+        p {
+            margin-bottom: 0;
+        }
+        footer {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 40px 0;
+            margin-top: 40px;
+        }
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        .footer-section {
+            flex: 1;
+            margin: 10px;
+            min-width: 200px;
+        }
+        .footer-section h3 {
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        .footer-section ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .footer-section ul li {
+            margin-bottom: 10px;
+        }
+        .footer-section ul li a {
+            color: #ddd;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        .footer-section ul li a:hover {
+            color: var(--primary-color);
+        }
+        .social-icons {
+            font-size: 1.5em;
+        }
+        .social-icons a {
+            color: white;
+            margin-right: 10px;
+            text-decoration: none;
+        }
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+            .footer-content {
+                flex-direction: column;
+            }
+            .avatar {
+                left: 20px;
+                width: 80px;
+                height: 80px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="banner">
+            <div class="tech-circles">
+                <div class="tech-circle"></div>
+                <div class="tech-circle"></div>
+                <div class="tech-circle"></div>
+            </div>
+            <h1>我的学习与分享空间 - Networking</h1>
+            <a href="/" style="text-decoration: none; color: inherit;">
+            <img src="/images/avatar/avatar.jpg" alt="个人头像" class="avatar">
+            </a>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="content">
+            <div class="card fade-module">
+                <a href="/solutions/small_hgx.pdf" style="text-decoration: none; color: inherit;">
+                <div class="card">
+                    <img src="/images/dgx-a100.jpg" alt="经验分享" class="card-image">
+                    <div class="card-content">
+                        <h2>Small DGX Solution</h2>
+                        <p>ACCELERATE YOUR TENSORFLOW WITH NVIDIA RDMA</p>
+                    </div>
+                </div>
+                </a>
+            </div>
+
+            <div class="card fade-module">
+                <a href="/solutions/caseshare-mdf.pdf" style="text-decoration: none; color: inherit;">
+                <div class="card">
+                    <img src="/images/products.jpg" alt="经验分享" class="card-image">
+                    <div class="card-content">
+                        <h2>Networking Cases Share</h2>
+                        <p>The Critical Role of InfiniBand in Large Model Training</p>
+                    </div>
+                </div>
+                </a>
+            </div>
+
+            <div class="card fade-module">
+                <a href="https://nvcrm.my.site.com/ESPCommunity/s/" target="_blank" style="text-decoration: none; color: inherit;">
+                <div class="card">
+                    <img src="/images/s.png" alt="经验分享" class="card-image">
+                    <div class="card-content">
+                        <h2>NPN Portal</h2>
+                        <p>NVIDIA Enterprise Support Portal, RMA, Create Case for help</p>
+                    </div>
+                </div>
+                </a>
+            </div>
+
+            <div class="card fade-module">
+                <a href="https://www.nvidia.com/en-us/networking/ethernet-switching/" target="_blank" style="text-decoration: none; color: inherit;">
+                <div class="card">
+                    <img src="/images/sn5600.jpg" alt="经验分享" class="card-image">
+                    <div class="card-content">
+                        <h2>Spectrum Ethernet Platform</h2>
+                        <p>NVIDIA Supercharges Ethernet Networking for Generative AI</p>
+                    </div>
+                </div>
+                </a>
+            </div> 
+
+            <div class="card fade-module">
+                <a href="https://www.nvidia.com/en-us/networking/products/data-processing-unit/" target="_blank" style="text-decoration: none; color: inherit;">
+                <div class="card">
+                    <img src="/images/dpu3.jpeg" alt="经验分享" class="card-image">
+                    <div class="card-content">
+                        <h2>BlueField Platform (DPU)</h2>
+                        <p>Transform the Data Center With NVIDIA BlueField</p>
+                    </div>
+                </div>
+                </a>
+            </div>
+
+            <div class="card fade-module">
+                <a href="https://www.nvidia.com/en-us/networking/products/infiniband/" target="_blank" style="text-decoration: none; color: inherit;">
+                <div class="card">
+                    <img src="/images/x800.jpg" alt="经验分享" class="card-image">
+                    <div class="card-content">
+                        <h2>Quantum InfiniBand Platform</h2>
+                        <p>NVIDIA Quantum-X800 InfiniBand for Highest-Performance AI-Dedicated Infrastructure</p>
+                    </div>
+                </div>
+                </a>
+            </div>
+
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>关于我</h3>
+                    <p>这个网站是我记录学习历程、分享知识的平台。</p>
+                </div>
+                <div class="footer-section">
+                    <h3>快速链接</h3>
+                    <ul>
+                        <li><a href="#">首页</a></li>
+                        <!-- <li><a href="#">经验分享</a></li> -->
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>联系我</h3>
+                    <p>Email: vincentwu@zhengytech.com</p>
+                    <div class="social-icons">
+<!--                         <a href="#" title="GitHub">G</a>
+                        <a href="#" title="LinkedIn">L</a>
+                        <a href="#" title="Twitter">T</a> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+              const modules = document.querySelectorAll('.fade-module');
+              
+              function showModules() {
+                modules.forEach((module, index) => {
+                  setTimeout(() => {
+                    module.classList.add('show');
+                  }, index * 300); // 每个模块之间延迟300毫秒
+                });
+              }
+
+              // 页面加载完成后开始动画
+              showModules();
+            });
+    </script>
+</body>
+</html>

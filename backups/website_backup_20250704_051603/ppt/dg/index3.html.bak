@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NVIDIA DGX GB300 NVL72 超大规模AI计算集群组网方案</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f0f0f0;
+      font-family: 'Noto Sans SC', sans-serif;
+      overflow: hidden;
+    }
+
+    .slide-container {
+      width: 100vw;
+      height: 56.25vw; /* 16:9 aspect ratio */
+      max-height: 100vh;
+      max-width: 177.78vh; /* 16:9 aspect ratio (reversed) */
+      position: relative;
+      background: linear-gradient(135deg, #0c1015 0%, #1a2332 40%, #0f1419 100%);
+      color: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    /* 背景图形元素 */
+    .bg-grid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image:
+        linear-gradient(rgba(118, 185, 0, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(118, 185, 0, 0.04) 1px, transparent 1px);
+      background-size: 20px 20px;
+      z-index: 0;
+    }
+
+    .bg-gradient {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 15% 25%, rgba(118, 185, 0, 0.15) 0%, rgba(12, 16, 21, 0) 50%),
+                  radial-gradient(circle at 85% 75%, rgba(16, 185, 129, 0.1) 0%, rgba(12, 16, 21, 0) 50%);
+      z-index: 1;
+    }
+
+    .bg-circle1 {
+      position: absolute;
+      top: -20%;
+      right: -15%;
+      width: 50%;
+      height: 50%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #76b900 0%, #10b981 100%);
+      filter: blur(100px);
+      opacity: 0.2;
+      z-index: 2;
+    }
+
+    .bg-circle2 {
+      position: absolute;
+      bottom: -15%;
+      left: -20%;
+      width: 40%;
+      height: 40%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      filter: blur(80px);
+      opacity: 0.15;
+      z-index: 2;
+    }
+
+    /* 主要内容 */
+    .content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    .header {
+      padding: 1.8% 3.5%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .nvidia-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-box {
+      width: 8%;
+      min-width: 110px;
+      height: 36px;
+      background: linear-gradient(135deg, #76b900 0%, #10b981 100%);
+      border-radius: 6px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 700;
+      font-size: clamp(16px, 2vw, 20px);
+      color: #0c1015;
+      box-shadow: 0 4px 15px rgba(118, 185, 0, 0.3);
+    }
+
+    .partner-text {
+      font-size: clamp(12px, 1.5vw, 16px);
+      font-weight: 500;
+      opacity: 0.9;
+      color: #76b900;
+    }
+
+    .slide-title {
+      font-size: clamp(14px, 1.6vw, 18px);
+      font-weight: 600;
+      padding: 0.5% 1.5%;
+      background: rgba(16, 185, 129, 0.1);
+      backdrop-filter: blur(5px);
+      border-radius: 20px;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #10b981;
+    }
+
+    .main-content {
+      flex: 1;
+      padding: 1.5% 3%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .title-section {
+      text-align: center;
+      margin-bottom: 1%;
+    }
+
+    .main-title {
+      font-size: clamp(18px, 2.2vw, 26px);
+      font-weight: 700;
+      background: linear-gradient(135deg, #ffffff 0%, #76b900 50%, #10b981 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 0.5%;
+      line-height: 1.1;
+    }
+
+    .upgrade-badge {
+      background: linear-gradient(90deg, #76b900 0%, #10b981 100%);
+      color: #0c1015;
+      padding: 0.3% 1.5%;
+      border-radius: 15px;
+      font-size: clamp(11px, 1.2vw, 14px);
+      font-weight: 600;
+      margin-bottom: 1%;
+      display: inline-block;
+    }
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2%;
+      flex: 1;
+    }
+
+    .system-specs {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 1.5%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .section-title {
+      font-size: clamp(16px, 1.8vw, 20px);
+      font-weight: 600;
+      color: #76b900;
+      margin-bottom: 1.5%;
+      text-align: center;
+    }
+
+    .dgx-highlight {
+      background: linear-gradient(135deg, rgba(118, 185, 0, 0.15) 0%, rgba(16, 185, 129, 0.1) 100%);
+      border: 2px solid rgba(118, 185, 0, 0.3);
+      border-radius: 10px;
+      padding: 1.2%;
+      margin-bottom: 1.5%;
+      text-align: center;
+    }
+
+    .dgx-title {
+      font-size: clamp(14px, 1.6vw, 18px);
+      font-weight: 700;
+      color: #76b900;
+      margin-bottom: 0.8%;
+    }
+
+    .dgx-desc {
+      font-size: clamp(11px, 1.2vw, 13px);
+      color: rgba(255, 255, 255, 0.9);
+      line-height: 1.4;
+    }
+
+    .specs-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1%;
+      flex: 1;
+    }
+
+    .spec-item {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 1.2%;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .spec-item:hover {
+      background: rgba(118, 185, 0, 0.1);
+      border-color: rgba(118, 185, 0, 0.3);
+    }
+
+    .spec-number {
+      font-size: clamp(16px, 2.2vw, 26px);
+      font-weight: 700;
+      color: #10b981;
+      margin-bottom: 0.5%;
+    }
+
+    .spec-label {
+      font-size: clamp(10px, 1.1vw, 12px);
+      color: rgba(255, 255, 255, 0.8);
+      font-weight: 500;
+    }
+
+    .performance-section {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 1.5%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .performance-comparison {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2%;
+      flex: 1;
+    }
+
+    .comparison-item {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 1.2%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .comparison-label {
+      font-size: clamp(11px, 1.3vw, 14px);
+      font-weight: 600;
+      color: #ffffff;
+    }
+
+    .comparison-data {
+      display: flex;
+      align-items: center;
+      gap: 1%;
+    }
+
+    .old-value {
+      font-size: clamp(10px, 1.1vw, 12px);
+      color: #ef4444;
+      text-decoration: line-through;
+      opacity: 0.7;
+    }
+
+    .new-value {
+      font-size: clamp(11px, 1.2vw, 14px);
+      color: #10b981;
+      font-weight: 600;
+    }
+
+    .savings-badge {
+      background: linear-gradient(90deg, #22c55e 0%, #16a34a 100%);
+      color: white;
+      padding: 0.3% 0.8%;
+      border-radius: 12px;
+      font-size: clamp(9px, 1vw, 11px);
+      font-weight: 700;
+    }
+
+    .key-advantages {
+      grid-column: 1 / -1;
+      background: linear-gradient(135deg, rgba(118, 185, 0, 0.15) 0%, rgba(16, 185, 129, 0.1) 100%);
+      border: 2px solid rgba(118, 185, 0, 0.3);
+      border-radius: 10px;
+      padding: 1%;
+      margin-top: 1%;
+    }
+
+    .advantages-title {
+      font-size: clamp(14px, 1.6vw, 18px);
+      font-weight: 700;
+      color: #76b900;
+      text-align: center;
+      margin-bottom: 0.8%;
+    }
+
+    .advantages-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2%;
+      text-align: center;
+    }
+
+    .advantage-item {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 1%;
+      border-radius: 8px;
+    }
+
+    .advantage-number {
+      font-size: clamp(14px, 1.8vw, 20px);
+      font-weight: 700;
+      color: #10b981;
+      margin-bottom: 0.3%;
+    }
+
+    .advantage-label {
+      font-size: clamp(9px, 1vw, 11px);
+      color: rgba(255, 255, 255, 0.8);
+      font-weight: 500;
+    }
+
+    .footer {
+      padding: 1.2% 3.5%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .company-name {
+      font-weight: 500;
+      font-size: clamp(12px, 1.4vw, 16px);
+    }
+
+    .page-number {
+      font-size: clamp(12px, 1.4vw, 16px);
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    /* 动画效果 */
+    .network-flow {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 80%;
+      height: 80%;
+      z-index: 3;
+      opacity: 0.06;
+    }
+
+    .flow-line {
+      position: absolute;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #76b900, transparent);
+      animation: dataFlow 4s ease-in-out infinite;
+    }
+
+    .line1 {
+      top: 20%;
+      left: 10%;
+      width: 30%;
+      animation-delay: 0s;
+    }
+
+    .line2 {
+      top: 40%;
+      right: 10%;
+      width: 40%;
+      animation-delay: 1s;
+    }
+
+    .line3 {
+      bottom: 30%;
+      left: 20%;
+      width: 35%;
+      animation-delay: 2s;
+    }
+
+    .line4 {
+      top: 60%;
+      left: 50%;
+      width: 25%;
+      animation-delay: 3s;
+    }
+
+    @keyframes dataFlow {
+      0% {
+        opacity: 0;
+        transform: scaleX(0);
+      }
+      50% {
+        opacity: 1;
+        transform: scaleX(1);
+      }
+      100% {
+        opacity: 0;
+        transform: scaleX(0);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <!-- 背景元素 -->
+    <div class="bg-grid"></div>
+    <div class="bg-gradient"></div>
+    <div class="bg-circle1"></div>
+    <div class="bg-circle2"></div>
+
+    <!-- 网络数据流动画 -->
+    <div class="network-flow">
+      <div class="flow-line line1"></div>
+      <div class="flow-line line2"></div>
+      <div class="flow-line line3"></div>
+      <div class="flow-line line4"></div>
+    </div>
+
+    <!-- 主要内容 -->
+    <div class="content">
+      <div class="header">
+        <div class="nvidia-logo">
+          <div class="logo-box">NVIDIA</div>
+          <div class="partner-text">DGX SuperPOD Architecture</div>
+        </div>
+        <div class="slide-title">项目升级概述与核心优势</div>
+      </div>
+
+      <div class="main-content">
+        <!-- 标题 -->
+        <div class="title-section">
+          <h1 class="main-title">NVIDIA DGX GB300 NVL72<br>超大规模AI计算集群组网方案</h1>
+          <div class="upgrade-badge">H100 → B300 架构升级方案</div>
+        </div>
+
+        <!-- 主要内容区域 -->
+        <div class="content-grid">
+          <!-- DGX GB300系统规格 -->
+          <div class="system-specs">
+            <h3 class="section-title">DGX GB300 核心规格</h3>
+            
+            <div class="dgx-highlight">
+              <div class="dgx-title">NVIDIA DGX GB300 NVL72</div>
+              <div class="dgx-desc">
+                专为AI推理时代设计的综合性AI基础设施解决方案<br>
+                72颗Blackwell Ultra GPU + 36颗Grace CPU
+              </div>
+            </div>
+
+            <div class="specs-grid">
+              <div class="spec-item">
+                <div class="spec-number">72颗</div>
+                <div class="spec-label">B300 GPU</div>
+              </div>
+              <div class="spec-item">
+                <div class="spec-number">20.1TB</div>
+                <div class="spec-label">聚合显存</div>
+              </div>
+              <div class="spec-item">
+                <div class="spec-number">1,400</div>
+                <div class="spec-label">petaFLOPS (FP4)</div>
+              </div>
+              <div class="spec-item">
+                <div class="spec-number">100%</div>
+                <div class="spec-label">液冷设计</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 集群规模对比 -->
+          <div class="performance-section">
+            <h3 class="section-title">集群规模优化对比</h3>
+
+            <div class="performance-comparison">
+              <div class="comparison-item">
+                <div class="comparison-label">CAD 3D渲染模块</div>
+                <div class="comparison-data">
+                  <span class="old-value">7,200张H100</span>
+                  <span class="new-value">2,474张B300</span>
+                  <span class="savings-badge">65.6%节省</span>
+                </div>
+              </div>
+
+              <div class="comparison-item">
+                <div class="comparison-label">AIGC推理模块(FP4)</div>
+                <div class="comparison-data">
+                  <span class="old-value">1,400张H100</span>
+                  <span class="new-value">156张B300</span>
+                  <span class="savings-badge">88.9%节省</span>
+                </div>
+              </div>
+
+              <div class="comparison-item">
+                <div class="comparison-label">DAMS训练模块</div>
+                <div class="comparison-data">
+                  <span class="old-value">256张H100</span>
+                  <span class="new-value">88张B300</span>
+                  <span class="savings-badge">65.6%节省</span>
+                </div>
+              </div>
+
+              <div class="comparison-item">
+                <div class="comparison-label">DGX服务器总数</div>
+                <div class="comparison-data">
+                  <span class="old-value">1,107台DGX H100</span>
+                  <span class="new-value">40台DGX GB300</span>
+                  <span class="savings-badge">96.4%节省</span>
+                </div>
+              </div>
+
+              <div class="comparison-item">
+                <div class="comparison-label">GPU总需求</div>
+                <div class="comparison-data">
+                  <span class="old-value">8,856张H100</span>
+                  <span class="new-value">2,874张B300</span>
+                  <span class="savings-badge">67.5%节省</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 关键优势 -->
+        <div class="key-advantages">
+          <div class="advantages-title">核心技术优势</div>
+          <div class="advantages-grid">
+            <div class="advantage-item">
+              <div class="advantage-number">800Gb/s</div>
+              <div class="advantage-label">InfiniBand带宽</div>
+            </div>
+            <div class="advantage-item">
+              <div class="advantage-number">SuperPOD</div>
+              <div class="advantage-label">参考架构</div>
+            </div>
+            <div class="advantage-item">
+              <div class="advantage-number">4层网络</div>
+              <div class="advantage-label">独立架构</div>
+            </div>
+            <div class="advantage-item">
+              <div class="advantage-number">液冷优化</div>
+              <div class="advantage-label">能效提升</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="company-name">鼎亘集团技术评估中心</div>
+        <div class="page-number">1 / 2</div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 导航按钮 -->
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+    <a href="#" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #0c1015; color: #76b900; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s; border: 1px solid rgba(118, 185, 0, 0.3);">&lt;</a>
+    <a href="#" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #0c1015; color: #76b900; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s; border: 1px solid rgba(118, 185, 0, 0.3);">&gt;</a>
+  </div>
+</body>
+</html>

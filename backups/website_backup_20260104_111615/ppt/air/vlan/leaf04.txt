@@ -1,0 +1,111 @@
+cumulus@leaf04:mgmt:~$ nv config show -o commands
+nv set bridge domain br_default vlan 1 vni 1
+nv set bridge domain br_default vlan 10 vni 10
+nv set bridge domain br_default vlan 20 vni 20
+nv set bridge domain br_default vlan 30 vni 30
+nv set evpn enable on
+nv set interface bond1 bond member swp1
+nv set interface bond1 bond mlag id 1
+nv set interface bond1 bridge domain br_default untagged 1
+nv set interface bond1 bridge domain br_default vlan 10
+nv set interface bond1-3 bond lacp-bypass on
+nv set interface bond1-3 bond mlag enable on
+nv set interface bond1-3 link mtu 9000
+nv set interface bond1-3 type bond
+nv set interface bond2 bond member swp2
+nv set interface bond2 bond mlag id 2
+nv set interface bond2 bridge domain br_default access 20
+nv set interface bond3 bond member swp3
+nv set interface bond3 bond mlag id 3
+nv set interface bond3 bridge domain br_default access 30
+nv set interface eth0 ip address dhcp
+nv set interface eth0 ip vrf mgmt
+nv set interface eth0 type eth
+nv set interface lo ip address 10.10.10.4/32
+nv set interface lo type loopback
+nv set interface peerlink bond member swp49-50
+nv set interface peerlink type peerlink
+nv set interface peerlink.4094 base-interface peerlink
+nv set interface peerlink.4094 type sub
+nv set interface peerlink.4094 vlan 4094
+nv set interface swp1-3,49-54 type swp
+nv set interface vlan10 ip address 10.1.10.5/24
+nv set interface vlan10 ip vrr address 10.1.10.1/24
+nv set interface vlan10 vlan 10
+nv set interface vlan10,20 ip vrf RED
+nv set interface vlan10,20,30 ip vrr enable on
+nv set interface vlan10,20,30 ip vrr state up
+nv set interface vlan10,20,30 type svi
+nv set interface vlan20 ip address 10.1.20.5/24
+nv set interface vlan20 ip vrr address 10.1.20.1/24
+nv set interface vlan20 vlan 20
+nv set interface vlan30 ip address 10.1.30.5/24
+nv set interface vlan30 ip vrf BLUE
+nv set interface vlan30 ip vrr address 10.1.30.1/24
+nv set interface vlan30 vlan 30
+nv set mlag backup 10.10.10.3
+nv set mlag enable on
+nv set mlag init-delay 10
+nv set mlag peer-ip linklocal
+nv set mlag priority 2000
+nv set nve vxlan arp-nd-suppress on
+nv set nve vxlan enable on
+nv set nve vxlan mlag shared-address 10.0.1.34
+nv set nve vxlan source address 10.10.10.4
+nv set router bgp autonomous-system 65104
+nv set router bgp enable on
+nv set router bgp router-id 10.10.10.4
+nv set router vrr enable on
+nv set service ntp mgmt server 0.cumulusnetworks.pool.ntp.org
+nv set service ntp mgmt server 1.cumulusnetworks.pool.ntp.org
+nv set service ntp mgmt server 2.cumulusnetworks.pool.ntp.org
+nv set service ntp mgmt server 3.cumulusnetworks.pool.ntp.org
+nv set system aaa class nvapply action allow
+nv set system aaa class nvapply command-path / permission all
+nv set system aaa class nvshow action allow
+nv set system aaa class nvshow command-path / permission ro
+nv set system aaa class sudo action allow
+nv set system aaa class sudo command-path / permission all
+nv set system aaa role nvue-admin class nvapply
+nv set system aaa role nvue-monitor class nvshow
+nv set system aaa role system-admin class nvapply
+nv set system aaa role system-admin class sudo
+nv set system aaa user cumulus full-name cumulus,,,
+nv set system aaa user cumulus hashed-password '*'
+nv set system aaa user cumulus role system-admin
+nv set system api state enabled
+nv set system config auto-save state enabled
+nv set system control-plane acl acl-default-dos inbound
+nv set system control-plane acl acl-default-whitelist inbound
+nv set system global anycast-mac 44:38:39:FF:00:BB
+nv set system hostname leaf04
+nv set system reboot mode cold
+nv set system ssh-server state enabled
+nv set system wjh channel forwarding trigger l2
+nv set system wjh channel forwarding trigger l3
+nv set system wjh channel forwarding trigger tunnel
+nv set system wjh enable on
+nv set vrf BLUE evpn enable on
+nv set vrf BLUE evpn vni 4002
+nv set vrf BLUE router bgp address-family ipv4-unicast enable on
+nv set vrf BLUE router bgp address-family ipv4-unicast redistribute connected enable on
+nv set vrf BLUE router bgp address-family ipv4-unicast route-export to-evpn enable on
+nv set vrf BLUE router bgp autonomous-system 65104
+nv set vrf BLUE router bgp enable on
+nv set vrf BLUE router bgp router-id 10.10.10.4
+nv set vrf RED evpn enable on
+nv set vrf RED evpn vni 4001
+nv set vrf RED router bgp address-family ipv4-unicast enable on
+nv set vrf RED router bgp address-family ipv4-unicast redistribute connected enable on
+nv set vrf RED router bgp address-family ipv4-unicast route-export to-evpn enable on
+nv set vrf RED router bgp autonomous-system 65104
+nv set vrf RED router bgp enable on
+nv set vrf RED router bgp router-id 10.10.10.4
+nv set vrf default router bgp address-family ipv4-unicast enable on
+nv set vrf default router bgp address-family ipv4-unicast redistribute connected enable on
+nv set vrf default router bgp address-family l2vpn-evpn enable on
+nv set vrf default router bgp enable on
+nv set vrf default router bgp neighbor peerlink.4094,swp51-54 peer-group underlay
+nv set vrf default router bgp neighbor peerlink.4094,swp51-54 type unnumbered
+nv set vrf default router bgp peer-group underlay address-family l2vpn-evpn enable on
+nv set vrf default router bgp peer-group underlay remote-as external

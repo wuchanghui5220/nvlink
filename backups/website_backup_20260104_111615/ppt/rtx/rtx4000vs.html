@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NVIDIA RTX 4000系列产品对比</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f0f0f0;
+      font-family: 'Noto Sans SC', sans-serif;
+      overflow: hidden;
+    }
+
+    .slide-container {
+      width: 100vw;
+      height: 56.25vw;
+      max-height: 100vh;
+      max-width: 177.78vh;
+      position: relative;
+      background: linear-gradient(135deg, #0c1015 0%, #1a2332 40%, #0f1419 100%);
+      color: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    /* 背景图形元素 */
+    .bg-grid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image:
+        linear-gradient(rgba(118, 185, 0, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(118, 185, 0, 0.04) 1px, transparent 1px);
+      background-size: 20px 20px;
+      z-index: 0;
+    }
+
+    .bg-gradient {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 85% 15%, rgba(118, 185, 0, 0.12) 0%, rgba(12, 16, 21, 0) 50%),
+                  radial-gradient(circle at 15% 85%, rgba(16, 185, 129, 0.08) 0%, rgba(12, 16, 21, 0) 50%);
+      z-index: 1;
+    }
+
+    .bg-circle1 {
+      position: absolute;
+      top: -25%;
+      right: -20%;
+      width: 60%;
+      height: 60%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #76b900 0%, #10b981 100%);
+      filter: blur(120px);
+      opacity: 0.15;
+      z-index: 2;
+    }
+
+    .bg-circle2 {
+      position: absolute;
+      bottom: -20%;
+      left: -25%;
+      width: 50%;
+      height: 50%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      filter: blur(100px);
+      opacity: 0.12;
+      z-index: 2;
+    }
+
+    /* 主要内容 */
+    .content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    .header {
+      padding: 1.5% 3%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .nvidia-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-box {
+      width: 8%;
+      min-width: 110px;
+      height: 36px;
+      background: linear-gradient(135deg, #76b900 0%, #10b981 100%);
+      border-radius: 6px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 700;
+      font-size: clamp(16px, 2vw, 20px);
+      color: #0c1015;
+      box-shadow: 0 4px 15px rgba(118, 185, 0, 0.3);
+    }
+
+    .partner-text {
+      font-size: clamp(12px, 1.5vw, 16px);
+      font-weight: 500;
+      opacity: 0.9;
+      color: #76b900;
+    }
+
+    .slide-title {
+      font-size: clamp(14px, 1.6vw, 18px);
+      font-weight: 600;
+      padding: 0.5% 1.5%;
+      background: rgba(16, 185, 129, 0.1);
+      backdrop-filter: blur(5px);
+      border-radius: 20px;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #10b981;
+    }
+
+    .main-content {
+      flex: 1;
+      padding: 1% 2%;
+      display: flex;
+      flex-direction: column;
+      gap: 1%;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    /* 对比表格容器 */
+    .comparison-container {
+      flex: 0.82;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 1%;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      overflow-y: auto;
+      min-height: 0;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: clamp(8px, 1vw, 12px);
+    }
+
+    .comparison-table th {
+      background: linear-gradient(135deg, rgba(118, 185, 0, 0.2) 0%, rgba(16, 185, 129, 0.15) 100%);
+      color: #76b900;
+      font-weight: 600;
+      padding: 1.4% 0.6%;
+      text-align: center;
+      border: 1px solid rgba(118, 185, 0, 0.3);
+      font-size: clamp(9px, 1.1vw, 13px);
+    }
+
+    .comparison-table td {
+      padding: 1% 0.4%;
+      text-align: center;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.02);
+      transition: all 0.3s ease;
+    }
+
+    .comparison-table tr:hover td {
+      background: rgba(118, 185, 0, 0.08);
+    }
+
+    .spec-name {
+      background: rgba(16, 185, 129, 0.1) !important;
+      color: #10b981;
+      font-weight: 500;
+      text-align: left !important;
+      padding-left: 0.8% !important;
+    }
+
+    .highlight-best {
+      background: linear-gradient(135deg, rgba(118, 185, 0, 0.2) 0%, rgba(16, 185, 129, 0.15) 100%) !important;
+      color: #76b900;
+      font-weight: 600;
+      position: relative;
+    }
+
+    .highlight-best::after {
+      content: '★';
+      position: absolute;
+      right: 3px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #76b900;
+      font-size: 12px;
+    }
+
+    .highlight-value {
+      color: #10b981;
+      font-weight: 700;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    }
+
+    /* 底部分析区域 */
+    .analysis-container {
+      flex: 0.18;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.8%;
+      margin-top: 0.5%;
+      min-height: 0;
+    }
+
+    .analysis-box {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 6px;
+      padding: 0.8%;
+      border-left: 3px solid #76b900;
+      border: 1px solid rgba(118, 185, 0, 0.2);
+      transition: all 0.3s ease;
+      animation: fadeInUp 0.8s ease-out forwards;
+      backdrop-filter: blur(10px);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      overflow: hidden;
+    }
+
+    .analysis-box:hover {
+      background: rgba(118, 185, 0, 0.12);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 15px rgba(118, 185, 0, 0.2);
+      border-color: rgba(118, 185, 0, 0.4);
+    }
+
+    .analysis-title {
+      font-weight: 700;
+      color: #76b900;
+      margin-bottom: 0.4%;
+      font-size: clamp(9px, 1.1vw, 12px);
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+      border-bottom: 1px solid rgba(118, 185, 0, 0.3);
+      padding-bottom: 0.2%;
+    }
+
+    .analysis-desc {
+      color: rgba(255, 255, 255, 0.95);
+      font-size: clamp(7px, 0.9vw, 10px);
+      line-height: 1.3;
+      font-weight: 400;
+    }
+
+    /* 性能指标特殊样式 */
+    .performance-box {
+      background: linear-gradient(135deg, rgba(118, 185, 0, 0.18) 0%, rgba(16, 185, 129, 0.12) 100%);
+      border: 1px solid rgba(118, 185, 0, 0.4);
+      position: relative;
+    }
+
+    .performance-box::before {
+      content: '';
+      position: absolute;
+      top: -1px;
+      left: -1px;
+      right: -1px;
+      bottom: -1px;
+      background: linear-gradient(45deg, #76b900, #10b981, #76b900);
+      border-radius: 6px;
+      z-index: -1;
+      opacity: 0.2;
+      filter: blur(1px);
+    }
+
+    .footer {
+      padding: 1% 3%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .company-name {
+      font-weight: 500;
+      font-size: clamp(10px, 1.2vw, 14px);
+      color: #76b900;
+    }
+
+    .page-number {
+      font-size: clamp(10px, 1.2vw, 14px);
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    /* 动画效果 */
+    @keyframes fadeInUp {
+      from { 
+        opacity: 0; 
+        transform: translateY(20px); 
+      }
+      to { 
+        opacity: 1; 
+        transform: translateY(0); 
+      }
+    }
+
+    .comparison-container, .analysis-container {
+      animation: fadeInUp 0.8s ease-out forwards;
+    }
+
+    .analysis-container {
+      animation-delay: 0.2s;
+    }
+
+    /* 添加数据流动画 */
+    .data-pulse {
+      position: absolute;
+      top: 20%;
+      right: 10%;
+      width: 4px;
+      height: 40px;
+      background: linear-gradient(0deg, transparent, #76b900, transparent);
+      animation: pulse 3s ease-in-out infinite;
+      opacity: 0.6;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.4; transform: scaleY(0.8); }
+      50% { opacity: 1; transform: scaleY(1.2); }
+    }
+
+    /* 导航按钮 */
+    .navigation {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      display: flex;
+      gap: 10px;
+      z-index: 1000;
+    }
+
+    .nav-btn {
+      padding: 8px 16px;
+      background: linear-gradient(135deg, #76b900 0%, #10b981 100%);
+      color: #0c1015;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 12px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(118, 185, 0, 0.3);
+    }
+
+    .nav-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(118, 185, 0, 0.4);
+    }
+
+    .nav-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* 响应式调整 */
+    @media (max-width: 1200px) {
+      .comparison-table {
+        font-size: clamp(7px, 0.9vw, 10px);
+      }
+      
+      .comparison-table th {
+        font-size: clamp(8px, 1vw, 11px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <!-- 背景元素 -->
+    <div class="bg-grid"></div>
+    <div class="bg-gradient"></div>
+    <div class="bg-circle1"></div>
+    <div class="bg-circle2"></div>
+    <div class="data-pulse"></div>
+
+    <!-- 主要内容 -->
+    <div class="content">
+      <div class="header">
+        <div class="nvidia-logo">
+          <div class="logo-box">NVIDIA</div>
+          <div class="partner-text">RTX 4000 Series Professional GPU Lineup</div>
+        </div>
+        <div class="slide-title">专业显卡4000系列全家族对比</div>
+      </div>
+
+      <div class="main-content">
+        <!-- 对比表格 -->
+        <div class="comparison-container">
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>规格参数</th>
+                <th>RTX PRO 4000<br>(Blackwell)</th>
+                <th>RTX 4000<br>(Ada Gen)</th>
+                <th>RTX 4000 SFF<br>(Ada Gen)</th>
+                <th>RTX A4000<br>(Ampere)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="spec-name">架构</td>
+                <td class="highlight-best">Blackwell</td>
+                <td>Ada Lovelace</td>
+                <td>Ada Lovelace</td>
+                <td>Ampere</td>
+              </tr>
+              <tr>
+                <td class="spec-name">CUDA核心数</td>
+                <td class="highlight-best">8,960</td>
+                <td>6,144</td>
+                <td>6,144</td>
+                <td>6,144</td>
+              </tr>
+              <tr>
+                <td class="spec-name">Tensor核心</td>
+                <td class="highlight-best">5th Gen</td>
+                <td>4th Gen (192)</td>
+                <td>4th Gen (192)</td>
+                <td>3rd Gen (192)</td>
+              </tr>
+              <tr>
+                <td class="spec-name">RT核心</td>
+                <td class="highlight-best">4th Gen</td>
+                <td>3rd Gen (48)</td>
+                <td>3rd Gen (48)</td>
+                <td>2nd Gen (48)</td>
+              </tr>
+              <tr>
+                <td class="spec-name">显存容量</td>
+                <td class="highlight-best">24 GB GDDR7</td>
+                <td>20 GB GDDR6</td>
+                <td>20 GB GDDR6</td>
+                <td>16 GB GDDR6</td>
+              </tr>
+              <tr>
+                <td class="spec-name">显存带宽</td>
+                <td class="highlight-best">672 GB/s</td>
+                <td>360 GB/s</td>
+                <td>280 GB/s</td>
+                <td>448 GB/s</td>
+              </tr>
+              <tr>
+                <td class="spec-name">内存接口</td>
+                <td>192-bit</td>
+                <td>160-bit</td>
+                <td>160-bit</td>
+                <td class="highlight-best">256-bit</td>
+              </tr>
+              <tr>
+                <td class="spec-name">单精度浮点性能</td>
+                <td class="highlight-best">未公布</td>
+                <td>26.7 TFLOPS</td>
+                <td>19.2 TFLOPS</td>
+                <td>19.2 TFLOPS</td>
+              </tr>
+              <tr>
+                <td class="spec-name">RT Core性能</td>
+                <td class="highlight-best">未公布</td>
+                <td>61.8 TFLOPS</td>
+                <td>44.3 TFLOPS</td>
+                <td>37.4 TFLOPS</td>
+              </tr>
+              <tr>
+                <td class="spec-name">Tensor性能</td>
+                <td class="highlight-best">未公布</td>
+                <td>327.6 TFLOPS</td>
+                <td>306.8 TFLOPS</td>
+                <td>153.4 TFLOPS</td>
+              </tr>
+              <tr>
+                <td class="spec-name">显示输出</td>
+                <td class="highlight-best">4x DisplayPort 2.1b</td>
+                <td>4x DisplayPort 1.4a</td>
+                <td>4x Mini DisplayPort 1.4a</td>
+                <td>4x DisplayPort 1.4a</td>
+              </tr>
+              <tr>
+                <td class="spec-name">最大功耗</td>
+                <td>140 W</td>
+                <td>130 W</td>
+                <td class="highlight-best">70 W</td>
+                <td>140 W</td>
+              </tr>
+              <tr>
+                <td class="spec-name">PCIe接口</td>
+                <td class="highlight-best">PCIe 5.0 x16</td>
+                <td>PCIe 4.0 x16</td>
+                <td>PCIe 4.0 x16</td>
+                <td>PCIe 4.0 x16</td>
+              </tr>
+              <tr>
+                <td class="spec-name">外形尺寸</td>
+                <td class="highlight-best">单槽 (4.4" x 9.5")</td>
+                <td>单槽 (4.4" x 9.5")</td>
+                <td class="highlight-best">小型 (2.7" x 6.6")</td>
+                <td>单槽 (4.4" x 9.5")</td>
+              </tr>
+              <tr>
+                <td class="spec-name">视频编解码</td>
+                <td class="highlight-best">2x NVENC/2x NVDEC (9th/6th Gen)</td>
+                <td>2x NVENC/2x NVDEC (+AV1)</td>
+                <td>2x NVENC/2x NVDEC (+AV1)</td>
+                <td>1x NVENC/1x NVDEC</td>
+              </tr>
+              <tr>
+                <td class="spec-name">ECC内存</td>
+                <td class="highlight-best">是</td>
+                <td>是</td>
+                <td>是</td>
+                <td>是</td>
+              </tr>
+              <tr>
+                <td class="spec-name">上市时间</td>
+                <td class="highlight-best">2025年Q2</td>
+                <td>2023年9月</td>
+                <td>2023年4月</td>
+                <td>2021年4月</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- 底部分析 -->
+        <div class="analysis-container">
+          
+          <div class="analysis-box performance-box">
+            <div class="analysis-title">技术代际对比</div>
+            <div class="analysis-desc">
+              • 架构演进: <span class="highlight-value">Blackwell > Ada > Ampere</span><br>
+              • CUDA核心提升: <span class="highlight-value">PRO 4000领先46%</span><br>
+              • 显存升级: <span class="highlight-value">PRO 4000达24GB GDDR7</span><br>
+              • 单槽设计在所有代际中保持一致
+            </div>
+          </div>
+
+          <div class="analysis-box">
+            <div class="analysis-title">应用场景定位</div>
+            <div class="analysis-desc">
+              • <span class="highlight-value">RTX PRO 4000</span>: AI训练、高端创作、单槽旗舰<br>
+              • <span class="highlight-value">RTX 4000 Ada</span>: 专业设计、内容创作<br>
+              • <span class="highlight-value">RTX 4000 SFF</span>: 紧凑工作站、嵌入式应用<br>
+              • <span class="highlight-value">RTX A4000</span>: 成熟方案、经济选择
+            </div>
+          </div>
+
+          <div class="analysis-box">
+            <div class="analysis-title">选择建议</div>
+            <div class="analysis-desc">
+              • <span class="highlight-value">单槽最强性能</span>: 首选RTX PRO 4000<br>
+              • <span class="highlight-value">标准单槽需求</span>: 推荐RTX 4000 Ada<br>
+              • <span class="highlight-value">空间受限环境</span>: 选择RTX 4000 SFF<br>
+              • 功耗从70W到140W满足不同需求
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="company-name">NVIDIA RTX 4000 Series — 单槽专业显卡产品线完整对比分析</div>
+        <div class="page-number">4000 Series / 2025</div>
+      </div>
+    </div>
+
+    <!-- 导航按钮 -->
+    <div class="navigation">
+      <button class="nav-btn" onclick="previousPage()">上一页</button>
+      <button class="nav-btn" onclick="nextPage()">下一页</button>
+    </div>
+  </div>
+
+  <!-- JavaScript实现交互功能 -->
+  <script>
+    // 页面列表
+    const pages = [
+      'index.html',
+      'rtx2000etc.html', 
+      'rtx4000vs.html',
+      'rtx5000vs.html',
+      'rtx6000vs.html',
+      'rtxpro6000.html'
+    ];
+
+    // 获取当前页面索引
+    function getCurrentPageIndex() {
+      const currentPage = window.location.pathname.split('/').pop();
+      return pages.indexOf(currentPage);
+    }
+
+    // 上一页
+    function previousPage() {
+      const currentIndex = getCurrentPageIndex();
+      if (currentIndex > 0) {
+        window.location.href = pages[currentIndex - 1];
+      }
+    }
+
+    // 下一页
+    function nextPage() {
+      const currentIndex = getCurrentPageIndex();
+      if (currentIndex < pages.length - 1) {
+        window.location.href = pages[currentIndex + 1];
+      }
+    }
+
+    // 键盘导航
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'ArrowLeft') {
+        previousPage();
+      } else if (e.key === 'ArrowRight') {
+        nextPage();
+      }
+    });
+
+    // 更新导航按钮状态
+    function updateNavigationButtons() {
+      const currentIndex = getCurrentPageIndex();
+      const prevBtn = document.querySelector('.navigation .nav-btn:first-child');
+      const nextBtn = document.querySelector('.navigation .nav-btn:last-child');
+      
+      prevBtn.disabled = currentIndex === 0;
+      nextBtn.disabled = currentIndex === pages.length - 1;
+    }
+
+    // 页面加载完成后更新按钮状态
+    window.addEventListener('load', updateNavigationButtons);
+    // 添加表格行动画延迟
+    const tableRows = document.querySelectorAll('.comparison-table tbody tr');
+    tableRows.forEach((row, index) => {
+      row.style.animationDelay = `${0.05 * index}s`;
+      row.style.animation = 'fadeInUp 0.6s ease-out forwards';
+    });
+
+    // 添加分析框动画延迟
+    const analysisBoxes = document.querySelectorAll('.analysis-box');
+    analysisBoxes.forEach((box, index) => {
+      box.style.animationDelay = `${0.8 + 0.2 * index}s`;
+    });
+
+    // 表格行悬停效果增强
+    tableRows.forEach(row => {
+      row.addEventListener('mouseenter', function() {
+        this.style.transform = 'scale(1.01)';
+        this.style.zIndex = '10';
+      });
+      
+      row.addEventListener('mouseleave', function() {
+        this.style.transform = 'scale(1)';
+        this.style.zIndex = '1';
+      });
+    });
+
+    // 性能数据高亮动画
+    const highlightCells = document.querySelectorAll('.highlight-best');
+    highlightCells.forEach((cell, index) => {
+      setTimeout(() => {
+        cell.style.animation = 'pulse 2s ease-in-out infinite';
+      }, 1000 + index * 100);
+    });
+  </script>
+
+</body>
+</html>

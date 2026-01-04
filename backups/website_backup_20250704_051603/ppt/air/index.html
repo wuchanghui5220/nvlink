@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>数据中心EVPN Symmetric Routing案例分析</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f0f0f0;
+      font-family: 'Noto Sans SC', sans-serif;
+      overflow: hidden;
+    }
+
+    .slide-container {
+      width: 100vw;
+      height: 56.25vw; /* 16:9 aspect ratio */
+      max-height: 100vh;
+      max-width: 177.78vh; /* 16:9 aspect ratio (reversed) */
+      position: relative;
+      background: #111827;
+      color: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    /* 背景图形元素 */
+    .bg-grid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image:
+        linear-gradient(rgba(24, 92, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(24, 92, 255, 0.05) 1px, transparent 1px);
+      background-size: 20px 20px;
+      z-index: 0;
+    }
+
+    .bg-gradient {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 120% 45%, rgba(76, 29, 149, 0.7) 0%, rgba(17, 24, 39, 0) 50%);
+      z-index: 1;
+    }
+
+    .bg-circle1 {
+      position: absolute;
+      top: -15%;
+      right: -15%;
+      width: 40%;
+      height: 40%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #76b900 0%, #1a4163 100%);
+      filter: blur(80px);
+      opacity: 0.6;
+      z-index: 2;
+    }
+
+    .bg-circle2 {
+      position: absolute;
+      bottom: -10%;
+      left: -10%;
+      width: 30%;
+      height: 30%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0099da 0%, #1e40af 100%);
+      filter: blur(60px);
+      opacity: 0.5;
+      z-index: 2;
+    }
+
+    /* 主要内容 */
+    .content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    .header {
+      padding: 2.5% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .nvidia-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-box {
+      width: 8%;
+      min-width: 100px;
+      height: 36px;
+      background: #76b900;
+      border-radius: 4px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 700;
+      font-size: clamp(16px, 2vw, 22px);
+      transform: skew(-10deg);
+    }
+
+    .partner-text {
+      font-size: clamp(12px, 1.5vw, 16px);
+      font-weight: 500;
+      opacity: 0.9;
+    }
+
+    .date-badge {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 0.8% 1.6%;
+      border-radius: 30px;
+      font-size: clamp(12px, 1.4vw, 14px);
+      font-weight: 500;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 2% 6%;
+      text-align: center;
+    }
+
+    .title {
+      font-size: clamp(32px, 5.5vw, 56px);
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 3%;
+      background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      max-width: 85%;
+    }
+
+    .subtitle-container {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(5px);
+      border-radius: 30px;
+      padding: 0.8% 2.5%;
+      margin-bottom: 3%;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      max-width: 70%;
+    }
+
+    .subtitle {
+      font-size: clamp(18px, 3vw, 32px);
+      font-weight: 400;
+      font-style: italic;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .competition-badge {
+      background: linear-gradient(135deg, #76b900 0%, #3e703e 100%);
+      border-radius: 8px;
+      padding: 1.5% 3%;
+      margin-bottom: 4%;
+      box-shadow: 0 10px 30px rgba(118, 185, 0, 0.3);
+      transform: perspective(300px) rotateX(10deg);
+    }
+
+    .competition-text {
+      font-size: clamp(20px, 3.5vw, 36px);
+      font-weight: 600;
+      letter-spacing: 2px;
+    }
+
+    .tech-tags {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      margin-top: 4%;
+    }
+
+    .tech-tag {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-size: clamp(12px, 1.4vw, 14px);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      transition: all 0.3s ease;
+    }
+
+    .tech-tag:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .footer {
+      padding: 1.5% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .location-text {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .location-dot {
+      width: 12px;
+      height: 12px;
+      background: #76b900;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(118, 185, 0, 0.7);
+      }
+      70% {
+        box-shadow: 0 0 0 10px rgba(118, 185, 0, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(118, 185, 0, 0);
+      }
+    }
+
+    .badges {
+      display: flex;
+      gap: 15px;
+    }
+
+    .badge {
+      padding: 6px 14px;
+      border-radius: 4px;
+      font-size: clamp(10px, 1.2vw, 12px);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .badge-evpn {
+      background: linear-gradient(90deg, #0099da 0%, #1e40af 100%);
+      box-shadow: 0 0 15px rgba(0, 153, 218, 0.4);
+    }
+
+    .badge-datacenter {
+      background: linear-gradient(90deg, #76b900 0%, #3e703e 100%);
+      box-shadow: 0 0 15px rgba(118, 185, 0, 0.4);
+    }
+
+    .rotating-lines {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 50%;
+      height: 50%;
+      z-index: 5;
+      opacity: 0.15;
+      animation: rotate 60s linear infinite;
+    }
+
+    @keyframes rotate {
+      from {
+        transform: translate(-50%, -50%) rotate(0deg);
+      }
+      to {
+        transform: translate(-50%, -50%) rotate(360deg);
+      }
+    }
+
+    /* EVPN网络动画 */
+    .network-animation {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 80%;
+      height: 80%;
+      z-index: 3;
+      opacity: 0.1;
+    }
+
+    .network-node {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: #76b900;
+      border-radius: 50%;
+      box-shadow: 0 0 20px rgba(118, 185, 0, 0.5);
+    }
+
+    .node1 { top: 20%; left: 20%; }
+    .node2 { top: 20%; right: 20%; }
+    .node3 { bottom: 20%; left: 20%; }
+    .node4 { bottom: 20%; right: 20%; }
+    .node5 { top: 50%; left: 50%; transform: translate(-50%, -50%); }
+
+    .network-line {
+      position: absolute;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #76b900, transparent);
+      transform-origin: left center;
+      animation: flow 3s linear infinite;
+    }
+
+    @keyframes flow {
+      from {
+        background-position: -100% 0;
+      }
+      to {
+        background-position: 100% 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <!-- 背景元素 -->
+    <div class="bg-grid"></div>
+    <div class="bg-gradient"></div>
+    <div class="bg-circle1"></div>
+    <div class="bg-circle2"></div>
+
+    <!-- 旋转线框背景 -->
+    <svg class="rotating-lines" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+      <path d="M250,10 L490,250 L250,490 L10,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,50 L450,250 L250,450 L50,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,90 L410,250 L250,410 L90,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,130 L370,250 L250,370 L130,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,170 L330,250 L250,330 L170,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,210 L290,250 L250,290 L210,250 Z" fill="none" stroke="white" stroke-width="1" />
+    </svg>
+
+    <!-- EVPN网络动画 -->
+    <div class="network-animation">
+      <div class="network-node node1"></div>
+      <div class="network-node node2"></div>
+      <div class="network-node node3"></div>
+      <div class="network-node node4"></div>
+      <div class="network-node node5"></div>
+    </div>
+
+    <!-- 主要内容 -->
+    <div class="content">
+      <div class="header">
+        <div class="nvidia-logo">
+          <div class="logo-box">NVIDIA</div>
+          <div class="partner-text">Networking NPN Elite Partner</div>
+        </div>
+        <div class="date-badge">2025年6月</div>
+      </div>
+
+      <div class="main-content">
+        <!-- 竞赛名称 -->
+        <div class="competition-badge">
+          <div class="competition-text">NVIDIA Air 合作伙伴精英挑战赛</div>
+        </div>
+
+        <!-- 主标题 -->
+	<div class="title">利用 NVIDIA Cumulus BGP EVPN 构建<br>高可扩展 VXLAN 网络</div>
+
+        <!-- 副标题 -->
+        <div class="subtitle-container">
+          <div class="subtitle">基于Cumulus Linux的现代数据中心网络架构实践</div>
+        </div>
+
+        <!-- 技术标签 -->
+        <div class="tech-tags">
+          <div class="tech-tag">VXLAN</div>
+          <div class="tech-tag">BGP EVPN</div>
+          <div class="tech-tag">Multi-Tenancy</div>
+          <div class="tech-tag">L3 Gateway</div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="location-text">
+          <div class="location-dot"></div>
+          <div>北京正阳恒卓科技有限公司</div>
+        </div>
+        <div class="badges">
+          <div class="badge badge-evpn">EVPN TECHNOLOGY</div>
+          <div class="badge badge-datacenter">DATA CENTER</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 导航按钮 -->
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+    <a href="#" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+    <a href="index1.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+  </div>
+</body>
+</html>

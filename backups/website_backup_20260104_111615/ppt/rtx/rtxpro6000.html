@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NVIDIA RTX PRO 6000 Blackwell 工作站版详解</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f0f0f0;
+      font-family: 'Noto Sans SC', sans-serif;
+      overflow: hidden;
+    }
+
+    .slide-container {
+      width: 100vw;
+      height: 56.25vw;
+      max-height: 100vh;
+      max-width: 177.78vh;
+      position: relative;
+      background: linear-gradient(135deg, #0c1015 0%, #1a2332 40%, #0f1419 100%);
+      color: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    /* 背景图形元素 */
+    .bg-grid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image:
+        linear-gradient(rgba(118, 185, 0, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(118, 185, 0, 0.04) 1px, transparent 1px);
+      background-size: 20px 20px;
+      z-index: 0;
+    }
+
+    .bg-gradient {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 85% 15%, rgba(118, 185, 0, 0.12) 0%, rgba(12, 16, 21, 0) 50%),
+                  radial-gradient(circle at 15% 85%, rgba(16, 185, 129, 0.08) 0%, rgba(12, 16, 21, 0) 50%);
+      z-index: 1;
+    }
+
+    .bg-circle1 {
+      position: absolute;
+      top: -25%;
+      right: -20%;
+      width: 60%;
+      height: 60%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #76b900 0%, #10b981 100%);
+      filter: blur(120px);
+      opacity: 0.15;
+      z-index: 2;
+    }
+
+    .bg-circle2 {
+      position: absolute;
+      bottom: -20%;
+      left: -25%;
+      width: 50%;
+      height: 50%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      filter: blur(100px);
+      opacity: 0.12;
+      z-index: 2;
+    }
+
+    /* 主要内容 */
+    .content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    .header {
+      padding: 1.8% 3.5%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .nvidia-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-box {
+      width: 8%;
+      min-width: 110px;
+      height: 36px;
+      background: linear-gradient(135deg, #76b900 0%, #10b981 100%);
+      border-radius: 6px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 700;
+      font-size: clamp(16px, 2vw, 20px);
+      color: #0c1015;
+      box-shadow: 0 4px 15px rgba(118, 185, 0, 0.3);
+    }
+
+    .partner-text {
+      font-size: clamp(12px, 1.5vw, 16px);
+      font-weight: 500;
+      opacity: 0.9;
+      color: #76b900;
+    }
+
+    .slide-title {
+      font-size: clamp(14px, 1.6vw, 18px);
+      font-weight: 600;
+      padding: 0.5% 1.5%;
+      background: rgba(16, 185, 129, 0.1);
+      backdrop-filter: blur(5px);
+      border-radius: 20px;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #10b981;
+    }
+
+    .main-content {
+      flex: 1;
+      padding: 1.2% 2.5%;
+      display: flex;
+      gap: 2%;
+    }
+
+    /* 左侧面板 */
+    .left-panel {
+      flex: 1.2;
+      display: flex;
+      flex-direction: column;
+      gap: 1%;
+    }
+
+    .panel-title {
+      font-size: clamp(14px, 1.6vw, 18px);
+      font-weight: 600;
+      color: #76b900;
+      margin-bottom: 1%;
+      text-align: center;
+      background: rgba(118, 185, 0, 0.1);
+      padding: 0.5% 1%;
+      border-radius: 8px;
+      border: 1px solid rgba(118, 185, 0, 0.3);
+    }
+
+    .image-container {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 2%;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      min-height: 0;
+      width: 100%;
+      height: 100%;
+      max-height: 60vh;
+    }
+
+    .image-container:hover {
+      background: rgba(255, 255, 255, 0.08);
+      transform: scale(1.02);
+    }
+
+    .image-container img {
+      max-width: 90%;
+      max-height: 95%;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      object-position: center;
+      border-radius: 8px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease;
+      display: block;
+      margin: 0 auto;
+      /* 针对高瘦图片的特殊处理 */
+      max-width: min(90%, 60vh);
+    }
+
+    .zoom-hint {
+      position: absolute;
+      bottom: 1%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.7);
+      color: #76b900;
+      padding: 0.3% 1%;
+      border-radius: 15px;
+      font-size: clamp(8px, 0.8vw, 10px);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+
+    .image-container:hover .zoom-hint {
+      opacity: 1;
+    }
+
+    /* 右侧面板 */
+    .right-panel {
+      flex: 2;
+      display: flex;
+      flex-direction: column;
+      gap: 1%;
+    }
+
+    .features-container {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 1.2%;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-gap: 1%;
+      overflow-y: auto;
+    }
+
+    .feature-box {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      padding: 1%;
+      border-left: 4px solid #76b900;
+      transition: all 0.3s ease;
+      animation: fadeInUp 0.8s ease-out forwards;
+    }
+
+    .feature-box:hover {
+      background: rgba(118, 185, 0, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .feature-title {
+      font-weight: 600;
+      color: #76b900;
+      margin-bottom: 0.5%;
+      font-size: clamp(11px, 1.2vw, 14px);
+    }
+
+    .feature-desc {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: clamp(9px, 1vw, 11px);
+      line-height: 1.4;
+    }
+
+    .highlight-value {
+      color: #10b981;
+      font-weight: 600;
+    }
+
+    /* 性能指标特殊样式 */
+    .performance-box {
+      background: linear-gradient(135deg, rgba(118, 185, 0, 0.15) 0%, rgba(16, 185, 129, 0.1) 100%);
+      border: 2px solid rgba(118, 185, 0, 0.4);
+    }
+
+    .performance-box .feature-title {
+      color: #76b900;
+      font-size: clamp(12px, 1.3vw, 15px);
+    }
+
+    .footer {
+      padding: 1.2% 3.5%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .company-name {
+      font-weight: 500;
+      font-size: clamp(11px, 1.3vw, 15px);
+      color: #76b900;
+    }
+
+    .page-number {
+      font-size: clamp(11px, 1.3vw, 15px);
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    /* 动画效果 */
+    @keyframes fadeInUp {
+      from { 
+        opacity: 0; 
+        transform: translateY(20px); 
+      }
+      to { 
+        opacity: 1; 
+        transform: translateY(0); 
+      }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.4; transform: scaleX(0.8); }
+      50% { opacity: 1; transform: scaleX(1.2); }
+    }
+
+    .left-panel, .right-panel {
+      animation: fadeInUp 0.8s ease-out forwards;
+    }
+
+    .right-panel {
+      animation-delay: 0.2s;
+    }
+
+    /* 添加数据流动画 */
+    .data-pulse {
+      position: absolute;
+      top: 20%;
+      right: 10%;
+      width: 4px;
+      height: 40px;
+      background: linear-gradient(0deg, transparent, #76b900, transparent);
+      animation: pulse 3s ease-in-out infinite;
+      opacity: 0.6;
+    }
+
+    /* 全屏图片显示 */
+    .fullscreen-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.95);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+
+    .fullscreen-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .fullscreen-image {
+      max-width: 90%;
+      max-height: 90%;
+      object-fit: contain;
+      border-radius: 8px;
+      box-shadow: 0 0 50px rgba(118, 185, 0, 0.3);
+    }
+
+    .close-button {
+      position: absolute;
+      top: 3%;
+      right: 3%;
+      color: #76b900;
+      font-size: 30px;
+      cursor: pointer;
+      background: rgba(0, 0, 0, 0.7);
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.3s ease;
+      border: 2px solid rgba(118, 185, 0, 0.5);
+    }
+
+    .close-button:hover {
+      background: rgba(239, 68, 68, 0.7);
+      color: white;
+      border-color: rgba(239, 68, 68, 0.8);
+      transform: scale(1.1);
+    }
+
+    /* 导航按钮 */
+    .navigation {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      display: flex;
+      gap: 10px;
+      z-index: 1000;
+    }
+
+    .nav-btn {
+      padding: 8px 16px;
+      background: linear-gradient(135deg, #76b900 0%, #10b981 100%);
+      color: #0c1015;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 12px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(118, 185, 0, 0.3);
+    }
+
+    .nav-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(118, 185, 0, 0.4);
+    }
+
+    .nav-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <!-- 背景元素 -->
+    <div class="bg-grid"></div>
+    <div class="bg-gradient"></div>
+    <div class="bg-circle1"></div>
+    <div class="bg-circle2"></div>
+    <div class="data-pulse"></div>
+
+    <!-- 主要内容 -->
+    <div class="content">
+      <div class="header">
+        <div class="nvidia-logo">
+          <div class="logo-box">NVIDIA</div>
+          <div class="partner-text">RTX PRO 6000 Blackwell Workstation Edition</div>
+        </div>
+        <div class="slide-title">专业AI工作站显卡</div>
+      </div>
+
+      <div class="main-content">
+        <!-- 左侧面板 -->
+        <div class="left-panel">
+          <div class="panel-title">RTX PRO 6000 Blackwell 工作站版</div>
+          <div class="image-container" id="zoomable-image">
+            <img src="https://www.nvidia.com/en-au/products/workstations/professional-desktop-gpus/rtx-pro-6000-family/_jcr_content/root/responsivegrid/nv_container_1907901/nv_container/nv_teaser_copy.coreimg.100.1070.jpeg/1742149577651/nvidia-workstation-rtx-pro-6000-ari.jpeg" alt="NVIDIA RTX PRO 6000 Blackwell工作站版" id="main-image">
+            <div class="zoom-hint">点击查看详细图片</div>
+          </div>
+        </div>
+
+        <!-- 右侧面板 -->
+        <div class="right-panel">
+          <div class="panel-title">核心特性与技术规格</div>
+          <div class="features-container">
+            
+            <div class="feature-box performance-box">
+              <div class="feature-title">AI性能突破</div>
+              <div class="feature-desc">
+                • AI算力: <span class="highlight-value">4,000 TOPS</span><br>
+                • FP4精度支持，显著提升AI处理速度<br>
+                • 本地LLM微调和生成式AI<br>
+                • 实时AI推理处理
+              </div>
+            </div>
+
+            <div class="feature-box">
+              <div class="feature-title">Blackwell架构</div>
+              <div class="feature-desc">
+                • CUDA核心: <span class="highlight-value">24,064个</span><br>
+                • 第5代Tensor Core<br>
+                • 第4代RT Core<br>
+                • 增强型流式多处理器(SM)
+              </div>
+            </div>
+
+            <div class="feature-box">
+              <div class="feature-title">超大显存</div>
+              <div class="feature-desc">
+                • 显存容量: <span class="highlight-value">96GB GDDR7</span><br>
+                • 内存带宽: <span class="highlight-value">1.8TB/s</span><br>
+                • ECC内存保护<br>
+                • 512位内存接口
+              </div>
+            </div>
+
+            <div class="feature-box">
+              <div class="feature-title">计算性能</div>
+              <div class="feature-desc">
+                • 单精度性能: <span class="highlight-value">125 TFLOPS</span><br>
+                • RT Core性能: <span class="highlight-value">380 TFLOPS</span><br>
+                • 支持大规模3D和AI项目<br>
+                • 万亿参数模型处理
+              </div>
+            </div>
+
+            <div class="feature-box">
+              <div class="feature-title">DLSS 4技术</div>
+              <div class="feature-desc">
+                • 多帧生成技术<br>
+                • 提升<span class="highlight-value">3倍</span>帧率性能<br>
+                • 超平滑帧间隔<br>
+                • 逼真模拟体验
+              </div>
+            </div>
+
+            <div class="feature-box">
+              <div class="feature-title">显示输出</div>
+              <div class="feature-desc">
+                • 接口: <span class="highlight-value">4x DisplayPort 2.1b</span><br>
+                • 支持8K@240Hz或16K@60Hz<br>
+                • 多显示器设置<br>
+                • HDR和高色深支持
+              </div>
+            </div>
+
+            <div class="feature-box">
+              <div class="feature-title">视频引擎</div>
+              <div class="feature-desc">
+                • 编码: <span class="highlight-value">4x NVENC (第9代)</span><br>
+                • 解码: <span class="highlight-value">4x NVDEC (第6代)</span><br>
+                • 4:2:2编解码支持<br>
+                • 实时AI视频处理
+              </div>
+            </div>
+
+            <div class="feature-box">
+              <div class="feature-title">MIG虚拟化</div>
+              <div class="feature-desc">
+                • 最多4x 24GB实例<br>
+                • 最多2x 48GB实例<br>
+                • 最多1x 96GB实例<br>
+                • 多用户安全隔离
+              </div>
+            </div>
+
+            <div class="feature-box performance-box">
+              <div class="feature-title">散热设计</div>
+              <div class="feature-desc">
+                • 功耗: <span class="highlight-value">600W TBP</span><br>
+                • 双流通散热设计<br>
+                • 静音运行<br>
+                • 无热节流保证
+              </div>
+            </div>
+
+            <div class="feature-box">
+              <div class="feature-title">应用场景</div>
+              <div class="feature-desc">
+                • <span class="highlight-value">AI模型开发与训练</span><br>
+                • <span class="highlight-value">实时光线追踪渲染</span><br>
+                • <span class="highlight-value">科学计算仿真</span><br>
+                • <span class="highlight-value">专业创意制作</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="company-name">NVIDIA RTX PRO 6000 Blackwell — 面向下一代AI的专业工作站显卡</div>
+        <div class="page-number">RTX PRO 6000</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 导航按钮 -->
+  <div class="navigation">
+    <button class="nav-btn" onclick="previousPage()">上一页</button>
+    <button class="nav-btn" onclick="nextPage()">下一页</button>
+  </div>
+
+  <!-- 全屏图片显示区域 -->
+  <div class="fullscreen-overlay" id="image-overlay">
+    <img src="" alt="全屏图片" class="fullscreen-image" id="fullscreen-image">
+    <div class="close-button" id="close-button">×</div>
+  </div>
+
+  <!-- JavaScript实现交互功能 -->
+  <script>
+    // 页面列表
+    const pages = [
+      'index.html',
+      'rtx2000etc.html', 
+      'rtx4000vs.html',
+      'rtx5000vs.html',
+      'rtx6000vs.html',
+      'rtxpro6000.html'
+    ];
+
+    // 获取当前页面索引
+    function getCurrentPageIndex() {
+      const currentPage = window.location.pathname.split('/').pop();
+      return pages.indexOf(currentPage);
+    }
+
+    // 上一页
+    function previousPage() {
+      const currentIndex = getCurrentPageIndex();
+      if (currentIndex > 0) {
+        window.location.href = pages[currentIndex - 1];
+      }
+    }
+
+    // 下一页
+    function nextPage() {
+      const currentIndex = getCurrentPageIndex();
+      if (currentIndex < pages.length - 1) {
+        window.location.href = pages[currentIndex + 1];
+      }
+    }
+
+    // 键盘导航
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'ArrowLeft') {
+        previousPage();
+      } else if (e.key === 'ArrowRight') {
+        nextPage();
+      }
+    });
+
+    // 更新导航按钮状态
+    function updateNavigationButtons() {
+      const currentIndex = getCurrentPageIndex();
+      const prevBtn = document.querySelector('.navigation .nav-btn:first-child');
+      const nextBtn = document.querySelector('.navigation .nav-btn:last-child');
+      
+      prevBtn.disabled = currentIndex === 0;
+      nextBtn.disabled = currentIndex === pages.length - 1;
+    }
+
+    // 页面加载完成后更新按钮状态
+    window.addEventListener('load', updateNavigationButtons);
+
+    // 获取元素
+    const zoomableImage = document.getElementById('zoomable-image');
+    const mainImage = document.getElementById('main-image');
+    const imageOverlay = document.getElementById('image-overlay');
+    const fullscreenImage = document.getElementById('fullscreen-image');
+    const closeButton = document.getElementById('close-button');
+
+    // 点击图片显示全屏
+    zoomableImage.addEventListener('click', function() {
+      fullscreenImage.src = mainImage.src;
+      imageOverlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    });
+
+    // 点击关闭按钮
+    closeButton.addEventListener('click', function() {
+      imageOverlay.classList.remove('active');
+      document.body.style.overflow = '';
+    });
+
+    // 点击背景关闭
+    imageOverlay.addEventListener('click', function(e) {
+      if (e.target === imageOverlay) {
+        imageOverlay.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    });
+
+    // ESC键关闭
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && imageOverlay.classList.contains('active')) {
+        imageOverlay.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    });
+
+    // 添加feature-box动画延迟
+    const featureBoxes = document.querySelectorAll('.feature-box');
+    featureBoxes.forEach((box, index) => {
+      box.style.animationDelay = `${0.1 * index}s`;
+    });
+  </script>
+
+</body>
+</html>

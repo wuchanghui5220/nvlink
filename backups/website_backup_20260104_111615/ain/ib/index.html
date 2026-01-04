@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InfiniBand 网络 - AI Networking 高性能计算</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --nvidia-green: #76b900;
+            --nvidia-dark-green: #4d7c00;
+            --dark-bg: #0a0a0a;
+            --card-bg: #1a1a1a;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --accent-cyan: #00d4aa;
+            --accent-orange: #ff9500;
+            --gradient-primary: linear-gradient(135deg, var(--nvidia-green), var(--accent-cyan));
+            --gradient-secondary: linear-gradient(135deg, var(--accent-orange), var(--nvidia-green));
+            --shadow-glow: 0 0 20px rgba(118, 185, 0, 0.3);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* 动态背景 */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(118, 185, 0, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 149, 0, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(118, 185, 0, 0.05) 0%, transparent 50%);
+        }
+
+        .bg-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-image: 
+                linear-gradient(rgba(118, 185, 0, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(118, 185, 0, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: grid-move 20s linear infinite;
+        }
+
+        @keyframes grid-move {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+        }
+
+        /* 导航栏 */
+        .nav-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 3rem;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .nvidia-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            filter: drop-shadow(0 0 15px rgba(118, 185, 0, 0.5));
+            transition: all 0.3s ease;
+        }
+
+        .nvidia-logo:hover {
+            filter: drop-shadow(0 0 25px rgba(118, 185, 0, 0.8));
+            transform: scale(1.05);
+        }
+
+        .nvidia-logo svg {
+            height: 40px;
+            width: auto;
+        }
+
+        .nvidia-logo svg path {
+            fill: var(--nvidia-green);
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+        }
+
+        .breadcrumb a {
+            color: var(--nvidia-green);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .breadcrumb a:hover {
+            color: var(--accent-cyan);
+        }
+
+        .breadcrumb-separator {
+            color: var(--text-secondary);
+        }
+
+        /* 头部区域 */
+        .header {
+            text-align: center;
+            margin-bottom: 4rem;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .category-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--gradient-secondary);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 2.5rem;
+            box-shadow: var(--shadow-glow);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.8;
+        }
+
+        /* 技术特点 */
+        .features-section {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            border: 1px solid #333;
+            animation: fadeInUp 1s ease-out 0.6s both;
+        }
+
+        .features-title {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            color: var(--text-primary);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-item {
+            text-align: center;
+            padding: 1.5rem;
+            background: rgba(255, 149, 0, 0.1);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 149, 0, 0.2);
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* 文档网格 */
+        .docs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .doc-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 2rem;
+            position: relative;
+            border: 1px solid #333;
+            transition: all 0.4s ease;
+            animation: fadeInUp 1s ease-out var(--animation-delay, 0.8s) both;
+            overflow: hidden;
+        }
+
+        .doc-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(118, 185, 0, 0.1), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .doc-card:hover::before {
+            left: 100%;
+        }
+
+        .doc-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--nvidia-green);
+            box-shadow: 0 15px 40px rgba(118, 185, 0, 0.2);
+        }
+
+        .doc-badge {
+            display: inline-block;
+            background: var(--gradient-primary);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .doc-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+            line-height: 1.4;
+        }
+
+        .doc-description {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            line-height: 1.7;
+            font-size: 0.95rem;
+        }
+
+        .doc-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--gradient-primary);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(118, 185, 0, 0.3);
+        }
+
+        .doc-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(118, 185, 0, 0.4);
+        }
+
+        .doc-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid #333;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .doc-type {
+            background: rgba(255, 149, 0, 0.2);
+            color: var(--accent-orange);
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-weight: 500;
+        }
+
+        /* 统计信息 */
+        .stats-section {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            border: 1px solid #333;
+            animation: fadeInUp 1s ease-out 1.2s both;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            text-align: center;
+        }
+
+        .stat-item {
+            padding: 1rem;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* 底部信息 */
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            border-top: 1px solid #333;
+            animation: fadeIn 1s ease-out 1.4s both;
+        }
+
+        .footer-content {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .footer-highlight {
+            color: var(--nvidia-green);
+            font-weight: 600;
+        }
+
+        /* 动画效果 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .docs-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .nav-bar {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+
+            .category-icon {
+                width: 60px;
+                height: 60px;
+                font-size: 2rem;
+            }
+
+            .nvidia-logo svg {
+                height: 35px;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+        }
+
+        /* 滚动条样式 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--dark-bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--nvidia-green);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-cyan);
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+    <div class="bg-grid"></div>
+    
+    <div class="container">
+        <!-- 导航栏 -->
+        <nav class="nav-bar">
+            <div class="nav-brand">
+                <div class="nvidia-logo">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="32" viewBox="0 0 48 32" fill="none">
+                        <path d="M17.9101 9.54961V6.65962C18.1893 6.64003 18.4704 6.624 18.7567 6.6151C26.6044 6.36581 31.7531 13.4083 31.7531 13.4083C31.7531 13.4083 26.1926 21.1897 20.2308 21.1897C19.3718 21.1897 18.6029 21.0508 17.9101 20.8158V12.0496C20.9661 12.4218 21.5794 13.7804 23.4158 16.8645L27.5005 13.394C27.5005 13.394 24.5188 9.45345 19.492 9.45345C18.9458 9.45345 18.4227 9.49263 17.9083 9.54783L17.9101 9.54961ZM17.9083 0V4.31807C18.1893 4.29492 18.4721 4.27711 18.7549 4.26643C29.6675 3.89606 36.7781 13.2836 36.7781 13.2836C36.7781 13.2836 28.6123 23.2873 20.1035 23.2873C19.3241 23.2873 18.5941 23.2143 17.9083 23.0932V25.7624C18.4951 25.8372 19.1031 25.8817 19.7359 25.8817C27.6525 25.8817 33.3792 21.8094 38.9239 16.9874C39.843 17.7281 43.606 19.5319 44.3802 20.3225C39.1077 24.7688 26.8236 28.3515 19.8579 28.3515C19.1862 28.3515 18.5411 28.3105 17.9083 28.25V32H48V0.00178103H17.9101L17.9083 0ZM17.9083 20.814V23.0932C10.5856 21.7773 8.55293 14.1098 8.55293 14.1098C8.55293 14.1098 12.0685 10.1853 17.9083 9.54961V12.0496C17.9083 12.0496 17.9012 12.0496 17.8977 12.0496C14.8329 11.6793 12.4397 14.5639 12.4397 14.5639C12.4397 14.5639 13.7812 19.4197 17.9101 20.8175L17.9083 20.814ZM4.90481 13.7804C4.90481 13.7804 9.24403 7.32914 17.9101 6.6614V4.32163C8.31255 5.09799 0 13.2872 0 13.2872C0 13.2872 4.70685 26.9982 17.9101 28.2535V25.766C8.22064 24.5373 4.90481 13.7804 4.90481 13.7804Z" fill="#76B900"/>
+                    </svg>
+                </div>
+            </div>
+            <div class="breadcrumb">
+                <a href="../">AI Networking</a>
+                <span class="breadcrumb-separator">→</span>
+                <span>InfiniBand</span>
+            </div>
+        </nav>
+
+        <!-- 头部区域 -->
+        <header class="header">
+            <div class="category-icon">⚡</div>
+            <h1>InfiniBand 高性能网络</h1>
+            <p>高性能计算和AI工作负载网络技术中心 - 掌握InfiniBand网络实践和诊断工具使用</p>
+        </header>
+
+        <!-- 技术特点 -->
+        <section class="features-section">
+            <h2 class="features-title">🚀 InfiniBand 核心优势</h2>
+            <div class="features-grid">
+                <div class="feature-item">
+                    <div class="feature-icon">⚡</div>
+                    <div class="feature-title">超低延迟</div>
+                    <div class="feature-desc">亚微秒级网络延迟，满足最严苛的性能要求</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🔄</div>
+                    <div class="feature-title">高带宽</div>
+                    <div class="feature-desc">支持400Gb/s及更高带宽，优化数据传输效率</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🛡️</div>
+                    <div class="feature-title">可靠传输</div>
+                    <div class="feature-desc">硬件级错误检测和恢复机制，确保数据完整性</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🔧</div>
+                    <div class="feature-title">智能诊断</div>
+                    <div class="feature-desc">全面的网络监控和故障排除工具</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 统计信息 -->
+        <section class="stats-section">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number">2</div>
+                    <div class="stat-label">核心文档</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">400+</div>
+                    <div class="stat-label">Gb/s 带宽</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">< 1</div>
+                    <div class="stat-label">微秒延迟</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">HPC</div>
+                    <div class="stat-label">优化方案</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 文档网格 -->
+        <main class="docs-grid">
+            <div class="doc-card" style="--animation-delay: 0.8s">
+                <div class="doc-badge">实践指南</div>
+                <h3 class="doc-title">InfiniBand网络实践指南</h3>
+                <p class="doc-description">全面的InfiniBand网络部署和优化实践指南，涵盖网络配置、性能调优和最佳实践，帮助构建高性能计算环境。</p>
+                <a href="IB-networking-pratice-Jan2022.pdf" class="doc-link" target="_blank">
+                    <span>📘</span>
+                    查看指南
+                </a>
+                <div class="doc-meta">
+                    <span class="doc-type">实践文档</span>
+                    <span>PDF 格式 | 2022年1月</span>
+                </div>
+            </div>
+
+            <div class="doc-card" style="--animation-delay: 0.9s">
+                <div class="doc-badge">诊断工具</div>
+                <h3 class="doc-title">IBDiagNet 诊断工具用户手册</h3>
+                <p class="doc-description">InfiniBand网络诊断工具IBDiagNet v2.11的详细使用手册，提供全面的网络故障排除和性能分析功能。</p>
+                <a href="ibdiagnet-infiniband-fabric-diagnostic-tool-user-manual-v2-11.pdf" class="doc-link" target="_blank">
+                    <span>🔧</span>
+                    查看手册
+                </a>
+                <div class="doc-meta">
+                    <span class="doc-type">工具手册</span>
+                    <span>PDF 格式 | v2.11</span>
+                </div>
+            </div>
+        </main>
+
+        <!-- 底部信息 -->
+        <footer class="footer">
+            <div class="footer-content">
+                <p><span class="footer-highlight">InfiniBand</span> 高性能网络技术中心</p>
+                <p>加速高性能计算和AI应用</p>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

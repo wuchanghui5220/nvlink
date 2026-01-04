@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>InfiniBand 概述</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    :root {
+      --primary-blue: #00a2ff;
+      --primary-green: #76b900;
+      --primary-orange: #ffa500;
+      --primary-purple: #4834d4;
+      --primary-red: #ff6b6b;
+      --text-primary: #ffffff;
+      --text-secondary: rgba(255, 255, 255, 0.87);
+    }
+
+    .main-content {
+      padding: 1% 2%;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .page-title {
+      text-align: center;
+      margin-bottom: 2%;
+      flex-shrink: 0;
+    }
+
+    .title-main {
+      font-size: clamp(28px, 3.5vw, 38px);
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-green) 50%, var(--primary-purple) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 0.8%;
+    }
+
+    .title-sub {
+      font-size: clamp(16px, 1.8vw, 20px);
+      color: rgba(255, 255, 255, 0.85);
+      font-weight: 500;
+      margin-bottom: 1%;
+    }
+
+    .content-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2.5%;
+      min-height: 0;
+      overflow-y: auto;
+    }
+
+    /* IB简介卡片 */
+    .ib-intro {
+      background: linear-gradient(135deg, rgba(0, 162, 255, 0.15), rgba(0, 162, 255, 0.08));
+      border: 2px solid rgba(0, 162, 255, 0.4);
+      border-radius: 15px;
+      padding: 3%;
+      text-align: center;
+      box-shadow: 0 8px 20px rgba(0, 162, 255, 0.15);
+    }
+
+    .ib-icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, var(--primary-blue), #0078d4);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 36px;
+      font-weight: bold;
+      margin: 0 auto 2%;
+    }
+
+    .intro-title {
+      font-size: clamp(22px, 2.4vw, 28px);
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 1.5%;
+    }
+
+    .intro-description {
+      font-size: clamp(15px, 1.6vw, 18px);
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 2%;
+    }
+
+    .intro-highlight {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 2%;
+      margin-top: 2%;
+    }
+
+    .highlight-text {
+      font-size: clamp(14px, 1.5vw, 16px);
+      color: var(--primary-blue);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    /* 核心特性网格 */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2.5%;
+    }
+
+    .feature-card {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04));
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 15px;
+      padding: 2.5%;
+      transition: all 0.3s ease;
+      height: fit-content;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .feature-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 2%;
+      padding-bottom: 1.5%;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .feature-icon {
+      width: 45px;
+      height: 45px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .rdma-feature .feature-icon {
+      background: linear-gradient(135deg, var(--primary-green), #4caf50);
+    }
+
+    .performance-feature .feature-icon {
+      background: linear-gradient(135deg, var(--primary-orange), #ff8c00);
+    }
+
+    .reliability-feature .feature-icon {
+      background: linear-gradient(135deg, var(--primary-purple), #6b46c1);
+    }
+
+    .ecosystem-feature .feature-icon {
+      background: linear-gradient(135deg, var(--primary-red), #e53e3e);
+    }
+
+    .feature-title {
+      font-size: clamp(16px, 1.7vw, 19px);
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .feature-subtitle {
+      font-size: clamp(12px, 1.2vw, 14px);
+      color: rgba(255, 255, 255, 0.6);
+      margin-top: 3px;
+    }
+
+    .feature-description {
+      font-size: clamp(13px, 1.4vw, 15px);
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .feature-highlight {
+      color: var(--primary-blue);
+      font-weight: 600;
+    }
+
+    @media (max-width: 1200px) {
+      .features-grid {
+        grid-template-columns: 1fr;
+        gap: 2%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <div class="bg-elements">
+      <div class="brain-pattern"></div>
+      <div class="network-signals">
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+      </div>
+    </div>
+    
+    <div class="content">
+      <div class="header" style="padding: 0.6% 2%;">
+        <div class="day-info">
+          <div class="day-badge">1</div>
+          <div class="day-text">第一章：InfiniBand架构基础</div>
+        </div>
+        <div class="section-indicator">IB网络概述</div>
+      </div>
+      
+      <div class="main-content">
+        <div class="page-title">
+          <div class="title-main">InfiniBand (IBA) 网络架构概述</div>
+          <div class="title-sub">高性能计算 · 低延迟通信 · RDMA技术 · 交换网络架构</div>
+        </div>
+        
+        <div class="content-wrapper">
+          <!-- InfiniBand 简介 -->
+          <div class="ib-intro">
+            <div class="ib-icon">∞</div>
+            <div class="intro-title">什么是 InfiniBand？</div>
+            <div class="intro-description">
+              InfiniBand (IB) 是专为<strong>高性能计算 (HPC)</strong>、<strong>人工智能 (AI)</strong>、大规模数据中心和企业级应用设计的计算机网络通信标准。它不是对传统以太网的简单升级，而是一套从零开始构建的、以<strong>低延迟、高带宽和高效率</strong>为核心目标的交换网络架构。
+            </div>
+            <div class="intro-highlight">
+              <div class="highlight-text">
+                <span>🚀</span>
+                <span>核心技术：远程直接内存访问 (RDMA) - 实现极致性能的关键</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 核心特性 -->
+          <div class="features-grid">
+            <!-- RDMA 技术 -->
+            <div class="feature-card rdma-feature">
+              <div class="feature-header">
+                <div class="feature-icon">📡</div>
+                <div>
+                  <div class="feature-title">RDMA 核心技术</div>
+                  <div class="feature-subtitle">Remote Direct Memory Access</div>
+                </div>
+              </div>
+              <div class="feature-description">
+                允许一台计算机的处理器<span class="feature-highlight">直接读写</span>另一台计算机的内存，<span class="feature-highlight">无需占用各自操作系统的处理时间</span>。通过将通信开销从 CPU 卸载到专用的网络硬件（通道适配器），实现极低延迟和极高吞吐量。
+              </div>
+            </div>
+            
+            <!-- 极致性能 -->
+            <div class="feature-card performance-feature">
+              <div class="feature-header">
+                <div class="feature-icon">⚡</div>
+                <div>
+                  <div class="feature-title">极致性能表现</div>
+                  <div class="feature-subtitle">Ultra-Low Latency & High Throughput</div>
+                </div>
+              </div>
+              <div class="feature-description">
+                <span class="feature-highlight">链路速率持续演进</span>：HDR (200Gb/s)、NDR (400Gb/s) 甚至 XDR (800Gb/s)。成为驱动全球顶级超级计算机和 AI 训练集群的<span class="feature-highlight">首选互联技术</span>。
+              </div>
+            </div>
+            
+            <!-- 无损网络 -->
+            <div class="feature-card reliability-feature">
+              <div class="feature-header">
+                <div class="feature-icon">🛡️</div>
+                <div>
+                  <div class="feature-title">原生无损网络</div>
+                  <div class="feature-subtitle">Lossless Network Architecture</div>
+                </div>
+              </div>
+              <div class="feature-description">
+                通过复杂的<span class="feature-highlight">基于信用的端到端流量控制机制</span>，从根本上防止因接收方缓冲区不足而导致的数据包丢失。这对于需要<span class="feature-highlight">确定性性能</span>的 HPC 和 AI 任务至关重要。
+              </div>
+            </div>
+            
+            <!-- 完整生态 -->
+            <div class="feature-card ecosystem-feature">
+              <div class="feature-header">
+                <div class="feature-icon">🌐</div>
+                <div>
+                  <div class="feature-title">完整技术生态</div>
+                  <div class="feature-subtitle">End-to-End Solution</div>
+                </div>
+              </div>
+              <div class="feature-description">
+                提供从芯片、网卡、交换机到管理软件和上层通信库的<span class="feature-highlight">端到端优化解决方案</span>。集中式子网管理器 (SM) 统一负责网络拓扑发现、LID 分配和路由表计算与下发。
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="footer" style="padding: 0.6% 2%;">
+        <div class="footer-left">
+          <div class="status-dot"></div>
+          <span>InfiniBand架构学习 - 高性能网络通信基础</span>
+        </div>
+        <div class="footer-badges">
+          <div class="footer-badge badge-install">RDMA技术</div>
+          <div class="footer-badge badge-config">无损网络</div>
+          <div class="footer-badge badge-command">极致性能</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+    <a href="#" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+    <a href="IB_PPT_02.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+  </div>
+</body>
+</html>

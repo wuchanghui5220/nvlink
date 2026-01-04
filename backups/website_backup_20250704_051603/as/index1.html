@@ -1,0 +1,416 @@
+<div class="jz_fix_ue_img">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+        NVIDIA网络解决方案应急响应预案
+    </title><script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.6.1/mermaid.min.js"></script><style>body {
+            font-family: 'Microsoft YaHei', 'SimHei', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background-color: #76b900; /* NVIDIA绿色 */
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px 5px 0 0;
+        }
+        .content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 0 0 5px 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        h2 {
+            color: #333;
+            border-bottom: 2px solid #76b900;
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+        .flowchart {
+            margin: 30px 0;
+            overflow: auto;
+        }
+        .legend {
+            margin-top: 40px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            border-left: 4px solid #76b900;
+        }
+        .legend h3 {
+            margin-top: 0;
+            color: #555;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            border-radius: 3px;
+        }
+        .priority-1 { background-color: #ff5252; }
+        .priority-2 { background-color: #ffb142; }
+        .priority-3 { background-color: #2ed573; }
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #666;
+            font-size: 14px;
+        }
+        @media print {
+            body {
+                background-color: white;
+            }
+            .container {
+                max-width: 100%;
+                padding: 0;
+            }
+            .content {
+                box-shadow: none;
+            }
+        }</style>
+    <div class="container">
+        <header>
+            <h1>
+                NVIDIA网络解决方案应急响应预案流程图
+            </h1>
+        </header>
+        <div class="content">
+            <div class="introduction">
+                <p>
+                    本流程图详细说明了北京正阳恒卓科技有限公司作为NVIDIA精英合作伙伴在处理网络解决方案故障时的标准应急响应流程。该流程确保在发生故障时能够迅速、有效地恢复系统运行，将业务中断影响降至最低。
+                </p>
+            </div>
+            <h2>
+                标准应急响应流程
+            </h2>
+            <div class="flowchart">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1400" width="1000" height="1400">
+  <!-- 背景 -->
+  <rect width="1000" height="1400" fill="#f8f9fa" />
+  
+  <!-- 标题 -->
+  <text x="500" y="50" font-family="Arial, 'Microsoft YaHei'" font-size="24" text-anchor="middle" font-weight="bold" fill="#333">NVIDIA网络解决方案应急响应预案流程图</text>
+  
+  <!-- 图例 -->
+  <rect x="700" y="80" width="20" height="20" fill="#ff5252" rx="3" />
+  <text x="730" y="95" font-family="Arial, 'Microsoft YaHei'" font-size="14" fill="#333">优先级1: 紧急</text>
+  
+  <rect x="700" y="110" width="20" height="20" fill="#ffb142" rx="3" />
+  <text x="730" y="125" font-family="Arial, 'Microsoft YaHei'" font-size="14" fill="#333">优先级2: 高级</text>
+  
+  <rect x="700" y="140" width="20" height="20" fill="#2ed573" rx="3" />
+  <text x="730" y="155" font-family="Arial, 'Microsoft YaHei'" font-size="14" fill="#333">优先级3: 常规</text>
+  
+  <!-- 开始节点 -->
+  <rect x="425" y="100" width="150" height="60" rx="10" fill="#eee" stroke="#666" stroke-width="2" />
+  <text x="500" y="135" font-family="Arial, 'Microsoft YaHei'" font-size="16" text-anchor="middle" fill="#333">故障/事件发生</text>
+  
+  <!-- 连接线 -->
+  <line x1="500" y1="160" x2="500" y2="190" stroke="#666" stroke-width="2" />
+  <polygon points="500,200 495,190 505,190" fill="#666" />
+  
+  <!-- 故障级别评估 - 菱形 -->
+  <polygon points="500,200 550,250 500,300 450,250" fill="#74b9ff" stroke="#0984e3" stroke-width="2" />
+  <text x="500" y="255" font-family="Arial, 'Microsoft YaHei'" font-size="15" text-anchor="middle" fill="#333">故障级别评估</text>
+  
+  <!-- 连接线 - 3条 -->
+  <line x1="450" y1="250" x2="330" y2="320" stroke="#666" stroke-width="2" />
+  <polygon points="325,325 330,315 340,320" fill="#666" />
+  <text x="380" y="290" font-family="Arial, 'Microsoft YaHei'" font-size="14" fill="#333">优先级1: 紧急</text>
+  
+  <line x1="500" y1="300" x2="500" y2="320" stroke="#666" stroke-width="2" />
+  <polygon points="500,330 495,320 505,320" fill="#666" />
+  <text x="560" y="320" font-family="Arial, 'Microsoft YaHei'" font-size="14" fill="#333">优先级2: 高级</text>
+  
+  <line x1="550" y1="250" x2="670" y2="320" stroke="#666" stroke-width="2" />
+  <polygon points="675,325 665,320 670,315" fill="#666" />
+  <text x="630" y="290" font-family="Arial, 'Microsoft YaHei'" font-size="14" fill="#333">优先级3: 常规</text>
+  
+  <!-- 三种响应节点 -->
+  <rect x="250" y="330" width="150" height="60" rx="10" fill="#ff5252" stroke="#ff0000" stroke-width="2" />
+  <text x="325" y="365" font-family="Arial, 'Microsoft YaHei'" font-size="15" text-anchor="middle" fill="white">启动24/7紧急响应</text>
+  
+  <rect x="425" y="330" width="150" height="60" rx="10" fill="#ffb142" stroke="#ff9a00" stroke-width="2" />
+  <text x="500" y="365" font-family="Arial, 'Microsoft YaHei'" font-size="15" text-anchor="middle" fill="white">启动标准响应流程</text>
+  
+  <rect x="600" y="330" width="150" height="60" rx="10" fill="#2ed573" stroke="#26ab5b" stroke-width="2" />
+  <text x="675" y="365" font-family="Arial, 'Microsoft YaHei'" font-size="15" text-anchor="middle" fill="white">计划性维护</text>
+  
+  <!-- 接下来跟踪优先级1的流程 -->
+  <!-- 连接线 -->
+  <line x1="325" y1="390" x2="325" y2="420" stroke="#666" stroke-width="2" />
+  <polygon points="325,430 320,420 330,420" fill="#666" />
+  
+  <!-- 第一阶段 -->
+  <rect x="250" y="430" width="150" height="60" rx="10" fill="#ecf0f1" stroke="#bdc3c7" stroke-width="2" />
+  <text x="325" y="455" font-family="Arial, 'Microsoft YaHei'" font-size="15" text-anchor="middle" fill="#333">第一阶段:</text>
+  <text x="325" y="475" font-family="Arial, 'Microsoft YaHei'" font-size="15" text-anchor="middle" fill="#333">1小时内响应</text>
+  
+  <!-- 连接线 -->
+  <line x1="325" y1="490" x2="325" y2="520" stroke="#666" stroke-width="2" />
+  <polygon points="325,530 320,520 330,520" fill="#666" />
+  
+  <!-- 客户专线接入 -->
+  <rect x="250" y="530" width="150" height="50" rx="10" fill="#ecf0f1" stroke="#bdc3c7" stroke-width="2" />
+  <text x="325" y="560" font-family="Arial, 'Microsoft YaHei'" font-size="15" text-anchor="middle" fill="#333">客户专线接入</text>
+  
+  <!-- 连接线 -->
+  <line x1="325" y1="580" x2="325" y2="600" stroke="#666" stroke-width="2" />
+  <polygon points="325,610 320,600 330,600" fill="#666" />
+  
+  <!-- NVIDIA专家组远程诊断 -->
+  <rect x="250" y="610" width="150" height="50" rx="10" fill="#ecf0f1" stroke="#bdc3c7" stroke-width="2" />
+  <text x="325" y="635" font-family="Arial, 'Microsoft YaHei'" font-size="14" text-anchor="middle" fill="#333">NVIDIA专家组远程诊断</text>
+  
+  <!-- 连接线 -->
+  <line x1="325" y1="660" x2="325" y2="680" stroke="#666" stroke-width="2" />
+  <polygon points="325,690 320,680 330,680" fill="#666" />
+  
+  <!-- 初步故障定位 -->
+  <rect x="250" y="690" width="150" height="50" rx="10" fill="#ecf0f1" stroke="#bdc3c7" stroke-width="2" />
+  <text x="325" y="720" font-family="Arial, 'Microsoft YaHei'" font-size="15" text-anchor="middle" fill="#333">初步故障定位</text>
+  
+  <!-- 连接线 -->
+  <line x1="325" y1="740" x2="325" y2="760" stroke="#666" stroke-width="2" />
+  <polygon points="325,770 320,760 330,760" fill="#666" />
+  
+  <!-- 第二阶段 -->
+  <rect x="250" y="770" width="150" height="60" rx="10" fill="#ecf0f1" stroke="#bdc3c7" stroke-width="2" />
+  <text x="325" y="795" font-family="Arial, 'Microsoft YaHei'" font-size="15" text-anchor="middle" fill="#333">第二阶段:</text>
+  <text x="325" y="815" font-family="Arial, 'Microsoft YaHei'" font-size="15" text-anchor="middle" fill="#333">2小时内现场支持</text>
+  
+  <!-- 连接线 -->
+  <line x1="325" y1="830" x2="325" y2="850" stroke="#666" stroke-width="2" />
+  <polygon points="325,860 320,850 330,850" fill="#666" />
+  
+  <!-- 本地团队紧急出动 -->
+  <rect x="250" y="860" width="150" height="50" rx="10" fill="#ecf0f1" stroke="#bdc3c7" stroke-width="2" />
+  <text x="325" y="890" font-family="Arial, 'Microsoft YaHei'" font-size="15" text-anchor="middle" fill="#333">本地团队紧急出动</text>
+  
+  <!-- 连接线 -->
+  <line x1="325" y1="910" x2="325" y2="930" stroke="#666" stroke-width="2" />
+  <polygon points="325,940 320,930 330,930" fill="#666" />
+  
+  <!-- 携带预配置备件 -->
+  <rect x="250" y="940" width="150" height="50" rx="10" fill="#ecf0f1" stroke="#bdc3c7" stroke-width="2" />
+  <text x="325" y="970" font-family="Arial, 'Microsoft YaHei'" font-size="15" text-anchor="middle" fill="#333">携带预配置备件</text>
+  
+  <!-- 连接线 -->
+  <line x1="325" y1="990" x2="325" y2="1010" stroke="#666" stroke-width="2" />
+  <polygon points="325,1020 320,1010 330,1010" fill="#666" />
+  
+  <!-- 远程专家组同步会诊 -->
+  <rect x="250" y="1020" width="150" height="50" rx="10" fill="#ecf0f1" stroke="#bdc3c7" stroke-width="2" />
+  <text x="325" y="1050" font-family="Arial, 'Microsoft YaHei'" font-size="15" text-anchor="middle" fill="#333">远程专家组同步会诊</text>
+  
+  <!-- 连接线 -->
+  <line x1="325" y1="1070" x2="325" y2="1090" stroke="#666" stroke-width="2" />
+  <polygon points="325,1100 320,1090 330,1090" fill="#666" />
+  
+  <!-- 硬件故障判断 - 菱形 -->
+  <polygon points="325,1100 375,1150 325,1200 275,1150" fill="#74b9ff" stroke="#0984e3" stroke-width="2" />
+  <text x="325" y="1155" font-family="Arial, 'Microsoft YaHei'" font-size="15" text-anchor="middle" fill="#333">硬件故障判断</text>
+  
+  <!-- 连接线 - 2条 -->
+  <line x1="275" y1="1150" x2="225" y2="1200" stroke="#666" stroke-width="2" />
+  <polygon points="220,1205 225,1195 235,1200" fill="#666" />
+  <text x="250" y="1180" font-family="Arial, 'Microsoft YaHei'" font-size="14" fill="#333">是</text>
+  
+  <line x1="375" y1="1150" x2="425" y2="1200" stroke="#666" stroke-width="2" />
+  <polygon points="430,1205 420,1200 425,1195" fill="#666" />
+  <text x="400" y="1180" font-family="Arial, 'Microsoft YaHei'" font-size="14" fill="#333">否</text>
+  
+  <!-- 硬件更换与软件调整 -->
+  <rect x="130" y="1210" width="180" height="60" rx="10" fill="#ecf0f1" stroke="#bdc3c7" stroke-width="2" />
+  <text x="220" y="1240" font-family="Arial, 'Microsoft YaHei'" font-size="15" text-anchor="middle" fill="#333">4小时内硬件更换</text>
+  
+  <rect x="340" y="1210" width="180" height="60" rx="10" fill="#ecf0f1" stroke="#bdc3c7" stroke-width="2" />
+  <text x="430" y="1240" font-family="Arial, 'Microsoft YaHei'" font-size="15" text-anchor="middle" fill="#333">软件/配置调整</text>
+  
+  <!-- 连接线 - 汇合 -->
+  <line x1="220" y1="1270" x2="220" y2="1300" stroke="#666" stroke-width="2" />
+  <line x1="430" y1="1270" x2="430" y2="1300" stroke="#666" stroke-width="2" />
+  <line x1="220" y1="1300" x2="325" y2="1300" stroke="#666" stroke-width="2" />
+  <line x1="430" y1="1300" x2="325" y2="1300" stroke="#666" stroke-width="2" />
+  <line x1="325" y1="1300" x2="325" y2="1320" stroke="#666" stroke-width="2" />
+  <polygon points="325,1330 320,1320 330,1320" fill="#666" />
+  
+  <!-- 最终节点 -->
+  <rect x="250" y="1330" width="150" height="50" rx="10" fill="#ecf0f1" stroke="#bdc3c7" stroke-width="2" />
+  <text x="325" y="1360" font-family="Arial, 'Microsoft YaHei'" font-size="15" text-anchor="middle" fill="#333">故障解决确认</text>
+  
+  <!-- 并行通告机制 -->
+  <rect x="600" y="430" width="220" height="130" rx="10" fill="#f9f9f9" stroke="#ddd" stroke-width="2" />
+  <text x="710" y="455" font-family="Arial, 'Microsoft YaHei'" font-size="16" text-anchor="middle" font-weight="bold" fill="#333">并行通告机制</text>
+  <line x1="650" y1="470" x2="770" y2="470" stroke="#ddd" stroke-width="2" />
+  
+  <text x="620" y="495" font-family="Arial, 'Microsoft YaHei'" font-size="14" fill="#333">• 客户关键联系人通知</text>
+  <text x="620" y="525" font-family="Arial, 'Microsoft YaHei'" font-size="14" fill="#333">• 管理层定时状态播报</text>
+  <text x="620" y="555" font-family="Arial, 'Microsoft YaHei'" font-size="14" fill="#333">• 指挥中心协调资源</text>
+  
+  <!-- 虚线连接 -->
+  <line x1="325" y1="360" x2="600" y2="480" stroke="#666" stroke-width="2" stroke-dasharray="5,5" />
+  <polygon points="600,480 590,475 590,485" fill="#666" />
+  
+  <!-- 升级路径 -->
+  <rect x="600" y="600" width="220" height="130" rx="10" fill="#f9f9f9" stroke="#ddd" stroke-width="2" />
+  <text x="710" y="625" font-family="Arial, 'Microsoft YaHei'" font-size="16" text-anchor="middle" font-weight="bold" fill="#333">升级路径</text>
+  <line x1="650" y1="640" x2="770" y2="640" stroke="#ddd" stroke-width="2" />
+  
+  <text x="620" y="665" font-family="Arial, 'Microsoft YaHei'" font-size="14" fill="#333">• 团队级别解决失败</text>
+  <text x="620" y="695" font-family="Arial, 'Microsoft YaHei'" font-size="14" fill="#333">• 区域专家组介入</text>
+  <text x="620" y="725" font-family="Arial, 'Microsoft YaHei'" font-size="14" fill="#333">• 全球NVIDIA总部支持</text>
+  
+  <!-- 底部信息 -->
+  <text x="500" y="1380" font-family="Arial, 'Microsoft YaHei'" font-size="12" text-anchor="middle" fill="#666">© 2025 北京正阳恒卓科技有限公司 - NVIDIA精英合作伙伴</text>
+</svg>
+
+            </div>
+            <div class="legend">
+                <h3>
+                    图例说明
+                </h3>
+                <div class="legend-item">
+                    <div class="legend-color priority-1">
+                    </div>
+                    <div>
+                        优先级1：紧急&nbsp;-&nbsp;系统完全无法使用或严重性能下降，需要立即响应
+                    </div>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color priority-2">
+                    </div>
+                    <div>
+                        优先级2：高级&nbsp;-&nbsp;系统功能部分受损，但仍可运行，需要快速响应
+                    </div>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color priority-3">
+                    </div>
+                    <div>
+                        优先级3：常规&nbsp;-&nbsp;非关键功能问题，可在正常工作时间内解决
+                    </div>
+                </div>
+            </div>
+            <h2>
+                关键响应时间承诺
+            </h2>
+            <table border="1" cellspacing="0" cellpadding="8" style="width:100%;border-collapse:collapse;margin:20px 0;">
+                <tbody>
+                    <tr style="background-color:#76b900;color:white;">
+                        <th>
+                            优先级
+                        </th>
+                        <th>
+                            初始响应
+                        </th>
+                        <th>
+                            现场支持
+                        </th>
+                        <th>
+                            解决方案实施
+                        </th>
+                        <th>
+                            后续RCA报告
+                        </th>
+                    </tr>
+                    <tr>
+                        <td>
+                            <strong>优先级1：紧急</strong>
+                        </td>
+                        <td>
+                            1小时内
+                        </td>
+                        <td>
+                            2小时内
+                        </td>
+                        <td>
+                            4小时内
+                        </td>
+                        <td>
+                            72小时内
+                        </td>
+                    </tr>
+                    <tr style="background-color:#f9f9f9;">
+                        <td>
+                            <strong>优先级2：高级</strong>
+                        </td>
+                        <td>
+                            2小时内
+                        </td>
+                        <td>
+                            4小时内
+                        </td>
+                        <td>
+                            8小时内
+                        </td>
+                        <td>
+                            5个工作日内
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <strong>优先级3：常规</strong>
+                        </td>
+                        <td>
+                            4小时内
+                        </td>
+                        <td>
+                            下一工作日
+                        </td>
+                        <td>
+                            两个工作日内
+                        </td>
+                        <td>
+                            10个工作日内
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <h2>
+                联系方式
+            </h2>
+            <p>
+                24/7紧急响应热线：<strong>010-63085531</strong>
+            </p>
+            <p>
+                技术支持邮箱：<strong>support@zhengytech.com</strong>
+            </p>
+            <p>
+                客户门户：<strong>http://zhengytech.com/</strong>
+            </p>
+        </div>
+        <footer>
+            <p>
+                ©&nbsp;2025&nbsp;北京正阳恒卓科技有限公司&nbsp;-&nbsp;NVIDIA精英合作伙伴
+            </p>
+            <p>
+                文档编号：ER-NVIDIA-2025-03-27
+            </p>
+        </footer>
+    </div><script>mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });</script><!--!doctype-->
+</div>

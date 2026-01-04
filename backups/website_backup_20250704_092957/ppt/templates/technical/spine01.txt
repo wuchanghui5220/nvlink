@@ -1,0 +1,17 @@
+nv set interface lo ip address 10.10.10.101/32
+nv set interface swp1-6
+nv set router bgp autonomous-system 65199
+nv set router bgp router-id 10.10.10.101
+nv set vrf default router bgp peer-group underlay remote-as external
+nv set vrf default router bgp path-selection multipath aspath-ignore on
+nv set vrf default router bgp neighbor swp1 peer-group underlay
+nv set vrf default router bgp neighbor swp2 peer-group underlay
+nv set vrf default router bgp neighbor swp3 peer-group underlay
+nv set vrf default router bgp neighbor swp4 peer-group underlay
+nv set vrf default router bgp neighbor swp5 peer-group underlay
+nv set vrf default router bgp neighbor swp6 peer-group underlay
+nv set vrf default router bgp address-family l2vpn-evpn enable on
+nv set vrf default router bgp peer-group underlay address-family l2vpn-evpn enable on
+nv set vrf default router bgp address-family ipv4-unicast redistribute connected
+nv set system hostname spine01
+nv config apply

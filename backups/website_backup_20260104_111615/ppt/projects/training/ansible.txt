@@ -1,0 +1,77 @@
+ubuntu@oob-mgmt-server:~$ cat /etc/ansible/hosts
+[all:vars]
+ansible_user=cumulus
+ansible_ssh_pass=Cumu1usLinux!
+
+[server:vars]
+ansible_user=ubuntu
+ansible_ssh_pass=nvidia
+
+[fw:vars]
+ansible_user=ubuntu
+ansible_ssh_pass=nvidia
+
+[border]
+border01
+border02
+
+[fw]
+fw1
+fw2
+
+[leaf]
+leaf01
+leaf02
+leaf03
+leaf04
+
+[spine]
+spine01
+spine02
+spine03
+spine04
+
+[server]
+server01
+server02
+server03
+server04
+server05
+server06
+
+[pod1:children]
+fw
+leaf
+spine
+border
+server
+
+# Ansible 常用命令
+
+## 检查节点ping 
+ansible pod1 -m ping
+
+## 检查leaf交换机bgp 状态
+ansible leaf -m shell -a "nv show vrf default router bgp neighbor"
+
+## 验证 MLAG 接口状态，并检查 MLAG 对等体之间是否存在配置冲突
+ansible leaf -m shell -a "nv show interface --view=mlag-cc"
+
+## 检查交换机聚合端口 bond 状态
+ansible leaf -m shell -a "nv show interface bonds"
+
+## 检查 Leaf交换机 VTEP 配置
+ansible leaf -m shell -a "nv config show -o commands| grep 'interface vlan'"
+
+
+## 检查交换机型号和序列号
+ansible leaf -m shell -a "nv show platform"
+
+## 检查主机名和IP地址对应是否正确
+ansible server -m shell -a "hostname;ip a s |grep -P '(?=.*inet)(?=.*eth0)'"
+
+
+ansible leaf -m shell -a "nv config show -o commands |grep autonomous-system"
+ansible spine -m shell -a "nv config show -o commands |grep autonomous-system"
+ansible border -m shell -a "nv config show -o commands |grep autonomous-system"
+

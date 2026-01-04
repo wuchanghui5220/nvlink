@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>InfiniBand 流量控制、可靠性与异常处理</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    :root {
+      --primary-blue: #00a2ff;
+      --primary-green: #76b900;
+      --primary-orange: #ffa500;
+      --primary-purple: #4834d4;
+      --primary-red: #ff6b6b;
+      --text-primary: #ffffff;
+      --text-secondary: rgba(255, 255, 255, 0.87);
+    }
+
+    .main-content {
+      padding: 1% 2%;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .page-title {
+      text-align: center;
+      margin-bottom: 1%;
+      flex-shrink: 0;
+    }
+
+    .title-main {
+      font-size: clamp(24px, 2.8vw, 32px);
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary-red) 0%, var(--primary-orange) 50%, var(--primary-green) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 0.5%;
+    }
+
+    .title-sub {
+      font-size: clamp(13px, 1.5vw, 17px);
+      color: rgba(255, 255, 255, 0.85);
+      font-weight: 500;
+      margin-bottom: 1%;
+    }
+
+    .content-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5%;
+      min-height: 0;
+      overflow-y: auto;
+    }
+
+    /* 可靠性概述 */
+    .reliability-intro {
+      background: linear-gradient(135deg, rgba(255, 107, 107, 0.15), rgba(255, 107, 107, 0.08));
+      border: 2px solid rgba(255, 107, 107, 0.4);
+      border-radius: 12px;
+      padding: 2%;
+      text-align: center;
+    }
+
+    .intro-title {
+      font-size: clamp(18px, 2vw, 22px);
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 1%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .intro-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--primary-red), #e53e3e);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .intro-text {
+      font-size: clamp(12px, 1.3vw, 14px);
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    /* 流量控制核心 */
+    .flow-control {
+      background: linear-gradient(135deg, rgba(0, 162, 255, 0.15), rgba(0, 162, 255, 0.08));
+      border: 2px solid rgba(0, 162, 255, 0.4);
+      border-radius: 12px;
+      padding: 2.5%;
+    }
+
+    .flow-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 1.5%;
+    }
+
+    .flow-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--primary-blue), #0078d4);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .flow-title {
+      font-size: clamp(16px, 1.8vw, 20px);
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .credit-mechanism {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2%;
+      margin-bottom: 2%;
+    }
+
+    .credit-step {
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 8px;
+      padding: 2%;
+      border-left: 3px solid var(--primary-blue);
+    }
+
+    .step-number {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      background: var(--primary-blue);
+      border-radius: 4px;
+      color: white;
+      text-align: center;
+      font-weight: bold;
+      font-size: 12px;
+      line-height: 20px;
+      margin-right: 8px;
+    }
+
+    .step-title {
+      font-size: clamp(12px, 1.3vw, 14px);
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.5%;
+    }
+
+    .step-desc {
+      font-size: clamp(11px, 1.2vw, 13px);
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    .credit-highlight {
+      color: var(--primary-blue);
+      font-weight: 600;
+    }
+
+    /* 图书馆类比 */
+    .library-analogy {
+      background: linear-gradient(135deg, rgba(118, 185, 0, 0.15), rgba(118, 185, 0, 0.08));
+      border: 2px solid rgba(118, 185, 0, 0.4);
+      border-radius: 12px;
+      padding: 2.5%;
+    }
+
+    .analogy-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 1.5%;
+    }
+
+    .analogy-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--primary-green), #4caf50);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .analogy-title {
+      font-size: clamp(16px, 1.8vw, 20px);
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .analogy-steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5%;
+    }
+
+    .analogy-step {
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 8px;
+      padding: 2%;
+      text-align: center;
+    }
+
+    .analogy-emoji {
+      font-size: 24px;
+      margin-bottom: 1%;
+    }
+
+    .analogy-step-title {
+      font-size: clamp(12px, 1.3vw, 14px);
+      font-weight: 600;
+      color: var(--primary-green);
+      margin-bottom: 0.5%;
+    }
+
+    .analogy-step-desc {
+      font-size: clamp(10px, 1.1vw, 12px);
+      color: var(--text-secondary);
+      line-height: 1.3;
+    }
+
+    /* 异常处理机制 */
+    .exception-handling {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5%;
+    }
+
+    .exception-card {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04));
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      padding: 2%;
+      transition: all 0.3s ease;
+    }
+
+    .exception-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .exception-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 1%;
+      padding-bottom: 1%;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .exception-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .nak-card .exception-icon {
+      background: linear-gradient(135deg, var(--primary-orange), #ff8c00);
+    }
+
+    .retry-card .exception-icon {
+      background: linear-gradient(135deg, var(--primary-purple), #6b46c1);
+    }
+
+    .link-card .exception-icon {
+      background: linear-gradient(135deg, var(--primary-blue), #0078d4);
+    }
+
+    .apm-card .exception-icon {
+      background: linear-gradient(135deg, var(--primary-red), #e53e3e);
+    }
+
+    .exception-title {
+      font-size: clamp(13px, 1.4vw, 15px);
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .exception-desc {
+      font-size: clamp(11px, 1.2vw, 13px);
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    .exception-highlight {
+      color: var(--primary-orange);
+      font-weight: 600;
+    }
+
+    @media (max-width: 1200px) {
+      .credit-mechanism {
+        grid-template-columns: 1fr;
+        gap: 1.5%;
+      }
+      
+      .analogy-steps {
+        grid-template-columns: 1fr;
+        gap: 1%;
+      }
+      
+      .exception-handling {
+        grid-template-columns: 1fr;
+        gap: 1%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <div class="bg-elements">
+      <div class="brain-pattern"></div>
+      <div class="network-signals">
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+      </div>
+    </div>
+    
+    <div class="content">
+      <div class="header" style="padding: 0.6% 2%;">
+        <div class="day-info">
+          <div class="day-badge">6</div>
+          <div class="day-text">第六章：流量控制、可靠性与异常处理</div>
+        </div>
+        <div class="section-indicator">无损网络机制</div>
+      </div>
+      
+      <div class="main-content">
+        <div class="page-title">
+          <div class="title-main">流量控制、可靠性与异常处理</div>
+          <div class="title-sub">多层次可靠性体系 · 基于信用的流量控制 · 主动预防与被动响应</div>
+        </div>
+        
+        <div class="content-wrapper">
+          <!-- 可靠性概述 -->
+          <div class="reliability-intro">
+            <div class="intro-title">
+              <div class="intro-icon">🛡️</div>
+              <span>完整的多层次可靠性体系</span>
+            </div>
+            <div class="intro-text">
+              InfiniBand 的可靠性并非单一功能，而是一个多层次、从<strong>主动预防到被动响应</strong>的完整体系。
+            </div>
+          </div>
+          
+          <!-- 基于信用的流量控制 -->
+          <div class="flow-control">
+            <div class="flow-header">
+              <div class="flow-icon">💳</div>
+              <div class="flow-title">基于信用的端到端流量控制 - 无损网络基石</div>
+            </div>
+            
+            <div class="credit-mechanism">
+              <div class="credit-step">
+                <div class="step-title">
+                  <span class="step-number">1</span>信用许可机制
+                </div>
+                <div class="step-desc">
+                  发送方必须拥有来自接收方的<span class="credit-highlight">"信用 (Credit)"</span>才能发送新请求。信用代表接收方<span class="credit-highlight">可用的接收缓冲区数量</span>。
+                </div>
+              </div>
+              
+              <div class="credit-step">
+                <div class="step-title">
+                  <span class="step-number">2</span>ACK包返还信用
+                </div>
+                <div class="step-desc">
+                  接收方处理数据后，通过<span class="credit-highlight">ACK包</span>将新的信用额度告知发送方，ACK包包含<span class="credit-highlight">"信用计数"</span>字段。
+                </div>
+              </div>
+              
+              <div class="credit-step">
+                <div class="step-title">
+                  <span class="step-number">3</span>自动暂停机制
+                </div>
+                <div class="step-desc">
+                  发送方耗尽信用时，硬件<span class="credit-highlight">自动暂停发送</span>，直到收到新ACK包获得补充，从源头杜绝缓冲区溢出。
+                </div>
+              </div>
+              
+              <div class="credit-step">
+                <div class="step-title">
+                  <span class="step-number">4</span>两级流量控制
+                </div>
+                <div class="step-desc">
+                  <span class="credit-highlight">链路层</span>：基于VL的交换机端口缓冲区管理<br>
+                  <span class="credit-highlight">传输层</span>：端到端QP间的信用机制
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 图书馆类比 -->
+          <div class="library-analogy">
+            <div class="analogy-header">
+              <div class="analogy-icon">📚</div>
+              <div class="analogy-title">图书馆借书系统类比理解</div>
+            </div>
+            
+            <div class="analogy-steps">
+              <div class="analogy-step">
+                <div class="analogy-emoji">📖</div>
+                <div class="analogy-step-title">凭证借书</div>
+                <div class="analogy-step-desc">
+                  你(发送方)必须持有图书馆(接收方)的可还书凭证(信用)才能还书(发送数据)
+                </div>
+              </div>
+              
+              <div class="analogy-step">
+                <div class="analogy-emoji">🧾</div>
+                <div class="analogy-step-title">收据补充</div>
+                <div class="analogy-step-desc">
+                  图书馆整理完毕后给出收据(ACK包)："又整理出X个空书架，获得X张新凭证"
+                </div>
+              </div>
+              
+              <div class="analogy-step">
+                <div class="analogy-emoji">🚫</div>
+                <div class="analogy-step-title">防止爆仓</div>
+                <div class="analogy-step-desc">
+                  没有凭证就等待，确保不会把书堆到门口导致书架(缓冲区)爆仓
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 异常处理机制 -->
+          <div class="exception-handling">
+            <!-- NAK机制 -->
+            <div class="exception-card nak-card">
+              <div class="exception-header">
+                <div class="exception-icon">❌</div>
+                <div class="exception-title">否定确认 (NAK)</div>
+              </div>
+              <div class="exception-desc">
+                检测到错误时返回NAK包：<br>
+                • <span class="exception-highlight">PSN序列错误</span>：丢包或乱序<br>
+                • <span class="exception-highlight">无效请求</span>：R_Key错误等<br>
+                • <span class="exception-highlight">RNR NAK</span>：接收方未就绪
+              </div>
+            </div>
+            
+            <!-- 重试机制 -->
+            <div class="exception-card retry-card">
+              <div class="exception-header">
+                <div class="exception-icon">🔄</div>
+                <div class="exception-title">重试机制</div>
+              </div>
+              <div class="exception-desc">
+                • <span class="exception-highlight">超时重传</span>：硬件定时器自动重传<br>
+                • <span class="exception-highlight">重复处理</span>：接收方识别并丢弃重复包<br>
+                • <span class="exception-highlight">错误状态</span>：重试耗尽后进入错误状态
+              </div>
+            </div>
+            
+            <!-- 链路层处理 -->
+            <div class="exception-card link-card">
+              <div class="exception-header">
+                <div class="exception-icon">🔗</div>
+                <div class="exception-title">链路层异常处理</div>
+              </div>
+              <div class="exception-desc">
+                • <span class="exception-highlight">CRC校验</span>：检测数据包损坏<br>
+                • <span class="exception-highlight">链路再训练</span>：信号质量下降时自动重训<br>
+                • 对上层透明的故障恢复
+              </div>
+            </div>
+            
+            <!-- APM -->
+            <div class="exception-card apm-card">
+              <div class="exception-header">
+                <div class="exception-icon">🚀</div>
+                <div class="exception-title">自动路径迁移 (APM)</div>
+              </div>
+              <div class="exception-desc">
+                • <span class="exception-highlight">硬件触发</span>：重试计数器耗尽时自动切换<br>
+                • <span class="exception-highlight">软件触发</span>：基于性能监控的预防性切换<br>
+                • 依赖SM提供的备用路径信息
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="footer" style="padding: 0.6% 2%;">
+        <div class="footer-left">
+          <div class="status-dot"></div>
+          <span>InfiniBand可靠性机制 - 多层次主动预防与被动响应</span>
+        </div>
+        <div class="footer-badges">
+          <div class="footer-badge badge-install">信用控制</div>
+          <div class="footer-badge badge-config">异常处理</div>
+          <div class="footer-badge badge-command">无损网络</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+    <a href="IB_PPT_05.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+    <a href="IB_PPT_07.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+  </div>
+</body>
+</html>

@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>NVIDIA InfiniBand智算中心组网创新与Quantum-X800高性能交换解决方案</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, rgba(175, 233, 207, 0.8) 0%, rgba(145, 210, 185, 0.8) 100%);
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+        }
+
+        .cover-container {
+            width: 90%;
+            height: 85%;
+            background: linear-gradient(135deg, rgba(245, 245, 245, 0.8) 0%, rgba(235, 235, 235, 0.8) 100%);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2);
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Background gradient overlay */
+        .gradient-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0, 118, 82, 0.1) 0%, rgba(0, 155, 119, 0.2) 100%);
+            z-index: 1;
+        }
+
+        /* Large circular design elements */
+        .circle-element {
+            position: absolute;
+            border-radius: 50%;
+            z-index: 2;
+        }
+
+        .circle-1 {
+            width: 800px;
+            height: 800px;
+            bottom: -400px;
+            right: -200px;
+            background: linear-gradient(45deg, rgba(0, 155, 119, 0.2) 0%, rgba(0, 155, 119, 0.05) 70%);
+            border: 2px solid rgba(0, 155, 119, 0.3);
+        }
+
+        .circle-2 {
+            width: 600px;
+            height: 600px;
+            top: -300px;
+            left: -100px;
+            background: linear-gradient(225deg, rgba(0, 155, 119, 0.15) 0%, rgba(0, 155, 119, 0.05) 70%);
+            border: 2px solid rgba(0, 155, 119, 0.2);
+        }
+
+        /* Content area */
+        .content-wrapper {
+            flex: 1;
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            z-index: 5;
+        }
+
+        /* Hero title container */
+        .hero-title-container {
+            position: relative;
+            margin-bottom: 40px;
+            z-index: 10;
+        }
+
+        /* Main title with border effect */
+        .hero-title {
+            font-size: 3.5em;
+            font-weight: 800;
+            color: #005741;
+            margin: 0;
+            padding: 0;
+            position: relative;
+            display: inline-block;
+        }
+
+        .title-border {
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 10px;
+            background-color: rgba(0, 155, 119, 0.3);
+            border-radius: 5px;
+        }
+
+        /* Prominent subtitle */
+        .prominent-subtitle {
+            padding: 20px 30px;
+            border-radius: 15px;
+            background: linear-gradient(90deg, #005741, #009B77);
+            margin: 30px 0;
+            display: inline-block;
+            max-width: 85%;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 87, 65, 0.3);
+        }
+
+        .subtitle-text {
+            color: white;
+            font-size: 1.8em;
+            font-weight: 600;
+            margin: 0;
+            line-height: 1.4;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Subtitle animated background */
+        .subtitle-glow {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 80%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transform: skewX(-25deg);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% {
+                left: -100%;
+            }
+            100% {
+                left: 200%;
+            }
+        }
+
+        /* Tech chip graphic element */
+        .tech-chip {
+            position: absolute;
+            right: 70px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 350px;
+            height: 350px;
+            z-index: 5;
+        }
+
+        /* Footer area */
+        .footer {
+            padding: 20px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 155, 119, 0.9);
+            color: white;
+            z-index: 10;
+            position: relative;
+        }
+
+        .presenter-info {
+            font-size: 1.1em;
+        }
+
+        .presenter-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .presenter-title {
+            font-style: italic;
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .company-info {
+            text-align: right;
+            font-style: italic;
+        }
+
+        /* Brand logo */
+        .logo-container {
+            position: absolute;
+            top: 40px;
+            left: 50px;
+            display: flex;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .logo-text {
+            color: #005741;
+            font-size: 2.4em;
+            font-weight: 700;
+        }
+
+        .divider {
+            width: 2px;
+            height: 40px;
+            background-color: #005741;
+            margin: 0 15px;
+        }
+
+        .product-name {
+            color: #005741;
+            font-size: 2em;
+            font-weight: 400;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes float {
+            0% { transform: translateY(-50%) translateX(0); }
+            50% { transform: translateY(-50%) translateX(-10px); }
+            100% { transform: translateY(-50%) translateX(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        .slide-in-right {
+            animation: slideInRight 0.8s ease-out forwards;
+        }
+
+        .float-element {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .delay-1 {
+            animation-delay: 0.3s;
+        }
+
+        .delay-2 {
+            animation-delay: 0.6s;
+        }
+
+        .delay-3 {
+            animation-delay: 0.9s;
+        }
+    </style>
+</head>
+<body>
+    <div class="cover-container">
+        <!-- Background elements -->
+        <div class="gradient-overlay"></div>
+        <div class="circle-element circle-1"></div>
+        <div class="circle-element circle-2"></div>
+        
+        <!-- Brand logo -->
+        <div class="logo-container fade-in">
+            <div class="logo-text">NVIDIA</div>
+            <div class="divider"></div>
+            <div class="product-name">InfiniBand</div>
+        </div>
+        
+        <!-- Main content -->
+        <div class="content-wrapper">
+            <!-- Hero title with underline -->
+            <div class="hero-title-container fade-in">
+                <h1 class="hero-title">智算中心高性能网络革新</h1>
+                <div class="title-border"></div>
+            </div>
+            
+            <!-- Prominent subtitle with glow effect -->
+            <div class="prominent-subtitle fade-in delay-1">
+                <div class="subtitle-glow"></div>
+                <p class="subtitle-text">NVIDIA InfiniBand智算中心组网创新与<br>Quantum-X800高性能交换解决方案</p>
+            </div>
+            
+            <!-- Tech chip visualization -->
+            <div class="tech-chip float-element slide-in-right delay-2">
+                <svg width="100%" height="100%" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Main circular frame -->
+                    <circle cx="200" cy="200" r="180" fill="none" stroke="#009B77" stroke-width="3" opacity="0.8" />
+                    
+                    <!-- Inner geometric pattern -->
+                    <g opacity="0.9">
+                        <!-- Center hexagon -->
+                        <polygon points="200,120 240,150 240,210 200,240 160,210 160,150" 
+                                fill="rgba(0, 155, 119, 0.2)" stroke="#009B77" stroke-width="2" />
+                        
+                        <!-- Quantum symbol in center -->
+                        <text x="200" y="190" text-anchor="middle" font-size="24" fill="#005741" font-weight="bold">XDR</text>
+                        <text x="200" y="220" text-anchor="middle" font-size="30" fill="#005741" font-weight="bold">800G</text>
+                        
+                        <!-- Surrounding polygons -->
+                        <polygon points="160,100 190,110 190,130 160,140 130,130 130,110" 
+                                fill="rgba(0, 155, 119, 0.1)" stroke="#009B77" stroke-width="1" />
+                        <polygon points="240,100 270,110 270,130 240,140 210,130 210,110" 
+                                fill="rgba(0, 155, 119, 0.1)" stroke="#009B77" stroke-width="1" />
+                        <polygon points="120,170 150,180 150,200 120,210 90,200 90,180" 
+                                fill="rgba(0, 155, 119, 0.1)" stroke="#009B77" stroke-width="1" />
+                        <polygon points="280,170 310,180 310,200 280,210 250,200 250,180" 
+                                fill="rgba(0, 155, 119, 0.1)" stroke="#009B77" stroke-width="1" />
+                        <polygon points="160,240 190,250 190,270 160,280 130,270 130,250" 
+                                fill="rgba(0, 155, 119, 0.1)" stroke="#009B77" stroke-width="1" />
+                        <polygon points="240,240 270,250 270,270 240,280 210,270 210,250" 
+                                fill="rgba(0, 155, 119, 0.1)" stroke="#009B77" stroke-width="1" />
+                    </g>
+                    
+                    <!-- Concentric circles with pulsing animation -->
+                    <circle cx="200" cy="200" r="140" fill="none" stroke="#009B77" stroke-width="1" opacity="0.5">
+                        <animate attributeName="r" values="140;150;140" dur="4s" repeatCount="indefinite" />
+                        <animate attributeName="opacity" values="0.5;0.3;0.5" dur="4s" repeatCount="indefinite" />
+                    </circle>
+                    
+                    <circle cx="200" cy="200" r="160" fill="none" stroke="#009B77" stroke-width="1" opacity="0.3">
+                        <animate attributeName="r" values="160;175;160" dur="6s" repeatCount="indefinite" />
+                        <animate attributeName="opacity" values="0.3;0.1;0.3" dur="6s" repeatCount="indefinite" />
+                    </circle>
+                    
+                    <!-- Connection lines -->
+                    <g stroke="#009B77" stroke-width="1" opacity="0.7">
+                        <line x1="200" y1="120" x2="175" y2="140" />
+                        <line x1="240" y1="150" x2="265" y2="135" />
+                        <line x1="240" y1="210" x2="265" y2="195" />
+                        <line x1="200" y1="240" x2="175" y2="255" />
+                        <line x1="160" y1="210" x2="135" y2="195" />
+                        <line x1="160" y1="150" x2="135" y2="135" />
+                    </g>
+                    
+                    <!-- Moving data points -->
+                    <circle cx="175" cy="140" r="4" fill="#009B77">
+                        <animate attributeName="cx" values="175;160;175" dur="3s" repeatCount="indefinite" />
+                        <animate attributeName="cy" values="140;130;140" dur="3s" repeatCount="indefinite" />
+                    </circle>
+                    
+                    <circle cx="265" cy="135" r="4" fill="#009B77">
+                        <animate attributeName="cx" values="265;255;265" dur="2.5s" repeatCount="indefinite" />
+                        <animate attributeName="cy" values="135;125;135" dur="2.5s" repeatCount="indefinite" />
+                    </circle>
+                    
+                    <circle cx="265" cy="195" r="4" fill="#009B77">
+                        <animate attributeName="cx" values="265;285;265" dur="4s" repeatCount="indefinite" />
+                        <animate attributeName="cy" values="195;190;195" dur="4s" repeatCount="indefinite" />
+                    </circle>
+                    
+                    <circle cx="175" cy="255" r="4" fill="#009B77">
+                        <animate attributeName="cx" values="175;165;175" dur="3.5s" repeatCount="indefinite" />
+                        <animate attributeName="cy" values="255;265;255" dur="3.5s" repeatCount="indefinite" />
+                    </circle>
+                    
+                    <circle cx="135" cy="195" r="4" fill="#009B77">
+                        <animate attributeName="cx" values="135;115;135" dur="4.5s" repeatCount="indefinite" />
+                        <animate attributeName="cy" values="195;190;195" dur="4.5s" repeatCount="indefinite" />
+                    </circle>
+                    
+                    <circle cx="135" cy="135" r="4" fill="#009B77">
+                        <animate attributeName="cx" values="135;115;135" dur="3.2s" repeatCount="indefinite" />
+                        <animate attributeName="cy" values="135;125;135" dur="3.2s" repeatCount="indefinite" />
+                    </circle>
+                    
+                    <!-- Radiating pulse effect -->
+                    <circle cx="200" cy="200" r="50" fill="none" stroke="#FF6F61" stroke-width="2" opacity="0">
+                        <animate attributeName="r" values="50;180;180" dur="3s" repeatCount="indefinite" />
+                        <animate attributeName="opacity" values="0.5;0;0" dur="3s" repeatCount="indefinite" />
+                    </circle>
+                </svg>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="footer fade-in delay-3">
+            <div class="presenter-info">
+                <div class="presenter-name">[讲师姓名]</div>
+                <div class="presenter-title">NVIDIA 网络解决方案架构师</div>
+            </div>
+            <div class="company-info">
+                2024 NVIDIA Corporation
+            </div>
+        </div>
+    </div>
+</body>
+</html>

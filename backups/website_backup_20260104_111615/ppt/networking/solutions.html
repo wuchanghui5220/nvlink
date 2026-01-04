@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>网络解决方案 - NVIDIA Networking 培训</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f8fafb;
+            color: #2c3e50;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* PPT 样式背景 */
+        .ppt-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #ffffff 0%, #f0f9f4 30%, #f1f8ff 70%, #f0f9f4 100%);
+            overflow: hidden;
+        }
+
+        .ppt-background::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 60%;
+            height: 100%;
+            background: linear-gradient(45deg, #3b82f6 0%, #22c55e 30%, #76b900 60%, #06b6d4 100%);
+            clip-path: polygon(30% 0%, 100% 0%, 100% 100%, 0% 100%);
+            opacity: 0.12;
+        }
+
+        /* 创意装饰元素 */
+        .decoration-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        /* 右上角圆点装饰 */
+        .decoration-lines::before {
+            content: '';
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            width: 8px;
+            height: 8px;
+            background: linear-gradient(135deg, #3b82f6, #22c55e);
+            border-radius: 50%;
+            box-shadow:
+                20px 0 0 rgba(59, 130, 246, 0.4),
+                40px 0 0 rgba(59, 130, 246, 0.3),
+                60px 0 0 rgba(59, 130, 246, 0.2),
+                0 20px 0 rgba(34, 197, 94, 0.4),
+                20px 20px 0 rgba(34, 197, 94, 0.3),
+                40px 20px 0 rgba(34, 197, 94, 0.2),
+                0 40px 0 rgba(59, 130, 246, 0.3),
+                20px 40px 0 rgba(34, 197, 94, 0.2);
+            opacity: 0.6;
+        }
+
+        /* 左下角几何图形装饰 */
+        .decoration-lines::after {
+            content: '';
+            position: absolute;
+            bottom: 40px;
+            left: 40px;
+            width: 60px;
+            height: 60px;
+            border: 3px solid rgba(34, 197, 94, 0.2);
+            border-radius: 12px;
+            transform: rotate(15deg);
+            box-shadow:
+                80px 0 0 rgba(59, 130, 246, 0.15),
+                160px 0 0 rgba(34, 197, 94, 0.1);
+        }
+
+        /* 主容器 */
+        .slide-container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 40px 80px 60px;
+        }
+
+        /* 头部区域 */
+        .slide-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.15);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nvidia-logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .nvidia-logo svg {
+            height: 30px;
+            width: auto;
+        }
+
+        /* 标题区域 - 紧凑设计 */
+        .slide-title {
+            display: flex;
+            align-items: center;
+            margin-left: 20px;
+        }
+
+        .title-content {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .main-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            line-height: 1.1;
+            background: linear-gradient(90deg, #3b82f6 0%, #22c55e 40%, #76b900 80%, #06b6d4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 0.85rem;
+            color: #64748b;
+            font-weight: 400;
+        }
+
+        .breadcrumb {
+            font-size: 0.85rem;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .breadcrumb a {
+            color: #3b82f6;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .breadcrumb a:hover {
+            color: #1e40af;
+        }
+
+        /* 内容区域 */
+        .content-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-bottom: 25px;
+            overflow-y: auto;
+        }
+
+        /* 解决方案卡片网格 */
+        .solutions-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .solution-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .solution-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: linear-gradient(180deg, #3b82f6, #22c55e);
+            transition: width 0.3s ease;
+        }
+
+        .solution-card:hover::before {
+            width: 8px;
+        }
+
+        .solution-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(59, 130, 246, 0.15);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .solution-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .solution-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #3b82f6, #22c55e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .solution-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(34, 197, 94, 0.1));
+        }
+
+        .solution-desc {
+            font-size: 0.9rem;
+            color: #64748b;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .solution-features {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: auto;
+        }
+
+        .feature-item {
+            padding: 10px 12px;
+            background: rgba(59, 130, 246, 0.05);
+            border-radius: 8px;
+            border-left: 3px solid #3b82f6;
+            font-size: 0.85rem;
+            color: #475569;
+            transition: all 0.2s ease;
+        }
+
+        .feature-item:hover {
+            background: rgba(59, 130, 246, 0.1);
+            transform: translateX(5px);
+        }
+
+        .feature-item strong {
+            color: #1e293b;
+        }
+
+        /* 底部技术亮点 */
+        .highlights-section {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .highlight-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            padding: 18px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(59, 130, 246, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .highlight-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(34, 197, 94, 0.15);
+        }
+
+        .highlight-number {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #3b82f6, #22c55e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 5px;
+        }
+
+        .highlight-label {
+            font-size: 0.8rem;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        /* 底部信息 */
+        .slide-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .presenter-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .presenter-name {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .presenter-title {
+            font-size: 0.9rem;
+            background: linear-gradient(90deg, #3b82f6, #22c55e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 500;
+        }
+
+        .slide-number {
+            background: linear-gradient(45deg, rgba(59, 130, 246, 0.1), rgba(34, 197, 94, 0.1));
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: #475569;
+        }
+
+        /* 导航控制 */
+        .navigation-controls {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .nav-button {
+            background: linear-gradient(45deg, rgba(59, 130, 246, 0.1), rgba(34, 197, 94, 0.1));
+            border: 1px solid transparent;
+            color: #3b82f6;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-button::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            padding: 1px;
+            background: linear-gradient(45deg, #3b82f6, #22c55e);
+            border-radius: inherit;
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask-composite: xor;
+            -webkit-mask-composite: xor;
+        }
+
+        .nav-button:hover {
+            background: linear-gradient(45deg, #3b82f6, #22c55e);
+            color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+        }
+
+        .nav-hint {
+            color: #64748b;
+            font-size: 0.8rem;
+        }
+
+        /* 动画效果 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .solution-card {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .solution-card:nth-child(1) { animation-delay: 0.1s; }
+        .solution-card:nth-child(2) { animation-delay: 0.15s; }
+        .solution-card:nth-child(3) { animation-delay: 0.2s; }
+        .solution-card:nth-child(4) { animation-delay: 0.25s; }
+
+        .highlight-card {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .highlight-card:nth-child(1) { animation-delay: 0.3s; }
+        .highlight-card:nth-child(2) { animation-delay: 0.35s; }
+        .highlight-card:nth-child(3) { animation-delay: 0.4s; }
+        .highlight-card:nth-child(4) { animation-delay: 0.45s; }
+
+        /* 响应式设计 */
+        @media (max-width: 1400px) {
+            .slide-container {
+                padding: 30px 60px 50px;
+            }
+            .highlights-section {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .solutions-grid {
+                grid-template-columns: 1fr;
+            }
+            .highlights-section {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .slide-container {
+                padding: 30px 40px;
+            }
+            .main-title {
+                font-size: 1.5rem;
+            }
+            .highlights-section {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="ppt-background"></div>
+    <div class="decoration-lines"></div>
+
+    <div class="slide-container">
+        <header class="slide-header">
+            <div class="header-left">
+                <div class="nvidia-logo">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="100" height="67" viewBox="0 0 48 32" fill="none">
+                        <path d="M17.9101 9.54961V6.65962C18.1893 6.64003 18.4704 6.624 18.7567 6.6151C26.6044 6.36581 31.7531 13.4083 31.7531 13.4083C31.7531 13.4083 26.1926 21.1897 20.2308 21.1897C19.3718 21.1897 18.6029 21.0508 17.9101 20.8158V12.0496C20.9661 12.4218 21.5794 13.7804 23.4158 16.8645L27.5005 13.394C27.5005 13.394 24.5188 9.45345 19.492 9.45345C18.9458 9.45345 18.4227 9.49263 17.9083 9.54783L17.9101 9.54961ZM17.9083 0V4.31807C18.1893 4.29492 18.4721 4.27711 18.7549 4.26643C29.6675 3.89606 36.7781 13.2836 36.7781 13.2836C36.7781 13.2836 28.6123 23.2873 20.1035 23.2873C19.3241 23.2873 18.5941 23.2143 17.9083 23.0932V25.7624C18.4951 25.8372 19.1031 25.8817 19.7359 25.8817C27.6525 25.8817 33.3792 21.8094 38.9239 16.9874C39.843 17.7281 43.606 19.5319 44.3802 20.3225C39.1077 24.7688 26.8236 28.3515 19.8579 28.3515C19.1862 28.3515 18.5411 28.3105 17.9083 28.25V32H48V0.00178103H17.9101L17.9083 0ZM17.9083 20.814V23.0932C10.5856 21.7773 8.55293 14.1098 8.55293 14.1098C8.55293 14.1098 12.0685 10.1853 17.9083 9.54961V12.0496C17.9083 12.0496 17.9012 12.0496 17.8977 12.0496C14.8329 11.6793 12.4397 14.5639 12.4397 14.5639C12.4397 14.5639 13.7812 19.4197 17.9101 20.8175L17.9083 20.814ZM4.90481 13.7804C4.90481 13.7804 9.24403 7.32914 17.9101 6.6614V4.32163C8.31255 5.09799 0 13.2872 0 13.2872C0 13.2872 4.70685 26.9982 17.9101 28.2535V25.766C8.22064 24.5373 4.90481 13.7804 4.90481 13.7804Z" fill="#76B900"/>
+                    </svg>
+                </div>
+                <div class="slide-title">
+                    <div class="title-content">
+                        <h1 class="main-title">网络解决方案</h1>
+                        <p class="subtitle">面向AI、HPC、云数据中心和企业的综合网络方案</p>
+                    </div>
+                </div>
+            </div>
+            <div class="breadcrumb">
+                <a href="catalog.html">培训目录</a>
+                <span>></span>
+                <span>网络解决方案</span>
+            </div>
+        </header>
+
+        <main class="content-main">
+            <!-- 四大解决方案卡片 -->
+            <div class="solutions-grid">
+                <!-- AI 训练解决方案 -->
+                <div class="solution-card">
+                    <div class="solution-header">
+                        <h2 class="solution-title">AI 训练集群</h2>
+                        <div class="solution-icon">🤖</div>
+                    </div>
+                    <p class="solution-desc">
+                        为大规模 AI 训练提供超高带宽、超低延迟的网络互连，支持数千个 GPU 高效协同训练大模型，实现线性扩展性能。
+                    </p>
+                    <div class="solution-features">
+                        <div class="feature-item">
+                            <strong>网络架构：</strong>InfiniBand NDR/XDR 全连接拓扑
+                        </div>
+                        <div class="feature-item">
+                            <strong>核心产品：</strong>Quantum-3交换机 + ConnectX-8网卡 + NVLink
+                        </div>
+                        <div class="feature-item">
+                            <strong>关键技术：</strong>SHARP聚合加速 + GPUDirect RDMA + UFM管理
+                        </div>
+                        <div class="feature-item">
+                            <strong>典型应用：</strong>大语言模型训练 · 超大规模AI集群 · 科学计算
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI 推理解决方案 -->
+                <div class="solution-card">
+                    <div class="solution-header">
+                        <h2 class="solution-title">AI 推理服务</h2>
+                        <div class="solution-icon">⚡</div>
+                    </div>
+                    <p class="solution-desc">
+                        基于 RoCE v2 以太网技术，为 AI 推理服务提供灵活、高性能的网络连接，支持云原生部署和弹性扩展。
+                    </p>
+                    <div class="solution-features">
+                        <div class="feature-item">
+                            <strong>网络架构：</strong>Ethernet RoCE v2 + Leaf-Spine拓扑
+                        </div>
+                        <div class="feature-item">
+                            <strong>核心产品：</strong>Spectrum-4交换机 + ConnectX-7网卡 + BlueField DPU
+                        </div>
+                        <div class="feature-item">
+                            <strong>关键技术：</strong>PFC零丢包 + ECN拥塞控制 + DOCA加速库
+                        </div>
+                        <div class="feature-item">
+                            <strong>典型应用：</strong>在线推理服务 · 边缘AI · 实时视频分析
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 云数据中心解决方案 -->
+                <div class="solution-card">
+                    <div class="solution-header">
+                        <h2 class="solution-title">云数据中心</h2>
+                        <div class="solution-icon">☁️</div>
+                    </div>
+                    <p class="solution-desc">
+                        构建高性能、高可靠的云数据中心网络基础设施，支持虚拟化、容器化和 SDN/NFV，满足云服务商的多租户需求。
+                    </p>
+                    <div class="solution-features">
+                        <div class="feature-item">
+                            <strong>网络架构：</strong>Spine-Leaf + Overlay网络 + SDN控制
+                        </div>
+                        <div class="feature-item">
+                            <strong>核心产品：</strong>Spectrum系列交换机 + BlueField DPU + ConnectX网卡
+                        </div>
+                        <div class="feature-item">
+                            <strong>关键技术：</strong>VxLAN隧道 + OVS加速 + 网络虚拟化
+                        </div>
+                        <div class="feature-item">
+                            <strong>典型应用：</strong>公有云平台 · 私有云 · 混合云互连
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 企业网络解决方案 -->
+                <div class="solution-card">
+                    <div class="solution-header">
+                        <h2 class="solution-title">企业数据中心</h2>
+                        <div class="solution-icon">🏢</div>
+                    </div>
+                    <p class="solution-desc">
+                        为企业数据中心提供可靠、易管理的网络解决方案，支持传统应用和现代化应用混合部署，简化运维管理。
+                    </p>
+                    <div class="solution-features">
+                        <div class="feature-item">
+                            <strong>网络架构：</strong>三层网络架构 + 核心汇聚接入
+                        </div>
+                        <div class="feature-item">
+                            <strong>核心产品：</strong>Spectrum-2/3交换机 + ConnectX-6网卡
+                        </div>
+                        <div class="feature-item">
+                            <strong>关键技术：</strong>MLAG高可用 + QoS服务质量 + 统一管理
+                        </div>
+                        <div class="feature-item">
+                            <strong>典型应用：</strong>企业ERP · 数据库集群 · 虚拟桌面
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 底部：技术亮点数据 -->
+            <div class="highlights-section">
+                <div class="highlight-card">
+                    <div class="highlight-number">800G</div>
+                    <div class="highlight-label">单端口速率</div>
+                </div>
+
+                <div class="highlight-card">
+                    <div class="highlight-number">100ns</div>
+                    <div class="highlight-label">网络延迟</div>
+                </div>
+
+                <div class="highlight-card">
+                    <div class="highlight-number">128T</div>
+                    <div class="highlight-label">交换带宽</div>
+                </div>
+
+                <div class="highlight-card">
+                    <div class="highlight-number">32K+</div>
+                    <div class="highlight-label">GPU扩展</div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="slide-footer">
+            <div class="presenter-info">
+                <div class="presenter-name">Vincent</div>
+		<div class="presenter-title">正阳恒卓科技</div>
+            </div>
+            <div class="slide-number">9 / 9</div>
+        </footer>
+    </div>
+
+    <div class="navigation-controls">
+        <button class="nav-button" onclick="goBack()">← 返回目录</button>
+        <button class="nav-button" onclick="nextModule()">下一模块 →</button>
+        <div class="nav-hint">使用左右箭头键导航</div>
+    </div>
+
+    <script>
+        function goBack() {
+            window.location.href = 'catalog.html';
+        }
+
+        function nextModule() {
+            window.location.href = 'ibvseth.html';
+        }
+
+        // 键盘导航
+        document.addEventListener('keydown', function(e) {
+            if (e.code === 'ArrowLeft') {
+                e.preventDefault();
+                goBack();
+            } else if (e.code === 'ArrowRight' || e.code === 'Space') {
+                e.preventDefault();
+                nextModule();
+            } else if (e.code === 'Escape') {
+                goBack();
+            }
+        });
+
+        // 面包屑导航
+        document.querySelector('.breadcrumb a').addEventListener('click', function(e) {
+            e.preventDefault();
+            goBack();
+        });
+    </script>
+</body>
+</html>

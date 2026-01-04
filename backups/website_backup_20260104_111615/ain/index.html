@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NVIDIA-Certified Professional: AI Networking 认证考试学习指南</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --nvidia-green: #76b900;
+            --nvidia-dark-green: #4d7c00;
+            --dark-bg: #0a0a0a;
+            --card-bg: #1a1a1a;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --accent-cyan: #00d4aa;
+            --gradient-primary: linear-gradient(135deg, var(--nvidia-green), var(--accent-cyan));
+            --shadow-glow: 0 0 20px rgba(118, 185, 0, 0.3);
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* 动态背景 */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(118, 185, 0, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 212, 170, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(118, 185, 0, 0.05) 0%, transparent 50%);
+        }
+
+        .bg-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background-image: 
+                linear-gradient(rgba(118, 185, 0, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(118, 185, 0, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: grid-move 20s linear infinite;
+        }
+
+        @keyframes grid-move {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+        }
+
+        /* 头部区域 */
+        .header {
+            text-align: center;
+            margin-bottom: 4rem;
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 2rem;
+            gap: 1rem;
+        }
+
+        .nvidia-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            filter: drop-shadow(0 0 20px rgba(118, 185, 0, 0.5));
+            transition: all 0.3s ease;
+        }
+
+        .nvidia-logo:hover {
+            filter: drop-shadow(0 0 30px rgba(118, 185, 0, 0.8));
+            transform: scale(1.05);
+        }
+
+        .nvidia-logo svg {
+            height: 60px;
+            width: auto;
+        }
+
+        .nvidia-logo svg path {
+            fill: var(--nvidia-green);
+        }
+
+        .header h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            font-size: 1.3rem;
+            color: var(--text-secondary);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* 主要内容区域 */
+        .main-content {
+            display: grid;
+            gap: 3rem;
+            margin-bottom: 3rem;
+        }
+
+        /* 主学习指南卡片 */
+        .featured-guide {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 3rem;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent;
+            background-clip: padding-box;
+            animation: fadeInUp 1s ease-out 0.2s both;
+        }
+
+        .featured-guide::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            padding: 2px;
+            background: var(--gradient-primary);
+            border-radius: 20px;
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask-composite: subtract;
+            -webkit-mask-composite: source-out;
+        }
+
+        .featured-guide::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, var(--nvidia-green), transparent);
+            animation: rotate 4s linear infinite;
+            opacity: 0.3;
+            z-index: -1;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .featured-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .featured-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--gradient-primary);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 2rem;
+            box-shadow: var(--shadow-glow);
+        }
+
+        .featured-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .featured-description {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            line-height: 1.8;
+        }
+
+        .cta-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            background: var(--gradient-primary);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-glow);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(118, 185, 0, 0.4);
+        }
+
+        /* 模块导航网格 */
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .module-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 2rem;
+            position: relative;
+            border: 1px solid #333;
+            transition: all 0.4s ease;
+            animation: fadeInUp 1s ease-out 0.4s both;
+            overflow: hidden;
+        }
+
+        .module-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(118, 185, 0, 0.1), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .module-card:hover::before {
+            left: 100%;
+        }
+
+        .module-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--nvidia-green);
+            box-shadow: 0 15px 40px rgba(118, 185, 0, 0.2);
+        }
+
+        .module-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--gradient-primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .module-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .module-description {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            line-height: 1.7;
+        }
+
+        .module-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--nvidia-green);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .module-link:hover {
+            color: var(--accent-cyan);
+            transform: translateX(5px);
+        }
+
+        .module-stats {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #333;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* 底部信息 */
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            border-top: 1px solid #333;
+            margin-top: 3rem;
+            animation: fadeIn 1s ease-out 0.8s both;
+        }
+
+        .footer-content {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .footer-highlight {
+            color: var(--nvidia-green);
+            font-weight: 600;
+        }
+
+        /* 动画效果 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .header p {
+                font-size: 1.1rem;
+            }
+
+            .featured-guide {
+                padding: 2rem;
+            }
+
+            .modules-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .nvidia-logo svg {
+                height: 45px;
+            }
+        }
+
+        /* 滚动条样式 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--dark-bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--nvidia-green);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-cyan);
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+    <div class="bg-grid"></div>
+    
+    <div class="container">
+        <header class="header">
+            <div class="logo-section">
+                <div class="nvidia-logo">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="32" viewBox="0 0 48 32" fill="none">
+                        <path d="M17.9101 9.54961V6.65962C18.1893 6.64003 18.4704 6.624 18.7567 6.6151C26.6044 6.36581 31.7531 13.4083 31.7531 13.4083C31.7531 13.4083 26.1926 21.1897 20.2308 21.1897C19.3718 21.1897 18.6029 21.0508 17.9101 20.8158V12.0496C20.9661 12.4218 21.5794 13.7804 23.4158 16.8645L27.5005 13.394C27.5005 13.394 24.5188 9.45345 19.492 9.45345C18.9458 9.45345 18.4227 9.49263 17.9083 9.54783L17.9101 9.54961ZM17.9083 0V4.31807C18.1893 4.29492 18.4721 4.27711 18.7549 4.26643C29.6675 3.89606 36.7781 13.2836 36.7781 13.2836C36.7781 13.2836 28.6123 23.2873 20.1035 23.2873C19.3241 23.2873 18.5941 23.2143 17.9083 23.0932V25.7624C18.4951 25.8372 19.1031 25.8817 19.7359 25.8817C27.6525 25.8817 33.3792 21.8094 38.9239 16.9874C39.843 17.7281 43.606 19.5319 44.3802 20.3225C39.1077 24.7688 26.8236 28.3515 19.8579 28.3515C19.1862 28.3515 18.5411 28.3105 17.9083 28.25V32H48V0.00178103H17.9101L17.9083 0ZM17.9083 20.814V23.0932C10.5856 21.7773 8.55293 14.1098 8.55293 14.1098C8.55293 14.1098 12.0685 10.1853 17.9083 9.54961V12.0496C17.9083 12.0496 17.9012 12.0496 17.8977 12.0496C14.8329 11.6793 12.4397 14.5639 12.4397 14.5639C12.4397 14.5639 13.7812 19.4197 17.9101 20.8175L17.9083 20.814ZM4.90481 13.7804C4.90481 13.7804 9.24403 7.32914 17.9101 6.6614V4.32163C8.31255 5.09799 0 13.2872 0 13.2872C0 13.2872 4.70685 26.9982 17.9101 28.2535V25.766C8.22064 24.5373 4.90481 13.7804 4.90481 13.7804Z" fill="#76B900"/>
+                    </svg>
+                </div>
+            </div>
+            <h1>AI Networking 认证考试学习指南</h1>
+	    <p>NVIDIA-Certified Professional: AI Networking 技术文档中心<br> - 全面掌握AI网络技术的核心知识</p>
+        </header>
+
+        <main class="main-content">
+            <!-- 主学习指南 -->
+            <section class="featured-guide">
+                <div class="featured-content">
+                    <div class="featured-icon">📚</div>
+                    <h2 class="featured-title">NCP-AI 网络认证考试学习指南</h2>
+                    <p class="featured-description">
+                        官方认证考试学习指南，涵盖AI网络基础架构、性能优化、故障排除等核心主题。
+                        系统性学习NVIDIA AI网络技术栈，为认证考试做好充分准备。
+                    </p>
+                    <a href="nvt-certification-exam-study-guide-ncp-ai-networking-zhCN-r3.pdf" class="cta-button" target="_blank">
+                        <span>📖</span>
+                        开始学习
+                    </a>
+                </div>
+            </section>
+
+            <!-- 技术模块导航 -->
+            <section class="modules-grid">
+                <div class="module-card">
+                    <div class="module-icon">🔧</div>
+                    <h3 class="module-title">BlueField DPU</h3>
+                    <p class="module-description">
+                        NVIDIA BlueField数据处理单元(DPU)技术文档，包括产品更新、用户手册、NVQual认证流程等核心资料。
+                    </p>
+                    <a href="dpu/" class="module-link">
+                        探索DPU技术 →
+                    </a>
+                    <div class="module-stats">
+                        <span class="stat-item">📄 6个文档</span>
+                        <span class="stat-item">🏷️ 核心技术</span>
+                    </div>
+                </div>
+
+                <div class="module-card">
+                    <div class="module-icon">🌐</div>
+                    <h3 class="module-title">Spectrum-X 以太网</h3>
+                    <p class="module-description">
+                        NVIDIA Spectrum-X以太网平台培训资料，深入了解AI数据中心网络设计、NetQ监控和POC最佳实践。
+                    </p>
+                    <a href="spx/" class="module-link">
+                        学习Spectrum-X →
+                    </a>
+                    <div class="module-stats">
+                        <span class="stat-item">📄 4个培训</span>
+                        <span class="stat-item">🏷️ 以太网平台</span>
+                    </div>
+                </div>
+
+                <div class="module-card">
+                    <div class="module-icon">⚡</div>
+                    <h3 class="module-title">InfiniBand 网络</h3>
+                    <p class="module-description">
+                        InfiniBand高性能网络技术文档，包含网络实践指南和诊断工具使用手册，优化HPC和AI工作负载性能。提升运维效率。
+                    </p>
+                    <a href="ib/" class="module-link">
+                        掌握InfiniBand →
+                    </a>
+                    <div class="module-stats">
+                        <span class="stat-item">📄 2个文档</span>
+                        <span class="stat-item">🏷️ 高性能网络</span>
+                    </div>
+                </div>
+
+                <div class="module-card">
+                    <div class="module-icon">🏗️</div>
+                    <h3 class="module-title">参考架构</h3>
+                    <p class="module-description">
+                        NVIDIA DGX BasePOD和SuperPOD企业级AI基础设施参考架构，为大规模AI部署提供设计指导。
+                    </p>
+                    <a href="referencearch/" class="module-link">
+                        查看架构设计 →
+                    </a>
+                    <div class="module-stats">
+                        <span class="stat-item">📄 2个架构</span>
+                        <span class="stat-item">🏷️ 基础设施</span>
+                    </div>
+                </div>
+
+                <div class="module-card">
+                    <div class="module-icon">☁️</div>
+                    <h3 class="module-title">NVIDIA Air 实战经验</h3>
+                    <p class="module-description">
+                        利用NVIDIA Cumulus BGP EVPN构建高可扩展VXLAN网络，基于Cumulus Linux的现代数据中心网络架构实践。
+                    </p>
+                    <a href="https://nvlink.vip/ppt/air/index.html" class="module-link" target="_blank">
+                        实战Air平台 →
+                    </a>
+                    <div class="module-stats">
+                        <span class="stat-item">🌐 VXLAN网络</span>
+                        <span class="stat-item">🏷️ 实战经验</span>
+                    </div>
+                </div>
+
+                <div class="module-card">
+                    <div class="module-icon">🔗</div>
+                    <h3 class="module-title">InfiniBand (IBA) 架构概述</h3>
+                    <p class="module-description">
+                        深入学习RDMA通信机制核心原理，掌握子网管理器(SM)工作机制、流量控制策略和可靠性异常处理等核心理论知识。
+                    </p>
+                    <a href="https://nvlink.vip/ppt/rdma/index.html" class="module-link" target="_blank">
+                        深入RDMA理论 →
+                    </a>
+                    <div class="module-stats">
+                        <span class="stat-item">📚 理论知识</span>
+                        <span class="stat-item">🏷️ 核心原理</span>
+                    </div>
+                </div>
+
+                <div class="module-card">
+                    <div class="module-icon">📝</div>
+                    <h3 class="module-title">历年考试题库</h3>
+                    <p class="module-description">
+                        Nvidia网络销售和技术课程历年考题集合，包含真题解析和模拟测试，帮助你系统复习和考前冲刺。
+                    </p>
+                    <a href="https://nvlink.vip/pnp/" class="module-link" target="_blank">
+                        练习考试题目 →
+                    </a>
+                    <div class="module-stats">
+                        <span class="stat-item">💯 历年真题</span>
+                        <span class="stat-item">🏷️ 考试准备</span>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <div class="footer-content">
+                <p><span class="footer-highlight">NVIDIA AI Networking</span> 认证学习中心</p>
+                <p>构建未来AI网络基础设施.</p>
+            </div>
+        </footer>
+    </div>
+</body>
+</html>

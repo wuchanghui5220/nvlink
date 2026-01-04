@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Quantum-X800平台详解</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* 只添加图片相关的额外样式 */
+        .device-image {
+            background: rgba(255,255,255,0.5);
+            border-radius: 8px;
+            border: 2px solid #009B77;
+            padding: 10px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .device-image img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+        
+        .device-title {
+            font-size: 1.1em;
+            color: #005741;
+            margin: 10px 0 5px 0;
+            font-weight: bold;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="header">
+            <h1>Quantum-X800平台详解</h1>
+            <h2>NVIDIA InfiniBand智算中心组网创新与Quantum-X800高性能交换解决方案</h2>
+        </div>
+        <div class="content">
+            <div class="left-panel">
+                <div class="panel-title">Quantum-X800交换平台</div>
+                <div class="chart-container" id="quantum-x800-hardware">
+                    <div class="device-image">
+                        <img src="Q3400.png" alt="NVIDIA Quantum Q3400交换机" title="Q3400交换机">
+                        <div class="device-title">Q3400交换机 (144端口800Gb/s)</div>
+                    </div>
+                    
+                    <div class="device-image">
+                        <img src="Q3200.png" alt="NVIDIA Quantum Q3200交换机" title="Q3200交换机">
+                        <div class="device-title">Q3200交换机 (72端口800Gb/s)</div>
+                    </div>
+                </div>
+            </div>
+            <div class="right-panel">
+                <div class="panel-title">Quantum-X800核心特性</div>
+                <div class="chart-container">
+                    <div class="advantage-box">
+                        <div class="advantage-title">SHARP v4技术</div>
+                        <div class="advantage-desc">
+                            <p>可扩展分层聚合和减少协议(SHARP)，显著加速AI训练中的集合通信操作(如AllReduce)。支持更多种类的集合通信模式，并且优化了大规模训练场景下的性能。</p>
+                        </div>
+                    </div>
+                    
+                    <div class="advantage-box">
+                        <div class="advantage-title">自适应路由</div>
+                        <div class="advantage-desc">
+                            <p>动态根据网络状况选择最优路径，避开拥塞区域，提高网络吞吐量。引入了新一代动态自适应路由算法，实时响应网络负载变化，特别适合AI训练负载的突发流量特性。</p>
+                        </div>
+                    </div>
+                    
+                    <div class="advantage-box">
+                        <div class="advantage-title">网络拥塞控制</div>
+                        <div class="advantage-desc">
+                            <p>引入新型拥塞控制机制在源头侦测和响应拥塞，提前调整发送速率，避免网络阻塞导致性能下降。通过软硬件协同，保障大规模集群中不同应用间的公平共享和性能隔离。</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="key-points">
+                    <ul>
+                        <li>Q3400单机提供高达115.2 Tb/s的交换容量，满足超大规模集群需求</li>
+                        <li>超低延迟与XDR带宽共同提升大模型训练的横向扩展效率</li>
+                        <li>统一的管理平台简化了多机架网络部署与维护的复杂度</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            NVIDIA InfiniBand智算中心组网创新与Quantum-X800高性能交换解决方案
+        </div>
+    </div>
+</body>
+</html>

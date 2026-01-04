@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>H100 vs B300 应用场景分析与成本效益</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f0f0f0;
+      font-family: 'Noto Sans SC', sans-serif;
+      overflow: hidden;
+    }
+
+    .slide-container {
+      width: 100vw;
+      height: 56.25vw; /* 16:9 aspect ratio */
+      max-height: 100vh;
+      max-width: 177.78vh; /* 16:9 aspect ratio (reversed) */
+      position: relative;
+      background: linear-gradient(135deg, #0a0e1a 0%, #1a1f2e 50%, #0f1419 100%);
+      color: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    /* 背景图形元素 */
+    .bg-grid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image:
+        linear-gradient(rgba(118, 185, 0, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(118, 185, 0, 0.03) 1px, transparent 1px);
+      background-size: 25px 25px;
+      z-index: 0;
+    }
+
+    .bg-gradient {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 80% 20%, rgba(118, 185, 0, 0.1) 0%, rgba(10, 14, 26, 0) 50%),
+                  radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.08) 0%, rgba(10, 14, 26, 0) 50%);
+      z-index: 1;
+    }
+
+    .bg-circle1 {
+      position: absolute;
+      top: -15%;
+      right: -10%;
+      width: 40%;
+      height: 40%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #76b900 0%, #3b82f6 100%);
+      filter: blur(80px);
+      opacity: 0.15;
+      z-index: 2;
+    }
+
+    .bg-circle2 {
+      position: absolute;
+      bottom: -10%;
+      left: -15%;
+      width: 35%;
+      height: 35%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+      filter: blur(60px);
+      opacity: 0.12;
+      z-index: 2;
+    }
+
+    /* 主要内容 */
+    .content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    .header {
+      padding: 1.8% 3.5%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .nvidia-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-box {
+      width: 8%;
+      min-width: 110px;
+      height: 36px;
+      background: linear-gradient(135deg, #76b900 0%, #22c55e 100%);
+      border-radius: 6px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 700;
+      font-size: clamp(16px, 2vw, 20px);
+      color: #0a0e1a;
+      box-shadow: 0 4px 15px rgba(118, 185, 0, 0.3);
+    }
+
+    .partner-text {
+      font-size: clamp(12px, 1.5vw, 16px);
+      font-weight: 500;
+      opacity: 0.9;
+      color: #76b900;
+    }
+
+    .slide-title {
+      font-size: clamp(14px, 1.6vw, 18px);
+      font-weight: 600;
+      padding: 0.5% 1.5%;
+      background: rgba(59, 130, 246, 0.1);
+      backdrop-filter: blur(5px);
+      border-radius: 20px;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      color: #3b82f6;
+    }
+
+    .main-content {
+      flex: 1;
+      padding: 1.5% 3%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .title-section {
+      text-align: center;
+      margin-bottom: 1.5%;
+    }
+
+    .main-title {
+      font-size: clamp(20px, 2.8vw, 32px);
+      font-weight: 700;
+      background: linear-gradient(135deg, #ffffff 0%, #76b900 50%, #3b82f6 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 0.5%;
+    }
+
+    .content-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2%;
+      flex: 1;
+    }
+
+    .scenarios-section {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 1.5%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .section-title {
+      font-size: clamp(16px, 2vw, 22px);
+      font-weight: 600;
+      color: #76b900;
+      margin-bottom: 1.5%;
+      text-align: center;
+    }
+
+    .scenario-item {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 1.2%;
+      margin-bottom: 1.2%;
+      transition: all 0.3s ease;
+    }
+
+    .scenario-item:hover {
+      background: rgba(118, 185, 0, 0.08);
+      border-color: rgba(118, 185, 0, 0.3);
+    }
+
+    .scenario-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.8%;
+    }
+
+    .scenario-name {
+      font-size: clamp(12px, 1.4vw, 16px);
+      font-weight: 600;
+      color: #3b82f6;
+    }
+
+    .scenario-precision {
+      background: rgba(59, 130, 246, 0.2);
+      color: #3b82f6;
+      padding: 0.3% 0.8%;
+      border-radius: 12px;
+      font-size: clamp(9px, 1vw, 11px);
+      font-weight: 600;
+    }
+
+    .scenario-details {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .scenario-desc {
+      font-size: clamp(10px, 1.1vw, 12px);
+      color: rgba(255, 255, 255, 0.8);
+      flex: 1;
+    }
+
+    .performance-badge {
+      background: linear-gradient(90deg, #22c55e 0%, #16a34a 100%);
+      color: white;
+      padding: 0.4% 1%;
+      border-radius: 15px;
+      font-size: clamp(10px, 1.1vw, 12px);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .cost-analysis {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 1.5%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .comparison-tables {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5%;
+    }
+
+    .table-container {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 8px;
+      padding: 1%;
+    }
+
+    .table-title {
+      font-size: clamp(11px, 1.3vw, 14px);
+      font-weight: 600;
+      color: #3b82f6;
+      margin-bottom: 0.8%;
+      text-align: center;
+    }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: clamp(9px, 1vw, 11px);
+    }
+
+    .comparison-table th {
+      background: rgba(118, 185, 0, 0.15);
+      color: #76b900;
+      font-weight: 600;
+      padding: 0.6% 0.8%;
+      text-align: center;
+      border: 1px solid rgba(118, 185, 0, 0.3);
+    }
+
+    .comparison-table td {
+      padding: 0.5% 0.8%;
+      text-align: center;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .h100-cell {
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+      font-weight: 600;
+    }
+
+    .b300-cell {
+      background: rgba(59, 130, 246, 0.1);
+      color: #3b82f6;
+      font-weight: 600;
+    }
+
+    .savings-cell {
+      background: rgba(34, 197, 94, 0.15);
+      color: #22c55e;
+      font-weight: 700;
+    }
+
+    .summary-section {
+      background: linear-gradient(135deg, rgba(118, 185, 0, 0.15) 0%, rgba(59, 130, 246, 0.1) 100%);
+      border: 2px solid rgba(118, 185, 0, 0.3);
+      border-radius: 12px;
+      padding: 1.5%;
+      margin-top: 1.5%;
+      grid-column: 1 / -1;
+    }
+
+    .summary-title {
+      font-size: clamp(14px, 1.6vw, 18px);
+      font-weight: 700;
+      color: #76b900;
+      text-align: center;
+      margin-bottom: 1%;
+    }
+
+    .summary-stats {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+    }
+
+    .summary-item {
+      text-align: center;
+    }
+
+    .summary-number {
+      font-size: clamp(16px, 2.2vw, 26px);
+      font-weight: 700;
+      color: #22c55e;
+      margin-bottom: 0.3%;
+    }
+
+    .summary-label {
+      font-size: clamp(10px, 1.2vw, 13px);
+      color: rgba(255, 255, 255, 0.8);
+      font-weight: 500;
+    }
+
+    .footer {
+      padding: 1.2% 3.5%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .company-name {
+      font-weight: 500;
+      font-size: clamp(12px, 1.4vw, 16px);
+    }
+
+    .page-number {
+      font-size: clamp(12px, 1.4vw, 16px);
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    /* 动画效果 */
+    .cost-waves {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 70%;
+      height: 70%;
+      z-index: 3;
+      opacity: 0.04;
+    }
+
+    .wave {
+      position: absolute;
+      border: 1px solid #76b900;
+      border-radius: 50%;
+      animation: wave 6s ease-in-out infinite;
+    }
+
+    .wave1 {
+      width: 30%;
+      height: 30%;
+      top: 35%;
+      left: 35%;
+      animation-delay: 0s;
+    }
+
+    .wave2 {
+      width: 50%;
+      height: 50%;
+      top: 25%;
+      left: 25%;
+      animation-delay: 2s;
+    }
+
+    .wave3 {
+      width: 70%;
+      height: 70%;
+      top: 15%;
+      left: 15%;
+      animation-delay: 4s;
+    }
+
+    @keyframes wave {
+      0% {
+        transform: scale(0.5);
+        opacity: 0.8;
+      }
+      50% {
+        transform: scale(1.1);
+        opacity: 0.2;
+      }
+      100% {
+        transform: scale(0.5);
+        opacity: 0.8;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <!-- 背景元素 -->
+    <div class="bg-grid"></div>
+    <div class="bg-gradient"></div>
+    <div class="bg-circle1"></div>
+    <div class="bg-circle2"></div>
+
+    <!-- 成本波纹动画 -->
+    <div class="cost-waves">
+      <div class="wave wave1"></div>
+      <div class="wave wave2"></div>
+      <div class="wave wave3"></div>
+    </div>
+
+    <!-- 主要内容 -->
+    <div class="content">
+      <div class="header">
+        <div class="nvidia-logo">
+          <div class="logo-box">NVIDIA</div>
+          <div class="partner-text">Cost-Benefit Analysis</div>
+        </div>
+        <div class="slide-title">应用场景分析与成本效益</div>
+      </div>
+
+      <div class="main-content">
+        <!-- 标题 -->
+        <div class="title-section">
+          <h1 class="main-title">应用场景分析与GPU需求量化对比</h1>
+        </div>
+
+        <!-- 主要内容布局 -->
+        <div class="content-layout">
+          <!-- 应用场景分析 -->
+          <div class="scenarios-section">
+            <h3 class="section-title">三大核心应用场景</h3>
+            
+            <div class="scenario-item">
+              <div class="scenario-header">
+                <div class="scenario-name">CAD 3D渲染模块</div>
+                <div class="scenario-precision">FP32</div>
+              </div>
+              <div class="scenario-details">
+                <div class="scenario-desc">高精度图形渲染，质量要求严格</div>
+                <div class="performance-badge">1:2.91</div>
+              </div>
+            </div>
+
+            <div class="scenario-item">
+              <div class="scenario-header">
+                <div class="scenario-name">AIGC推理模块</div>
+                <div class="scenario-precision">FP8</div>
+              </div>
+              <div class="scenario-details">
+                <div class="scenario-desc">生成式AI推理，追求响应速度</div>
+                <div class="performance-badge">1:4.5</div>
+              </div>
+            </div>
+
+            <div class="scenario-item">
+              <div class="scenario-header">
+                <div class="scenario-name">AIGC推理模块</div>
+                <div class="scenario-precision">FP4</div>
+              </div>
+              <div class="scenario-details">
+                <div class="scenario-desc">极速推理，最大性能优势</div>
+                <div class="performance-badge">1:9</div>
+              </div>
+            </div>
+
+            <div class="scenario-item">
+              <div class="scenario-header">
+                <div class="scenario-name">DAMS训练模块</div>
+                <div class="scenario-precision">FP16</div>
+              </div>
+              <div class="scenario-details">
+                <div class="scenario-desc">混合精度训练，支持复用</div>
+                <div class="performance-badge">1:2.91</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 成本效益分析 -->
+          <div class="cost-analysis">
+            <h3 class="section-title">GPU需求量化对比</h3>
+            
+            <div class="comparison-tables">
+              <div class="table-container">
+                <div class="table-title">CAD 3D渲染模块 (FP32)</div>
+                <table class="comparison-table">
+                  <thead>
+                    <tr>
+                      <th>阶段</th>
+                      <th>H100需求</th>
+                      <th>B300需求</th>
+                      <th>节省数量</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>第一阶段</td>
+                      <td class="h100-cell">4,800张</td>
+                      <td class="b300-cell">1,650张</td>
+                      <td class="savings-cell">3,150张</td>
+                    </tr>
+                    <tr>
+                      <td>第二阶段</td>
+                      <td class="h100-cell">7,200张</td>
+                      <td class="b300-cell">2,474张</td>
+                      <td class="savings-cell">4,726张</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="table-container">
+                <div class="table-title">AIGC推理模块 (FP8/FP4)</div>
+                <table class="comparison-table">
+                  <thead>
+                    <tr>
+                      <th>阶段</th>
+                      <th>H100需求</th>
+                      <th>B300(FP8)</th>
+                      <th>B300(FP4)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>第一阶段</td>
+                      <td class="h100-cell">700张</td>
+                      <td class="b300-cell">156张</td>
+                      <td class="savings-cell">78张</td>
+                    </tr>
+                    <tr>
+                      <td>第二阶段</td>
+                      <td class="h100-cell">1,400张</td>
+                      <td class="b300-cell">312张</td>
+                      <td class="savings-cell">156张</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="table-container">
+                <div class="table-title">DAMS训练模块 (FP16)</div>
+                <table class="comparison-table">
+                  <thead>
+                    <tr>
+                      <th>阶段</th>
+                      <th>H100需求</th>
+                      <th>B300需求</th>
+                      <th>节省数量</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>第一阶段</td>
+                      <td class="h100-cell">256张</td>
+                      <td class="b300-cell">88张</td>
+                      <td class="savings-cell">168张</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 总结部分 -->
+        <div class="summary-section">
+          <div class="summary-title">成本效益总结</div>
+          <div class="summary-stats">
+            <div class="summary-item">
+              <div class="summary-number">65.6%-88.9%</div>
+              <div class="summary-label">GPU数量节省</div>
+            </div>
+            <div class="summary-item">
+              <div class="summary-number">9倍优势</div>
+              <div class="summary-label">FP4推理性能</div>
+            </div>
+            <div class="summary-item">
+              <div class="summary-number">推理优化</div>
+              <div class="summary-label">未来AI架构</div>
+            </div>
+            <div class="summary-item">
+              <div class="summary-number">显著降低</div>
+              <div class="summary-label">总体拥有成本</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="company-name">鼎亘集团技术评估中心</div>
+        <div class="page-number">2 / 2</div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 导航按钮 -->
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+    <a href="index1.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #0a0e1a; color: #76b900; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s; border: 1px solid rgba(118, 185, 0, 0.3);">&lt;</a>
+    <a href="index3.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #0a0e1a; color: #76b900; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s; border: 1px solid rgba(118, 185, 0, 0.3);">&gt;</a>
+  </div>
+</body>
+</html>

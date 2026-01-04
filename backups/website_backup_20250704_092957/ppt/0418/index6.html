@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>组网案例分析：从HDR/NDR到XDR的演进</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* 只添加特定于此页面的样式，其他通用样式在style.css中 */
+        .topology-container {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .topology {
+            flex: 1;
+            margin: 0 5px;
+            text-align: center;
+        }
+
+        .topology-title {
+            font-weight: bold;
+            color: #005741;
+            margin-bottom: 5px;
+            font-size: 1.1em;
+        }
+
+        .metric-container {
+            margin-top: 5px;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .metric {
+            text-align: center;
+            font-size: 0.85em;
+        }
+
+        .metric-value {
+            font-weight: bold;
+            font-size: 1.2em;
+            color: #005741;
+        }
+
+        .metric-label {
+            color: #666;
+        }
+
+        .performance-box {
+            margin-top: 15px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 8px;
+            border-left: 4px solid #009B77;
+        }
+
+        .performance-title {
+            font-weight: bold;
+            color: #005741;
+            margin-bottom: 8px;
+        }
+
+        .performance-desc {
+            font-size: 0.9em;
+            color: #333;
+        }
+
+        /* 节点样式 */
+        .node {
+            fill: #fff;
+            stroke: #333;
+            stroke-width: 1.5px;
+        }
+
+        .compute-node {
+            fill: #d1e7dd;
+            stroke: #198754;
+        }
+
+        .storage-node {
+            fill: #cfe2ff;
+            stroke: #0d6efd;
+        }
+
+        .spine-switch {
+            fill: #fff2cc;
+            stroke: #ffc107;
+        }
+
+        .leaf-switch {
+            fill: #f8d7da;
+            stroke: #dc3545;
+        }
+
+        .roi-box {
+            margin-top: 15px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 8px;
+            border-left: 4px solid #FF6F61;
+        }
+
+        .roi-title {
+            font-weight: bold;
+            color: #d63384;
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="header">
+            <h1>组网案例分析：从HDR/NDR到XDR的演进</h1>
+            <h2>NVIDIA InfiniBand智算中心组网创新与Quantum-X800高性能交换解决方案</h2>
+        </div>
+        <div class="content">
+            <div class="left-panel">
+                <div class="panel-title">InfiniBand 2层Fat-Tree最大组网规模</div>
+                <div class="chart-container" id="topology-evolution">
+                    <svg width="100%" height="280" viewBox="0 0 500 280" preserveAspectRatio="xMidYMid meet">
+                        <!-- 标题 -->
+                        <text x="250" y="30" text-anchor="middle" font-size="16" font-weight="bold" fill="#005741">InfiniBand 2层Fat-Tree最大组网规模比较</text>
+                        
+                        <!-- 背景线 -->
+                        <line x1="80" y1="230" x2="460" y2="230" stroke="#333" stroke-width="2" />
+                        <line x1="80" y1="230" x2="80" y2="60" stroke="#333" stroke-width="2" />
+                        
+                        <!-- 横轴标签 - 简化 -->
+                        <text x="180" y="250" text-anchor="middle" font-size="16" fill="#005741" font-weight="bold">HDR</text>
+                        <text x="270" y="250" text-anchor="middle" font-size="16" fill="#005741" font-weight="bold">NDR</text>
+                        <text x="360" y="250" text-anchor="middle" font-size="16" fill="#005741" font-weight="bold">XDR</text>
+                        
+                        <!-- 纵轴标签和刻度 - 简化刻度 -->
+                        <text x="30" y="140" text-anchor="middle" font-size="14" fill="#333" transform="rotate(-90, 30, 140)">支持规模(Ports)</text>
+                        
+                        <line x1="78" y1="230" x2="82" y2="230" stroke="#333" stroke-width="2" />
+                        <text x="70" y="235" text-anchor="end" font-size="12">0</text>
+                        
+                        <line x1="78" y1="180" x2="82" y2="180" stroke="#333" stroke-width="2" />
+                        <text x="70" y="185" text-anchor="end" font-size="12">3000</text>
+                        
+                        <line x1="78" y1="130" x2="82" y2="130" stroke="#333" stroke-width="2" />
+                        <text x="70" y="135" text-anchor="end" font-size="12">6000</text>
+                        
+                        <line x1="78" y1="80" x2="82" y2="80" stroke="#333" stroke-width="2" />
+                        <text x="70" y="85" text-anchor="end" font-size="12">12000</text>
+                        
+                        <!-- 虚线辅助线 -->
+                        <line x1="80" y1="180" x2="460" y2="180" stroke="#ccc" stroke-width="1" stroke-dasharray="5,5" />
+                        <line x1="80" y1="130" x2="460" y2="130" stroke="#ccc" stroke-width="1" stroke-dasharray="5,5" />
+                        <line x1="80" y1="80" x2="460" y2="80" stroke="#ccc" stroke-width="1" stroke-dasharray="5,5" />
+                        
+                        <!-- 计算新的比例尺 - 12000对应170像素高度，留出空间 -->
+                        <!-- 800端口 = 230 - (800/12000)*170 = 230 - 11.3 = 218.7 -->
+                        <!-- 2048端口 = 230 - (2048/12000)*170 = 230 - 29 = 201 -->
+                        <!-- 10368端口 = 230 - (10368/12000)*170 = 230 - 147 = 83 -->
+                        
+                        <!-- 100服务器 = 230 - (100/1500)*170 = 230 - 11.3 = 218.7 -->
+                        <!-- 256服务器 = 230 - (256/1500)*170 = 230 - 29 = 201 -->
+                        <!-- 1296服务器 = 230 - (1296/1500)*170 = 230 - 147 = 83 -->
+                        
+                        <!-- 柱状图 - 端口总数 -->
+                        <rect x="140" y="218.7" width="30" height="11.3" fill="#70AD47" />
+                        <rect x="230" y="201" width="30" height="29" fill="#70AD47" />
+                        <rect x="320" y="83" width="30" height="147" fill="#70AD47" />
+                        
+                        <!-- 柱状图 - GPU服务器数量 -->
+                        <rect x="170" y="218.7" width="30" height="11.3" fill="#C5E0B4" />
+                        <rect x="260" y="201" width="30" height="29" fill="#C5E0B4" />
+                        <rect x="350" y="83" width="30" height="147" fill="#C5E0B4" />
+                        
+                        <!-- 文本标签 - 添加数值 -->
+                        <text x="155" y="214" text-anchor="middle" font-size="13" fill="black" stroke="white" stroke-width="0.5">800</text>
+                        <text x="245" y="197" text-anchor="middle" font-size="13" fill="black" stroke="white" stroke-width="0.5">2048</text>
+                        <text x="330" y="78" text-anchor="middle" font-size="13" fill="black" stroke="white" stroke-width="0.5">10368</text>
+                        
+                        <text x="185" y="214" text-anchor="middle" font-size="13" fill="black" stroke="white" stroke-width="0.5">100</text>
+                        <text x="275" y="197" text-anchor="middle" font-size="13" fill="black" stroke="white" stroke-width="0.5">256</text>
+                        <text x="370" y="78" text-anchor="middle" font-size="13" fill="black" stroke="white" stroke-width="0.5">1296</text>
+                        
+                        <!-- 图例 -->
+                        <rect x="170" y="40" width="15" height="15" fill="#70AD47" />
+                        <text x="190" y="52" text-anchor="start" font-size="12">端口总数</text>
+                        
+                        <rect x="280" y="40" width="15" height="15" fill="#C5E0B4" />
+                        <text x="300" y="52" text-anchor="start" font-size="12">GPU服务器数量</text>
+                        
+                        <!-- 移除了延迟和端口数/交换机的标签 -->
+                    </svg>
+                    
+                    <div class="performance-box">
+                        <div class="performance-title">组网规模提升分析</div>
+                        <div class="performance-desc">
+                   	 <ul>
+                        	<li>XDR相比HDR实现了13倍的最大组网规模提升，显著提高数据中心容量</li>
+                        	<li>随着AI模型规模增长，更大规模的集群成为必要，XDR满足千级服务器需求</li>
+                        	<li>XDR支持的网络规模直接对应超大规模AI训练的最低通信开销需求</li>
+                    	</ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="right-panel">
+                <div class="panel-title">AI训练性能与投资回报分析</div>
+                <div class="chart-container">
+                    <svg width="100%" height="200" viewBox="0 0 500 200" preserveAspectRatio="xMidYMid meet">
+                        <!-- 背景网格 -->
+                        <line x1="50" y1="150" x2="450" y2="150" stroke="#ccc" stroke-width="1" />
+                        <line x1="50" y1="120" x2="450" y2="120" stroke="#ccc" stroke-width="1" stroke-dasharray="2,2" />
+                        <line x1="50" y1="90" x2="450" y2="90" stroke="#ccc" stroke-width="1" stroke-dasharray="2,2" />
+                        <line x1="50" y1="60" x2="450" y2="60" stroke="#ccc" stroke-width="1" stroke-dasharray="2,2" />
+                        <line x1="50" y1="30" x2="450" y2="30" stroke="#ccc" stroke-width="1" stroke-dasharray="2,2" />
+                        
+                        <!-- 坐标轴 -->
+                        <line x1="50" y1="150" x2="50" y2="20" stroke="#333" stroke-width="1.5" />
+                        <line x1="50" y1="150" x2="450" y2="150" stroke="#333" stroke-width="1.5" />
+                        
+                        <!-- Y轴标签 - 训练速度提升 -->
+                        <text x="45" y="150" text-anchor="end" font-size="10">1x</text>
+                        <text x="45" y="120" text-anchor="end" font-size="10">1.5x</text>
+                        <text x="45" y="90" text-anchor="end" font-size="10">2x</text>
+                        <text x="45" y="60" text-anchor="end" font-size="10">2.5x</text>
+                        <text x="45" y="30" text-anchor="end" font-size="10">3x</text>
+                        
+                        <!-- X轴标签 - 模型大小 -->
+                        <text x="100" y="165" text-anchor="middle" font-size="10">10B</text>
+                        <text x="200" y="165" text-anchor="middle" font-size="10">100B</text>
+                        <text x="300" y="165" text-anchor="middle" font-size="10">500B</text>
+                        <text x="400" y="165" text-anchor="middle" font-size="10">1000B+</text>
+                        
+                        <!-- 标题和轴标签 -->
+                        <text x="250" y="15" text-anchor="middle" font-size="12" font-weight="bold">AI模型训练速度提升（相对HDR基准）</text>
+                        <text x="250" y="185" text-anchor="middle" font-size="11">模型参数规模</text>
+                        <text x="15" y="90" text-anchor="middle" font-size="11" transform="rotate(-90, 15, 90)">训练速度提升</text>
+                        
+                        <!-- 性能线 - HDR基线 -->
+                        <line x1="100" y1="150" x2="400" y2="150" stroke="#5B9BD5" stroke-width="2" />
+                        <circle cx="100" cy="150" r="4" fill="#5B9BD5" />
+                        <circle cx="200" cy="150" r="4" fill="#5B9BD5" />
+                        <circle cx="300" cy="150" r="4" fill="#5B9BD5" />
+                        <circle cx="400" cy="150" r="4" fill="#5B9BD5" />
+                        
+                        <!-- 性能线 - NDR -->
+                        <path d="M100,145 C150,140 200,130 300,110 T400,95" fill="none" stroke="#ED7D31" stroke-width="2" />
+                        <circle cx="100" cy="145" r="4" fill="#ED7D31" />
+                        <circle cx="200" cy="130" r="4" fill="#ED7D31" />
+                        <circle cx="300" cy="110" r="4" fill="#ED7D31" />
+                        <circle cx="400" cy="95" r="4" fill="#ED7D31" />
+                        
+                        <!-- 性能线 - XDR -->
+                        <path d="M100,140 C150,130 200,110 300,70 T400,40" fill="none" stroke="#70AD47" stroke-width="2" />
+                        <circle cx="100" cy="140" r="4" fill="#70AD47" />
+                        <circle cx="200" cy="110" r="4" fill="#70AD47" />
+                        <circle cx="300" cy="70" r="4" fill="#70AD47" />
+                        <circle cx="400" cy="40" r="4" fill="#70AD47" />
+                        
+                        <!-- 图例 -->
+                        <rect x="410" y="40" width="12" height="12" fill="#70AD47" />
+                        <text x="430" y="50" font-size="10">XDR </text>
+                        
+                        <rect x="410" y="60" width="12" height="12" fill="#ED7D31" />
+                        <text x="430" y="70" font-size="10">NDR </text>
+                        
+                        <rect x="410" y="80" width="12" height="12" fill="#5B9BD5" />
+                        <text x="430" y="90" font-size="10">HDR </text>
+                    </svg>
+                    
+                    <div class="roi-box">
+                        <div class="roi-title">投资回报分析</div>
+                        <div class="performance-desc">
+                            <ul style="margin: 8px 0; padding-left: 20px;">
+                                <li><strong>端口密度提升</strong>：XDR交换机的144端口配置使整个网络所需的交换机数量减少40%以上</li>
+                                <li><strong>带宽提升</strong>：与NDR相比，XDR带宽翻倍而价格仅增加约50%，每GB带宽成本下降25%</li>
+                                <li><strong>运维简化</strong>：更少的电缆和设备意味着更低的能耗和散热需求，减少30%的运维成本</li>
+				<li><strong>大规模集群中</strong>: XDR网络的投资回报周期比NDR更短（12-18个月）</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            NVIDIA InfiniBand智算中心组网创新与Quantum-X800高性能交换解决方案
+        </div>
+    </div>
+</body>
+</html>

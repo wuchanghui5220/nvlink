@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>NVIDIA GB200 NVL72系统特性</title>
+    <style>
+    /* NVIDIA GB200 PPT全局样式 */
+    body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: linear-gradient(135deg, rgba(118, 201, 175, 0.8) 0%, rgba(76, 161, 175, 0.8) 100%);
+        font-family: 'Arial', sans-serif;
+        overflow: hidden;
+    }
+
+    .slide-container {
+        width: 90%;
+        height: 85%;
+        background: rgba(255, 255, 255, 0.25);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .header {
+        padding: 20px 40px;
+        background: rgba(0, 118, 129, 0.85);
+        color: white;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    h1 {
+        margin: 0;
+        font-size: 2.2em;
+        font-weight: 600;
+        letter-spacing: 1px;
+    }
+
+    h2 {
+        margin: 5px 0 0 0;
+        font-size: 1.3em;
+        font-weight: 400;
+        letter-spacing: 0.5px;
+    }
+
+    .content {
+        display: flex;
+        flex: 1;
+        padding: 20px;
+    }
+
+    .left-panel {
+        flex: 1;
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .right-panel {
+        flex: 2;
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .panel-title {
+        font-size: 1.4em;
+        color: #005741;
+        margin-bottom: 15px;
+        font-weight: 600;
+    }
+
+    .image-container {
+        flex: 1;
+        background: rgba(255, 255, 255, 0.5);
+        border-radius: 10px;
+        padding: 15px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+    }
+
+    .image-container img {
+        max-width: 100%;
+        max-height: 90%;
+        object-fit: contain;
+        border-radius: 5px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .features-container {
+        flex: 1;
+        background: rgba(255, 255, 255, 0.5);
+        border-radius: 10px;
+        padding: 15px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        position: relative;
+        overflow-y: auto;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-gap: 15px;
+    }
+
+    .feature-box {
+        background: rgba(255, 255, 255, 0.7);
+        border-radius: 8px;
+        padding: 12px;
+        border-left: 4px solid #009B77;
+    }
+
+    .feature-title {
+        font-weight: bold;
+        color: #005741;
+        margin-bottom: 8px;
+        font-size: 1.1em;
+    }
+
+    .feature-desc {
+        color: #333;
+        font-size: 0.9em;
+        line-height: 1.3;
+    }
+
+    .footer {
+        text-align: right;
+        padding: 10px 20px;
+        color: #005741;
+        font-style: italic;
+        font-size: 0.9em;
+    }
+
+    /* 动画效果 */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .left-panel, .right-panel {
+        animation: fadeIn 0.8s ease-out forwards;
+    }
+
+    .right-panel {
+        animation-delay: 0.3s;
+    }
+    
+    .placeholder-text {
+        color: #666;
+        text-align: center;
+        font-style: italic;
+    }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="header">
+            <h1>NVIDIA GB200 NVL72系统详解</h1>
+            <h2>超大规模AI训练与推理的整机柜解决方案</h2>
+        </div>
+        <div class="content">
+            <div class="left-panel">
+                <div class="panel-title">GB200 NVL72整机柜</div>
+                <div class="image-container">
+                    <img src="gb200_nvl72.jpg" alt="NVIDIA GB200 NVL72整机柜">
+                </div>
+            </div>
+            <div class="right-panel">
+                <div class="panel-title">核心特性</div>
+                <div class="features-container">
+                    <div class="feature-box">
+                        <div class="feature-title">整机规格</div>
+                        <div class="feature-desc">
+                            整机柜设备，包含18个Compute tray、9个NVSwitch tray和6个电源tray。单机柜功耗120KW，提供36个Bianca超级芯片（每个含1个Grace CPU和2个B200 GPU）。
+                        </div>
+                    </div>
+                    
+                    <div class="feature-box">
+                        <div class="feature-title">计算性能</div>
+                        <div class="feature-desc">
+                            • FP16算力：360 PFLOPS<br>
+                            • FP4推理：1,440 PFLOPS<br>
+                            • AI性能：1.4 exaFLOPS<br>
+                            • 相当于22.5台H100系统
+                        </div>
+                    </div>
+                    
+                    <div class="feature-box">
+                        <div class="feature-title">互联架构</div>
+                        <div class="feature-desc">
+                            采用第五代NVLink技术，72个GPU全互联。每个B200芯片18个NVLink端口，每端口100GB/s带宽，每芯片总计1.8TB/s双向吞吐量。系统总带宽130TB/s。
+                        </div>
+                    </div>
+                    
+                    <div class="feature-box">
+                        <div class="feature-title">内存规格</div>
+                        <div class="feature-desc">
+                            • GPU显存：13.5TB HBM3e<br>
+                            • 系统总内存：30.2TB<br>
+                            • 单GPU显存：192GB<br>
+                            • 显存带宽：8TB/s (单GPU)
+                        </div>
+                    </div>
+                    
+                    <div class="feature-box">
+                        <div class="feature-title">散热技术</div>
+                        <div class="feature-desc">
+                            标配冷板液冷系统，支持in-rack CDU和in-row CDU两种方案。高密度设计要求高效散热，in-row CDU可提供高达2000KW的制冷能力，满足集群需求。
+                        </div>
+                    </div>
+                    
+                    <div class="feature-box">
+                        <div class="feature-title">电源系统</div>
+                        <div class="feature-desc">
+                            采用OCP ORv3 HPR标准，电源效率>97.5%。配置4+4(或4+2)个电源shelf，每个33KW，支持5+1冗余。
+                        </div>
+                    </div>
+                    
+                    <div class="feature-box">
+                        <div class="feature-title">网络连接</div>
+                        <div class="feature-desc">
+                            每Compute tray：4个OSFP（400G）2个QSFP（100G）
+                        </div>
+                    </div>
+                    
+                    <div class="feature-box">
+                        <div class="feature-title">系统扩展</div>
+                        <div class="feature-desc">
+                            可通过NVL576架构扩展至576颗GPU（8个集群节点），实现2,880 PFLOPS的FP16算力。
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            NVIDIA GB200 NVL72 — 面向万亿参数级生成式AI的超级计算基础设施
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NVIDIA NPN SP技术大比武 - 公司组织架构介绍</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f0f0f0;
+      font-family: 'Noto Sans SC', sans-serif;
+      overflow: hidden;
+    }
+
+    .slide-container {
+      width: 100vw;
+      height: 56.25vw; /* 16:9 aspect ratio */
+      max-height: 100vh;
+      max-width: 177.78vh; /* 16:9 aspect ratio (reversed) */
+      position: relative;
+      background: #111827;
+      color: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    /* 背景图形元素 */
+    .bg-grid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image:
+        linear-gradient(rgba(24, 92, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(24, 92, 255, 0.05) 1px, transparent 1px);
+      background-size: 20px 20px;
+      z-index: 0;
+    }
+
+    .bg-gradient {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 120% 45%, rgba(76, 29, 149, 0.7) 0%, rgba(17, 24, 39, 0) 50%);
+      z-index: 1;
+    }
+
+    .bg-circle1 {
+      position: absolute;
+      top: -15%;
+      right: -15%;
+      width: 40%;
+      height: 40%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #76b900 0%, #1a4163 100%);
+      filter: blur(80px);
+      opacity: 0.6;
+      z-index: 2;
+    }
+
+    .bg-circle2 {
+      position: absolute;
+      bottom: -10%;
+      left: -10%;
+      width: 30%;
+      height: 30%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0099da 0%, #1e40af 100%);
+      filter: blur(60px);
+      opacity: 0.5;
+      z-index: 2;
+    }
+
+    /* 主要内容 */
+    .content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    .header {
+      padding: 2.5% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .nvidia-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-box {
+      width: 8%;
+      min-width: 100px;
+      height: 36px;
+      background: #76b900;
+      border-radius: 4px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 700;
+      font-size: clamp(16px, 2vw, 22px);
+      transform: skew(-10deg);
+    }
+
+    .partner-text {
+      font-size: clamp(12px, 1.5vw, 16px);
+      font-weight: 500;
+      opacity: 0.9;
+    }
+
+    .slide-title {
+      font-size: clamp(16px, 1.8vw, 20px);
+      font-weight: 600;
+      padding: 0.5% 4%;
+      background: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(5px);
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      padding: 2% 4%;
+    }
+
+    .orgchart-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .section-title {
+      font-size: clamp(20px, 2.5vw, 28px);
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section-title::before {
+      content: "";
+      width: 6px;
+      height: 28px;
+      background: #76b900;
+      border-radius: 3px;
+    }
+
+    .orgchart {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      font-family: monospace;
+      font-size: 16px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      flex: 1;
+    }
+
+    .profile-container {
+      flex: 1;
+      padding-left: 30px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .profile-card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      flex: 1;
+    }
+
+    .profile-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .profile-avatar {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #0099da 30%, #1e40af 100%);
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 700;
+      font-size: 28px;
+      color: white;
+      margin-right: 20px;
+      box-shadow: 0 5px 15px rgba(0, 153, 218, 0.4);
+      border: 2px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .profile-title {
+      flex: 1;
+    }
+
+    .profile-position {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 6px;
+    }
+
+    .profile-name {
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    .profile-details {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .profile-section {
+      background: rgba(0, 0, 0, 0.2);
+      padding: 15px;
+      border-radius: 8px;
+      border-left: 4px solid #76b900;
+    }
+
+    .profile-section-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: #76b900;
+    }
+
+    .profile-section-content {
+      font-size: 15px;
+      line-height: 1.6;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .profile-section-content ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .profile-section-content li {
+      margin-bottom: 5px;
+    }
+
+    .footer {
+      padding: 1.5% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .page-number {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .company-name {
+      font-weight: 500;
+    }
+
+    .rotating-lines {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 50%;
+      height: 50%;
+      z-index: 5;
+      opacity: 0.15;
+      animation: rotate 60s linear infinite;
+    }
+
+    @keyframes rotate {
+      from {
+        transform: translate(-50%, -50%) rotate(0deg);
+      }
+      to {
+        transform: translate(-50%, -50%) rotate(360deg);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <!-- 背景元素 -->
+    <div class="bg-grid"></div>
+    <div class="bg-gradient"></div>
+    <div class="bg-circle1"></div>
+    <div class="bg-circle2"></div>
+
+    <!-- 旋转线框背景 -->
+    <svg class="rotating-lines" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+      <path d="M250,10 L490,250 L250,490 L10,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,50 L450,250 L250,450 L50,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,90 L410,250 L250,410 L90,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,130 L370,250 L250,370 L130,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,170 L330,250 L250,330 L170,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,210 L290,250 L250,290 L210,250 Z" fill="none" stroke="white" stroke-width="1" />
+    </svg>
+
+    <!-- 主要内容 -->
+    <div class="content">
+      <div class="header">
+        <div class="nvidia-logo">
+          <div class="logo-box">NVIDIA</div>
+          <div class="partner-text">Networking NPN Elite Partner</div>
+        </div>
+        <div class="slide-title">1. 技术团队架构</div>
+      </div>
+
+      <div class="main-content">
+        <div class="orgchart-container" style="width: 100%;">
+          <div class="section-title">北京正阳恒卓科技有限公司 - 技术团队架构</div>
+          <div style="width: 100%; height: 420px; position: relative; margin-top: 20px;">
+            <!-- 放置SVG组织结构图 -->
+            <svg width="100%" height="100%" viewBox="0 0 1000 400" xmlns="http://www.w3.org/2000/svg">
+              <!-- 背景线条纹理 -->
+              <defs>
+                <linearGradient id="headerGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" style="stop-color:#76b900;stop-opacity:1" />
+                  <stop offset="100%" style="stop-color:#3e703e;stop-opacity:1" />
+                </linearGradient>
+                <linearGradient id="teamGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" style="stop-color:#0099da;stop-opacity:1" />
+                  <stop offset="100%" style="stop-color:#1e40af;stop-opacity:1" />
+                </linearGradient>
+                <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur stdDeviation="2" result="blur" />
+                  <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                </filter>
+              </defs>
+              
+              <!-- 技术总监框 -->
+              <rect x="425" y="20" width="150" height="60" rx="6" fill="url(#headerGradient)" filter="url(#glow)" />
+              <text x="500" y="45" text-anchor="middle" fill="white" font-weight="bold" font-size="16">技术总监</text>
+              <text x="500" y="65" text-anchor="middle" fill="white" font-size="14">吴昌辉</text>
+              
+              <!-- 垂直连接线 -->
+              <line x1="500" y1="80" x2="500" y2="100" stroke="rgba(255,255,255,0.5)" stroke-width="2" />
+              
+              <!-- 水平主连接线 -->
+              <line x1="200" y1="100" x2="800" y2="100" stroke="rgba(255,255,255,0.5)" stroke-width="2" />
+              
+              <!-- 从主线到各部门的连接线 -->
+              <line x1="200" y1="100" x2="200" y2="130" stroke="rgba(255,255,255,0.5)" stroke-width="2" />
+              <line x1="500" y1="100" x2="500" y2="130" stroke="rgba(255,255,255,0.5)" stroke-width="2" />
+              <line x1="800" y1="100" x2="800" y2="130" stroke="rgba(255,255,255,0.5)" stroke-width="2" />
+              
+              <!-- 三个部门框 -->
+              <rect x="125" y="130" width="150" height="60" rx="6" fill="url(#teamGradient)" filter="url(#glow)" />
+              <text x="200" y="155" text-anchor="middle" fill="white" font-weight="bold" font-size="15">售前技术团队</text>
+              <text x="200" y="175" text-anchor="middle" fill="white" font-size="13">(2人)</text>
+              
+              <rect x="425" y="130" width="150" height="60" rx="6" fill="url(#teamGradient)" filter="url(#glow)" />
+              <text x="500" y="155" text-anchor="middle" fill="white" font-weight="bold" font-size="15">实施与交付团队</text>
+              <text x="500" y="175" text-anchor="middle" fill="white" font-size="13">(3人)</text>
+              
+              <rect x="725" y="130" width="150" height="60" rx="6" fill="url(#teamGradient)" filter="url(#glow)" />
+              <text x="800" y="155" text-anchor="middle" fill="white" font-weight="bold" font-size="15">售后支持团队</text>
+              <text x="800" y="175" text-anchor="middle" fill="white" font-size="13">(2人)</text>
+              
+              <!-- 从部门到成员的连接线 -->
+              <!-- 售前团队连接线 -->
+              <line x1="200" y1="190" x2="200" y2="210" stroke="rgba(255,255,255,0.5)" stroke-width="2" />
+              <line x1="130" y1="210" x2="270" y2="210" stroke="rgba(255,255,255,0.5)" stroke-width="2" />
+              <line x1="130" y1="210" x2="130" y2="240" stroke="rgba(255,255,255,0.5)" stroke-width="2" />
+              <line x1="270" y1="210" x2="270" y2="240" stroke="rgba(255,255,255,0.5)" stroke-width="2" />
+              
+              <!-- 实施团队连接线 -->
+              <line x1="500" y1="190" x2="500" y2="210" stroke="rgba(255,255,255,0.5)" stroke-width="2" />
+              <line x1="380" y1="210" x2="620" y2="210" stroke="rgba(255,255,255,0.5)" stroke-width="2" />
+              <line x1="380" y1="210" x2="380" y2="240" stroke="rgba(255,255,255,0.5)" stroke-width="2" />
+              <line x1="500" y1="210" x2="500" y2="240" stroke="rgba(255,255,255,0.5)" stroke-width="2" />
+              <line x1="620" y1="210" x2="620" y2="240" stroke="rgba(255,255,255,0.5)" stroke-width="2" />
+              
+              <!-- 售后团队连接线 -->
+              <line x1="800" y1="190" x2="800" y2="210" stroke="rgba(255,255,255,0.5)" stroke-width="2" />
+              <line x1="730" y1="210" x2="870" y2="210" stroke="rgba(255,255,255,0.5)" stroke-width="2" />
+              <line x1="730" y1="210" x2="730" y2="240" stroke="rgba(255,255,255,0.5)" stroke-width="2" />
+              <line x1="870" y1="210" x2="870" y2="240" stroke="rgba(255,255,255,0.5)" stroke-width="2" />
+              
+              <!-- 售前成员框 -->
+              <rect x="80" y="240" width="100" height="70" rx="5" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)" />
+              <text x="130" y="265" text-anchor="middle" fill="white" font-size="12" opacity="0.8">高级售前工程师</text>
+              <text x="130" y="290" text-anchor="middle" fill="white" font-weight="bold" font-size="14">王正宗</text>
+              
+              <rect x="220" y="240" width="100" height="70" rx="5" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)" />
+              <text x="270" y="265" text-anchor="middle" fill="white" font-size="12" opacity="0.8">高级售前工程师</text>
+              <text x="270" y="290" text-anchor="middle" fill="white" font-weight="bold" font-size="14">刘腾旭</text>
+              
+              <!-- 实施成员框 -->
+              <rect x="330" y="240" width="100" height="70" rx="5" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)" />
+              <text x="380" y="265" text-anchor="middle" fill="white" font-size="12" opacity="0.8">网络架构师</text>
+              <text x="380" y="290" text-anchor="middle" fill="white" font-weight="bold" font-size="14">郭豫川</text>
+              
+              <rect x="450" y="240" width="100" height="70" rx="5" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)" />
+              <text x="500" y="265" text-anchor="middle" fill="white" font-size="12" opacity="0.8">网络架构师</text>
+              <text x="500" y="290" text-anchor="middle" fill="white" font-weight="bold" font-size="14">岳欣洁</text>
+              
+              <rect x="570" y="240" width="100" height="70" rx="5" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)" />
+              <text x="620" y="265" text-anchor="middle" fill="white" font-size="12" opacity="0.8">系统集成工程师</text>
+              <text x="620" y="290" text-anchor="middle" fill="white" font-weight="bold" font-size="14">张雷</text>
+              
+              <!-- 售后成员框 -->
+              <rect x="680" y="240" width="100" height="70" rx="5" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)" />
+              <text x="730" y="265" text-anchor="middle" fill="white" font-size="12" opacity="0.8">技术支持工程师</text>
+              <text x="730" y="290" text-anchor="middle" fill="white" font-weight="bold" font-size="14">樊生辉</text>
+              
+              <rect x="820" y="240" width="100" height="70" rx="5" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)" />
+              <text x="870" y="265" text-anchor="middle" fill="white" font-size="12" opacity="0.8">技术支持工程师</text>
+              <text x="870" y="290" text-anchor="middle" fill="white" font-weight="bold" font-size="14">汤润泽</text>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="company-name">北京正阳恒卓科技有限公司</div>
+        <div class="page-number">3</div>
+      </div>
+    </div>
+  </div>
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+        <a href="index0.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+        <a href="index1.2.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+    </div>
+</body>
+</html>

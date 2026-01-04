@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NVIDIA UFM监控软件介绍</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    :root {
+      --primary-blue: #00a2ff;
+      --primary-green: #76b900;
+      --primary-orange: #ffa500;
+      --primary-purple: #4834d4;
+      --text-primary: #ffffff;
+      --text-secondary: rgba(255, 255, 255, 0.87);
+    }
+
+    .main-content {
+      padding: 1% 2%;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .page-title {
+      text-align: center;
+      margin-bottom: 2%;
+      flex-shrink: 0;
+    }
+
+    .title-main {
+      font-size: clamp(26px, 3.2vw, 36px);
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-green) 50%, var(--primary-orange) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 0.8%;
+    }
+
+    .title-sub {
+      font-size: clamp(15px, 1.7vw, 19px);
+      color: rgba(255, 255, 255, 0.85);
+      font-weight: 500;
+      margin-bottom: 1%;
+    }
+
+    .content-wrapper {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2.5%;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    /* UFM平台概述 */
+    .platform-overview {
+      background: linear-gradient(135deg, rgba(0, 162, 255, 0.15), rgba(0, 162, 255, 0.08));
+      border: 2px solid rgba(0, 162, 255, 0.4);
+      border-radius: 15px;
+      padding: 2.5%;
+      box-shadow: 0 8px 20px rgba(0, 162, 255, 0.15);
+    }
+
+    .overview-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 2%;
+    }
+
+    .overview-icon {
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, var(--primary-blue), #0078d4);
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .overview-title {
+      font-size: clamp(20px, 2.2vw, 26px);
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .overview-content {
+      font-size: clamp(13px, 1.4vw, 15px);
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 2.5%;
+    }
+
+    .platform-benefits {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5%;
+    }
+
+    .benefit-item {
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 1.8%;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: all 0.3s ease;
+    }
+
+    .benefit-item:hover {
+      background: rgba(255, 255, 255, 0.12);
+      transform: translateX(5px);
+    }
+
+    .benefit-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      background: var(--primary-blue);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .benefit-text {
+      font-size: clamp(12px, 1.3vw, 14px);
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    /* UFM产品组合 */
+    .product-suite {
+      display: flex;
+      flex-direction: column;
+      gap: 2%;
+    }
+
+    .product-card {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04));
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      padding: 2.5%;
+      transition: all 0.3s ease;
+    }
+
+    .product-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .product-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 1.5%;
+    }
+
+    .product-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .telemetry-card .product-icon {
+      background: linear-gradient(135deg, var(--primary-green), #4caf50);
+    }
+
+    .enterprise-card .product-icon {
+      background: linear-gradient(135deg, var(--primary-orange), #ff8c00);
+    }
+
+    .cyber-ai-card .product-icon {
+      background: linear-gradient(135deg, var(--primary-purple), #6b46c1);
+    }
+
+    .product-name {
+      font-size: clamp(16px, 1.7vw, 18px);
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .product-tagline {
+      font-size: clamp(11px, 1.2vw, 13px);
+      color: rgba(255, 255, 255, 0.6);
+      margin-top: 2px;
+    }
+
+    .product-features {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .product-features li {
+      padding: 0.5% 0;
+      position: relative;
+      padding-left: 20px;
+      font-size: clamp(11.5px, 1.25vw, 13.5px);
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    .product-features li::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      color: var(--primary-green);
+      font-weight: bold;
+    }
+
+    @media (max-width: 1200px) {
+      .content-wrapper {
+        grid-template-columns: 1fr;
+        gap: 2%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <div class="bg-elements">
+      <div class="brain-pattern"></div>
+      <div class="network-signals">
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+      </div>
+    </div>
+    
+    <div class="content">
+      <div class="header" style="padding: 0.6% 2%;">
+        <div class="day-info">
+          <div class="day-badge">5</div>
+          <div class="day-text">第五天：UFM培训与总结</div>
+        </div>
+        <div class="section-indicator">UFM监控软件介绍</div>
+      </div>
+      
+      <div class="main-content">
+        <div class="page-title">
+          <div class="title-main">NVIDIA UFM监控管理软件</div>
+          <div class="title-sub">AI驱动的网络智能化管理平台 · InfiniBand网络监控与优化</div>
+        </div>
+        
+        <div class="content-wrapper">
+          <!-- UFM平台概述 -->
+          <div class="platform-overview">
+            <div class="overview-header">
+              <div class="overview-icon">🚀</div>
+              <div class="overview-title">UFM平台概述</div>
+            </div>
+            
+            <div class="overview-content">
+              <p><strong>NVIDIA UFM®平台</strong>通过结合增强的实时网络遥测与AI驱动的网络智能分析，革命性地改变了数据中心网络管理。它有效促进了InfiniBand连接数据中心的高效扩展。</p>
+              <p>UFM平台能够发现运行异常并预测网络故障以进行预防性维护，包含多个层次的解决方案和功能来满足您数据中心的需求。</p>
+            </div>
+            
+            <div class="platform-benefits">
+              <div class="benefit-item">
+                <div class="benefit-icon">🔍</div>
+                <div class="benefit-text">实时网络遥测和性能监控</div>
+              </div>
+              <div class="benefit-item">
+                <div class="benefit-icon">🤖</div>
+                <div class="benefit-text">AI驱动的网络智能分析</div>
+              </div>
+              <div class="benefit-item">
+                <div class="benefit-icon">🔧</div>
+                <div class="benefit-text">自动化网络配置和管理</div>
+              </div>
+              <div class="benefit-item">
+                <div class="benefit-icon">⚡</div>
+                <div class="benefit-text">预测性故障分析和维护</div>
+              </div>
+              <div class="benefit-item">
+                <div class="benefit-icon">🛡️</div>
+                <div class="benefit-text">网络安全威胁检测</div>
+              </div>
+              <div class="benefit-item">
+                <div class="benefit-icon">📊</div>
+                <div class="benefit-text">综合性能优化建议</div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- UFM产品组合 -->
+          <div class="product-suite">
+            <!-- UFM Telemetry -->
+            <div class="product-card telemetry-card">
+              <div class="product-header">
+                <div class="product-icon">📡</div>
+                <div>
+                  <div class="product-name">UFM Telemetry</div>
+                  <div class="product-tagline">实时网络监控</div>
+                </div>
+              </div>
+              <ul class="product-features">
+                <li>交换机、适配器和线缆遥测数据</li>
+                <li>系统验证和网络性能测试</li>
+                <li>遥测信息流式传输到数据库</li>
+                <li>基础网络健康状态监控</li>
+              </ul>
+            </div>
+            
+            <!-- UFM Enterprise -->
+            <div class="product-card enterprise-card">
+              <div class="product-header">
+                <div class="product-icon">⚙️</div>
+                <div>
+                  <div class="product-name">UFM Enterprise</div>
+                  <div class="product-tagline">网络可视化与控制</div>
+                </div>
+              </div>
+              <ul class="product-features">
+                <li>自动化网络发现和验证</li>
+                <li>安全线缆管理和拥塞跟踪</li>
+                <li>作业调度器集成(Slurm、LSF)</li>
+                <li>丰富的Web界面和REST API</li>
+              </ul>
+            </div>
+            
+            <!-- UFM Cyber-AI -->
+            <div class="product-card cyber-ai-card">
+              <div class="product-header">
+                <div class="product-icon">🧠</div>
+                <div>
+                  <div class="product-name">UFM Cyber-AI</div>
+                  <div class="product-tagline">AI网络智能分析</div>
+                </div>
+              </div>
+              <ul class="product-features">
+                <li>性能退化和异常行为检测</li>
+                <li>预测性维护警报和建议</li>
+                <li>链路异常和集群行为分析</li>
+                <li>持续学习提高预测精度</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="footer" style="padding: 0.6% 2%;">
+        <div class="footer-left">
+          <div class="status-dot"></div>
+          <span>UFM监控软件 - 智能化网络管理平台</span>
+        </div>
+        <div class="footer-badges">
+          <div class="footer-badge badge-install">AI驱动</div>
+          <div class="footer-badge badge-config">实时监控</div>
+          <div class="footer-badge badge-command">预测维护</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+    <a href="index30.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+    <a href="index32.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+  </div>
+</body>
+</html>

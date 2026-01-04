@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>驱动安装与配置</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    :root { --primary-green: #76b900; --primary-blue: #00a2ff; --primary-orange: #ffa500; --primary-red: #ff6b6b; --text-primary: #ffffff; --text-secondary: rgba(255, 255, 255, 0.87); --glass-light: rgba(255, 255, 255, 0.08); --glass-border: rgba(255, 255, 255, 0.2); --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .main-content { padding: 1% 2%; flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden; max-width: 1400px; margin: 0 auto; width: 100%; }
+    .page-title { text-align: center; margin-bottom: 1.2%; flex-shrink: 0; }
+    .title-main { font-size: clamp(24px, 2.8vw, 30px); font-weight: 800; background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-orange) 50%, var(--primary-blue) 100%); -webkit-background-clip: text; background-clip: text; color: transparent; margin-bottom: 0.6%; }
+    .title-sub { font-size: clamp(14px, 1.6vw, 18px); color: rgba(255, 255, 255, 0.8); font-weight: 400; margin-bottom: 0.6%; }
+    .content-grid { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 2%; min-height: 0; overflow: hidden; }
+    .content-section { display: flex; flex-direction: column; gap: 1.5%; min-height: 0; overflow-y: auto; }
+    .section-title { font-size: clamp(16px, 1.8vw, 20px); font-weight: 700; color: var(--text-primary); margin-bottom: 1%; padding: 1.5%; border-radius: 8px; text-align: center; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); }
+    .section-title.rtx { background: linear-gradient(135deg, rgba(118, 185, 0, 0.25), rgba(118, 185, 0, 0.15)); border: 2px solid rgba(118, 185, 0, 0.4); }
+    .section-title.hgx { background: linear-gradient(135deg, rgba(255, 165, 0, 0.25), rgba(255, 165, 0, 0.15)); border: 2px solid rgba(255, 165, 0, 0.4); }
+    .content-item { background: linear-gradient(135deg, var(--glass-light), rgba(255, 255, 255, 0.04)); border: 1px solid var(--glass-border); border-radius: 10px; padding: 2%; transition: var(--transition-smooth); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); }
+    .content-item:hover { background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06)); border-color: rgba(255, 255, 255, 0.35); transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25); }
+    .item-header { display: flex; align-items: center; gap: 12px; margin-bottom: 1%; }
+    .item-icon { width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: clamp(14px, 1.4vw, 16px); color: white; flex-shrink: 0; box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3); }
+    .rtx-prep .item-icon { background: linear-gradient(135deg, var(--primary-green), #3e703e); }
+    .rtx-driver .item-icon { background: linear-gradient(135deg, var(--primary-blue), #0078d4); }
+    .hgx-prep .item-icon { background: linear-gradient(135deg, var(--primary-orange), #ff8c00); }
+    .hgx-cuda .item-icon { background: linear-gradient(135deg, var(--primary-red), #ee5a24); }
+    .item-title { font-size: clamp(15px, 1.7vw, 18px); font-weight: 700; color: var(--text-primary); flex: 1; line-height: 1.3; }
+    .item-content { font-size: clamp(12px, 1.4vw, 15px); color: var(--text-secondary); line-height: 1.5; margin-bottom: 1%; font-weight: 400; }
+    .config-example { background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.2); border-left: 3px solid; padding: 1.5%; border-radius: 0 6px 6px 0; font-family: 'Courier New', monospace; font-size: clamp(11px, 1.2vw, 13px); color: #e8f4fd; line-height: 1.4; margin-bottom: 0.5%; }
+    .rtx-prep .config-example { border-left-color: var(--primary-green); }
+    .rtx-driver .config-example { border-left-color: var(--primary-blue); }
+    .hgx-prep .config-example { border-left-color: var(--primary-orange); }
+    .hgx-cuda .config-example { border-left-color: var(--primary-red); }
+    .rtx-image, .hgx-image { margin-top: 15px; }
+    .rtx-image img, .hgx-image img { transition: transform 0.3s ease; }
+    .rtx-image img:hover, .hgx-image img:hover { transform: scale(1.02); }
+    .summary-note { background: linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(76, 175, 80, 0.1)); border: 2px solid rgba(76, 175, 80, 0.4); border-radius: 8px; padding: 2%; margin-top: 1.5%; text-align: center; box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2); }
+    .summary-text { font-size: clamp(14px, 1.6vw, 17px); color: rgba(255, 255, 255, 0.9); font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px; }
+    .highlight { color: #4caf50; font-weight: 700; }
+    @media (max-width: 1200px) { .content-grid { grid-template-columns: 1fr; gap: 1.5%; } }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <div class="bg-elements"><div class="brain-pattern"></div><div class="network-signals"><div class="signal-dot"></div><div class="signal-dot"></div><div class="signal-dot"></div><div class="signal-dot"></div><div class="signal-dot"></div></div></div>
+    <div class="content">
+      <div class="header" style="padding: 0.6% 2%;">
+        <div class="day-info"><div class="day-badge">3</div><div class="day-text">第三天：GPU服务器基础测试</div></div>
+        <div class="section-indicator">GPU驱动安装</div>
+      </div>
+      <div class="main-content">
+        <div class="page-title"><div class="title-main">GPU驱动安装</div><div class="title-sub">NVIDIA GPU驱动和CUDA开发环境配置</div></div>
+        <div class="content-grid">
+          <div class="content-section">
+            <div class="section-title rtx">桌面推理显卡 RTX 4090</div>
+            
+            <div class="content-item rtx-prep">
+              <div class="item-header"><div class="item-icon">🔧</div><div class="item-title">预安装准备</div></div>
+              <div class="item-content">
+                安装内核更新和开发包
+              </div>
+              <div class="config-example"># Ubuntu安装gcc-12和内核头文件</div>
+              <div class="config-example">sudo apt install gcc-12 linux-headers-$(uname -r)</div>
+            </div>
+            
+            <div class="content-item rtx-driver">
+              <div class="item-header"><div class="item-icon">🎮</div><div class="item-title">RTX 4090 驱动安装</div></div>
+              <div class="item-content">
+		      下载页面: <a href="https://www.nvidia.com/en-us/drivers/" target="_blank" style="text-decoration: none; color: white;">https://www.nvidia.com/en-us/drivers</a><br>
+                选择对应的GPU型号和操作系统版本下载驱动程序包。<br>
+                使用.deb包进行安装，确保系统兼容性。
+              </div>
+              <div class="config-example"># 安装下载的驱动包</div>
+              <div class="config-example">sudo dpkg -i nvidia-driver-local-repo-ubuntu2204-*.deb</div>
+            </div>
+            
+            <div class="rtx-image">
+              <img src="rtx4090_driver_download.png" alt="RTX 4090驱动下载页面" style="width: 100%; border-radius: 8px; margin-top: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+            </div>
+          </div>
+          
+          <div class="content-section">
+            <div class="section-title hgx">HGX H100/H200/H800</div>
+            
+            <div class="content-item hgx-prep">
+              <div class="item-header"><div class="item-icon">⚙️</div><div class="item-title">预安装准备</div></div>
+              <div class="item-content">
+                安装内核更新和开发包（支持Ubuntu/CentOS）
+              </div>
+              <div class="config-example"># Ubuntu: sudo apt install gcc linux-headers-$(uname -r)</div>
+              <div class="config-example"># CentOS: sudo dnf install gcc kernel-devel-$(uname -r) kernel-headers</div>
+            </div>
+            
+            <div class="content-item hgx-cuda">
+              <div class="item-header"><div class="item-icon">⚡</div><div class="item-title">CUDA Toolkit安装</div></div>
+              <div class="item-content">
+		      下载页面:<a href="https://developer.nvidia.com/cuda-toolkit-archive" target="_blank" style="text-decoration: none; color: white;">https://developer.nvidia.com/cuda-toolkit-archive</a><br>
+                选择合适的CUDA版本，下载.run安装包。<br>
+                使用静默安装模式，同时安装驱动、工具包并覆盖现有配置。
+              </div>
+              <div class="config-example"># CUDA 12.9.1 静默安装</div>
+              <div class="config-example">sudo sh cuda_12.9.1_575.57.08_linux.run --silent --driver --toolkit --override</div>
+            </div>
+            
+            <div class="hgx-image">
+              <img src="cuda_download.png" alt="CUDA官方下载页面" style="width: 100%; border-radius: 8px; margin-top: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+            </div>
+          </div>
+        </div>
+        <div class="summary-note">
+          <div class="summary-text"><div>🔧</div><span><span class="highlight">安装要点：</span>务必预先安装内核头文件和开发包</span></div>
+        </div>
+      </div>
+      <div class="footer" style="padding: 0.6% 2%;">
+        <div class="footer-left"><div class="status-dot"></div><span>第三天 - GPU驱动安装</span></div>
+        <div class="footer-badges"><div class="footer-badge badge-install">NVIDIA</div><div class="footer-badge badge-config">CUDA</div><div class="footer-badge badge-command">DRIVER</div></div>
+      </div>
+    </div>
+  </div>
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+    <a href="index19.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+    <a href="index21.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+  </div>
+</body>
+</html>

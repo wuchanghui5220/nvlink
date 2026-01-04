@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>NVIDIA InfiniBand智算中心组网创新与Quantum-X800高性能交换解决方案</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700&display=swap');
+        
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, rgba(175, 233, 207, 0.8) 0%, rgba(145, 210, 185, 0.8) 100%);
+            font-family: 'Montserrat', 'Arial', sans-serif;
+            overflow: hidden;
+        }
+
+        .cover-container {
+            width: 90%;
+            height: 85%;
+            background: linear-gradient(135deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 118, 82, 0.8) 100%);
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .content-wrapper {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            display: flex;
+        }
+
+        .overlay-glass {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.03) 100%);
+            z-index: 1;
+        }
+
+        .left-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding-left: 80px;
+            position: relative;
+            z-index: 3;
+        }
+
+        .right-panel {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .title-block {
+            max-width: 90%;
+        }
+
+        .tagline {
+            color: #76f3d0;
+            font-size: 1.2em;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            margin-bottom: 20px;
+        }
+
+        .main-title {
+            color: white;
+            font-size: 3.8em;
+            font-weight: 700;
+            margin: 0 0 20px 0;
+            line-height: 1.1;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.6em;
+            font-weight: 300;
+            line-height: 1.4;
+            margin: 0;
+            max-width: 90%;
+        }
+
+        .brand-logo {
+            position: absolute;
+            top: 40px;
+            left: 60px;
+            z-index: 4;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-text {
+            color: white;
+            font-size: 1.8em;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .divider {
+            width: 2px;
+            height: 30px;
+            background-color: #76f3d0;
+            margin: 0 15px;
+        }
+
+        .product-name {
+            color: white;
+            font-size: 1.6em;
+            font-weight: 300;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 30px 80px;
+            box-sizing: border-box;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 3;
+        }
+
+        .presenter-info {
+            color: white;
+        }
+
+        .presenter-name {
+            font-weight: 600;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+
+        .presenter-title {
+            font-weight: 300;
+            font-size: 0.9em;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .company-info {
+            text-align: right;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9em;
+        }
+
+        /* 装饰性元素 */
+        .floating-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            opacity: 0.6;
+            z-index: 1;
+        }
+
+        .visual-element {
+            position: absolute;
+            width: 90%;
+            height: 90%;
+            top: 5%;
+            right: -30%;
+            z-index: 1;
+            opacity: 0.9;
+        }
+
+        .tech-badge {
+            position: absolute;
+            bottom: 120px;
+            right: 80px;
+            z-index: 2;
+        }
+        
+        .accent-line {
+            position: absolute;
+            height: 300px;
+            width: 3px;
+            background: linear-gradient(to bottom, transparent, #76f3d0, transparent);
+            left: 50px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        /* 动画效果 */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInLeft {
+            from { opacity: 0; transform: translateX(-30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes fadeInRight {
+            from { opacity: 0; transform: translateX(30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes floatAnimation {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0); }
+        }
+
+        @keyframes rotateSlowly {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .fade-in {
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+
+        .fade-in-left {
+            opacity: 0;
+            animation: fadeInLeft 0.8s ease-out forwards;
+        }
+
+        .fade-in-right {
+            opacity: 0;
+            animation: fadeInRight 0.8s ease-out forwards;
+        }
+
+        .delay-1 {
+            animation-delay: 0.3s;
+        }
+
+        .delay-2 {
+            animation-delay: 0.6s;
+        }
+
+        .delay-3 {
+            animation-delay: 0.9s;
+        }
+
+        .float-element {
+            animation: floatAnimation 6s ease-in-out infinite;
+        }
+
+        .rotate-slowly {
+            animation: rotateSlowly 60s linear infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="cover-container">
+        <!-- 半透明玻璃效果叠加层 -->
+        <div class="overlay-glass"></div>
+        
+        <!-- 浮动粒子背景 -->
+        <div class="floating-particles">
+            <svg width="100%" height="100%" viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid slice">
+                <!-- 微粒子系统 -->
+                <g opacity="0.6">
+                    <!-- 50个随机分布的点 -->
+                    <g fill="#76f3d0">
+                        <circle cx="100" cy="100" r="1.5">
+                            <animate attributeName="opacity" values="0.3;0.8;0.3" dur="3s" repeatCount="indefinite" />
+                        </circle>
+                        <circle cx="150" cy="250" r="1">
+                            <animate attributeName="opacity" values="0.3;0.7;0.3" dur="4s" repeatCount="indefinite" />
+                        </circle>
+                        <circle cx="220" cy="150" r="1.2">
+                            <animate attributeName="opacity" values="0.4;0.9;0.4" dur="5s" repeatCount="indefinite" />
+                        </circle>
+                        <circle cx="280" cy="300" r="1">
+                            <animate attributeName="opacity" values="0.3;0.6;0.3" dur="6s" repeatCount="indefinite" />
+                        </circle>
+                        <circle cx="350" cy="100" r="1.4">
+                            <animate attributeName="opacity" values="0.5;0.9;0.5" dur="4.5s" repeatCount="indefinite" />
+                        </circle>
+                        <circle cx="400" cy="200" r="1.2">
+                            <animate attributeName="opacity" values="0.4;0.8;0.4" dur="3.5s" repeatCount="indefinite" />
+                        </circle>
+                        <circle cx="450" cy="350" r="1">
+                            <animate attributeName="opacity" values="0.3;0.7;0.3" dur="5.5s" repeatCount="indefinite" />
+                        </circle>
+                        <circle cx="500" cy="150" r="1.5">
+                            <animate attributeName="opacity" values="0.5;1;0.5" dur="4s" repeatCount="indefinite" />
+                        </circle>
+                        <circle cx="550" cy="250" r="1.3">
+                            <animate attributeName="opacity" values="0.4;0.8;0.4" dur="3s" repeatCount="indefinite" />
+                        </circle>
+                        <circle cx="600" cy="100" r="1">
+                            <animate attributeName="opacity" values="0.3;0.6;0.3" dur="5s" repeatCount="indefinite" />
+                        </circle>
+                        <circle cx="650" cy="300" r="1.2">
+                            <animate attributeName="opacity" values="0.4;0.9;0.4" dur="4.5s" repeatCount="indefinite" />
+                        </circle>
+                        <circle cx="700" cy="200" r="1.4">
+                            <animate attributeName="opacity" values="0.5;0.9;0.5" dur="3.5s" repeatCount="indefinite" />
+                        </circle>
+                        <circle cx="750" cy="150" r="1">
+                            <animate attributeName="opacity" values="0.3;0.7;0.3" dur="6s" repeatCount="indefinite" />
+                        </circle>
+                        <circle cx="800" cy="350" r="1.3">
+                            <animate attributeName="opacity" values="0.4;0.8;0.4" dur="5s" repeatCount="indefinite" />
+                        </circle>
+                        <circle cx="850" cy="250" r="1.5">
+                            <animate attributeName="opacity" values="0.5;1;0.5" dur="4s" repeatCount="indefinite" />
+                        </circle>
+                        <circle cx="900" cy="100" r="1.2">
+                            <animate attributeName="opacity" values="0.4;0.8;0.4" dur="3s" repeatCount="indefinite" />
+                        </circle>
+                        <circle cx="950" cy="300" r="1">
+                            <animate attributeName="opacity" values="0.3;0.6;0.3" dur="5.5s" repeatCount="indefinite" />
+                        </circle>
+                        <circle cx="120" cy="350" r="1.4">
+                            <animate attributeName="opacity" values="0.5;0.9;0.5" dur="4.5s" repeatCount="indefinite" />
+                        </circle>
+                        <circle cx="180" cy="400" r="1.2">
+                            <animate attributeName="opacity" values="0.4;0.8;0.4" dur="3.5s" repeatCount="indefinite" />
+                        </circle>
+                        <circle cx="250" cy="450" r="1">
+                            <animate attributeName="opacity" values="0.3;0.7;0.3" dur="6s" repeatCount="indefinite" />
+                        </circle>
+                        <circle cx="330" cy="200" r="1.5">
+                            <animate attributeName="opacity" values="0.5;1;0.5" dur="4s" repeatCount="indefinite" />
+                        </circle>
+                        <circle cx="380" cy="450" r="1.3">
+                            <animate attributeName="opacity" values="0.4;0.8;0.4" dur="3s" repeatCount="indefinite" />
+                        </circle>
+                        <circle cx="450" cy="500" r="1">
+                            <animate attributeName="opacity" values="0.3;0.6;0.3" dur="5s" repeatCount="indefinite" />
+                        </circle>
+                        <circle cx="520" cy="400" r="1.2">
+                            <animate attributeName="opacity" values="0.4;0.9;0.4" dur="4.5s" repeatCount="indefinite" />
+                        </circle>
+                        <circle cx="580" cy="450" r="1.4">
+                            <animate attributeName="opacity" values="0.5;0.9;0.5" dur="3.5s" repeatCount="indefinite" />
+                        </circle>
+                        <circle cx="650" cy="500" r="1">
+                            <animate attributeName="opacity" values="0.3;0.7;0.3" dur="6s" repeatCount="indefinite" />
+                        </circle>
+                        <circle cx="720" cy="430" r="1.3">
+                            <animate attributeName="opacity" values="0.4;0.8;0.4" dur="5s" repeatCount="indefinite" />
+                        </circle>
+                        <circle cx="780" cy="480" r="1.5">
+                            <animate attributeName="opacity" values="0.5;1;0.5" dur="4s" repeatCount="indefinite" />
+                        </circle>
+                        <circle cx="850" cy="430" r="1.2">
+                            <animate attributeName="opacity" values="0.4;0.8;0.4" dur="3s" repeatCount="indefinite" />
+                        </circle>
+                        <circle cx="920" cy="500" r="1">
+                            <animate attributeName="opacity" values="0.3;0.6;0.3" dur="5.5s" repeatCount="indefinite" />
+                        </circle>
+                    </g>
+                    
+                    <!-- 随机连线 -->
+                    <g stroke="#76f3d0" stroke-width="0.3" opacity="0.5">
+                        <line x1="100" y1="100" x2="220" y2="150" />
+                        <line x1="220" y1="150" x2="350" y2="100" />
+                        <line x1="350" y1="100" x2="500" y2="150" />
+                        <line x1="500" y1="150" x2="700" y2="200" />
+                        <line x1="700" y1="200" x2="850" y2="250" />
+                        <line x1="150" y1="250" x2="280" y2="300" />
+                        <line x1="280" y1="300" x2="450" y2="350" />
+                        <line x1="450" y1="350" x2="650" y2="300" />
+                        <line x1="650" y1="300" x2="800" y2="350" />
+                        <line x1="400" y1="200" x2="550" y2="250" />
+                        <line x1="550" y1="250" x2="750" y2="150" />
+                        <line x1="750" y1="150" x2="900" y2="100" />
+                        <line x1="180" y1="400" x2="330" y2="200" />
+                        <line x1="330" y1="200" x2="520" y2="400" />
+                        <line x1="520" y1="400" x2="720" y2="430" />
+                        <line x1="250" y1="450" x2="380" y2="450" />
+                        <line x1="380" y1="450" x2="580" y2="450" />
+                        <line x1="580" y1="450" x2="780" y2="480" />
+                        <line x1="450" y1="500" x2="650" y2="500" />
+                        <line x1="650" y1="500" x2="850" y2="430" />
+                        <line x1="850" y1="430" x2="920" y2="500" />
+                    </g>
+                </g>
+            </svg>
+        </div>
+        
+        <!-- 主要内容包装器 -->
+        <div class="content-wrapper">
+            <!-- 左侧标题区域 -->
+            <div class="left-panel">
+                <!-- 品牌标识 -->
+                <div class="brand-logo fade-in-left">
+                    <div class="logo-text">NVIDIA</div>
+                    <div class="divider"></div>
+                    <div class="product-name">InfiniBand</div>
+                </div>
+                
+                <!-- 装饰性垂直线 -->
+                <div class="accent-line"></div>
+                
+                <!-- 标题内容 -->
+                <div class="title-block">
+                    <div class="tagline fade-in-left delay-1">下一代人工智能基础设施</div>
+                    <h1 class="main-title fade-in-left delay-1">智算中心<br>网络革命</h1>
+                    <p class="subtitle fade-in-left delay-2">NVIDIA InfiniBand智算中心组网创新与<br>Quantum-X800高性能交换解决方案</p>
+                </div>
+            </div>
+            
+            <!-- 右侧视觉元素 -->
+            <div class="right-panel">
+                <!-- 主视觉元素 -->
+                <div class="visual-element float-element">
+                    <svg width="100%" height="100%" viewBox="0 0 800 800" preserveAspectRatio="xMidYMid meet" class="rotate-slowly">
+                        <!-- 大型抽象科技图形 -->
+                        <defs>
+                            <!-- 主要渐变 -->
+                            <linearGradient id="techGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#76f3d0" stop-opacity="0.9"/>
+                                <stop offset="100%" stop-color="#009B77" stop-opacity="0.3"/>
+                            </linearGradient>
+                            
+                            <!-- 环形渐变 -->
+                            <radialGradient id="ringGradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
+                                <stop offset="0%" stop-color="#76f3d0" stop-opacity="0.8"/>
+                                <stop offset="70%" stop-color="#009B77" stop-opacity="0.4"/>
+                                <stop offset="100%" stop-color="#009B77" stop-opacity="0"/>
+                            </radialGradient>
+                            
+                            <!-- 滤镜 -->
+                            <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                                <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur"/>
+                                <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+                            </filter>
+                        </defs>
+                        
+                        <!-- 背景辉光圆环 -->
+                        <circle cx="400" cy="400" r="350" fill="none" stroke="url(#ringGradient)" stroke-width="2" filter="url(#glow)" opacity="0.5"/>
+                        
+                        <!-- 抽象技术视觉元素 - 核心网格 -->
+                        <g opacity="0.8">
+                            <!-- 主要几何形状 -->
+                            <circle cx="400" cy="400" r="200" fill="none" stroke="url(#techGradient)" stroke-width="3" opacity="0.7"/>
+                            <circle cx="400" cy="400" r="250" fill="none" stroke="url(#techGradient)" stroke-width="2" opacity="0.5"/>
+                            <circle cx="400" cy="400" r="300" fill="none" stroke="url(#techGradient)" stroke-width="1" opacity="0.3"/>
+                            
+                            <!-- 分段内圆环 -->
+                            <path d="M400,200 A200,200 0 0,1 600,400" fill="none" stroke="#76f3d0" stroke-width="4" opacity="0.9"/>
+                            <path d="M600,400 A200,200 0 0,1 400,600" fill="none" stroke="#76f3d0" stroke-width="4" opacity="0.7"/>
+                            <path d="M400,600 A200,200 0 0,1 200,400" fill="none" stroke="#76f3d0" stroke-width="4" opacity="0.9"/>
+                            <path d="M200,400 A200,200 0 0,1 400,200" fill="none" stroke="#76f3d0" stroke-width="4" opacity="0.7"/>
+                            
+                            <!-- 交叉线 -->
+                            <line x1="200" y1="400" x2="600" y2="400" stroke="#76f3d0" stroke-width="2" opacity="0.6"/>
+                            <line x1="400" y1="200" x2="400" y2="600" stroke="#76f3d0" stroke-width="2" opacity="0.6"/>
+                            
+                            <!-- 辐射线 -->
+                            <line x1="400" y1="400" x2="600" y2="200" stroke="#76f3d0" stroke-width="1.5" opacity="0.6"/>
+                            <line x1="400" y1="400" x2="600" y2="600" stroke="#76f3d0" stroke-width="1.5" opacity="0.6"/>
+                            <line x1="400" y1="400" x2="200" y2="600" stroke="#76f3d0" stroke-width="1.5" opacity="0.6"/>
+                            <line x1="400" y1="400" x2="200" y2="200" stroke="#76f3d0" stroke-width="1.5" opacity="0.6"/>
+                            
+                            <!-- 装饰点 -->
+                            <circle cx="200" cy="400" r="8" fill="#76f3d0" opacity="0.9"/>
+                            <circle cx="400" cy="200" r="8" fill="#76f3d0" opacity="0.9"/>
+                            <circle cx="600" cy="400" r="8" fill="#76f3d0" opacity="0.9"/>
+                            <circle cx="400" cy="600" r="8" fill="#76f3d0" opacity="0.9"/>
+                            
+                            <circle cx="200" cy="200" r="5" fill="#76f3d0" opacity="0.7"/>
+                            <circle cx="600" cy="200" r="5" fill="#76f3d0" opacity="0.7"/>
+                            <circle cx="600" cy="600" r="5" fill="#76f3d0" opacity="0.7"/>
+                            <circle cx="200" cy="600" r="5" fill="#76f3d0" opacity="0.7"/>
+                            
+                            <!-- 中央元素 -->
+                            <circle cx="400" cy="400" r="30" fill="url(#techGradient)" opacity="0.9"/>
+                            <circle cx="400" cy="400" r="15" fill="#ffffff" opacity="0.9"/>
+                        </g>
+                    </svg>
+                </div>
+                
+                <!-- XDR 技术标志 -->
+                <div class="tech-badge fade-in-right delay-3">
+                    <svg width="150" height="150" viewBox="0 0 150 150">
+                        <defs>
+                            <linearGradient id="badgeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#ffffff" stop-opacity="1"/>
+                                <stop offset="100%" stop-color="#76f3d0" stop-opacity="1"/>
+                            </linearGradient>
+                        </defs>
+                        
+                        <!-- 技术标志背景 -->
+                        <circle cx="75" cy="75" r="70" fill="none" stroke="url(#badgeGradient)" stroke-width="2" opacity="0.8"/>
+                        <circle cx="75" cy="75" r="60" fill="none" stroke="#76f3d0" stroke-width="1" opacity="0.6"/>
+                        
+                        <!-- XDR 标志 -->
+                        <text x="75" y="65" text-anchor="middle" font-size="24" fill="#ffffff" font-weight="bold">XDR</text>
+                        <text x="75" y="95" text-anchor="middle" font-size="36" fill="#ffffff" font-weight="bold">800G</text>
+                        
+                        <!-- 装饰性光效 -->
+                        <g opacity="0.8">
+                            <line x1="20" y1="75" x2="40" y2="75" stroke="#76f3d0" stroke-width="2">
+                                <animate attributeName="x2" values="40;50;40" dur="3s" repeatCount="indefinite"/>
+                                <animate attributeName="opacity" values="1;0.5;1" dur="3s" repeatCount="indefinite"/>
+                            </line>
+                            <line x1="110" y1="75" x2="130" y2="75" stroke="#76f3d0" stroke-width="2">
+                                <animate attributeName="x1" values="110;100;110" dur="3s" repeatCount="indefinite"/>
+                                <animate attributeName="opacity" values="1;0.5;1" dur="3s" repeatCount="indefinite"/>
+                            </line>
+                            <line x1="75" y1="20" x2="75" y2="40" stroke="#76f3d0" stroke-width="2">
+                                <animate attributeName="y2" values="40;50;40" dur="3s" repeatCount="indefinite"/>
+                                <animate attributeName="opacity" values="1;0.5;1" dur="3s" repeatCount="indefinite"/>
+                            </line>
+                            <line x1="75" y1="110" x2="75" y2="130" stroke="#76f3d0" stroke-width="2">
+                                <animate attributeName="y1" values="110;100;110" dur="3s" repeatCount="indefinite"/>
+                                <animate attributeName="opacity" values="1;0.5;1" dur="3s" repeatCount="indefinite"/>
+                            </line>
+                        </g>
+                    </svg>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 页脚信息 -->
+        <div class="footer">
+            <div class="presenter-info fade-in delay-3">
+                <div class="presenter-name">[讲师姓名]</div>
+                <div class="presenter-title">NVIDIA 网络解决方案架构师</div>
+            </div>
+            <div class="company-info fade-in delay-3">
+                2024 NVIDIA Corporation
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>协同性能优势与竞争力分析 - NVIDIA网络研讨会</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: 
+                radial-gradient(circle at 15% 85%, #0a0a2e 0%, #001122 40%, #000610 100%),
+                linear-gradient(135deg, rgba(0, 150, 255, 0.08), rgba(76, 175, 80, 0.06));
+            height: 100vh;
+            color: #fff;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* 动态科技背景 */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(0, 150, 255, 0.05) 1px, transparent 2px),
+                radial-gradient(circle at 70% 80%, rgba(76, 175, 80, 0.05) 1px, transparent 2px),
+                radial-gradient(circle at 85% 20%, rgba(255, 193, 7, 0.04) 1px, transparent 2px);
+            background-size: 60px 60px, 80px 80px, 100px 100px;
+            animation: dotFlow 25s linear infinite;
+            z-index: 1;
+        }
+
+        @keyframes dotFlow {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(100px, 100px) rotate(360deg); }
+        }
+
+        /* 主容器 */
+        .container {
+            position: relative;
+            z-index: 10;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        /* 页面标题 */
+        .page-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #0096FF 0%, #FFC107 50%, #4CAF50 100%);
+            background-size: 200% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+            animation: titleShimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes titleShimmer {
+            0%, 100% { background-position: -200% center; }
+            50% { background-position: 200% center; }
+        }
+
+        .page-subtitle {
+            font-size: 1rem;
+            color: #B0BEC5;
+            margin-bottom: 5px;
+        }
+
+        /* 主内容区域 - 三栏布局 */
+        .performance-showcase {
+            flex: 1;
+            display: grid;
+            grid-template-areas: 
+                "perf-core perf-ai perf-scale"
+                "perf-roce perf-comparison perf-tco";
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 18px;
+            height: 100%;
+        }
+
+        /* 基础卡片样式 */
+        .performance-card {
+            background: rgba(15, 25, 45, 0.85);
+            border-radius: 20px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(15px);
+            border: 2px solid;
+            transition: all 0.3s ease;
+        }
+
+        .performance-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        /* 核心网络性能 - 左上 */
+        .perf-core {
+            grid-area: perf-core;
+            border-color: rgba(0, 150, 255, 0.4);
+            background: linear-gradient(135deg, rgba(0, 150, 255, 0.1), rgba(30, 144, 255, 0.05));
+        }
+
+        /* AI训练性能 - 中上 */
+        .perf-ai {
+            grid-area: perf-ai;
+            border-color: rgba(76, 175, 80, 0.4);
+            background: linear-gradient(135deg, rgba(76, 175, 80, 0.1), rgba(46, 125, 50, 0.05));
+        }
+
+        /* 规模扩展能力 - 右上 */
+        .perf-scale {
+            grid-area: perf-scale;
+            border-color: rgba(255, 193, 7, 0.4);
+            background: linear-gradient(135deg, rgba(255, 193, 7, 0.1), rgba(255, 152, 0, 0.05));
+        }
+
+        /* RoCE优化 - 左下 */
+        .perf-roce {
+            grid-area: perf-roce;
+            border-color: rgba(233, 30, 99, 0.4);
+            background: linear-gradient(135deg, rgba(233, 30, 99, 0.1), rgba(173, 20, 87, 0.05));
+        }
+
+        /* 性能对比 - 中下 */
+        .perf-comparison {
+            grid-area: perf-comparison;
+            border-color: rgba(156, 39, 176, 0.4);
+            background: linear-gradient(135deg, rgba(156, 39, 176, 0.1), rgba(123, 31, 162, 0.05));
+        }
+
+        /* TCO优势 - 右下 */
+        .perf-tco {
+            grid-area: perf-tco;
+            border-color: rgba(255, 87, 34, 0.4);
+            background: linear-gradient(135deg, rgba(255, 87, 34, 0.1), rgba(230, 74, 25, 0.05));
+        }
+
+        /* 卡片标题样式 */
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .perf-core .card-title { color: #0096FF; }
+        .perf-ai .card-title { color: #4CAF50; }
+        .perf-scale .card-title { color: #FFC107; }
+        .perf-roce .card-title { color: #E91E63; }
+        .perf-comparison .card-title { color: #9C27B0; }
+        .perf-tco .card-title { color: #FF5722; }
+
+        /* 性能指标网格 */
+        .perf-metrics {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+            height: calc(100% - 40px);
+        }
+
+        .metric-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 8px 10px;
+            border-left: 3px solid currentColor;
+            transition: all 0.3s ease;
+            font-size: 0.85rem;
+        }
+
+        .metric-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(3px);
+        }
+
+        .metric-label {
+            color: #B0BEC5;
+            flex: 1;
+        }
+
+        .metric-value {
+            font-weight: 700;
+            color: currentColor;
+            font-family: 'Courier New', monospace;
+            text-shadow: 0 0 8px currentColor;
+            min-width: 45px;
+            text-align: right;
+        }
+
+        /* 大数字展示样式 */
+        .big-metric {
+            text-align: center;
+            margin: 10px 0;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 12px;
+        }
+
+        .big-number {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: currentColor;
+            font-family: 'Courier New', monospace;
+            text-shadow: 0 0 15px currentColor;
+            margin-bottom: 4px;
+            animation: numberPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes numberPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+
+        .big-label {
+            font-size: 0.8rem;
+            color: #B0BEC5;
+            font-weight: 500;
+        }
+
+        /* 对比表格样式 */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 8px;
+            font-size: 0.8rem;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 6px 8px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .comparison-table th {
+            background: rgba(255, 255, 255, 0.05);
+            color: #E0E0E0;
+            font-weight: 600;
+        }
+
+        .comparison-table td {
+            color: #B0BEC5;
+        }
+
+        .comparison-table .highlight {
+            color: currentColor;
+            font-weight: 700;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* 底部统计栏 */
+        .bottom-stats {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 12px 0;
+            gap: 30px;
+            background: rgba(15, 25, 45, 0.6);
+            border-radius: 15px;
+            margin-top: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--stat-color);
+            margin-bottom: 3px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: #B0BEC5;
+        }
+
+        /* 特殊效果元素 */
+        .performance-indicator {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            width: 8px;
+            height: 8px;
+            background: currentColor;
+            border-radius: 50%;
+            animation: indicatorPulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes indicatorPulse {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.3); }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .performance-showcase {
+                grid-template-areas: 
+                    "perf-core perf-ai"
+                    "perf-scale perf-roce"
+                    "perf-comparison perf-tco";
+                grid-template-columns: 1fr 1fr;
+                grid-template-rows: 1fr 1fr 1fr;
+            }
+
+            .page-title {
+                font-size: 2.2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 12px;
+            }
+
+            .performance-showcase {
+                grid-template-areas: 
+                    "perf-core"
+                    "perf-ai"
+                    "perf-scale"
+                    "perf-roce"
+                    "perf-comparison"
+                    "perf-tco";
+                grid-template-columns: 1fr;
+                grid-template-rows: repeat(6, auto);
+                gap: 12px;
+            }
+
+            .page-title {
+                font-size: 1.8rem;
+            }
+
+            .bottom-stats {
+                flex-wrap: wrap;
+                gap: 15px;
+            }
+        }
+
+        /* 键盘提示 */
+        .keyboard-hint {
+            position: fixed;
+            bottom: 15px;
+            left: 15px;
+            font-size: 0.75rem;
+            color: #666;
+            background: rgba(25, 25, 35, 0.9);
+            padding: 6px 10px;
+            border-radius: 6px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(118, 185, 0, 0.2);
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- PPT页面标题 -->
+        <div class="page-header">
+            <h1 class="page-title">🚀 协同性能优势与竞争力分析</h1>
+            <p class="page-subtitle">Spectrum-X+DPU端到端性能数据全景展示</p>
+        </div>
+
+        <!-- 主性能展示区域 -->
+        <div class="performance-showcase">
+            <!-- 核心网络性能 -->
+            <div class="performance-card perf-core">
+                <div class="performance-indicator"></div>
+                <div class="card-title">🌐 核心网络性能</div>
+                <div class="perf-metrics">
+                    <div class="metric-item">
+                        <span class="metric-label">RoCE双向带宽提升</span>
+                        <span class="metric-value" data-target="4.3">0x</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">网络延迟降低</span>
+                        <span class="metric-value" data-target="2.2">0x</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">集合操作性能</span>
+                        <span class="metric-value" data-target="1.6">0x</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">NCCL All-Reduce隔离</span>
+                        <span class="metric-value" data-target="1.5">0x</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">NCCL All-to-All优化</span>
+                        <span class="metric-value" data-target="1.1">0x</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI训练性能 -->
+            <div class="performance-card perf-ai">
+                <div class="performance-indicator"></div>
+                <div class="card-title">🤖 AI训练加速</div>
+                <div class="perf-metrics">
+                    <div class="big-metric">
+                        <div class="big-number" data-target="1.4">0x</div>
+                        <div class="big-label">平均训练加速比</div>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">NeMo LLM 43B模型</span>
+                        <span class="metric-value" data-target="1.2">0x</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">FSDP Llama 70B模型</span>
+                        <span class="metric-value" data-target="1.4">0x</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">GPT MoE 1.8T专家</span>
+                        <span class="metric-value">无冲突</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 规模扩展能力 -->
+            <div class="performance-card perf-scale">
+                <div class="performance-indicator"></div>
+                <div class="card-title">📈 规模扩展能力</div>
+                <div class="perf-metrics">
+                    <div class="big-metric">
+                        <div class="big-number" data-target="32">0K</div>
+                        <div class="big-label">最大GPU连接数</div>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">单集群Hopper GPU</span>
+                        <span class="metric-value">32,768</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">噪声隔离保证</span>
+                        <span class="metric-value">99%+</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">弹性故障容错</span>
+                        <span class="metric-value">50%链路</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RoCE优化性能 -->
+            <div class="performance-card perf-roce">
+                <div class="performance-indicator"></div>
+                <div class="card-title">🚀 RoCE优化性能</div>
+                <div class="perf-metrics">
+                    <div class="metric-item">
+                        <span class="metric-label">RDMA双向带宽</span>
+                        <span class="metric-value" data-target="4.3">0x</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">RDMA延迟优化</span>
+                        <span class="metric-value" data-target="2.2">0x</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">多租户隔离</span>
+                        <span class="metric-value">1%内</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">EVPN VXLAN性能</span>
+                        <span class="metric-value">保持不变</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">自适应路由</span>
+                        <span class="metric-value">动态优化</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 性能对比分析 -->
+            <div class="performance-card perf-comparison">
+                <div class="performance-indicator"></div>
+                <div class="card-title">⚖️ vs 传统以太网</div>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>关键指标</th>
+                            <th>传统方案</th>
+                            <th>Spectrum-X</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>有效吞吐量</td>
+                            <td>60%</td>
+                            <td class="highlight">95%</td>
+                        </tr>
+                        <tr>
+                            <td>数据流冲突</td>
+                            <td>数千次</td>
+                            <td class="highlight">零冲突</td>
+                        </tr>
+                        <tr>
+                            <td>部署时间</td>
+                            <td>数月</td>
+                            <td class="highlight">19天</td>
+                        </tr>
+                        <tr>
+                            <td>P99性能</td>
+                            <td>波动大</td>
+                            <td class="highlight">99%+</td>
+                        </tr>
+                        <tr>
+                            <td>建设周期</td>
+                            <td>数年</td>
+                            <td class="highlight">122天</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- TCO优势分析 -->
+            <div class="performance-card perf-tco">
+                <div class="performance-indicator"></div>
+                <div class="card-title">💰 TCO优势分析</div>
+                <div class="perf-metrics">
+                    <div class="big-metric">
+                        <div class="big-number" data-target="10">0%</div>
+                        <div class="big-label">总成本节省</div>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">功耗降低</span>
+                        <span class="metric-value" data-target="50">0%</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">性能功耗比</span>
+                        <span class="metric-value" data-target="1.7">0x</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">空间节省</span>
+                        <span class="metric-value" data-target="4">0x</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">带宽容量</span>
+                        <span class="metric-value" data-target="4">0x</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部统计栏 -->
+        <div class="bottom-stats">
+            <div class="stat-item">
+                <div class="stat-value" style="--stat-color: #0096FF;" data-target="95">0%</div>
+                <div class="stat-label">有效带宽利用率</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" style="--stat-color: #4CAF50;" data-target="1.7">0x</div>
+                <div class="stat-label">GPT3性能/功耗</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" style="--stat-color: #FFC107;" data-target="32">0K</div>
+                <div class="stat-label">最大GPU规模</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" style="--stat-color: #E91E63;" data-target="0">0</div>
+                <div class="stat-label">三层网络冲突数</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" style="--stat-color: #9C27B0;" data-target="122">0</div>
+                <div class="stat-label">建设周期(天)</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="keyboard-hint">
+        ← 返回上页 • → 下一页 • 实时性能数据展示
+    </div>
+
+    <script>
+        // 高级数字计数器动画
+        function animateCounter(element, target, duration = 2000, suffix = '', decimals = 0) {
+            let start = 0;
+            const startTime = performance.now();
+            const isDecimal = target % 1 !== 0;
+            
+            function updateCounter(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                // 使用更流畅的缓动函数
+                const easeOutCubic = 1 - Math.pow(1 - progress, 3);
+                const current = target * easeOutCubic;
+                
+                if (isDecimal) {
+                    element.textContent = current.toFixed(1) + suffix;
+                } else {
+                    element.textContent = Math.floor(current) + suffix;
+                }
+                
+                if (progress < 1) {
+                    requestAnimationFrame(updateCounter);
+                }
+            }
+            
+            requestAnimationFrame(updateCounter);
+        }
+
+        // 页面加载动画序列
+        document.addEventListener('DOMContentLoaded', () => {
+            // 延迟启动动画，增加视觉冲击力
+            setTimeout(() => {
+                // 所有数字动画
+                document.querySelectorAll('[data-target]').forEach((el, index) => {
+                    const target = parseFloat(el.dataset.target);
+                    let suffix = '';
+                    if (el.textContent.includes('%')) suffix = '%';
+                    else if (el.textContent.includes('K')) suffix = 'K';
+                    else if (el.textContent.includes('x')) suffix = 'x';
+                    
+                    setTimeout(() => {
+                        animateCounter(el, target, 2500 + (index * 100), suffix);
+                    }, index * 150);
+                });
+
+                // 卡片入场动画
+                document.querySelectorAll('.performance-card').forEach((card, index) => {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(30px)';
+                    setTimeout(() => {
+                        card.style.transition = 'all 0.6s ease';
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0)';
+                    }, index * 100);
+                });
+
+            }, 300);
+        });
+
+        // 键盘导航
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') {
+                window.location.href = 'network-architecture.html';
+            } else if (e.key === 'ArrowRight') {
+                window.location.href = 'operations-management.html';
+            }
+        });
+
+        // 交互增强
+        document.querySelectorAll('.metric-item').forEach(item => {
+            item.addEventListener('mouseenter', () => {
+                item.style.transform = 'translateX(6px) scale(1.02)';
+                item.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.2)';
+            });
+            
+            item.addEventListener('mouseleave', () => {
+                item.style.transform = 'translateX(0) scale(1)';
+                item.style.boxShadow = 'none';
+            });
+        });
+    </script>
+</body>
+</html>

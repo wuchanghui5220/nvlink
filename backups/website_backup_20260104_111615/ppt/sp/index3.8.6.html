@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NVIDIA NPN SP技术大比武 - 存储系统具体配置示例</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f0f0f0;
+      font-family: 'Noto Sans SC', sans-serif;
+      overflow: hidden;
+    }
+
+    .slide-container {
+      width: 100vw;
+      height: 56.25vw; /* 16:9 aspect ratio */
+      max-height: 100vh;
+      max-width: 177.78vh; /* 16:9 aspect ratio (reversed) */
+      position: relative;
+      background: #111827;
+      color: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    /* 背景图形元素 */
+    .bg-grid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image:
+        linear-gradient(rgba(24, 92, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(24, 92, 255, 0.05) 1px, transparent 1px);
+      background-size: 20px 20px;
+      z-index: 0;
+    }
+
+    .bg-gradient {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 120% 45%, rgba(76, 29, 149, 0.7) 0%, rgba(17, 24, 39, 0) 50%);
+      z-index: 1;
+    }
+
+    .bg-circle1 {
+      position: absolute;
+      top: -15%;
+      right: -15%;
+      width: 40%;
+      height: 40%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #76b900 0%, #1a4163 100%);
+      filter: blur(80px);
+      opacity: 0.6;
+      z-index: 2;
+    }
+
+    .bg-circle2 {
+      position: absolute;
+      bottom: -10%;
+      left: -10%;
+      width: 30%;
+      height: 30%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0099da 0%, #1e40af 100%);
+      filter: blur(60px);
+      opacity: 0.5;
+      z-index: 2;
+    }
+
+    /* 主要内容 */
+    .content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    .header {
+      padding: 1.5% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .nvidia-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-box {
+      width: 8%;
+      min-width: 100px;
+      height: 36px;
+      background: #76b900;
+      border-radius: 4px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 700;
+      font-size: clamp(16px, 2vw, 22px);
+      transform: skew(-10deg);
+    }
+
+    .partner-text {
+      font-size: clamp(12px, 1.5vw, 16px);
+      font-weight: 500;
+      opacity: 0.9;
+    }
+
+    .slide-title {
+      font-size: clamp(16px, 1.8vw, 20px);
+      font-weight: 600;
+      padding: 0.5% 4%;
+      background: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(5px);
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      padding: 1.5% 4%;
+      overflow: hidden;
+    }
+
+    .left-content {
+      flex: 1;
+      padding-right: 15px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto auto;
+      gap: 10px;
+    }
+
+    .right-content {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto auto;
+      gap: 10px;
+    }
+
+    .section-title {
+      font-size: clamp(18px, 2.2vw, 22px);
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: #76b900;
+      border-bottom: 1px solid rgba(118, 185, 0, 0.3);
+      padding-bottom: 6px;
+      grid-column: span 2;
+    }
+
+    .config-card {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 12px;
+    }
+
+    .config-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .config-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .hardware-icon {
+      background: linear-gradient(135deg, #76b900 0%, #3e703e 100%);
+    }
+
+    .performance-icon {
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    }
+
+    .capacity-icon {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    }
+
+    .filesystem-icon {
+      background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+    }
+
+    .network-icon {
+      background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+    }
+
+    .management-icon {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    }
+
+    .config-icon svg {
+      width: 16px;
+      height: 16px;
+      fill: white;
+    }
+
+    .config-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .hardware-title {
+      color: #76b900;
+    }
+
+    .performance-title {
+      color: #3b82f6;
+    }
+
+    .capacity-title {
+      color: #f59e0b;
+    }
+
+    .filesystem-title {
+      color: #8b5cf6;
+    }
+
+    .network-title {
+      color: #ef4444;
+    }
+
+    .management-title {
+      color: #10b981;
+    }
+
+    .config-content {
+      padding-left: 36px;
+    }
+
+    .config-item {
+      position: relative;
+      padding-left: 12px;
+      margin-bottom: 5px;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .config-item::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 6px;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+    }
+
+    .hardware-item::before {
+      background: #76b900;
+    }
+
+    .performance-item::before {
+      background: #3b82f6;
+    }
+
+    .capacity-item::before {
+      background: #f59e0b;
+    }
+
+    .filesystem-item::before {
+      background: #8b5cf6;
+    }
+
+    .network-item::before {
+      background: #ef4444;
+    }
+
+    .management-item::before {
+      background: #10b981;
+    }
+
+    .highlight {
+      font-weight: 600;
+    }
+
+    .hardware-highlight {
+      color: #76b900;
+    }
+
+    .performance-highlight {
+      color: #3b82f6;
+    }
+
+    .capacity-highlight {
+      color: #f59e0b;
+    }
+
+    .filesystem-highlight {
+      color: #8b5cf6;
+    }
+
+    .network-highlight {
+      color: #ef4444;
+    }
+
+    .management-highlight {
+      color: #10b981;
+    }
+
+    .recommendation-card {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 12px;
+    }
+
+    .recommendation-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .recommendation-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .cache-icon {
+      background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
+    }
+
+    .checkpoint-icon {
+      background: linear-gradient(135deg, #06b6d4 0%, #0369a1 100%);
+    }
+
+    .cooling-icon {
+      background: linear-gradient(135deg, #6366f1 0%, #4338ca 100%);
+    }
+
+    .software-icon {
+      background: linear-gradient(135deg, #84cc16 0%, #3f6212 100%);
+    }
+
+    .monitoring-icon {
+      background: linear-gradient(135deg, #f43f5e 0%, #be123c 100%);
+    }
+
+    .budget-icon {
+      background: linear-gradient(135deg, #fbbf24 0%, #92400e 100%);
+    }
+
+    .recommendation-icon svg {
+      width: 14px;
+      height: 14px;
+      fill: white;
+    }
+
+    .recommendation-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .cache-title {
+      color: #ec4899;
+    }
+
+    .checkpoint-title {
+      color: #06b6d4;
+    }
+
+    .cooling-title {
+      color: #6366f1;
+    }
+
+    .software-title {
+      color: #84cc16;
+    }
+
+    .monitoring-title {
+      color: #f43f5e;
+    }
+
+    .budget-title {
+      color: #fbbf24;
+    }
+
+    .recommendation-content {
+      padding-left: 32px;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .recommendation-content p {
+      margin: 0 0 4px 0;
+    }
+
+    .recommendation-highlight {
+      font-weight: 600;
+    }
+
+    .cache-highlight {
+      color: #ec4899;
+    }
+
+    .checkpoint-highlight {
+      color: #06b6d4;
+    }
+
+    .cooling-highlight {
+      color: #6366f1;
+    }
+
+    .software-highlight {
+      color: #84cc16;
+    }
+
+    .monitoring-highlight {
+      color: #f43f5e;
+    }
+
+    .budget-highlight {
+      color: #fbbf24;
+    }
+
+    .footer {
+      padding: 1% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .company-name {
+      font-weight: 500;
+    }
+
+    .page-number {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .rotating-lines {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 50%;
+      height: 50%;
+      z-index: 5;
+      opacity: 0.15;
+      animation: rotate 60s linear infinite;
+    }
+
+    @keyframes rotate {
+      from {
+        transform: translate(-50%, -50%) rotate(0deg);
+      }
+      to {
+        transform: translate(-50%, -50%) rotate(360deg);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <!-- 背景元素 -->
+    <div class="bg-grid"></div>
+    <div class="bg-gradient"></div>
+    <div class="bg-circle1"></div>
+    <div class="bg-circle2"></div>
+
+    <!-- 旋转线框背景 -->
+    <svg class="rotating-lines" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+      <path d="M250,10 L490,250 L250,490 L10,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,50 L450,250 L250,450 L50,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,90 L410,250 L250,410 L90,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,130 L370,250 L250,370 L130,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,170 L330,250 L250,330 L170,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,210 L290,250 L250,290 L210,250 Z" fill="none" stroke="white" stroke-width="1" />
+    </svg>
+
+    <!-- 主要内容 -->
+    <div class="content">
+      <div class="header">
+        <div class="nvidia-logo">
+          <div class="logo-box">NVIDIA</div>
+          <div class="partner-text">Networking NPN Elite Partner</div>
+        </div>
+        <div class="slide-title">3. 客户需求方案汇报 - 题目A：存储系统选型</div>
+      </div>
+
+      <div class="main-content">
+        <div class="left-content">
+          <div class="section-title">具体配置示例</div>
+          
+          <!-- 存储设备 -->
+          <div class="config-card">
+            <div class="config-header">
+              <div class="config-icon hardware-icon">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M2 20h20v-4H2v4zm2-3h2v2H4v-2zM2 4v4h20V4H2zm4 3H4V5h2v2zm-4 7h20v-4H2v4zm2-3h2v2H4v-2z"/>
+                </svg>
+              </div>
+              <h3 class="config-title hardware-title">存储设备</h3>
+            </div>
+            <div class="config-content">
+              <div class="config-item hardware-item">
+                <span class="highlight hardware-highlight">首选</span>：28台DDN AI400X2
+              </div>
+              <div class="config-item hardware-item">
+                <span class="highlight hardware-highlight">备选</span>：14台NetApp AFF A900或8个Pure Storage FlashBlade//S500
+              </div>
+            </div>
+          </div>
+          
+          <!-- 总带宽 -->
+          <div class="config-card">
+            <div class="config-header">
+              <div class="config-icon performance-icon">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM7 10h2v7H7zm4-3h2v10h-2zm4 6h2v4h-2z"/>
+                </svg>
+              </div>
+              <h3 class="config-title performance-title">总带宽</h3>
+            </div>
+            <div class="config-content">
+              <div class="config-item performance-item">
+                单节点：<span class="highlight performance-highlight">110 GB/s</span>
+              </div>
+              <div class="config-item performance-item">
+                集群总带宽：<span class="highlight performance-highlight">2.5 TB/s</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- 容量 -->
+          <div class="config-card">
+            <div class="config-header">
+              <div class="config-icon capacity-icon">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM19 18H6c-2.21 0-4-1.79-4-4 0-2.05 1.53-3.76 3.56-3.97l1.07-.11.5-.95C8.08 7.14 9.94 6 12 6c2.62 0 4.88 1.86 5.39 4.43l.3 1.5 1.53.11c1.56.1 2.78 1.41 2.78 2.96 0 1.65-1.35 3-3 3zm-9-3.82l-2.09-2.09L6.5 13.5 10 17l6.01-6.01-1.41-1.41z"/>
+                </svg>
+              </div>
+              <h3 class="config-title capacity-title">容量</h3>
+            </div>
+            <div class="config-content">
+              <div class="config-item capacity-item">
+                <span class="highlight capacity-highlight">3-12 PB</span>，支持LLM训练数据集与检查点存储
+              </div>
+            </div>
+          </div>
+          
+          <!-- 文件系统 -->
+          <div class="config-card">
+            <div class="config-header">
+              <div class="config-icon filesystem-icon">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11zM8 15.01l1.41 1.41L11 14.84V19h2v-4.16l1.59 1.59L16 15.01 12.01 11 8 15.01z"/>
+                </svg>
+              </div>
+              <h3 class="config-title filesystem-title">文件系统</h3>
+            </div>
+            <div class="config-content">
+              <div class="config-item filesystem-item">
+                <span class="highlight filesystem-highlight">Magnum IO GPUDirect Storage</span> + WEKA/Lustre
+              </div>
+              <div class="config-item filesystem-item">
+                专用检查点存储分区，<span class="highlight filesystem-highlight">全NVMe SSD</span>加速模型保存
+              </div>
+            </div>
+          </div>
+          
+          <!-- 网络 -->
+          <div class="config-card">
+            <div class="config-header">
+              <div class="config-icon network-icon">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M4 11h4a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1zm0-7h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zm12 7h4a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1zm0-7h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1zM8 13v-2h8v2H8z"/>
+                </svg>
+              </div>
+              <h3 class="config-title network-title">网络</h3>
+            </div>
+            <div class="config-content">
+              <div class="config-item network-item">
+                <span class="highlight network-highlight">14台QM9790 Leaf</span>、<span class="highlight network-highlight">7台QM9790 Spine</span>
+              </div>
+              <div class="config-item network-item">
+                <span class="highlight network-highlight">光模块</span>：400G约420个，800G约630个
+              </div>
+            </div>
+          </div>
+          
+          <!-- 管理工具 -->
+          <div class="config-card">
+            <div class="config-header">
+              <div class="config-icon management-icon">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+                </svg>
+              </div>
+              <h3 class="config-title management-title">管理工具</h3>
+            </div>
+            <div class="config-content">
+              <div class="config-item management-item">
+                <span class="highlight management-highlight">DDN Insight</span>用于I/O性能监控
+              </div>
+              <div class="config-item management-item">
+                <span class="highlight management-highlight">NVIDIA Base Command Manager</span>集成SLURM/K8s
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="right-content">
+          <div class="section-title">附加建议</div>
+          
+          <!-- 本地缓存 -->
+          <div class="recommendation-card">
+            <div class="recommendation-header">
+              <div class="recommendation-icon cache-icon">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M15.9 5c-.17 0-.32.09-.41.23l-.07.15-5.18 11.65c-.16.29-.26.61-.26.96 0 1.11.9 2.01 2.01 2.01.96 0 1.77-.68 1.96-1.59l.01-.03L16.4 5.5c0-.28-.22-.5-.5-.5zM1 9l2 2c2.88-2.88 6.79-4.08 10.53-3.62l1.19-2.68C9.89 3.84 4.74 5.27 1 9zm20 0l2-2c-3.74-3.73-8.89-5.17-13.71-4.28l1.18 2.68C14.21 4.93 18.12 6.13 21 9z"/>
+                </svg>
+              </div>
+              <h4 class="recommendation-title cache-title">本地缓存</h4>
+            </div>
+            <div class="recommendation-content">
+              <p>利用DGX H200内置<span class="recommendation-highlight cache-highlight">NVMe SSD</span>（每节点30-60 TB）</p>
+              <p>配置<span class="recommendation-highlight cache-highlight">DDN Hot Nodes</span>或WEKA客户端缓存</p>
+            </div>
+          </div>
+          
+          <!-- 检查点优化 -->
+          <div class="recommendation-card">
+            <div class="recommendation-header">
+              <div class="recommendation-icon checkpoint-icon">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                </svg>
+              </div>
+              <h4 class="recommendation-title checkpoint-title">检查点优化</h4>
+            </div>
+            <div class="recommendation-content">
+              <p>LLM检查点文件较大（<span class="recommendation-highlight checkpoint-highlight">数百GB到TB级</span>）</p>
+              <p>使用全NVMe分区，结合<span class="recommendation-highlight checkpoint-highlight">异步写入技术</span></p>
+            </div>
+          </div>
+          
+          <!-- 冷却与功耗 -->
+          <div class="recommendation-card">
+            <div class="recommendation-header">
+              <div class="recommendation-icon cooling-icon">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 3C7.03 3 3 7.03 3 12s4.03 9 9 9 9-4.03 9-9-4.03-9-9-9zm0 16c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7zm-2.25-3.17l5.66-5.66L14 8.75l-5.66 5.66zM10 14a1 1 0 1 1 0-2 1 1 0 0 1 0 2zm4-4a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+                </svg>
+              </div>
+              <h4 class="recommendation-title cooling-title">冷却与功耗</h4>
+            </div>
+            <div class="recommendation-content">
+              <p>集群功耗<span class="recommendation-highlight cooling-highlight">56 KW</span>，推荐液冷系统</p>
+              <p>Cooling, nominal <span class="recommendation-highlight cooling-highlight">205 kBTU/hr </span></p>
+              <p>存储机柜需与<span class="recommendation-highlight cooling-highlight">液冷机架兼容</span>，确保高效散热</p>
+            </div>
+          </div>
+          
+          <!-- 软件栈 -->
+          <div class="recommendation-card">
+            <div class="recommendation-header">
+              <div class="recommendation-icon software-icon">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/>
+                </svg>
+              </div>
+              <h4 class="recommendation-title software-title">软件栈</h4>
+            </div>
+            <div class="recommendation-content">
+              <p><span class="recommendation-highlight software-highlight">NVIDIA AI Enterprise</span>套件，优化LLM训练框架</p>
+              <p><span class="recommendation-highlight software-highlight">DeepOps/Cluster Manager</span>简化集群部署</p>
+              <p><span class="recommendation-highlight software-highlight">NGC容器</span>加速模型开发</p>
+            </div>
+          </div>
+          
+          <!-- 监控与维护 -->
+          <div class="recommendation-card">
+            <div class="recommendation-header">
+              <div class="recommendation-icon monitoring-icon">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/>
+                </svg>
+              </div>
+              <h4 class="recommendation-title monitoring-title">监控与维护</h4>
+            </div>
+            <div class="recommendation-content">
+              <p><span class="recommendation-highlight monitoring-highlight">NVIDIA UFM和DDN Insight</span>监控网络和存储性能</p>
+              <p><span class="recommendation-highlight monitoring-highlight">NVIDIA Enterprise Support</span>确保响应硬件/软件问题</p>
+            </div>
+          </div>
+          
+          <!-- 预算考虑 -->
+          <div class="recommendation-card">
+            <div class="recommendation-header">
+              <div class="recommendation-icon budget-icon">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/>
+                </svg>
+              </div>
+              <h4 class="recommendation-title budget-title">预算考虑</h4>
+            </div>
+            <div class="recommendation-content">
+              <p><span class="recommendation-highlight budget-highlight">DDN A³I</span>和<span class="recommendation-highlight budget-highlight">VAST Data</span>提供高性价比</p>
+              <p><span class="recommendation-highlight budget-highlight">NetApp/Pure Storage</span>适合企业级支持需求</p>
+              <p>预算受限可混合NVMe和QLC SSD，降低每TB成本</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="company-name">北京正阳恒卓科技有限公司</div>
+        <div class="page-number">26</div>
+      </div>
+    </div>
+  </div>
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+        <a href="index3.8.5.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+        <a href="index3.8.7.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+    </div>
+</body>
+</html>

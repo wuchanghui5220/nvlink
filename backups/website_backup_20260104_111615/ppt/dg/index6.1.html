@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NVIDIA DGX GB300 NVL72 系统详解</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f0f0f0;
+      font-family: 'Noto Sans SC', sans-serif;
+      overflow: hidden;
+    }
+
+    .slide-container {
+      width: 100vw;
+      height: 56.25vw; /* 16:9 aspect ratio */
+      max-height: 100vh;
+      max-width: 177.78vh; /* 16:9 aspect ratio (reversed) */
+      position: relative;
+      background: linear-gradient(135deg, #0c1015 0%, #1a2332 40%, #0f1419 100%);
+      color: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    /* 背景图形元素 */
+    .bg-grid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image:
+        linear-gradient(rgba(118, 185, 0, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(118, 185, 0, 0.04) 1px, transparent 1px);
+      background-size: 20px 20px;
+      z-index: 0;
+    }
+
+    .bg-gradient {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 85% 15%, rgba(118, 185, 0, 0.12) 0%, rgba(12, 16, 21, 0) 50%),
+                  radial-gradient(circle at 15% 85%, rgba(16, 185, 129, 0.08) 0%, rgba(12, 16, 21, 0) 50%);
+      z-index: 1;
+    }
+
+    .bg-circle1 {
+      position: absolute;
+      top: -25%;
+      right: -20%;
+      width: 60%;
+      height: 60%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #76b900 0%, #10b981 100%);
+      filter: blur(120px);
+      opacity: 0.15;
+      z-index: 2;
+    }
+
+    .bg-circle2 {
+      position: absolute;
+      bottom: -20%;
+      left: -25%;
+      width: 50%;
+      height: 50%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      filter: blur(100px);
+      opacity: 0.12;
+      z-index: 2;
+    }
+
+    /* 主要内容 */
+    .content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    .header {
+      padding: 1.8% 3.5%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .nvidia-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-box {
+      width: 8%;
+      min-width: 110px;
+      height: 36px;
+      background: linear-gradient(135deg, #76b900 0%, #10b981 100%);
+      border-radius: 6px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 700;
+      font-size: clamp(16px, 2vw, 20px);
+      color: #0c1015;
+      box-shadow: 0 4px 15px rgba(118, 185, 0, 0.3);
+    }
+
+    .partner-text {
+      font-size: clamp(12px, 1.5vw, 16px);
+      font-weight: 500;
+      opacity: 0.9;
+      color: #76b900;
+    }
+
+    .slide-title {
+      font-size: clamp(14px, 1.6vw, 18px);
+      font-weight: 600;
+      padding: 0.5% 1.5%;
+      background: rgba(16, 185, 129, 0.1);
+      backdrop-filter: blur(5px);
+      border-radius: 20px;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #10b981;
+    }
+
+    .main-content {
+      flex: 1;
+      padding: 1.2% 2.5%;
+      display: flex;
+      gap: 2%;
+    }
+
+    /* 左侧面板 */
+    .left-panel {
+      flex: 1.2;
+      display: flex;
+      flex-direction: column;
+      gap: 1%;
+    }
+
+    .panel-title {
+      font-size: clamp(14px, 1.6vw, 18px);
+      font-weight: 600;
+      color: #76b900;
+      margin-bottom: 1%;
+      text-align: center;
+      background: rgba(118, 185, 0, 0.1);
+      padding: 0.5% 1%;
+      border-radius: 8px;
+      border: 1px solid rgba(118, 185, 0, 0.3);
+    }
+
+    .image-container {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 1.5%;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .image-container:hover {
+      background: rgba(255, 255, 255, 0.08);
+      transform: scale(1.02);
+    }
+
+    .image-container img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      border-radius: 8px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease;
+    }
+
+    .zoom-hint {
+      position: absolute;
+      bottom: 1%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.7);
+      color: #76b900;
+      padding: 0.3% 1%;
+      border-radius: 15px;
+      font-size: clamp(8px, 0.8vw, 10px);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+
+    .image-container:hover .zoom-hint {
+      opacity: 1;
+    }
+
+    /* 右侧面板 */
+    .right-panel {
+      flex: 2;
+      display: flex;
+      flex-direction: column;
+      gap: 1%;
+    }
+
+    .features-container {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 1.2%;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-gap: 1%;
+      overflow-y: auto;
+    }
+
+    .feature-box {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      padding: 1%;
+      border-left: 4px solid #76b900;
+      transition: all 0.3s ease;
+      animation: fadeInUp 0.8s ease-out forwards;
+    }
+
+    .feature-box:hover {
+      background: rgba(118, 185, 0, 0.1);
+      transform: translateY(-2px);
+    }
+
+    .feature-title {
+      font-weight: 600;
+      color: #76b900;
+      margin-bottom: 0.5%;
+      font-size: clamp(11px, 1.2vw, 14px);
+    }
+
+    .feature-desc {
+      color: rgba(255, 255, 255, 0.9);
+      font-size: clamp(9px, 1vw, 11px);
+      line-height: 1.4;
+    }
+
+    .highlight-value {
+      color: #10b981;
+      font-weight: 600;
+    }
+
+    /* 性能指标特殊样式 */
+    .performance-box {
+      background: linear-gradient(135deg, rgba(118, 185, 0, 0.15) 0%, rgba(16, 185, 129, 0.1) 100%);
+      border: 2px solid rgba(118, 185, 0, 0.4);
+    }
+
+    .performance-box .feature-title {
+      color: #76b900;
+      font-size: clamp(12px, 1.3vw, 15px);
+    }
+
+    /* 全屏图片显示 */
+    .fullscreen-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.95);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+
+    .fullscreen-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .fullscreen-image {
+      max-width: 90%;
+      max-height: 90%;
+      object-fit: contain;
+      border-radius: 8px;
+      box-shadow: 0 0 50px rgba(118, 185, 0, 0.3);
+    }
+
+    .close-button {
+      position: absolute;
+      top: 3%;
+      right: 3%;
+      color: #76b900;
+      font-size: 30px;
+      cursor: pointer;
+      background: rgba(0, 0, 0, 0.7);
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.3s ease;
+      border: 2px solid rgba(118, 185, 0, 0.5);
+    }
+
+    .close-button:hover {
+      background: rgba(239, 68, 68, 0.7);
+      color: white;
+      border-color: rgba(239, 68, 68, 0.8);
+      transform: scale(1.1);
+    }
+
+    .footer {
+      padding: 1.2% 3.5%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .company-name {
+      font-weight: 500;
+      font-size: clamp(11px, 1.3vw, 15px);
+      color: #76b900;
+    }
+
+    .page-number {
+      font-size: clamp(11px, 1.3vw, 15px);
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    /* 动画效果 */
+    @keyframes fadeInUp {
+      from { 
+        opacity: 0; 
+        transform: translateY(20px); 
+      }
+      to { 
+        opacity: 1; 
+        transform: translateY(0); 
+      }
+    }
+
+    .left-panel, .right-panel {
+      animation: fadeInUp 0.8s ease-out forwards;
+    }
+
+    .right-panel {
+      animation-delay: 0.2s;
+    }
+
+    /* 添加数据流动画 */
+    .data-pulse {
+      position: absolute;
+      top: 20%;
+      right: 10%;
+      width: 4px;
+      height: 40px;
+      background: linear-gradient(0deg, transparent, #76b900, transparent);
+      animation: pulse 3s ease-in-out infinite;
+      opacity: 0.6;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.4; transform: scaleY(0.8); }
+      50% { opacity: 1; transform: scaleY(1.2); }
+    }
+
+    /* 导航按钮悬停效果 */
+    .nav-button:hover {
+      background-color: #76b900 !important;
+      transform: scale(1.1);
+      box-shadow: 0 4px 15px rgba(118, 185, 0, 0.4) !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <!-- 背景元素 -->
+    <div class="bg-grid"></div>
+    <div class="bg-gradient"></div>
+    <div class="bg-circle1"></div>
+    <div class="bg-circle2"></div>
+    <div class="data-pulse"></div>
+
+    <!-- 主要内容 -->
+    <div class="content">
+      <div class="header">
+        <div class="nvidia-logo">
+          <div class="logo-box">NVIDIA</div>
+          <div class="partner-text">DGX GB300 Grace Blackwell Ultra</div>
+        </div>
+        <div class="slide-title">AI推理时代的基础设施</div>
+      </div>
+
+      <div class="main-content">
+        <!-- 左侧面板 -->
+        <div class="left-panel">
+          <div class="panel-title">DGX GB300 NVL72 整机柜系统</div>
+          <div class="image-container" id="zoomable-image">
+            <img src="gb300_nvl72.png" alt="NVIDIA DGX GB300 NVL72整机柜" id="main-image">
+            <div class="zoom-hint">点击查看详细图片</div>
+          </div>
+        </div>
+
+        <!-- 右侧面板 -->
+        <div class="right-panel">
+          <div class="panel-title">核心特性与技术规格</div>
+          <div class="features-container">
+            
+            <div class="feature-box performance-box">
+              <div class="feature-title">超强AI性能</div>
+              <div class="feature-desc">
+                • FP4推理: <span class="highlight-value">1,400 petaFLOPS</span><br>
+                • FP8推理: <span class="highlight-value">700 petaFLOPS</span><br>
+                • FP16训练: <span class="highlight-value">360 petaFLOPS</span><br>
+                • 总体AI性能: <span class="highlight-value">1.4 exaFLOPS</span>
+              </div>
+            </div>
+
+            <div class="feature-box">
+              <div class="feature-title">Grace Blackwell Ultra架构</div>
+              <div class="feature-desc">
+                • GPU: <span class="highlight-value">72x Blackwell Ultra</span><br>
+                • CPU核心: <span class="highlight-value">2,592个</span><br>
+                • Superchips: <span class="highlight-value">36个GB300</span><br>
+                • 架构: Grace CPU + 双Blackwell Ultra GPU
+              </div>
+            </div>
+
+            <div class="feature-box">
+              <div class="feature-title">超大内存规格</div>
+              <div class="feature-desc">
+                • GPU显存: <span class="highlight-value">20.1TB HBM3e</span><br>
+                • 总快速内存: <span class="highlight-value">37.9TB</span><br>
+                • 单GPU显存: <span class="highlight-value">288GB HBM3e</span><br>
+                • 内存带宽: 超高速访问
+              </div>
+            </div>
+
+            <div class="feature-box">
+              <div class="feature-title">NVLink互联架构</div>
+              <div class="feature-desc">
+                • NVLink交换机: <span class="highlight-value">9x L1 NVLink</span><br>
+                • 全GPU互联: <span class="highlight-value">72个GPU</span><br>
+                • 系统带宽: <span class="highlight-value">130TB/s</span><br>
+                • 一体化设计: 统一内存空间
+              </div>
+            </div>
+
+            <div class="feature-box">
+              <div class="feature-title">高速网络</div>
+              <div class="feature-desc">
+                • 计算网络: <span class="highlight-value">72x ConnectX-8 800Gb/s</span><br>
+                • 管理网络: <span class="highlight-value">18x BlueField-3 200Gb/s</span><br>
+                • 协议支持: InfiniBand + Ethernet<br>
+                • 网络架构: NVIDIA NVLink Switch System
+              </div>
+            </div>
+
+            <div class="feature-box">
+              <div class="feature-title">整机柜设计</div>
+              <div class="feature-desc">
+                • Compute Tray: <span class="highlight-value">18个</span><br>
+                • NVSwitch Tray: <span class="highlight-value">9个</span><br>
+                • 电源Tray: <span class="highlight-value">6个(33KW each)</span><br>
+                • 总功耗: <span class="highlight-value">120KW</span>
+              </div>
+            </div>
+
+            <div class="feature-box">
+              <div class="feature-title">液冷散热系统</div>
+              <div class="feature-desc">
+                • 冷却方式: <span class="highlight-value">100%液冷</span><br>
+                • CDU支持: in-rack/in-row CDU<br>
+                • 制冷能力: <span class="highlight-value">最高2000KW</span><br>
+                • 高密度设计: 适配现代数据中心
+              </div>
+            </div>
+
+            <div class="feature-box">
+              <div class="feature-title">软件与管理</div>
+              <div class="feature-desc">
+                • <span class="highlight-value">NVIDIA Mission Control</span><br>
+                • <span class="highlight-value">NVIDIA AI Enterprise</span><br>
+                • <span class="highlight-value">NVIDIA DGX OS</span><br>
+                • 支持Ubuntu操作系统
+              </div>
+            </div>
+
+            <div class="feature-box performance-box">
+              <div class="feature-title">适用场景</div>
+              <div class="feature-desc">
+                • <span class="highlight-value">万亿参数模型训练</span><br>
+                • <span class="highlight-value">大规模AI推理</span><br>
+                • <span class="highlight-value">生成式AI应用</span><br>
+                • <span class="highlight-value">AI reasoning时代基础设施</span>
+              </div>
+            </div>
+
+            <div class="feature-box">
+              <div class="feature-title">扩展能力</div>
+              <div class="feature-desc">
+                • 可扩展至: <span class="highlight-value">数万个Superchips</span><br>
+                • DGX SuperPOD: 大规模集群<br>
+                • MGX机架: 标准化部署<br>
+                • 企业级: 3年硬件软件支持
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="company-name">NVIDIA DGX GB300 — 面向AI推理时代的超级计算基础设施</div>
+        <div class="page-number">4 / 4</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 全屏图片显示区域 -->
+  <div class="fullscreen-overlay" id="image-overlay">
+    <img src="" alt="全屏图片" class="fullscreen-image" id="fullscreen-image">
+    <div class="close-button" id="close-button">×</div>
+  </div>
+
+  <!-- JavaScript实现全屏功能 -->
+  <script>
+    // 获取元素
+    const zoomableImage = document.getElementById('zoomable-image');
+    const mainImage = document.getElementById('main-image');
+    const imageOverlay = document.getElementById('image-overlay');
+    const fullscreenImage = document.getElementById('fullscreen-image');
+    const closeButton = document.getElementById('close-button');
+
+    // 点击图片显示全屏
+    zoomableImage.addEventListener('click', function() {
+      fullscreenImage.src = mainImage.src;
+      imageOverlay.classList.add('active');
+      document.body.style.overflow = 'hidden'; // 防止背景滚动
+    });
+
+    // 点击关闭按钮关闭全屏
+    closeButton.addEventListener('click', function() {
+      imageOverlay.classList.remove('active');
+      document.body.style.overflow = ''; // 恢复背景滚动
+    });
+
+    // 点击黑色背景也可关闭全屏
+    imageOverlay.addEventListener('click', function(e) {
+      if (e.target === imageOverlay) {
+        imageOverlay.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    });
+
+    // ESC键关闭全屏
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && imageOverlay.classList.contains('active')) {
+        imageOverlay.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    });
+
+    // 添加feature-box动画延迟
+    const featureBoxes = document.querySelectorAll('.feature-box');
+    featureBoxes.forEach((box, index) => {
+      box.style.animationDelay = `${0.1 * index}s`;
+    });
+  </script>
+
+  <!-- 导航按钮 -->
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+    <a href="#" class="nav-button" style="display: inline-block; width: 40px; height: 40px; line-height: 40px; text-align: center; background-color: #0c1015; color: #76b900; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); transition: all 0.3s ease; border: 2px solid rgba(118, 185, 0, 0.3);">&lt;</a>
+    <a href="#" class="nav-button" style="display: inline-block; width: 40px; height: 40px; line-height: 40px; text-align: center; background-color: #0c1015; color: #76b900; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3); transition: all 0.3s ease; border: 2px solid rgba(118, 185, 0, 0.3);">&gt;</a>
+  </div>
+
+</body>
+</html>

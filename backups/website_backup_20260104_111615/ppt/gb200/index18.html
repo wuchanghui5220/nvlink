@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>NVIDIA Quantum-X800 System Specifications</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(220, 240, 230, 0.8);
+            font-family: 'Arial', sans-serif;
+            overflow-x: hidden;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .slide-container {
+            width: 96%;
+            max-width: 1600px;
+            aspect-ratio: 16/9;
+            background: #76a67e;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            padding: 15px 40px;
+            background: #3e703e;
+            color: white;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2.2em;
+            font-weight: 600;
+        }
+
+        h2 {
+            margin: 5px 0 0 0;
+            font-size: 1.3em;
+            font-weight: 400;
+        }
+
+        .content {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        .table-container {
+            background: rgba(210, 225, 210, 0.8);
+            border-radius: 10px;
+            padding: 15px;
+            flex: 1;
+            overflow: auto;
+        }
+
+        .specs-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9em;
+        }
+
+        .specs-table th {
+            background-color: #3e703e;
+            color: white;
+            padding: 10px;
+            text-align: left;
+            font-weight: bold;
+            border: 1px solid #2c5e2e;
+        }
+
+        .specs-table tr:nth-child(even) {
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .specs-table tr:nth-child(odd) {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .specs-table td {
+            padding: 8px 10px;
+            border: 1px solid rgba(60, 120, 60, 0.2);
+            vertical-align: top;
+        }
+
+        .specs-table td:first-child {
+            font-weight: bold;
+            color: #2c5e2e;
+            width: 18%;
+        }
+
+        .footer {
+            text-align: right;
+            padding: 5px 20px;
+            color: white;
+            font-style: italic;
+            font-size: 0.9em;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+            background: #3e703e;
+        }
+
+        .model-images {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+        }
+
+        .model-image-container {
+            text-align: center;
+            flex: 1;
+            max-width: 24%;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 8px;
+            padding: 10px;
+            margin: 0 5px;
+        }
+
+        .model-image {
+            width: 150px;
+            height: 90px;
+            background-color: white;
+            border-radius: 5px;
+            margin: 0 auto 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .model-image:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .model-image img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .model-name {
+            font-weight: bold;
+            color: #2c5e2e;
+            margin-top: 5px;
+        }
+
+        .highlight {
+            background-color: rgba(255, 255, 100, 0.3);
+            padding: 0 3px;
+        }
+
+        /* Lightbox Style */
+        .lightbox {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .lightbox.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .lightbox-content {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 5px;
+            background-color: white;
+            padding: 10px;
+            position: relative;
+        }
+
+        .lightbox-image {
+            max-width: 100%;
+            max-height: 80vh;
+            display: block;
+        }
+
+        .lightbox-caption {
+            margin-top: 10px;
+            color: #333;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .close-lightbox {
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            width: 40px;
+            height: 40px;
+            background-color: #3e703e;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .close-lightbox:hover {
+            background-color: #4a854c;
+        }
+
+        .zoom-hint {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            font-size: 0.7em;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="header">
+            <h1>NVIDIA Quantum-X800 System Specifications</h1>
+            <h2>Detailed comparison of models across the Quantum-X800 InfiniBand platform</h2>
+        </div>
+        
+        <div class="content">
+            <div class="model-images">
+                <div class="model-image-container">
+                    <div class="model-image" onclick="openLightbox('Q3200-RA.png', 'NVIDIA Quantum-X800 Q3200-RA')">
+                        <img src="Q3200-RA.png" alt="Q3200-RA">
+                        <div class="zoom-hint">点击放大</div>
+                    </div>
+                    <div class="model-name">Q3200-RA</div>
+                </div>
+                <div class="model-image-container">
+                    <div class="model-image" onclick="openLightbox('Q3400-RA.png', 'NVIDIA Quantum-X800 Q3400-RA')">
+                        <img src="Q3400-RA.png" alt="Q3400-RA">
+                        <div class="zoom-hint">点击放大</div>
+                    </div>
+                    <div class="model-name">Q3400-RA</div>
+                </div>
+                <div class="model-image-container">
+                    <div class="model-image" onclick="openLightbox('/api/placeholder/800/600', 'NVIDIA Quantum-X800 Q3401-RD')">
+                        <img src="/api/placeholder/400/320" alt="Q3401-RD">
+                        <div class="zoom-hint">点击放大</div>
+                    </div>
+                    <div class="model-name">Q3401-RD</div>
+                </div>
+                <div class="model-image-container">
+                    <div class="model-image" onclick="openLightbox('Q3450-LD-1.jpg', 'NVIDIA Quantum-X800 Q3450-LD')">
+                        <img src="Q3450-LD-1.jpg" alt="Q3450-LD">
+                        <div class="zoom-hint">点击放大</div>
+                    </div>
+                    <div class="model-name">Q3450-LD</div>
+                </div>
+            </div>
+            
+            <div class="table-container">
+                <table class="specs-table">
+                    <thead>
+                        <tr>
+                            <th>Specification</th>
+                            <th>Q3200-RA</th>
+                            <th>Q3400-RA</th>
+                            <th>Q3401-RD</th>
+                            <th>Q3450-LD</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Connectivity</td>
+                            <td>Pluggable</td>
+                            <td>Pluggable</td>
+                            <td>Pluggable</td>
+                            <td><span class="highlight">MPO12 (Optics-only)</span></td>
+                        </tr>
+                        <tr>
+                            <td>Performance</td>
+                            <td>Two switches each of 28.8Tb/s throughput</td>
+                            <td>115.2Tb/s throughput</td>
+                            <td>115.2Tb/s throughput</td>
+                            <td>115.2Tb/s throughput</td>
+                        </tr>
+                        <tr>
+                            <td>Switch radix</td>
+                            <td>Two switches of 36 800Gb/s non-blocking ports</td>
+                            <td>144 800Gb/s non-blocking ports</td>
+                            <td>144 800Gb/s non-blocking ports</td>
+                            <td>144 800Gb/s, non-blocking ports</td>
+                        </tr>
+                        <tr>
+                            <td>Connectors and cabling</td>
+                            <td>Two groups of 18 OSFP connectors</td>
+                            <td>72 OSFP connectors</td>
+                            <td>72 OSFP connectors</td>
+                            <td><span class="highlight">144 MPO connectors</span></td>
+                        </tr>
+                        <tr>
+                            <td>Management ports</td>
+                            <td>Separate OSFP 400Gb/s InfiniBand in-band management port (UFM)</td>
+                            <td>Separate OSFP 400Gb/s InfiniBand in-band management port (UFM)</td>
+                            <td>Separate OSFP 400Gb/s InfiniBand in-band management port (UFM)</td>
+                            <td>Separate OSFP 400Gb/s InfiniBand in-band management port (UFM)</td>
+                        </tr>
+                        <tr>
+                            <td>CPU</td>
+                            <td>Intel CFL 4 Cores i3-8100H 3GHz</td>
+                            <td>Intel CFL 4 Cores i3-8100H 3GHz</td>
+                            <td>Intel CFL 4 Cores i3-8100H 3GHz</td>
+                            <td>Intel CFL 4 cores i3-8100H 3GHz</td>
+                        </tr>
+                        <tr>
+                            <td>Security</td>
+                            <td>CPU/CPLD/Switch IC based on IRoT</td>
+                            <td>CPU/CPLD/Switch IC based on IRoT</td>
+                            <td>CPLD/Switch IC based on IRoT</td>
+                            <td>CPU/CPLD/Switch IC based on IRoT</td>
+                        </tr>
+                        <tr>
+                            <td>Software</td>
+                            <td>NVOS</td>
+                            <td>NVOS</td>
+                            <td>NVOS</td>
+                            <td>NVOS</td>
+                        </tr>
+                        <tr>
+                            <td>Rack mount</td>
+                            <td>2U</td>
+                            <td>4U</td>
+                            <td>4U</td>
+                            <td>4U</td>
+                        </tr>
+                        <tr>
+                            <td>Cooling mechanism</td>
+                            <td>Air cooled</td>
+                            <td>Air cooled</td>
+                            <td>Air cooled</td>
+                            <td><span class="highlight">Liquid cooled (85%)<br>Air cooled (15%)</span></td>
+                        </tr>
+                        <tr>
+                            <td>Power Feed</td>
+                            <td>200-240V AC</td>
+                            <td>200-240V AC</td>
+                            <td>48-54V DC</td>
+                            <td>48V DC</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="footer">
+            NVIDIA Quantum-X800 InfiniBand platform for high-performance, massively scalable AI
+        </div>
+    </div>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox">
+        <div class="lightbox-content">
+            <img class="lightbox-image" id="lightbox-image" src="" alt="">
+            <div class="lightbox-caption" id="lightbox-caption"></div>
+            <div class="close-lightbox" onclick="closeLightbox()">×</div>
+        </div>
+    </div>
+        <!-- 导航按钮 - 独立于主内容区 -->
+    <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+        <a href="index17.html" class="nav-button" style="display: inline-block; width: 40px; height: 40px; line-height: 40px; text-align: center; background-color: #3e703e; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+        <a href="index19.html" class="nav-button" style="display: inline-block; width: 40px; height: 40px; line-height: 40px; text-align: center; background-color: #3e703e; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+    </div>
+
+    <script>
+        // Lightbox functionality
+        function openLightbox(imgSrc, caption) {
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImage = document.getElementById('lightbox-image');
+            const lightboxCaption = document.getElementById('lightbox-caption');
+            
+            lightboxImage.src = imgSrc;
+            lightboxCaption.textContent = caption;
+            lightbox.classList.add('active');
+            
+            // Prevent scrolling when lightbox is open
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeLightbox() {
+            const lightbox = document.getElementById('lightbox');
+            lightbox.classList.remove('active');
+            
+            // Re-enable scrolling
+            document.body.style.overflow = 'auto';
+        }
+        
+        // Close lightbox when clicking outside the image
+        document.getElementById('lightbox').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeLightbox();
+            }
+        });
+        
+        // Close lightbox with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && document.getElementById('lightbox').classList.contains('active')) {
+                closeLightbox();
+            }
+        });
+    </script>
+</body>
+</html>

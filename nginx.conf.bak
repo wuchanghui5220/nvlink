@@ -1,0 +1,30 @@
+# vi /home/admin/ibtc/nginx.conf
+server {
+    listen 80;
+    listen [::]:80;
+    server_name nvlink.vip;
+    return 301 https://$server_name$request_uri;
+
+    location / {
+        root /usr/share/nginx/html;
+        index index.html index.htm;
+    }
+
+    # other configurations...
+}
+
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    server_name nvlink.vip;
+
+    ssl_certificate /etc/nginx/certs/cert.pem;
+    ssl_certificate_key /etc/nginx/certs/key.pem;
+
+    location / {
+        root /usr/share/nginx/html;
+        index index.html index.htm;
+    }
+
+    # other configurations...
+}

@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>NVIDIA Spectrum SN5400 Switch</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(220, 240, 230, 0.8);
+            font-family: 'Arial', sans-serif;
+            overflow-x: hidden;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .slide-container {
+            width: 96%;
+            max-width: 1600px;
+            aspect-ratio: 16/9;
+            background: #76a67e;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            padding: 15px 40px;
+            background: #3e703e;
+            color: white;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2.2em;
+            font-weight: 600;
+        }
+
+        h2 {
+            margin: 5px 0 0 0;
+            font-size: 1.3em;
+            font-weight: 400;
+        }
+
+        .content {
+            display: flex;
+            flex: 1;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .left-panel {
+            flex: 1;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .right-panel {
+            flex: 2;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .image-container {
+            background: rgba(210, 225, 210, 0.8);
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 10px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .image-title {
+            font-size: 1.2em;
+            color: #2c5e2e;
+            text-align: center;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .image-box {
+            text-align: center;
+            background: white;
+            padding: 5px;
+            border-radius: 8px;
+            width: 90%;
+            height: 75%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .image-box img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        .section-title {
+            font-size: 1.5em;
+            color: #fff;
+            margin: 5px 0 10px 0;
+            font-weight: 600;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .specs-container {
+            background: rgba(210, 225, 210, 0.8);
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 10px;
+            flex: 1;
+            overflow: auto;
+        }
+
+        .specs-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .specs-table td {
+            padding: 6px;
+            border-bottom: 1px solid rgba(60, 120, 60, 0.2);
+        }
+
+        .specs-table td:first-child {
+            font-weight: bold;
+            color: #2c5e2e;
+            width: 40%;
+        }
+
+        .features-container {
+            background: rgba(210, 225, 210, 0.8);
+            border-radius: 10px;
+            padding: 10px;
+            flex: 1;
+            overflow: auto;
+            margin-bottom: 0;
+        }
+
+        .feature-column {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .feature-item {
+            flex: 1 0 45%;
+            margin: 3px;
+            padding: 4px 10px 4px 25px;
+            position: relative;
+        }
+
+        .feature-item::before {
+            content: "✓";
+            position: absolute;
+            left: 5px;
+            color: #4a854c;
+            font-weight: bold;
+        }
+
+        .footer {
+            text-align: right;
+            padding: 5px 20px;
+            color: white;
+            font-style: italic;
+            font-size: 0.9em;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+            background: #3e703e;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="header">
+            <h1>NVIDIA Spectrum SN5400 400G Switch</h1>
+            <h2>Smart-leaf/spine/super-spine architecture for AI and cloud data centers</h2>
+        </div>
+        <div class="content">
+            <div class="left-panel">
+                <div class="image-container">
+                    <div class="image-title">NVIDIA SN5400 Switch</div>
+                    <div class="image-box">
+                        <img src="https://docscontent.nvidia.com/dims4/default/523f483/2147483647/strip/true/crop/1525x311+0+0/resize/2880x588!/format/webp/quality/90/?url=https%3A%2F%2Fk3-prod-nvidia-docs.s3.us-west-2.amazonaws.com%2Fbrightspot%2Fconfluence%2F00000193-e60b-d1d7-a593-e70bd0600000%2Fimages%2Fdownload%2Fattachments%2F2705811518%2Fimage-2024-2-26_9-17-14-version-1-modificationdate-1711558825237-api-v2.png" alt="NVIDIA SN5400 Switch">
+                    </div>
+                </div>
+                <div class="image-container">
+                    <div class="image-title">Key Applications</div>
+                    <div class="feature-column">
+                        <div class="feature-item">Ideal for 400G data center fabrics</div>
+                        <div class="feature-item">Smart-leaf/spine/super-spine topologies</div>
+                        <div class="feature-item">AI and Machine Learning infrastructure</div>
+                        <div class="feature-item">High-performance cloud computing workloads</div>
+                        <div class="feature-item">Data center spine network modernization</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="right-panel">
+                <div class="section-title">Product Specifications</div>
+                <div class="specs-container">
+                    <table class="specs-table">
+                        <tr>
+                            <td>Port Configuration</td>
+                            <td>64x QSFP-DD 400GbE + 2x SFP28 25GbE</td>
+                        </tr>
+                        <tr>
+                            <td>Switching Capacity</td>
+                            <td>25.6Tb/s (bidirectional)</td>
+                        </tr>
+                        <tr>
+                            <td>Wire-Speed Switching</td>
+                            <td>33.3Bpps</td>
+                        </tr>
+                        <tr>
+                            <td>Port Speeds</td>
+                            <td>400/200/100/50/40/25/10/1GbE</td>
+                        </tr>
+                        <tr>
+                            <td>Form Factor</td>
+                            <td>2U Rack Mount</td>
+                        </tr>
+                        <tr>
+                            <td>System Memory</td>
+                            <td>32GB with Hexa-core x86 CPU</td>
+                        </tr>
+                        <tr>
+                            <td>Packet Buffer</td>
+                            <td>160MB fully shared</td>
+                        </tr>
+                        <tr>
+                            <td>Power Supplies</td>
+                            <td>2x hot-swappable (1+1 redundant), 208-264VAC</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <div class="section-title">Key Features</div>
+                <div class="features-container">
+                    <div class="feature-column">
+                        <div class="feature-item">Up to 400GbE per port with 25.6Tb/s aggregate bandwidth</div>
+                        <div class="feature-item">Ultra-low cut-through latency</div>
+                        <div class="feature-item">Fully shared packet buffer (160MB)</div>
+                        <div class="feature-item">Accelerated RDMA over Converged Ethernet (RoCE)</div>
+                        <div class="feature-item">Best-in-class VXLAN scale</div>
+                        <div class="feature-item">512,000 shared forwarding entries</div>
+                        <div class="feature-item">Hardware-assisted in-service software upgrades</div>
+                        <div class="feature-item">256-way equal-cost multi-path routing</div>
+                        <div class="feature-item">On-chip flow counters and telemetry</div>
+                        <div class="feature-item">Hardware root of trust security</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            Powered by NVIDIA Spectrum-4 ASIC - Bringing accelerated Ethernet to every data center for AI and cloud
+        </div>
+    </div>
+        <!-- 导航按钮 - 独立于主内容区 -->
+    <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+        <a href="index13.html" class="nav-button" style="display: inline-block; width: 40px; height: 40px; line-height: 40px; text-align: center; background-color: #3e703e; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+        <a href="index15.html" class="nav-button" style="display: inline-block; width: 40px; height: 40px; line-height: 40px; text-align: center; background-color: #3e703e; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+    </div>
+</body>
+</html>

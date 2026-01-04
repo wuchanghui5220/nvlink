@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DDN AI存储产品对比</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f0f0f0;
+      font-family: 'Noto Sans SC', sans-serif;
+      overflow: hidden;
+    }
+
+    .slide-container {
+      width: 100vw;
+      height: 56.25vw; /* 16:9 aspect ratio */
+      max-height: 100vh;
+      max-width: 177.78vh; /* 16:9 aspect ratio (reversed) */
+      position: relative;
+      background: #111827;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    /* 背景图形元素 */
+    .bg-grid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image:
+        linear-gradient(rgba(24, 92, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(24, 92, 255, 0.05) 1px, transparent 1px);
+      background-size: 20px 20px;
+      z-index: 0;
+    }
+
+    .bg-gradient {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 120% 45%, rgba(76, 29, 149, 0.4) 0%, rgba(17, 24, 39, 0) 50%);
+      z-index: 1;
+    }
+
+    .bg-circle1 {
+      position: absolute;
+      top: -15%;
+      right: -15%;
+      width: 40%;
+      height: 40%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #76b900 0%, #1a4163 100%);
+      filter: blur(80px);
+      opacity: 0.3;
+      z-index: 2;
+    }
+
+    .bg-circle2 {
+      position: absolute;
+      bottom: -10%;
+      left: -10%;
+      width: 30%;
+      height: 30%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0099da 0%, #1e40af 100%);
+      filter: blur(60px);
+      opacity: 0.3;
+      z-index: 2;
+    }
+
+    /* 主要内容 */
+    .content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    .header {
+      padding: 1.5% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .nvidia-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-box {
+      width: 80px;
+      height: 28px;
+      background: #76b900;
+      border-radius: 4px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 700;
+      font-size: 16px;
+      transform: skew(-10deg);
+    }
+
+    .partner-text {
+      font-size: 14px;
+      font-weight: 500;
+      opacity: 0.9;
+    }
+
+    .slide-title {
+      font-size: 20px;
+      font-weight: 600;
+      padding: 0.5% 2%;
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(5px);
+      border-radius: 4px;
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 2% 4%;
+      overflow: hidden;
+    }
+
+    .two-columns {
+      display: flex;
+      gap: 20px;
+      height: 100%;
+    }
+
+    .column {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .product-card {
+      flex: 1;
+      background: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 18px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-x2 {
+      background: linear-gradient(180deg, rgba(13, 71, 161, 0.1) 0%, rgba(13, 71, 161, 0.05) 100%);
+      border-left: 3px solid #0d47a1;
+    }
+
+    .card-x3 {
+      background: linear-gradient(180deg, rgba(245, 158, 11, 0.1) 0%, rgba(245, 158, 11, 0.05) 100%);
+      border-left: 3px solid #f59e0b;
+    }
+
+    .product-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 15px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .product-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .x2-icon {
+      background: linear-gradient(135deg, #0099da 0%, #1e40af 100%);
+      box-shadow: 0 5px 15px rgba(0, 153, 218, 0.3);
+    }
+
+    .x3-icon {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      box-shadow: 0 5px 15px rgba(245, 158, 11, 0.3);
+    }
+
+    .product-icon svg {
+      width: 24px;
+      height: 24px;
+      fill: white;
+    }
+
+    .product-title {
+      font-size: 22px;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .x2-title {
+      color: #0099da;
+    }
+
+    .x3-title {
+      color: #f59e0b;
+    }
+
+    .product-image-container {
+      width: 100%;
+      height: 200px;
+      margin: 5px 0 15px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(0, 0, 0, 0.2);
+    }
+
+    .product-image {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      padding: 5px;
+    }
+
+    .spec-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .spec-item {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 10px;
+    }
+
+    .spec-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 5px;
+    }
+
+    .spec-value {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .x2-value {
+      color: #0099da;
+    }
+
+    .x3-value {
+      color: #f59e0b;
+    }
+
+    .features-list {
+      margin-top: 15px;
+    }
+
+    .feature-item {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+
+    .feature-icon {
+      width: 20px;
+      height: 20px;
+      min-width: 20px;
+      margin-right: 8px;
+      color: #76b900;
+    }
+
+    .feature-icon svg {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+    }
+
+    .feature-text {
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .highlights {
+      font-weight: 600;
+    }
+
+    .x2-highlights {
+      color: #0099da;
+    }
+
+    .x3-highlights {
+      color: #f59e0b;
+    }
+
+    .footer {
+      padding: 1.5% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .company-name {
+      font-weight: 500;
+    }
+
+    .badges {
+      display: flex;
+      gap: 15px;
+    }
+
+    .badge {
+      padding: 6px 14px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .badge-ai {
+      background: linear-gradient(90deg, #0099da 0%, #1e40af 100%);
+      box-shadow: 0 0 15px rgba(0, 153, 218, 0.4);
+    }
+
+    .badge-storage {
+      background: linear-gradient(90deg, #ff9900 0%, #c25e00 100%);
+      box-shadow: 0 0 15px rgba(255, 153, 0, 0.4);
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <!-- 背景元素 -->
+    <div class="bg-grid"></div>
+    <div class="bg-gradient"></div>
+    <div class="bg-circle1"></div>
+    <div class="bg-circle2"></div>
+
+    <!-- 主要内容 -->
+    <div class="content">
+      <div class="header">
+        <div class="nvidia-logo">
+          <div class="logo-box">NVIDIA</div>
+	  <div class="partner-text">Networking NPN Elite Partner</div>
+        </div>
+        <div class="slide-title">3. 客户需求方案汇报 - DDN 存储解决方案</div>
+      </div>
+
+      <div class="main-content">
+        <div class="two-columns">
+          <div class="column">
+            <div class="product-card card-x2">
+              <div class="product-header">
+                <div class="product-icon x2-icon">
+                  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M2 20h20v-4H2v4zm2-3h2v2H4v-2zM2 4v4h20V4H2zm4 3H4V5h2v2zm-4 7h20v-4H2v4zm2-3h2v2H4v-2z"/>
+                  </svg>
+                </div>
+                <h2 class="product-title x2-title">AI400X2T 存储平台</h2>
+              </div>
+              
+              <div class="product-image-container">
+                <img src="DDN-AI400X2-Turbo-teaser.jpg" alt="DDN AI400X2T" class="product-image">
+              </div>
+              
+              <div class="spec-grid">
+                <div class="spec-item">
+                  <div class="spec-title">最大读取性能</div>
+                  <div class="spec-value x2-value">115 GB/s</div>
+                </div>
+                <div class="spec-item">
+                  <div class="spec-title">最大写入性能</div>
+                  <div class="spec-value x2-value">75 GB/s</div>
+                </div>
+                <div class="spec-item">
+                  <div class="spec-title">IOPS</div>
+                  <div class="spec-value x2-value">3M</div>
+                </div>
+                <div class="spec-item">
+                  <div class="spec-title">最大容量</div>
+                  <div class="spec-value x2-value">500 TB</div>
+                </div>
+              </div>
+              
+              <div class="features-list">
+                <div class="feature-item">
+                  <div class="feature-icon">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                    </svg>
+                  </div>
+                  <div class="feature-text">
+                    <span class="highlights x2-highlights">16x</span> 200G HDR InfiniBand/200GbE 端口
+                  </div>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-icon">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                    </svg>
+                  </div>
+                  <div class="feature-text">
+                    <span class="highlights x2-highlights">全闪存</span> 架构，2.5" 双端口 NVMe 驱动器
+                  </div>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-icon">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                    </svg>
+                  </div>
+                  <div class="feature-text">
+                    <span class="highlights x2-highlights">多租户</span> 支持和高级配额控制
+                  </div>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-icon">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                    </svg>
+                  </div>
+                  <div class="feature-text">
+                    <span class="highlights x2-highlights">20倍</span> DL加速和扩展效率
+                  </div>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-icon">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                    </svg>
+                  </div>
+                  <div class="feature-text">
+                    支持<span class="highlights x2-highlights">EXAScaler</span> 高性能并行文件系统
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="column">
+            <div class="product-card card-x3">
+              <div class="product-header">
+                <div class="product-icon x3-icon">
+                  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M2 20h20v-4H2v4zm2-3h2v2H4v-2zM2 4v4h20V4H2zm4 3H4V5h2v2zm-4 7h20v-4H2v4zm2-3h2v2H4v-2z"/>
+                  </svg>
+                </div>
+                <h2 class="product-title x3-title">AI400X3 存储平台</h2>
+              </div>
+              
+              <div class="product-image-container">
+                <img src="DDN-AI400X3.jpg" alt="DDN AI400X3" class="product-image">
+              </div>
+              
+              <div class="spec-grid">
+                <div class="spec-item">
+                  <div class="spec-title">最大读取性能</div>
+                  <div class="spec-value x3-value">140 GB/s</div>
+                </div>
+                <div class="spec-item">
+                  <div class="spec-title">最大写入性能</div>
+                  <div class="spec-value x3-value">75-110 GB/s</div>
+                </div>
+                <div class="spec-item">
+                  <div class="spec-title">IOPS</div>
+                  <div class="spec-value x3-value">1.5-5M</div>
+                </div>
+                <div class="spec-item">
+                  <div class="spec-title">PCIe版本</div>
+                  <div class="spec-value x3-value">Gen 5</div>
+                </div>
+              </div>
+              
+              <div class="features-list">
+                <div class="feature-item">
+                  <div class="feature-icon">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                    </svg>
+                  </div>
+                  <div class="feature-text">
+			  集成<span class="highlights x3-highlights">NVIDIA BlueField-3 SuperNIC</span>技术<span class="highlights x3-highlights"> / </span>8x QSFP112 InfiniBand NDR200/200GbE
+                  </div>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-icon">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                    </svg>
+                  </div>
+                  <div class="feature-text">
+                    支持<span class="highlights x3-highlights">24个</span> 2.5" 双端口 PCIe G5 NVMe 驱动器
+                  </div>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-icon">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                    </svg>
+                  </div>
+                  <div class="feature-text">
+                    <span class="highlights x3-highlights">客户端压缩</span>提升存储效率，无性能牺牲
+                  </div>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-icon">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                    </svg>
+                  </div>
+                  <div class="feature-text">
+                    支持<span class="highlights x3-highlights">NVMe-oF</span>扩展（2025年中推出）
+                  </div>
+                </div>
+                <div class="feature-item">
+                  <div class="feature-icon">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/>
+                    </svg>
+                  </div>
+                  <div class="feature-text">
+                    <span class="highlights x3-highlights">AMD Zen 4</span> 处理器，Active/Active 存储控制器
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="company-name">北京正阳恒卓科技有限公司</div>
+	<div class="page-number">24</div>
+      </div>
+    </div>
+  </div>
+    <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+        <a href="index3.8.3.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+        <a href="index3.8.5.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+    </div>
+</body>
+</html>

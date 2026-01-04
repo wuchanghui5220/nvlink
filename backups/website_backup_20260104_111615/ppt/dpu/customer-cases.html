@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>客户成功案例 - NVIDIA DPU BlueField-3</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Microsoft YaHei", sans-serif;
+            background: #000;
+            color: white;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 复用背景效果 */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(ellipse at top left, rgba(118, 185, 0, 0.15) 0%, transparent 60%),
+                radial-gradient(ellipse at bottom right, rgba(0, 191, 255, 0.1) 0%, transparent 60%),
+                radial-gradient(ellipse at center, rgba(138, 43, 226, 0.05) 0%, transparent 70%),
+                linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 25%, #0f0f0f 50%, #1a1a1a 75%, #0a0a0a 100%);
+            animation: backgroundFlow 12s ease-in-out infinite;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(rgba(0, 191, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 191, 255, 0.02) 1px, transparent 1px);
+            background-size: 90px 90px;
+            animation: gridShift 35s linear infinite;
+        }
+
+        .data-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: linear-gradient(45deg, #76B900, #00BFFF, #8A2BE2);
+            border-radius: 50%;
+            opacity: 0;
+            animation: particleFloat 15s infinite;
+        }
+
+        .circuit-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(60deg, transparent 48%, rgba(0, 191, 255, 0.06) 49%, rgba(0, 191, 255, 0.06) 51%, transparent 52%);
+            background-size: 500px 500px;
+            animation: circuitPulse 30s ease-in-out infinite;
+            opacity: 0.3;
+        }
+
+        /* 主容器 */
+        .slide-container {
+            width: 100%;
+            max-width: 1400px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 0 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 页面标题 */
+        .page-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 6px;
+            background: linear-gradient(135deg, #00BFFF, #8A2BE2, #76B900);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(0, 191, 255, 0.3);
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .page-subtitle {
+            text-align: center;
+            font-size: 1rem;
+            color: #b0b0b0;
+            margin-bottom: 18px;
+            animation: fadeInDown 1s ease-out 0.2s both;
+        }
+
+        /* 主要内容区域 */
+        .content-area {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+            align-items: start;
+            animation: fadeInUp 1.2s ease-out 0.4s both;
+            height: calc(100vh - 180px);
+            max-height: calc(100vh - 180px);
+            overflow: hidden;
+        }
+
+        /* 客户案例卡片 */
+        .customer-case {
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px solid;
+            border-radius: 15px;
+            padding: 16px;
+            backdrop-filter: blur(10px);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* DDN - 蓝色主题 */
+        .ddn-case {
+            border-color: rgba(0, 191, 255, 0.3);
+        }
+
+        .ddn-case:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: rgba(0, 191, 255, 0.7);
+            box-shadow: 0 25px 50px rgba(0, 191, 255, 0.3);
+        }
+
+        /* VAST Data - 紫色主题 */
+        .vast-case {
+            border-color: rgba(138, 43, 226, 0.3);
+        }
+
+        .vast-case:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: rgba(138, 43, 226, 0.7);
+            box-shadow: 0 25px 50px rgba(138, 43, 226, 0.3);
+        }
+
+        /* WEKA - 绿色主题 */
+        .weka-case {
+            border-color: rgba(118, 185, 0, 0.3);
+        }
+
+        .weka-case:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: rgba(118, 185, 0, 0.7);
+            box-shadow: 0 25px 50px rgba(118, 185, 0, 0.3);
+        }
+
+        /* Hitachi - 橙色主题 */
+        .hitachi-case {
+            border-color: rgba(255, 140, 0, 0.3);
+        }
+
+        .hitachi-case:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: rgba(255, 140, 0, 0.7);
+            box-shadow: 0 25px 50px rgba(255, 140, 0, 0.3);
+        }
+
+        .customer-case::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .customer-case:hover::before {
+            left: 100%;
+        }
+
+        .case-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .company-info {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .company-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .ddn-case .company-name {
+            color: rgba(0, 191, 255, 0.9);
+        }
+
+        .vast-case .company-name {
+            color: rgba(138, 43, 226, 0.9);
+        }
+
+        .weka-case .company-name {
+            color: #76B900;
+        }
+
+        .hitachi-case .company-name {
+            color: rgba(255, 140, 0, 0.9);
+        }
+
+        .company-category {
+            font-size: 0.75rem;
+            color: #b0b0b0;
+            font-weight: 500;
+        }
+
+        .logo-placeholder {
+            width: 60px;
+            height: 45px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            color: #888;
+            text-align: center;
+            border: 1px dashed rgba(255, 255, 255, 0.3);
+        }
+
+        .case-description {
+            font-size: 0.85rem;
+            line-height: 1.4;
+            color: #e0e0e0;
+            margin-bottom: 12px;
+            position: relative;
+            z-index: 1;
+            flex: 1;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .metric-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 8px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .metric-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: scale(1.05);
+        }
+
+        .metric-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 3px;
+        }
+
+        .ddn-case .metric-value {
+            color: rgba(0, 191, 255, 0.9);
+        }
+
+        .vast-case .metric-value {
+            color: rgba(138, 43, 226, 0.9);
+        }
+
+        .weka-case .metric-value {
+            color: #76B900;
+        }
+
+        .hitachi-case .metric-value {
+            color: rgba(255, 140, 0, 0.9);
+        }
+
+        .metric-label {
+            font-size: 0.7rem;
+            color: #c0c0c0;
+        }
+
+        .deployment-info {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 10px;
+            position: relative;
+            z-index: 1;
+            margin-top: auto;
+        }
+
+        .deployment-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 6px;
+        }
+
+        .deployment-details {
+            font-size: 0.75rem;
+            color: #d0d0d0;
+            line-height: 1.3;
+        }
+
+        /* ROI总结区域 */
+        .roi-summary {
+            grid-column: 1 / -1;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(0, 191, 255, 0.3);
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            animation: fadeIn 1.5s ease-out 1s both;
+            margin-top: 10px;
+        }
+
+        .roi-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #00BFFF;
+            margin-bottom: 8px;
+        }
+
+        .roi-text {
+            font-size: 0.9rem;
+            line-height: 1.4;
+            color: #ffffff;
+            font-weight: 500;
+        }
+
+        .roi-highlight {
+            background: linear-gradient(135deg, #00BFFF, #8A2BE2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+        }
+
+        /* 导航提示 */
+        .navigation-hint {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 30px;
+            font-size: 0.9rem;
+            color: #888;
+            animation: fadeIn 1.5s ease-out 1.2s both;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-key {
+            background: rgba(0, 191, 255, 0.2);
+            color: #00BFFF;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-weight: 600;
+        }
+
+        /* 动画定义 */
+        @keyframes backgroundFlow {
+            0%, 100% { filter: hue-rotate(0deg) brightness(1); transform: scale(1); }
+            25% { filter: hue-rotate(15deg) brightness(1.1); transform: scale(1.02); }
+            50% { filter: hue-rotate(-10deg) brightness(0.95); transform: scale(0.98); }
+            75% { filter: hue-rotate(20deg) brightness(1.05); transform: scale(1.01); }
+        }
+
+        @keyframes gridShift {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(90px, 90px); }
+        }
+
+        @keyframes particleFloat {
+            0% { opacity: 0; transform: translateY(100vh) scale(0) rotate(0deg); }
+            15% { opacity: 1; transform: translateY(85vh) scale(1) rotate(120deg); }
+            85% { opacity: 1; transform: translateY(-15vh) scale(1) rotate(240deg); }
+            100% { opacity: 0; transform: translateY(-30vh) scale(0) rotate(360deg); }
+        }
+
+        @keyframes circuitPulse {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 0.5; }
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .content-area {
+                gap: 25px;
+            }
+            
+            .metrics-grid {
+                gap: 10px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .content-area {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+            
+            .slide-container {
+                padding: 0 20px;
+            }
+            
+            .page-title {
+                font-size: 2.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 动态背景元素 -->
+    <div class="data-particles" id="particles"></div>
+    <div class="circuit-lines"></div>
+    
+    <div class="slide-container">
+        <h1 class="page-title">客户成功案例</h1>
+        <div class="page-subtitle">BlueField-3在全球顶级企业的实际部署效果和投资回报</div>
+        
+        <div class="content-area">
+            <!-- DDN案例 -->
+            <div class="customer-case ddn-case">
+                <div class="case-header">
+                    <div class="company-info">
+                        <div class="company-name">DDN</div>
+                        <div class="company-category">高性能存储领导者</div>
+                    </div>
+                    <div class="logo-placeholder">DDN<br>LOGO</div>
+                </div>
+                <div class="case-description">
+                    DDN采用BlueField-3构建AI400X2存储平台，为大规模AI训练提供极致性能的存储解决方案，支持PB级数据的高速访问。集成NVMe-oF和RDMA技术，实现存储网络一体化优化。
+                </div>
+                <div class="metrics-grid">
+                    <div class="metric-item">
+                        <div class="metric-value">400GB/s</div>
+                        <div class="metric-label">存储带宽</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value">75%</div>
+                        <div class="metric-label">延迟降低</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value">3x</div>
+                        <div class="metric-label">IOPS提升</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value">40%</div>
+                        <div class="metric-label">功耗节省</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value">50+</div>
+                        <div class="metric-label">部署中心</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value">TOP500</div>
+                        <div class="metric-label">超算支持</div>
+                    </div>
+                </div>
+                <div class="deployment-info">
+                    <div class="deployment-title">部署规模</div>
+                    <div class="deployment-details">
+                        全球超过50个数据中心部署，支撑TOP500超算中心和AI研究机构的关键工作负载
+                    </div>
+                </div>
+            </div>
+
+            <!-- VAST Data案例 -->
+            <div class="customer-case vast-case">
+                <div class="case-header">
+                    <div class="company-info">
+                        <div class="company-name">VAST Data</div>
+                        <div class="company-category">通用数据平台</div>
+                    </div>
+                    <div class="logo-placeholder">VAST<br>LOGO</div>
+                </div>
+                <div class="case-description">
+                    VAST Data通过BlueField-3实现数据湖和AI工作负载的统一加速，提供从EB级存储到实时分析的端到端解决方案。Universal Storage平台支持文件、对象和块存储协议统一访问。
+                </div>
+                <div class="metrics-grid">
+                    <div class="metric-item">
+                        <div class="metric-value">EB级</div>
+                        <div class="metric-label">数据规模</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value">10x</div>
+                        <div class="metric-label">查询加速</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value">90%</div>
+                        <div class="metric-label">成本降低</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value">99.99%</div>
+                        <div class="metric-label">可用性</div>
+                    </div>
+                </div>
+                <div class="deployment-info">
+                    <div class="deployment-title">应用场景</div>
+                    <div class="deployment-details">
+                        服务全球Fortune 500企业，覆盖金融分析、医疗影像、自动驾驶等数据密集型应用
+                    </div>
+                </div>
+            </div>
+
+            <!-- WEKA案例 -->
+            <div class="customer-case weka-case">
+                <div class="case-header">
+                    <div class="company-info">
+                        <div class="company-name">WEKA</div>
+                        <div class="company-category">分布式文件系统</div>
+                    </div>
+                    <div class="logo-placeholder">WEKA<br>LOGO</div>
+                </div>
+                <div class="case-description">
+                    WEKA利用BlueField-3的硬件加速能力，为GPU集群提供低延迟、高吞吐的并行文件系统，优化AI训练性能。WEKA FS实现GPU直接访问存储，消除传统I/O瓶颈。
+                </div>
+                <div class="metrics-grid">
+                    <div class="metric-item">
+                        <div class="metric-value">200μs</div>
+                        <div class="metric-label">平均延迟</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value">5x</div>
+                        <div class="metric-label">训练速度</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value">1000+</div>
+                        <div class="metric-label">支持GPU数</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value">80%</div>
+                        <div class="metric-label">利用率提升</div>
+                    </div>
+                </div>
+                <div class="deployment-info">
+                    <div class="deployment-title">技术突破</div>
+                    <div class="deployment-details">
+                        首次实现GPU直接访问存储，消除传统存储协议栈瓶颈，为大模型训练提供极致性能
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hitachi案例 -->
+            <div class="customer-case hitachi-case">
+                <div class="case-header">
+                    <div class="company-info">
+                        <div class="company-name">Hitachi Vantara</div>
+                        <div class="company-category">企业存储巨头</div>
+                    </div>
+                    <div class="logo-placeholder">Hitachi<br>LOGO</div>
+                </div>
+                <div class="case-description">
+                    日立通过BlueField-3增强其VSP存储系列，为企业客户提供云原生存储服务和数据管理解决方案。VSP 5000系列集成智能数据服务和自动化运维能力。
+                </div>
+                <div class="metrics-grid">
+                    <div class="metric-item">
+                        <div class="metric-value">60%</div>
+                        <div class="metric-label">管理效率</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value">4x</div>
+                        <div class="metric-label">存储密度</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value">50%</div>
+                        <div class="metric-label">TCO降低</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value">24/7</div>
+                        <div class="metric-label">可靠运行</div>
+                    </div>
+                </div>
+                <div class="deployment-info">
+                    <div class="deployment-title">企业影响</div>
+                    <div class="deployment-details">
+                        赋能全球2000+企业客户实现数字化转型，覆盖制造、金融、医疗等关键行业
+                    </div>
+                </div>
+            </div>
+
+            <!-- ROI总结 -->
+            <div class="roi-summary">
+                <div class="roi-title">投资回报率总结</div>
+                <div class="roi-text">
+                    基于以上客户案例的综合数据分析，<span class="roi-highlight">BlueField-3平均为客户带来3.2倍的投资回报</span>，
+                    部署后6-12个月内实现成本回收，同时显著提升系统性能、降低运营复杂度，
+                    为企业数字化转型和AI创新提供坚实的基础设施支撑。
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="navigation-hint">
+        <div class="nav-item">
+            <span class="nav-key">←</span>
+            <span>AI基础设施</span>
+        </div>
+        <div class="nav-item">
+            <span class="nav-key">→</span>
+            <span>行业价值</span>
+        </div>
+    </div>
+
+    <script>
+        // 创建动态粒子效果
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 20;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 15 + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            createParticles();
+            
+            // 客户案例卡片交错动画
+            const customerCases = document.querySelectorAll('.customer-case');
+            customerCases.forEach((card, index) => {
+                if (!card.classList.contains('roi-summary')) {
+                    card.style.animationDelay = `${0.6 + index * 0.2}s`;
+                    card.style.animation = 'fadeInUp 1.2s ease-out both';
+                }
+            });
+            
+            // 指标项动画
+            const metricItems = document.querySelectorAll('.metric-item');
+            metricItems.forEach((item, index) => {
+                item.style.animationDelay = `${1.4 + index * 0.1}s`;
+                item.style.animation = 'fadeIn 0.8s ease-out both';
+            });
+            
+            // 数值滚动动画
+            const metricValues = document.querySelectorAll('.metric-value');
+            metricValues.forEach((value, index) => {
+                setTimeout(() => {
+                    const originalText = value.textContent;
+                    
+                    // 解析数值
+                    const numMatch = originalText.match(/[\d.]+/);
+                    if (numMatch && !originalText.includes('24/7') && !originalText.includes('EB级')) {
+                        const targetNum = parseFloat(numMatch[0]);
+                        let currentNum = 0;
+                        const duration = 2000;
+                        const steps = 60;
+                        const increment = targetNum / steps;
+                        
+                        const timer = setInterval(() => {
+                            currentNum += increment;
+                            if (currentNum >= targetNum) {
+                                value.textContent = originalText;
+                                clearInterval(timer);
+                            } else {
+                                const displayNum = originalText.includes('.') ? 
+                                    currentNum.toFixed(1) : Math.floor(currentNum);
+                                value.textContent = originalText.replace(/[\d.]+/, displayNum.toString());
+                            }
+                        }, duration / steps);
+                    }
+                }, 2000 + index * 100);
+            });
+            
+            // 键盘导航
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'ArrowRight' || e.key === ' ') {
+                    // 切换到行业价值页面
+                    window.location.href = 'industry-value.html';
+                } else if (e.key === 'ArrowLeft') {
+                    // 返回AI基础设施页
+                    window.location.href = 'ai-infrastructure.html';
+                }
+            });
+
+            // 彩色鼠标跟踪效果
+            let mouseTracker = null;
+            document.addEventListener('mousemove', function(e) {
+                if (mouseTracker) {
+                    clearTimeout(mouseTracker);
+                }
+                
+                const light = document.createElement('div');
+                light.style.position = 'fixed';
+                light.style.left = e.clientX + 'px';
+                light.style.top = e.clientY + 'px';
+                light.style.width = '6px';
+                light.style.height = '6px';
+                light.style.background = 'radial-gradient(circle, #00BFFF 0%, #8A2BE2 50%, transparent 70%)';
+                light.style.borderRadius = '50%';
+                light.style.pointerEvents = 'none';
+                light.style.zIndex = '999';
+                light.style.boxShadow = '0 0 12px rgba(0, 191, 255, 0.5)';
+                light.style.animation = 'fadeOut 0.7s ease-out forwards';
+                document.body.appendChild(light);
+                
+                mouseTracker = setTimeout(() => {
+                    if (light.parentNode) {
+                        light.parentNode.removeChild(light);
+                    }
+                }, 700);
+            });
+            
+            // 添加淡出动画
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes fadeOut {
+                    from { opacity: 0.8; transform: scale(1); }
+                    to { opacity: 0; transform: scale(0); }
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+</body>
+</html>

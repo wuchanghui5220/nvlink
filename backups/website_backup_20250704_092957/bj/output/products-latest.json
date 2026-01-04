@@ -1,0 +1,3313 @@
+{
+  "products": [
+    {
+      "id": "0",
+      "price_book_organizer": "Mellanox BlueField-3 Adapter",
+      "product_name": "BlueField-3 B3220SH Controller",
+      "product_description": "NVIDIA BlueField-3 B3220SH E-Series No heatsink FHHL Storage Controller,  200GbE (default mode) / NDR200 IB, Dual-port QSFP112, PCIe Gen5.0 x16 w ith x16 PCIe extension option, 16 Arm cores, 48GB on-board DDR, integrat ed BMC, Crypto Enabled",
+      "price": 3020.0
+    },
+    {
+      "id": "1",
+      "price_book_organizer": "Mellanox BlueField-3 Adapter",
+      "product_name": "BlueField 3 B3140L, No Crypto",
+      "product_description": "NVIDIA BlueField-3 B3140L E-Series FHHL SuperNIC, 400GbE / NDR IB (defau lt mode), Single-port QSFP112, PCIe Gen5.0 x16, 8 Arm cores, 16GB on-boa rd DDR, integrated BMC, Crypto Disabled, Tall Bracket",
+      "price": 2518.0
+    },
+    {
+      "id": "2",
+      "price_book_organizer": "Mellanox BlueField-2 Adapter",
+      "product_name": "MBF2H536C-CEUOT",
+      "product_description": "BlueField®-2 P-Series DPU 100GbE Dual-Port QSFP56, integrated BMC, PCIe Gen4 x16, Secure Boot Enabled with UEFI Disabled, Crypto Disabled, 32GB on-board DDR, 1GbE OOB management, Tall Bracket, FHHL",
+      "price": 1590.0
+    },
+    {
+      "id": "3",
+      "price_book_organizer": "Mellanox BlueField-3 Adapter",
+      "product_name": "BF3 B3140L, Crypto",
+      "product_description": "NVIDIA BlueField-3 B3140L E-Series FHHL SuperNIC, 400GbE / NDR IB (defau lt mode), Single-port QSFP112, PCIe Gen5.0 x16, 8 Arm cores, 16GB on-boa rd DDR, integrated BMC, Crypto Enabled, Tall Bracket",
+      "price": 2820.0
+    },
+    {
+      "id": "4",
+      "price_book_organizer": "Mellanox BlueField-3 Adapter",
+      "product_name": "Nvidia BlueField-3 B3140H E-series HHHL",
+      "product_description": "Nvidia BlueField-3 B3140H E-series HHHL SuperNIC, 400GbE (default mode) /NDR IB, Single-port QSFP112, PCIe Gen5.0 x16, 8 Arm cores, 16GB on boar d DDR, integrated BMC, Crypto Enabled, Tall Bracket",
+      "price": 2820.0
+    },
+    {
+      "id": "5",
+      "price_book_organizer": "Mellanox BlueField-3 Adapter",
+      "product_name": "BlueField 3 B3220SH, No HSK, No Crypto",
+      "product_description": "NVIDIA BlueField-3 B3220SH E-Series No Heatsink FHHL Storage Controller,  200GbE (default mode) / NDR200 IB, Dual-port QSFP112, PCIe Gen5.0 x16 w ith x16 PCIe extension option, 16 Arm cores, 48GB on-board DDR, integrat ed BMC, Crypto Disabled",
+      "price": 2696.0
+    },
+    {
+      "id": "6",
+      "price_book_organizer": "Mellanox BlueField-3 Adapter",
+      "product_name": "BlueField 3 B3220SH, No crypto",
+      "product_description": "NVIDIA BlueField-3 B3220SH E-Series FHHL Storage Controller, 200GbE (def ault mode) / NDR200 IB, Dual-port QSFP112, PCIe Gen5.0 x16 with x16 PCIe  extension option, 16 Arm cores, 48GB on-board DDR, integrated BMC, Cryp to Disabled, Tall Bracke",
+      "price": 2696.0
+    },
+    {
+      "id": "7",
+      "price_book_organizer": "Mellanox BlueField-3 Adapter",
+      "product_name": "BlueField 3 B3220L,  No Crypto",
+      "product_description": "NVIDIA BlueField-3 B3220L E-Series FHHL SuperNIC, 200GbE (default mode) / NDR200 IB, Dual-port QSFP112, PCIe Gen5.0 x16, 8 Arm cores, 16GB on-bo ard DDR, integrated BMC, Crypto Disabled, Tall Bracket",
+      "price": 2398.0
+    },
+    {
+      "id": "8",
+      "price_book_organizer": "Mellanox BlueField-2 Adapter",
+      "product_name": "MBF2H332A-AENOT",
+      "product_description": "NVIDIA BlueField-2 P-Series DPU 25GbE Dual-Port SFP56, PCIe Gen4 x8, Cry pto Disabled, 16GB on-board DDR, 1GbE OOB management, Tall Bracket, HHHL",
+      "price": 919.0
+    },
+    {
+      "id": "9",
+      "price_book_organizer": "Mellanox BlueField-3 Adapter",
+      "product_name": "BlueField 3 B3220L, Crypto",
+      "product_description": "NVIDIA BlueField-3 B3220L E-Series FHHL SuperNIC, 200GbE (default mode) / NDR200 IB, Dual-port QSFP112, PCIe Gen5.0 x16, 8 Arm cores, 16GB on-bo ard DDR, integrated BMC, Crypto Enabled, Tall Bracket",
+      "price": 2686.0
+    },
+    {
+      "id": "10",
+      "price_book_organizer": "Mellanox BlueField-3 Adapter",
+      "product_name": "BlueField 3 B3140H, No Crypto",
+      "product_description": "Nvidia BlueField-3 B3140H E-series HHHL SuperNIC, 400GbE (default mode) /NDR IB, Single-port QSFP112, PCIe Gen5.0 x16, 8 Arm cores, 16GB on boar d DDR, integrated BMC, Crypto Disabled, Tall Bracket",
+      "price": 2517.0
+    },
+    {
+      "id": "11",
+      "price_book_organizer": "Mellanox BlueField-2 Adapter",
+      "product_name": "MBF2H332A-AEEOT",
+      "product_description": "NVIDIA BlueField-2 P-Series DPU 25GbE Dual-Port SFP56, PCIe Gen4 x8, Cry pto Enabled, 16GB on-board DDR, 1GbE OOB management, Tall Bracket, HHHL",
+      "price": 1024.0
+    },
+    {
+      "id": "12",
+      "price_book_organizer": "Mellanox BlueField-3 Adapter",
+      "product_name": "BlueField 3 B3210E, Crypto",
+      "product_description": "NVIDIA BlueField-3 B3210E E-Series FHHL DPU, 100GbE (default mode) / HDR 100 IB, Dual-port QSFP112, PCIe Gen5.0 x16 with x16 PCIe extension optio n, 16 Arm cores, 32GB on-board DDR,integrated BMC, Crypto Enabled, Tall Bracket",
+      "price": 1966.0
+    },
+    {
+      "id": "13",
+      "price_book_organizer": "Mellanox BlueField-2 Adapter",
+      "product_name": "MBF2H332A-AECOT",
+      "product_description": "NVIDIA BlueField-2 P-Series DPU 25GbE Dual-Port SFP56, PCIe Gen4 x8, Cry pto and Secure Boot Enabled, 16GB on-board DDR, 1GbE OOB management, Tal l Bracket, HHHL",
+      "price": 1024.0
+    },
+    {
+      "id": "14",
+      "price_book_organizer": "Mellanox BlueField-3 Adapter",
+      "product_name": "BlueField 3 B3210E, No crypto",
+      "product_description": "NVIDIA BlueField-3 B3210E E-Series FHHL DPU, 100GbE (default mode) / HDR 100 IB, Dual-port QSFP112, PCIe Gen5.0 x16 with x16 PCIe extension optio n, 16 Arm cores, 32GB on-board DDR,integrated BMC, Crypto Disabled, Tall  Bracket",
+      "price": 1755.0
+    },
+    {
+      "id": "15",
+      "price_book_organizer": "Mellanox BlueField-2 Adapter",
+      "product_name": "MBF2H516C-CESOT",
+      "product_description": "NVIDIA BlueField-2 P-Series DPU 100GbE Dual-Port QSFP56, integrated BMC,  PCIe Gen4 x16, Secure Boot Enabled, Crypto Disabled, 16GB on-board DDR,  1GbE OOB management, Tall Bracket, FHHL",
+      "price": 1372.0
+    },
+    {
+      "id": "16",
+      "price_book_organizer": "Mellanox BlueField-2 Adapter",
+      "product_name": "MBF2H536C-CESOT",
+      "product_description": "Nvidia BlueField-2 P-Series DPU 100GbE Dual-Port QSFP56, integrated BMC,  PCIe Gen4 x16, Secure Boot Enabled, Crypto Disabled, 32GB on-board DDR,  1GbE OOB management, Tall Bracket, FHHL",
+      "price": 1590.0
+    },
+    {
+      "id": "17",
+      "price_book_organizer": "Mellanox BlueField-2 Adapter",
+      "product_name": "MBF2M516C-CESOT",
+      "product_description": "NVIDIA BlueField-2 E-Series DPU 100GbE Dual-Port QSFP56, integrated BMC,  PCIe Gen4 x16, Secure Boot Enabled, Crypto Disabled, 16GB on-board DDR,  1GbE OOB management, Tall Bracket, FHHL",
+      "price": 1175.0
+    },
+    {
+      "id": "18",
+      "price_book_organizer": "Mellanox BlueField-2 Adapter",
+      "product_name": "MBF2H516C-CECOT",
+      "product_description": "NVIDIA BlueField-2 P-Series DPU 100GbE Dual-Port QSFP56, integrated BMC,  PCIe Gen4 x16, Secure Boot Enabled, Crypto Enabled, 16GB on-board DDR, 1GbE OOB management, Tall Bracket, FHHL",
+      "price": 1548.0
+    },
+    {
+      "id": "19",
+      "price_book_organizer": "Mellanox ConnectX-6 VPI Adapter Cards",
+      "product_name": "MCX653105A-HDAT",
+      "product_description": "ConnectX-6 VPI adapter card, HDR IB (200Gb/s) and 200GbE, single-port QS FP56, PCIe4.0 x16, tall bracket",
+      "price": 794.0
+    },
+    {
+      "id": "20",
+      "price_book_organizer": "Mellanox BlueField-2 Adapter",
+      "product_name": "MBF2H536C-CECOT",
+      "product_description": "Nvidia BlueField-2 P-Series DPU 100GbE Dual-Port QSFP56, integrated BMC,  PCIe Gen4 x16, Secure Boot Enabled, Crypto Enabled, 32GB on-board DDR, 1GbE OOB management, Tall Bracket, FHHL",
+      "price": 1766.0
+    },
+    {
+      "id": "21",
+      "price_book_organizer": "Mellanox BlueField-2 Adapter",
+      "product_name": "MBF2M516C-CECOT",
+      "product_description": "NVIDIA BlueField-2 E-Series DPU 100GbE Dual-Port QSFP56, integrated BMC,  PCIe Gen4 x16, Secure Boot Enabled, Crypto Enabled, 16GB on-board DDR, 1GbE OOB management, Tall Bracket, FHHL",
+      "price": 1323.0
+    },
+    {
+      "id": "22",
+      "price_book_organizer": "Mellanox ConnectX-6 VPI Adapter Cards",
+      "product_name": "MCX653106A-ECAT",
+      "product_description": "ConnectX-6 VPI adapter card, 100Gb/s (HDR100, EDR IB and 100GbE), dual-p ort QSFP56, PCIe3.0/4.0 x16, tall bracket",
+      "price": 635.0
+    },
+    {
+      "id": "23",
+      "price_book_organizer": "Mellanox BlueField-2 Adapter",
+      "product_name": "MBF2H532C-AESOT",
+      "product_description": "Nvidia BlueField-2 P-Series DPU 25GbE Dual-Port SFP56, integrated BMC, P CIe Gen4 x8, Secure Boot Enabled, Crypto Disabled, 32GB on-board DDR, 1G bE OOB management, Tall Bracket, FHHL",
+      "price": 1139.0
+    },
+    {
+      "id": "24",
+      "price_book_organizer": "Mellanox BlueField-2 Adapter",
+      "product_name": "MBF2H512C-AESOT",
+      "product_description": "NVIDIA BlueField-2 P-Series DPU 25GbE Dual-Port SFP56, integrated BMC, P CIe Gen4 x8, Secure Boot Enabled, Crypto Disabled, 16GB on-board DDR, 1G bE OOB management, Tall Bracket, FHHL",
+      "price": 919.0
+    },
+    {
+      "id": "25",
+      "price_book_organizer": "Mellanox BlueField-2 Adapter",
+      "product_name": "MBF2H512C-AEUOT",
+      "product_description": "BlueField-2 P-Series DPU 25GbE Dual-Port SFP56, integrated BMC, PCIe Gen 4 x8, Secure Boot Enabled with UEFI disabled, Crypto Disabled, 16GB on-b oard DDR, 1GbE OOB management, Tall Bracket, FHHL",
+      "price": 919.0
+    },
+    {
+      "id": "26",
+      "price_book_organizer": "Mellanox BlueField-2 Adapter",
+      "product_name": "MBF2H512C-AECOT",
+      "product_description": "NVIDIA BlueField-2 P-Series DPU 25GbE Dual-Port SFP56, integrated BMC, P CIe Gen4 x8, Crypto and Secure Boot Enabled, 16GB on-board DDR, 1GbE OOB  management, Tall Bracket, FHHL",
+      "price": 1024.0
+    },
+    {
+      "id": "27",
+      "price_book_organizer": "Mellanox BlueField-2 Adapter",
+      "product_name": "MBF2H532C-AECOT",
+      "product_description": "Nvidia BlueField-2 P-Series DPU 25GbE Dual-Port SFP56, integrated BMC, P CIe Gen4 x8, Secure Boot Enabled, Crypto Enabled, 32GB on-board DDR, 1Gb E OOB management, Tall Bracket, FHHL",
+      "price": 1242.0
+    },
+    {
+      "id": "28",
+      "price_book_organizer": "Mellanox BlueField-3 Adapter",
+      "product_name": "NVIDIA BlueField-3 B3220 P-Series FHHL D",
+      "product_description": "NVIDIA BlueField-3 B3220 P-Series FHHL DPU, 200GbE (default mode) / NDR2 00 IB, Dual-port QSFP112, PCIe Gen5.0 x16 with x16 PCIe extension option , 16 Arm cores, 32GB on-board DDR, integrated BMC, Crypto Enabled, Tall Bracket",
+      "price": 3012.0
+    },
+    {
+      "id": "29",
+      "price_book_organizer": "Mellanox BlueField-3 Adapter",
+      "product_name": "BlueField 3 B3240, No Crypto",
+      "product_description": "NVIDIA BlueField-3 B3240 P-Series Dual-slot FHHL DPU, 400GbE / NDR IB (d efault mode), Dual-port QSFP112, PCIe Gen5.0 x16 with x16 PCIe extension  option, 16 Arm cores, 32GB on-board DDR, integrated BMC, Crypto Disable d, Tall Bracket",
+      "price": 2958.0
+    },
+    {
+      "id": "30",
+      "price_book_organizer": "Mellanox BlueField-2 Adapter",
+      "product_name": "MBF2M345A-HESOT",
+      "product_description": "NVIDIA BlueField-2 E-Series DPU, 200GbE/HDR single-port QSFP56, PCIe Gen 4 x16, Secure Boot Enabled, Crypto Disabled, 16GB on-board DDR, 1GbE OOB  management, Tall Bracket, HHHL",
+      "price": 1233.0
+    },
+    {
+      "id": "31",
+      "price_book_organizer": "Mellanox BlueField-2 Adapter",
+      "product_name": "MBF2M345A-HECOT",
+      "product_description": "NVIDIA BlueField-2 E-Series DPU, 200GbE/HDR single-port QSFP56, PCIe Gen 4 x16, Secure Boot Enabled, Crypto Enabled, 16GB on-board DDR, 1GbE OOB management, Tall Bracket, HHHL",
+      "price": 1380.0
+    },
+    {
+      "id": "32",
+      "price_book_organizer": "Mellanox Bluefield-3 Adapter",
+      "product_name": "BlueField 3 B3210L, Crypto",
+      "product_description": "NVIDIA BlueField-3 B3210L E-series FHHL SuperNIC, 100GbE (default mode) /HDR100 IB, Dual port QSFP112, PCIe Gen5.0 x16, 8 Arm cores, 16GB on-boa rd DDR, integrated BMC, Crypto Enabled, Tall Bracket",
+      "price": 1752.0
+    },
+    {
+      "id": "33",
+      "price_book_organizer": "Mellanox BlueField-3 Adapter",
+      "product_name": "BlueField 3 B3210L, No crypto",
+      "product_description": "NVIDIA BlueField-3 B3210L E-series FHHL SuperNIC, 100GbE (default mode) /HDR100 IB, Dual port QSFP112, PCIe Gen5.0 x16, 8 Arm cores, 16GB on-boa rd DDR, integrated BMC, Crypto Disabled, Tall Bracket",
+      "price": 1565.0
+    },
+    {
+      "id": "34",
+      "price_book_organizer": "Mellanox BlueField-3 Adapter",
+      "product_name": "BlueField 3 B3240, Crypto",
+      "product_description": "NVIDIA BlueField-3 B3240 P-Series Dual-slot FHHL DPU, 400GbE / NDR IB (d efault mode), Dual-port QSFP112, PCIe Gen5.0 x16 with x16 PCIe extension  option, 16 Arm cores, 32GB on-board DDR, integrated BMC, Crypto Enabled , Tall Bracket",
+      "price": 3313.0
+    },
+    {
+      "id": "35",
+      "price_book_organizer": "Mellanox BlueField-3 Adapter",
+      "product_name": "NVIDIA BlueField-3 B3240 - cold aisle",
+      "product_description": "NVIDIA BlueField-3 B3240 P-Series FHHL DPU for Cold Aisle, 400GbE / NDR IB (default mode), Dual-port QSFP112, PCIe Gen5.0 x16 with x16 PCIe exte nsion option, 16 Arm cores, 32GB on-board DDR, integrated BMC, Crypto En abled, Tall Bracket",
+      "price": 3313.0
+    },
+    {
+      "id": "36",
+      "price_book_organizer": "Mellanox BlueField-3 Adapter",
+      "product_name": "BlueField 3 B3220, No Crypto",
+      "product_description": "NVIDIA BlueField-3 B3220 P-Series FHHL DPU, 200GbE (default mode) / NDR2 00 IB, Dual-port QSFP112, PCIe Gen5.0 x16 with x16 PCIe extension option , 16 Arm cores, 32GB on-board DDR, integrated BMC, Crypto Disabled, Tall  Bracket",
+      "price": 2689.0
+    },
+    {
+      "id": "37",
+      "price_book_organizer": "Mellanox BlueField-3 Adapter",
+      "product_name": "BlueField 3 B3220SH, Crypto",
+      "product_description": "NVIDIA BlueField-3 B3220SH E-Series FHHL Storage Controller, 200GbE (def ault mode) / NDR200 IB, Dual-port QSFP112, PCIe Gen5.0 x16 with x16 PCIe  extension option, 16 Arm cores, 48GB on-board DDR, integrated BMC, Cryp to Enabled, Secure Boot",
+      "price": 3020.0
+    },
+    {
+      "id": "38",
+      "price_book_organizer": "Mellanox ConnectX-6 VPI Adapter Cards",
+      "product_name": "MCX653436A-HDAB",
+      "product_description": "ConnectX-6 VPI adapter card, 200Gb/s (HDR IB and 200GbE) for OCP 3.0, wi th host management, Dual-port QSFP56, PCIe4.0 x16, Thumbscrew bracket",
+      "price": 1190.0
+    },
+    {
+      "id": "39",
+      "price_book_organizer": "Mellanox ConnectX-6 Dx EN cards",
+      "product_name": "MCX623435AC-CDAB",
+      "product_description": "ConnectX-6 Dx EN adapter card, 100GbE, OCP3.0, With Host management , Si ngle-port QSFP56, PCIe 4.0 x16, Crypto and Secure Boot, Thumbscrew (Pull  Tab) Bracket",
+      "price": 708.0
+    },
+    {
+      "id": "40",
+      "price_book_organizer": "Mellanox ConnectX-6 Dx EN cards",
+      "product_name": "MCX623436AN-CDAB",
+      "product_description": "ConnectX-6 Dx EN adapter card, 100GbE, OCP3.0, With Host management , Du al-port QSFP56, PCIe 4.0 x16, No Crypto, Thumbscrew (Pull Tab) Bracket",
+      "price": 794.0
+    },
+    {
+      "id": "41",
+      "price_book_organizer": "Mellanox ConnectX-6 Dx EN cards",
+      "product_name": "MCX623435AN-CDAB",
+      "product_description": "ConnectX-6 Dx EN adapter card, 100GbE, OCP3.0, With Host management , Si ngle-port QSFP56, PCIe 4.0 x16, No Crypto, Thumbscrew (Pull Tab) Bracket",
+      "price": 590.0
+    },
+    {
+      "id": "42",
+      "price_book_organizer": "Mellanox ConnectX-6 Dx EN cards",
+      "product_name": "MCX621202AC-ADAT",
+      "product_description": "ConnectX-6 Dx EN adapter card, 25GbE, With active cooling, Dual-port SFP 28, PCIe 4.0 x8, Crypto and Secure Boot, Tall Bracket",
+      "price": 431.0
+    },
+    {
+      "id": "43",
+      "price_book_organizer": "Mellanox ConnectX-6 VPI Adapter Cards",
+      "product_name": "MCX653106A-ECAT-SP",
+      "product_description": "ConnectX-6 VPI adapter card, 100Gb/s (HDR100, EDR IB and 100GbE), dual-p ort QSFP56, PCIe3.0/4.0 x16, tall bracket, single pack",
+      "price": 635.0
+    },
+    {
+      "id": "44",
+      "price_book_organizer": "Mellanox ConnectX-6 Dx EN cards",
+      "product_name": "MCX623430MS-CDAB",
+      "product_description": "ConnectX-6 Dx EN adapter card, 100GbE OCP3.0, With Host management , Dua l-port DSFP, Multi Host or Socket Direct,PCIe 4.0 x16, Secure Boot, No C rypto, Thumbscrew (Pull Tab) Bracket",
+      "price": 899.0
+    },
+    {
+      "id": "45",
+      "price_book_organizer": "Mellanox ConnectX-6 VPI Adapter Cards",
+      "product_name": "MCX653106A-HDAT",
+      "product_description": "ConnectX-6 VPI adapter card, HDR IB (200Gb/s) and 200GbE, dual-port QSFP 56, PCIe4.0 x16, tall bracket",
+      "price": 1190.0
+    },
+    {
+      "id": "46",
+      "price_book_organizer": "Mellanox ConnectX-6 Dx EN cards",
+      "product_name": "MCX623436AC-CDAB",
+      "product_description": "ConnectX-6 Dx EN adapter card, 100GbE, OCP3.0, With Host management , Du al-port QSFP56, PCIe 4.0 x16, Crypto and Secure Boot, Thumbscrew (Pull T ab) Bracket",
+      "price": 952.0
+    },
+    {
+      "id": "47",
+      "price_book_organizer": "Mellanox ConnectX-6 VPI Adapter Cards",
+      "product_name": "MCX651105A-EDAT",
+      "product_description": "ConnectX-6 VPI adapter card, 100Gb/s (HDR100, EDR IB and 100GbE) single- port QSFP56, PCIe4.0 x8, tall bracket",
+      "price": 529.0
+    },
+    {
+      "id": "48",
+      "price_book_organizer": "Mellanox ConnectX-6 Lx EN cards",
+      "product_name": "MCX631102AS-ADAT",
+      "product_description": "ConnectX-6 Lx EN adapter card, 25GbE, Dual-port SFP28, PCIe 4.0 x8, Secu re Boot, No Crypto, Tall Bracket",
+      "price": 236.0
+    },
+    {
+      "id": "49",
+      "price_book_organizer": "Mellanox ConnectX-6 Dx EN cards",
+      "product_name": "MCX623105AN-VDAT",
+      "product_description": "ConnectX-6 Dx EN adapter card, 200GbE , Single-port QSFP56, PCIe 4.0 x16 , No Crypto, Tall Bracket",
+      "price": 841.0
+    },
+    {
+      "id": "50",
+      "price_book_organizer": "Mellanox ConnectX-6 Dx EN cards",
+      "product_name": "MCX623106AN-CDAT",
+      "product_description": "ConnectX-6 Dx EN adapter card, 100GbE, Dual-port QSFP56, PCIe 4.0 x16, N o Crypto, Tall Bracket",
+      "price": 794.0
+    },
+    {
+      "id": "51",
+      "price_book_organizer": "Mellanox ConnectX-6 VPI Adapter Cards",
+      "product_name": "MCX653105A-ECAT",
+      "product_description": "ConnectX-6 VPI adapter card, 100Gb/s (HDR100, EDR IB and 100GbE), single -port QSFP56, PCIe3.0/4.0 x16, tall bracket",
+      "price": 529.0
+    },
+    {
+      "id": "52",
+      "price_book_organizer": "Mellanox ConnectX-6 VPI Adapter Cards",
+      "product_name": "MCX653105A-ECAT-SP",
+      "product_description": "ConnectX-6 VPI adapter card, 100Gb/s (HDR100, EDR IB and 100GbE), single -port QSFP56, PCIe3.0/4.0 x16, tall bracket, single pack",
+      "price": 529.0
+    },
+    {
+      "id": "53",
+      "price_book_organizer": "Mellanox ConnectX-6 Dx EN cards",
+      "product_name": "MCX623436MN-CDAB",
+      "product_description": "ConnectX-6 Dx EN adapter card, 100GbE, OCP3.0, With Host management , Du al-port QSFP56, Multi Host or Socket Direct,PCIe 4.0 x16, No Crypto, Thu mbscrew (Pull Tab) Bracket",
+      "price": 873.0
+    },
+    {
+      "id": "54",
+      "price_book_organizer": "Mellanox ConnectX-6 VPI Adapter Cards",
+      "product_name": "MCX653106A-HDAT-SP",
+      "product_description": "ConnectX-6 VPI adapter card, HDR IB (200Gb/s) and 200GbE, dual-port QSFP 56, PCIe4.0 x16, tall bracket, single pack",
+      "price": 1190.0
+    },
+    {
+      "id": "55",
+      "price_book_organizer": "Mellanox ConnectX-6 Lx EN cards",
+      "product_name": "MCX631102AC-ADAT",
+      "product_description": "ConnectX-6 Lx EN adapter card, 25GbE, Dual-port SFP28, PCIe 4.0 x8, Cryp to and Secure Boot, Tall Bracket",
+      "price": 294.0
+    },
+    {
+      "id": "56",
+      "price_book_organizer": "Mellanox ConnectX-6 Lx EN cards",
+      "product_name": "MCX631102AN-ADAT",
+      "product_description": "ConnectX-6 Lx EN adapter card, 25GbE, Dual-port SFP28, PCIe 4.0 x8, No C rypto, Tall Bracket",
+      "price": 236.0
+    },
+    {
+      "id": "57",
+      "price_book_organizer": "Mellanox ConnectX-6 Lx EN cards",
+      "product_name": "MCX631432AC-ADAB",
+      "product_description": "ConnectX-6 Lx EN adapter card, 25GbE OCP3.0, With Host management , Dual -port SFP28, PCIe 4.0 x8, Crypto and Secure Boot, Thumbscrew (Pull Tab) Bracket",
+      "price": 294.0
+    },
+    {
+      "id": "58",
+      "price_book_organizer": "Mellanox ConnectX-6 Lx EN cards",
+      "product_name": "MCX631432AN-ADAB",
+      "product_description": "ConnectX-6 Lx EN adapter card, 25GbE OCP3.0, With Host management , Dual -port SFP28, PCIe 4.0 x8, No Crypto, Thumbscrew (Pull Tab) Bracket",
+      "price": 236.0
+    },
+    {
+      "id": "59",
+      "price_book_organizer": "Mellanox ConnectX-6 Dx EN cards",
+      "product_name": "MCX623105AN-CDAT",
+      "product_description": "ConnectX-6 Dx EN adapter card, 100GbE, Single-port QSFP56, PCIe 4.0 x16,  No Crypto, Tall Bracket",
+      "price": 590.0
+    },
+    {
+      "id": "60",
+      "price_book_organizer": "Mellanox ConnectX-6 Dx EN cards",
+      "product_name": "MCX623105AC-VDAT",
+      "product_description": "ConnectX-6 Dx EN adapter card, 200GbE, Single-port QSFP56, PCIe 4.0 x16,  Crypto and Secure Boot, Tall Bracket",
+      "price": 992.0
+    },
+    {
+      "id": "61",
+      "price_book_organizer": "Mellanox ConnectX-6 Dx EN cards",
+      "product_name": "MCX621202AS-ADAT",
+      "product_description": "ConnectX-6 Dx EN adapter card, 25GbE, With active cooling, Dual-port SFP 28, PCIe 4.0 x8, Secure Boot, No Crypto, Tall Bracket",
+      "price": 344.0
+    },
+    {
+      "id": "62",
+      "price_book_organizer": "Mellanox ConnectX-6 Dx EN cards",
+      "product_name": "MCX623436MS-CDAB",
+      "product_description": "ConnectX-6 Dx EN adapter card, 100GbE, OCP3.0, With Host management , Du al-port QSFP56, Multi Host or Socket Direct,PCIe 4.0 x16, Secure Boot, N o Crypto, Thumbscrew (Pull Tab) Bracket",
+      "price": 873.0
+    },
+    {
+      "id": "63",
+      "price_book_organizer": "Mellanox ConnectX-6 Dx EN cards",
+      "product_name": "MCX623435AC-CDAI",
+      "product_description": "ConnectX®-6 Dx EN adapter card, 100GbE, OCP3.0, With Host management, Si ngle-port QSFP56, PCIe 4.0 x16, Crypto and Secure Boot, Internal Lock Br acket",
+      "price": 708.0
+    },
+    {
+      "id": "64",
+      "price_book_organizer": "Mellanox ConnectX-6 VPI Adapter Cards",
+      "product_name": "MCX653105A-HDAT-SP",
+      "product_description": "ConnectX-6 VPI adapter card, HDR IB (200Gb/s) and 200GbE, single-port QS FP56, PCIe4.0 x16, tall bracket, single pack",
+      "price": 794.0
+    },
+    {
+      "id": "65",
+      "price_book_organizer": "Mellanox ConnectX-6 Dx EN cards",
+      "product_name": "MCX623106AS-CDAT",
+      "product_description": "ConnectX-6 Dx EN adapter card, 100GbE, Dual-port QSFP56, PCIe 4.0 x16, S ecure Boot, No Crypto, Tall Bracket",
+      "price": 794.0
+    },
+    {
+      "id": "66",
+      "price_book_organizer": "Mellanox ConnectX-6 Dx EN cards",
+      "product_name": "MCX623106AC-CDAT",
+      "product_description": "ConnectX-6 Dx EN adapter card, 100GbE, Dual-port QSFP56, PCIe 4.0 x16, C rypto and Secure Boot, Tall Bracket",
+      "price": 952.0
+    },
+    {
+      "id": "67",
+      "price_book_organizer": "Mellanox ConnectX-6 Dx EN cards",
+      "product_name": "MCX623102AS-ADAT",
+      "product_description": "ConnectX-6 Dx EN adapter card, 25GbE, Dual-port SFP28, PCIe 4.0 x16, Sec ure Boot, No Crypto, Tall Bracket",
+      "price": 337.0
+    },
+    {
+      "id": "68",
+      "price_book_organizer": "Mellanox ConnectX-7 VPI Adapter Cards",
+      "product_name": "MCX750500C-0D00",
+      "product_description": "Nvidia adapter card with four ConnectX-7, each up to 400Gb/s IB (default  mode) or 400GbE, PCIe 5.0 x32, PCIe switch, crypto disabled, secure boo t enabled",
+      "price": 3853.0
+    },
+    {
+      "id": "69",
+      "price_book_organizer": "Mellanox ConnectX-7 VPI Adapter Cards",
+      "product_name": "MCX750500C-0D0K",
+      "product_description": "Nvidia adapter card with four ConnectX-7, each up to 400Gb/s IB (default  mode) or 400GbE, PCIe 5.0 x32, PCIe switch, No heatsink, crypto disable d, secure boot enabled",
+      "price": 3853.0
+    },
+    {
+      "id": "70",
+      "price_book_organizer": "Mellanox ConnectX-7 VPI Adapter Cards",
+      "product_name": "MCX750500B-0D0K",
+      "product_description": "Nvidia adapter card with four ConnectX-7, each up to 400Gb/s IB (default  mode) or 400GbE, PCIe 5.0 x32, PCIe switch, No heatsink, crypto disable d, secure boot enabled",
+      "price": 3853.0
+    },
+    {
+      "id": "71",
+      "price_book_organizer": "Mellanox ConnectX-7 VPI Adapter Cards",
+      "product_name": "MCX75510AAS-NEAT - InfiniBand Only",
+      "product_description": "NVIDIA ConnectX-7 adapter card, 400Gb/s NDR IB , Single-port OSFP, PCIe 5.0 x16 with x16 Extension option (Socket Direct ready), Secure boot, No  Crypto, Tall Bracket",
+      "price": 1111.0
+    },
+    {
+      "id": "72",
+      "price_book_organizer": "Mellanox ConnectX-7 VPI Adapter Cards",
+      "product_name": "MCX75510AAS-HEAT",
+      "product_description": "NVIDIA ConnectX-7 adapter card, 200Gb/s NDR200 IB, Single-port OSFP, PCI e 5.0 x16 Extension option (Socket Direct ready), Secure boot, No Crypto , Tall Bracket",
+      "price": 794.0
+    },
+    {
+      "id": "73",
+      "price_book_organizer": "Mellanox ConnectX-7 VPI Adapter Cards",
+      "product_name": "MCX753436MC-HEAB",
+      "product_description": "NVIDIA ConnectX-7 OCP3.0 SFF Adapter Card, 200GbE (default mode) / NDR20 0 IB, Dual-port QSFP112, Multi-Host and Socket Direct capable, PCIe 5.0 x16, Crypto Enabled, Secure Boot Enabled, Thumbscrew (Pull Tab) Bracket",
+      "price": 1257.0
+    },
+    {
+      "id": "74",
+      "price_book_organizer": "Mellanox ConnectX-7 VPI Adapter Cards",
+      "product_name": "MCX753436MS-HEAB",
+      "product_description": "NVIDIA ConnectX-7 OCP3.0 SFF Adapter Card, 200GbE (default mode) / NDR20 0 IB, Dual-port QSFP112, Multi-Host and Socket Direct capable, PCIe 5.0 x16, Crypto Disabled, Secure Boot Enabled, Thumbscrew (Pull Tab) Bracket",
+      "price": 1093.0
+    },
+    {
+      "id": "75",
+      "price_book_organizer": "Mellanox ConnectX-7 VPI Adapter Cards",
+      "product_name": "MCX75310AAS-NEAT",
+      "product_description": "NVIDIA ConnectX-7 HHHL Adapter card, 400GbE / NDR IB (default mode), Sin gle-port OSFP, PCIe 5.0 x16, Crypto Disabled, Secure Boot Enabled, Tall Bracket",
+      "price": 1093.0
+    },
+    {
+      "id": "76",
+      "price_book_organizer": "Mellanox ConnectX-7 VPI Adapter Cards",
+      "product_name": "MCX75310AAC-NEAT",
+      "product_description": "NVIDIA ConnectX-7 HHHL Adapter card, 400GbE / NDR IB (default mode), Sin gle-port OSFP, PCIe 5.0 x16, Crypto Enabled, Secure Boot Enabled, Tall B racket",
+      "price": 1257.0
+    },
+    {
+      "id": "77",
+      "price_book_organizer": "Mellanox ConnectX-7 VPI Adapter Cards",
+      "product_name": "MCX75310AAS-HEAT",
+      "product_description": "NVIDIA ConnectX-7 HHHL Adapter Card, 200GbE / NDR200 IB (default mode), Single-port OSFP, PCIe 5.0 x16, Crypto Disabled, Secure Boot Enabled, Ta ll Bracket",
+      "price": 782.0
+    },
+    {
+      "id": "78",
+      "price_book_organizer": "Mellanox ConnectX-7 VPI Adapter Cards",
+      "product_name": "MCX715105AS-WEAT",
+      "product_description": "NVIDIA ConnectX-7 HHHL Adapter Card, 400GbE (default mode) / NDR IB, Sin gle-port QSFP112, Port Split Capable, PCIe 5.0 x16 with x16 PCIe extensi on option, Crypto Disabled, Secure Boot Enabled, Tall bracket",
+      "price": 1093.0
+    },
+    {
+      "id": "79",
+      "price_book_organizer": "Mellanox ConnectX-7 VPI Adapter Cards",
+      "product_name": "NVIDIA ConnectX-7 Ethernet adapter card,",
+      "product_description": "NVIDIA ConnectX-7 FHHL Adapter Card, 25/50GbE, Quad-port SFP56 with enha nced-SyncE & PTP, PPS In/Out, PCIe 4.0 x16, Crypto Enabled, Secure Boot Enabled, Tall Bracket",
+      "price": 1742.0
+    },
+    {
+      "id": "80",
+      "price_book_organizer": "Mellanox ConnectX-7 Ethernet Cards",
+      "product_name": "MCX713106AS-CEAT",
+      "product_description": "NVIDIA ConnectX-7 HHHL Adapter Card, 100GbE, Dual-port QSFP112, PCIe 5.0  x16, Crypto Disabled, Secure Boot Enabled, Tall Bracket",
+      "price": 914.0
+    },
+    {
+      "id": "81",
+      "price_book_organizer": "Mellanox ConnectX-7 VPI Adapter Cards",
+      "product_name": "MCX755106AS-HEAT",
+      "product_description": "NVIDIA ConnectX-7 HHHL Adapter Card, 200GbE (default mode) / NDR200 IB, Dual-port QSFP112, PCIe 5.0 x16 with x16 PCIe extension option, Crypto D isabled, Secure Boot Enabled, Tall bracket",
+      "price": 1093.0
+    },
+    {
+      "id": "82",
+      "price_book_organizer": "Mellanox ConnectX-7 VPI Adapter Cards",
+      "product_name": "MCX755106AC-HEAT",
+      "product_description": "NVIDIA ConnectX-7 HHHL adapter Card, 200GbE (default mode) / NDR200 IB, Dual-port QSFP112, PCIe 5.0 x16 with x16 PCIe extension option, Crypto E nabled, Secure Boot Enabled, Tall bracket",
+      "price": 1257.0
+    },
+    {
+      "id": "83",
+      "price_book_organizer": "Mellanox ConnectX-7 Ethernet Cards",
+      "product_name": "MCX713106AC-CEAT",
+      "product_description": "NVIDIA ConnectX-7 HHHL Adapter Card, 100GbE, Dual-port QSFP112, PCIe 5.0  x16, Crypto Enabled, Secure Boot Enabled, Tall Bracket",
+      "price": 1097.0
+    },
+    {
+      "id": "84",
+      "price_book_organizer": "Mellanox ConnectX-7 Ethernet Cards",
+      "product_name": "MCX713104AS-ADAT",
+      "product_description": "NVIDIA ConnectX-7 HHHL Adapter Card, 25/50GbE, Quad-Port SFP56, PCIe 4.0  x16, Crypto Disabled, Secure Boot Enabled, Tall Bracket",
+      "price": 569.0
+    },
+    {
+      "id": "85",
+      "price_book_organizer": "Mellanox ConnectX-7 Ethernet Cards",
+      "product_name": "MCX713104AC-ADAT",
+      "product_description": "NVIDIA ConnectX-7 HHHL Adapter Card, 25/50GbE, Quad-Port SFP56, PCIe 4.0  x16, Crypto Enabled, Secure Boot Enabled, Tall Bracket",
+      "price": 712.0
+    },
+    {
+      "id": "86",
+      "price_book_organizer": "Mellanox ConnectX-7 VPI Adapter Cards",
+      "product_name": "MCX75343AMS-NEAC",
+      "product_description": "NVIDIA ConnectX-7 OCP3.0 TSFF Adapter Card, 400GbE / NDR IB (default mod e), Single-port OSFP, Multi-Host and Socket Direct capable, PCIe 5.0 x16 , Crypto Disabled, Secure Boot Enabled, Thumbscrew (Pull Tab) TSFF Brack et",
+      "price": 1093.0
+    },
+    {
+      "id": "87",
+      "price_book_organizer": "Mellanox ConnectX-7 VPI Adapter Cards",
+      "product_name": "MCX75343AMC-NEAC",
+      "product_description": "NVIDIA ConnectX-7 OCP3.0 TSFF Adapter Card, 400GbE / NDR IB (default mod e), Single-port OSFP, Multi-Host and Socket Direct capable, PCIe 5.0 x16 , Crypto Enabled, Secure Boot Enabled, Thumbscrew (Pull Tab) TSFF Bracke t",
+      "price": 1257.0
+    },
+    {
+      "id": "88",
+      "price_book_organizer": "ConnectX-8 Adapter Card",
+      "product_name": "Centaur-8, NVIDIA ConnectX-8 HHHL Adapter Card, XDR",
+      "product_description": "NVIDIA ConnectX-8 C8180 HHHL SuperNIC, 800Gbs XDR IB (default mode) / 2x 400GbE, Single-cage OSFP, PCIe 6 x16 with x16 PCIe Socket Direct/Multi H ost Eextension option, Crypto Enabled, Secure Boot Enabled, Tall bracket",
+      "price": 1350.0
+    },
+    {
+      "id": "89",
+      "price_book_organizer": "ConnectX-8 Adapter Card",
+      "product_name": "Topaz-8, NVIDIA ConnectX-8 HHHL Adapter Card, 400",
+      "product_description": "NVIDIA ConnectX-8 C8240 HHHL SuperNIC, 400GbE (default mode) / XDR400 IB , Dual-port QSFP112, PCIe 6 x16 with x16 PCIe Socket Direct/Multi Host E extension option, Crypto Enabled, Secure Boot Enabled, Tall bracket",
+      "price": 1350.0
+    },
+    {
+      "id": "90",
+      "price_book_organizer": "Mellanox HDR MCS8500 Modular Switch Series",
+      "product_name": "MTDF-LIQ-A",
+      "product_description": "MCS85xx director chassis water cooling set",
+      "price": 19435.0
+    },
+    {
+      "id": "91",
+      "price_book_organizer": "MCS8500 HDR Modular FRU",
+      "product_name": "AHX-22KW-350MM",
+      "product_description": "MCS85xx director systems liquid-to-air heat exchanger",
+      "price": 56420.0
+    },
+    {
+      "id": "92",
+      "price_book_organizer": "Mellanox Skyway",
+      "product_name": "MGA100-HS2",
+      "product_description": "Mellanox Skyway IB to Ethernet Gateway Appliance, 8x IB and 8x Ethernet ports, 2U server, 8x ConnectX-6 VPI dual-port HDR/200GbE adapters, 2 Pow er Supplies (AC)",
+      "price": 20413.0
+    },
+    {
+      "id": "93",
+      "price_book_organizer": "UFM Enterprise Appliance",
+      "product_name": "MUA9602H-2SR",
+      "product_description": "NVIDIA UFM 3.0 appliance for UFM Telemetry or UFM Enterprise, 1U server with 2x ConnectX-6 HDR Dual-port 200Gb/s InfiniBand adapter, UFM license  sold separately, UFM SW installed.",
+      "price": 14927.0
+    },
+    {
+      "id": "94",
+      "price_book_organizer": "METROX-3 XC Appliance",
+      "product_name": "MTQ8400-HS2R",
+      "product_description": "NVIDIA MetroX-3 XC long-haul NDR200 (100G bandwidth) 1U appliance, ready  for DWDM systems 2 long-haul QSFP112 ports, secured boot, 2 power suppl ies (AC), standard depth, rail kit",
+      "price": 28693.0
+    },
+    {
+      "id": "95",
+      "price_book_organizer": "UFM Cyber-AI Appliance",
+      "product_name": "MUA9652H-2SF",
+      "product_description": "Nvidia UFM 4.0 appliance for UFM Cyber-AI, 2U appliance with 2 ConnectX- 6 HDR 200Gb/s InfiniBand adapters, UFM software package sold separately.",
+      "price": 29774.0
+    },
+    {
+      "id": "96",
+      "price_book_organizer": "UFM Cyber-AI Appliance",
+      "product_name": "MUA9652H-2SF_NIL",
+      "product_description": "Nvidia UFM 4.0 appliance for UFM Cyber-AI, 2U appliance with 2 ConnectX- 6 HDR 200Gb/s InfiniBand adapters, UFM license sold separately, delivere d without UFM SW (COO China).",
+      "price": 29774.0
+    },
+    {
+      "id": "97",
+      "price_book_organizer": "Mellanox HDR MCS8500 Modular Switch Series",
+      "product_name": "MMB8500",
+      "product_description": "X86 dual-core chassis management module",
+      "price": 5750.0
+    },
+    {
+      "id": "98",
+      "price_book_organizer": "Mellanox HDR MCS8500 Modular Switch Series",
+      "product_name": "MCS8500",
+      "product_description": "320Tb/s, 800-port HDR InfiniBand chassis, includes 9 power supply units (N+1) with support for up to 16 power supply units (N+N)",
+      "price": 104650.0
+    },
+    {
+      "id": "99",
+      "price_book_organizer": "UFM Enterprise Appliance",
+      "product_name": "MUA9602H-2SRS",
+      "product_description": "NVIDIA UFM Appliance 3.0 for UFM Telemetry or UFM Enterprise, 1U server with 2x ConnectX-7 NDR Single-port 400Gb/s InfiniBand adapter, Secured-b oot, UFM license sold separately, UFM SW installed.",
+      "price": 14927.0
+    },
+    {
+      "id": "100",
+      "price_book_organizer": "UFM Enterprise Appliance",
+      "product_name": "MUA9602H-2SRS_NIL",
+      "product_description": "NVIDIA UFM Appliance 3.0 for UFM Telemetry or UFM Enterprise, 1U server with 2x ConnectX-7 NDR Single-port 400Gb/s InfiniBand adapter, Secured-b oot, UFM license sold separately, delivered without UFM SW (COO Poland).",
+      "price": 14927.0
+    },
+    {
+      "id": "101",
+      "price_book_organizer": "UFM-Enterprise Appliance",
+      "product_name": "MUA9702H-2SFS",
+      "product_description": "NVIDIA UFM Appliance 3.5 for UFM Telemetry or UFM Enterprise, 1U applian ce with 2x ConnectX-8 XDR Single-port 800Gb/s InfiniBand adapter, UFM li cense sold separately, UFM SW installed.",
+      "price": 15500.0
+    },
+    {
+      "id": "102",
+      "price_book_organizer": "Mellanox HDR MCS8500 Modular Switch Series",
+      "product_name": "MQM8520-H",
+      "product_description": "Mellanox quantum HDR InfiniBand spine blade, 40 ports",
+      "price": 15629.0
+    },
+    {
+      "id": "103",
+      "price_book_organizer": "Mellanox 40-Port, HDR, MQM8700 Series",
+      "product_name": "MQM8790-HS2F",
+      "product_description": "Mellanox Quantum HDR InfiniBand Switch, 40 QSFP56 ports, 2 Power Supplie s (AC), unmanaged, standard depth, P2C airflow, Rail Kit",
+      "price": 9971.0
+    },
+    {
+      "id": "104",
+      "price_book_organizer": "Mellanox HDR MCS8500 Modular Switch Series",
+      "product_name": "MQM8510-H",
+      "product_description": "Mellanox quantum HDR InfiniBand leaf blade, 40 QSFP56 ports",
+      "price": 25714.0
+    },
+    {
+      "id": "105",
+      "price_book_organizer": "MetroX-2",
+      "product_name": "MTQ8200-HS2F",
+      "product_description": "Quantum MetroX-2 40km long haul 100Gb/s switch, 2 long haul QSFP28 ports , 8 standard HDR ports, 2 Power Supplies (AC), x86 dual core, standard d epth, P2C airflow, Rail Kit",
+      "price": 23575.0
+    },
+    {
+      "id": "106",
+      "price_book_organizer": "MetroX-2",
+      "product_name": "MTQ8100-HS2F",
+      "product_description": "Quantum MetroX-2 10km long haul 100Gb/s switch, 2 long haul QSFP28 ports , 8 standard HDR ports, 2 Power Supplies (AC), x86 dual core, standard d epth, P2C airflow, Rail Kit",
+      "price": 17940.0
+    },
+    {
+      "id": "107",
+      "price_book_organizer": "Mellanox 40-Port, HDR, MQM8700 Series",
+      "product_name": "MQM8700-HS2F",
+      "product_description": "Mellanox Quantum HDR InfiniBand Switch, 40 QSFP56 ports, 2 Power Supplie s (AC), x86 dual core, standard depth, P2C airflow, Rail Kit",
+      "price": 12466.0
+    },
+    {
+      "id": "108",
+      "price_book_organizer": "Mellanox 40-Port, HDR, MQM8700 Series",
+      "product_name": "MQM8790-HS2R",
+      "product_description": "Mellanox Quantum HDR InfiniBand Switch, 40 QSFP56 ports, 2 Power Supplie s (AC), unmanaged, standard depth, C2P airflow, Rail Kit",
+      "price": 9971.0
+    },
+    {
+      "id": "109",
+      "price_book_organizer": "Mellanox 40-Port, HDR, MQM8700 Series",
+      "product_name": "MQM8700-HS2R",
+      "product_description": "Mellanox Quantum HDR InfiniBand Switch, 40 QSFP56 ports, 2 Power Supplie s (AC), x86 dual core, standard depth, C2P airflow, Rail Kit",
+      "price": 12466.0
+    },
+    {
+      "id": "110",
+      "price_book_organizer": "Mellanox 64-Port, NDR, MQM9700 Series",
+      "product_name": "MQM9790-NS2F",
+      "product_description": "NVIDIA Quantum 2 based NDR InfiniBand Switch, 64 NDR ports, 32 OSFP port s, 2 Power Supplies (AC), Standard depth, Unmanaged, P2C airflow, Rail K it",
+      "price": 19539.0
+    },
+    {
+      "id": "111",
+      "price_book_organizer": "Mellanox 64-Port, NDR, MQM9700 Series",
+      "product_name": "MQM9700-NS2F",
+      "product_description": "NVIDIA Quantum 2 based NDR InfiniBand Switch, 64 NDR ports, 32 OSFP port s, 2 Power Supplies (AC), Standard depth, Managed, P2C airflow, Rail Kit",
+      "price": 21689.0
+    },
+    {
+      "id": "112",
+      "price_book_organizer": "Mellanox 64-Port, NDR, MQM9700 Series",
+      "product_name": "MQM9790-NS2R",
+      "product_description": "NVIDIA Quantum 2 based NDR InfiniBand Switch, 64 NDR ports, 32 OSFP port s, 2 Power Supplies (AC), Standard depth, Unmanaged, C2P airflow, Rail K it",
+      "price": 19539.0
+    },
+    {
+      "id": "113",
+      "price_book_organizer": "Mellanox 64-Port, NDR, MQM9700 Series",
+      "product_name": "MQM9700-NS2R",
+      "product_description": "NVIDIA Quantum 2 based NDR InfiniBand Switch, 64 NDR ports, 32 OSFP port s, 2 Power Supplies (AC), Standard depth, Managed, C2P airflow, Rail Kit",
+      "price": 21689.0
+    },
+    {
+      "id": "114",
+      "price_book_organizer": "Air Cooled XDR Switches",
+      "product_name": "Crocodile Air Cooled, NVIDIA Quantum-3 based Two-Adjoining XDR",
+      "product_description": "NVIDIA Quantum-3 based Two-Adjoining XDR InfiniBand Switches, 2U, with 3 6 XDR Ports over 18 OSFP cages per Switch, 4 Power Supplies (Power Cords  Not Included), Standard Depth, Managed, C2P Airflow, Rail Kit",
+      "price": 37500.0
+    },
+    {
+      "id": "115",
+      "price_book_organizer": "Air Cooled XDR Switches",
+      "product_name": "Black Mamba Air Cooled, NVIDIA Quantum-3 based XDR InfiniBand Switch",
+      "product_description": "NVIDIA Quantum-3 based XDR InfiniBand Switch, 4U, 144 XDR Ports over 72 OSFP Cages, 8 Power Supplies (Power Cords Not Included), Standard Depth,  Managed, C2P Airflow, Rail Kit",
+      "price": 75000.0
+    },
+    {
+      "id": "116",
+      "price_book_organizer": "MSN2100 Series Ethernet Switches. Spectrum 16 QSFP28 ports",
+      "product_name": "MSN2100-CB2FC",
+      "product_description": "NVIDIA Spectrum based 100GbE 1U Open Ethernet Switch with Cumulus Linux,  16 QSFP28 ports, 2 Power Supplies (AC), x86 CPU, short depth, P2C airfl ow. Rail Kit must be purchased separately",
+      "price": 8500.0
+    },
+    {
+      "id": "117",
+      "price_book_organizer": "MSN2100 Series Ethernet Switches. Spectrum 16 QSFP28 ports",
+      "product_name": "MSN2100-CB2RC",
+      "product_description": "NVIDIA Spectrum based 100GbE 1U Open Ethernet Switch with Cumulus Linux,  16 QSFP28 ports, 2 Power Supplies (AC), x86 CPU, short depth, C2P airfl ow. Rail Kit must be purchased separately",
+      "price": 8500.0
+    },
+    {
+      "id": "118",
+      "price_book_organizer": "MSN2100 Series Ethernet Switches. Spectrum 16 QSFP28 ports",
+      "product_name": "MSN2100-CB2RO",
+      "product_description": "NVIDIA Spectrum based 100GbE 1U Open Ethernet switch with ONIE, 16 QSFP2 8 ports, 2 Power Supplies (AC), x86 CPU, short depth, C2P airflow. Rail Kit must be purchased separately",
+      "price": 8500.0
+    },
+    {
+      "id": "119",
+      "price_book_organizer": "MSN2201 Series Ethernet Switches. Spectrum 48 1GBASE-T ports, 4 QSFP28 ports",
+      "product_name": "MSN2201-CB2FC",
+      "product_description": "Nvidia Spectrum based 1GBase-T/100GbE 1U Open Ethernet switch with Cumul us Linux, 48 RJ45 ports and 4 QSFP28 ports, Dual Power Supply (AC), x86 CPU, short depth, P2C airflow, 4-post Rail kit.",
+      "price": 1900.0
+    },
+    {
+      "id": "120",
+      "price_book_organizer": "MSN2010 Series Ethernet Switches. Spectrum 18 SFP28 ports, 8 QSFP28 ports",
+      "product_name": "MSN2010-CB2FC",
+      "product_description": "NVIDIA Spectrum based 25GbE/100GbE 1U Open Ethernet switch with Cumulus Linux, 18 SFP28 ports and 4 QSFP28 ports, 2 Power Supplies (AC), x86 CPU , short depth, P2C airflow. Rail Kit must be purchased separately",
+      "price": 4500.0
+    },
+    {
+      "id": "121",
+      "price_book_organizer": "MSN2201 Series Ethernet Switches. Spectrum 48 1GBASE-T ports, 4 QSFP28 ports",
+      "product_name": "MSN2201-CB2RC",
+      "product_description": "Nvidia Spectrum based 1GBase-T/100GbE 1U Open Ethernet switch with Cumul us Linux, 48 RJ45 ports and 4 QSFP28 ports, Dual Power Supply (AC), x86 CPU, short depth, C2P airflow, 4-post Rail-kit.",
+      "price": 1900.0
+    },
+    {
+      "id": "122",
+      "price_book_organizer": "MSN2201 Series Ethernet Switches. Spectrum 48 1GBASE-T ports, 4 QSFP28 ports",
+      "product_name": "MSN2201-CBARC",
+      "product_description": "NVIDIA Spectrum based 1GbE/100GbE 1U Open Ethernet switch with Cumulus L inux, 48 RJ45 ports and 4 QSFP28 ports, Dual Power Supplies (DC), x86 CP U, Connector-to-Power airflow.",
+      "price": 2500.0
+    },
+    {
+      "id": "123",
+      "price_book_organizer": "MSN2010 Series Ethernet Switches. Spectrum 18 SFP28 ports, 8 QSFP28 ports",
+      "product_name": "MSN2010-CB2RC",
+      "product_description": "NVIDIA Spectrum based 25GbE/100GbE 1U Open Ethernet switch with Cumulus Linux, 18 SFP28 ports and 4 QSFP28 ports, 2 Power Supplies (AC), x86 CPU , short depth, C2P airflow. Rail Kit must be purchased separately",
+      "price": 4500.0
+    },
+    {
+      "id": "124",
+      "price_book_organizer": "MSN3700C Series Ethernet Switches. Spectrum-2 32 QSFP28 ports",
+      "product_name": "MSN3700-CS2FC",
+      "product_description": "NVIDIA Spectrum-2 based 100GbE 1U Open Ethernet Switch with Cumulus Linu x, 32 QSFP28 ports, 2 Power Supplies (AC), x86 CPU, standard depth, P2C airflow, Rail Kit",
+      "price": 11900.0
+    },
+    {
+      "id": "125",
+      "price_book_organizer": "MSN3700 Series Ethernet Switches. Spectrum-2 32 QSFP56 ports",
+      "product_name": "MSN3700-VS2FC",
+      "product_description": "NVIDIA Spectrum-2 based 200GbE 1U Open Switch with Cumulus Linux, 32 QSF P56 ports, 2 Power Supplies (AC), Standard depth, x86 CPU, P2C airflow, Rail Kit",
+      "price": 16900.0
+    },
+    {
+      "id": "126",
+      "price_book_organizer": "MSN3700 Series Ethernet Switches. Spectrum-2 32 QSFP56 ports",
+      "product_name": "MSN3750-VS2FSC",
+      "product_description": "NVIDIA Spectrum-2 based 200GbE 1U X-Haul Ethernet Switch with Cumulus Li nux, 32 QSFP56 ports, 2 Power Supplies (AC), x86 CPU, Secured-boot, stan dard depth, P2C airflow, SyncE and PPS, Rail Kit",
+      "price": 18900.0
+    },
+    {
+      "id": "127",
+      "price_book_organizer": "MSN3700C Series Ethernet Switches. Spectrum-2 32 QSFP28 ports",
+      "product_name": "MSN3700-CS2RC",
+      "product_description": "NVIDIA Spectrum-2 based 100GbE 1U Open Ethernet Switch with Cumulus Linu x, 32 QSFP28 ports, 2 Power Supplies (AC), x86 CPU, standard depth, C2P airflow, Rail Kit",
+      "price": 11900.0
+    },
+    {
+      "id": "128",
+      "price_book_organizer": "MSN3700 Series Ethernet Switches. Spectrum-2 32 QSFP56 ports",
+      "product_name": "MSN3700-VS2RC",
+      "product_description": "NVIDIA Spectrum-2 based 200GbE 1U Open Switch with Cumulus Linux, 32 QSF P56 ports, 2 Power Supplies (AC), Standard depth, x86 CPU, C2P airflow, Rail Kit",
+      "price": 16900.0
+    },
+    {
+      "id": "129",
+      "price_book_organizer": "MSN3420 Series Ethernet Switches. Spectrum-2 48 SFP28 ports, 12 QSFP28 ports",
+      "product_name": "MSN3420-CB2FC",
+      "product_description": "NVIDIA Spectrum-2 based 25GbE/100GbE 1U Open Ethernet switch with Cumulu s Linux, 48 SFP28 ports and 12 QSFP28 ports, 2 Power Supplies (AC), x86 CPU, short depth, P2C airflow, Rail Kit",
+      "price": 11900.0
+    },
+    {
+      "id": "130",
+      "price_book_organizer": "MSN3420 Series Ethernet Switches. Spectrum-2 48 SFP28 ports, 12 QSFP28 ports",
+      "product_name": "MSN3420-CB2RC",
+      "product_description": "NVIDIA Spectrum-2 based 25GbE/100GbE 1U Open Ethernet switch with Cumulu s Linux, 48 SFP28 ports and 12 QSFP28 ports, 2 Power Supplies (AC), x86 CPU, short depth, C2P airflow, Rail Kit",
+      "price": 11900.0
+    },
+    {
+      "id": "131",
+      "price_book_organizer": "MSN4700 Series Ethernet Switches. Spectrum-3 32 400GbE QSFP-DD ports",
+      "product_name": "MSN4700-WS2FC",
+      "product_description": "NVIDIA Spectrum-3 based 400GbE 1U Open Ethernet Switch with Cumulus Linu x, 32 QSFPDD ports, 2 Power Supplies (AC), x86 CPU, standard depth, P2C airflow, Rail Kit",
+      "price": 21900.0
+    },
+    {
+      "id": "132",
+      "price_book_organizer": "MSN4700 Series Ethernet Switches. Spectrum-3 32 400GbE QSFP-DD ports",
+      "product_name": "MSN4700-WS2RC",
+      "product_description": "NVIDIA Spectrum-3 based 400GbE 1U Open Ethernet Switch with Cumulus Linu x, 32 QSFPDD ports, 2 Power Supplies (AC), x86 CPU, standard depth, C2P airflow, Rail Kit",
+      "price": 21900.0
+    },
+    {
+      "id": "133",
+      "price_book_organizer": "MSN4600C Series Ethernet Switches. Spectrum-3 64 QSFP28 ports",
+      "product_name": "MSN4600-CS2FC",
+      "product_description": "NVIDIA Spectrum-3 based 100GbE 2U Open Ethernet switch with Cumulus Linu x, 64 QSFP28 ports, 2 Power Supplies (AC), x86 CPU, standard depth, P2C airflow, Rail Kit",
+      "price": 16900.0
+    },
+    {
+      "id": "134",
+      "price_book_organizer": "MSN4600 Series Ethernet Switches. Spectrum-3 64 QSFP56 ports",
+      "product_name": "MSN4600-VS2FC",
+      "product_description": "NVIDIA Spectrum-3 based 200GbE 2U Open Ethernet switch with Cumulus Linu x, 64 QSFP56 ports, 2 Power Supplies (AC), x86 CPU, standard depth, P2C airflow, Rail Kit",
+      "price": 21900.0
+    },
+    {
+      "id": "135",
+      "price_book_organizer": "MSN4600C Series Ethernet Switches. Spectrum-3 64 QSFP28 ports",
+      "product_name": "MSN4600-CS2RC",
+      "product_description": "NVIDIA Spectrum-3 based 100GbE 2U Open Ethernet switch with Cumulus Linu x, 64 QSFP28 ports, 2 Power Supplies (AC), x86 CPU, standard depth, C2P airflow, Rail Kit",
+      "price": 16900.0
+    },
+    {
+      "id": "136",
+      "price_book_organizer": "MSN4600 Series Ethernet Switches. Spectrum-3 64 QSFP56 ports",
+      "product_name": "MSN4600-VS2RC",
+      "product_description": "NVIDIA Spectrum-3 based 200GbE 2U Open Ethernet switch with Cumulus Linu x, 64 QSFP56 ports, 2 Power Supplies (AC), x86 CPU, standard depth, C2P airflow, Rail Kit",
+      "price": 21900.0
+    },
+    {
+      "id": "137",
+      "price_book_organizer": "MSN5400 Series Ethernet Switches. Spectrum-4 64 QSFP-DD ports",
+      "product_name": "MSN5400 Spectrum-4, 64x QSFP-DD, Cumulus, Secure",
+      "product_description": "NVIDIA Spectrum-4 based 400GbE 2U Open Ethernet switch with Cumulus Linu x Authentication, 64 QSFP56-DD ports and 2 SFP28 ports, 2 power supplies  (AC), x86 CPU, Secure-boot, standard depth, Power-to-Connector airflow,  Tool-less Rail Kit",
+      "price": 30500.0
+    },
+    {
+      "id": "138",
+      "price_book_organizer": "MSN5400 Series Ethernet Switches. Spectrum-4 64 QSFP-DD ports",
+      "product_name": "MSN5400 Spectrum-4, 64x QSFP-DD, Cumulus, Secure",
+      "product_description": "NVIDIA Spectrum-4 based 400GbE 2U Open Ethernet switch with Cumulus Linu x Authentication, 64 QSFP56-DD ports and 2 SFP28 ports, 2 power supplies  (AC), x86 CPU, Secure-boot, standard depth, Connector-to-Power airflow,  Tool-less Rail Kit",
+      "price": 30500.0
+    },
+    {
+      "id": "139",
+      "price_book_organizer": "MSN5600 Series Ethernet Switches. Spectrum-4 64 OSFP ports",
+      "product_name": "MSN5600 Spectrum-4, 64x OSFP, Cumulus, Secure",
+      "product_description": "NVIDIA Spectrum-4 based 800GbE 2U Open Ethernet switch with Cumulus Linu x Authentication, 64 OSFP ports and 1 SFP28 port, 2 power supplies (3KW,  AC), x86 CPU, Secure-boot, standard depth, C2P airflow, Tool-less Rail Kit",
+      "price": 42500.0
+    },
+    {
+      "id": "140",
+      "price_book_organizer": "Accessories",
+      "product_name": "MTMK9100-T15",
+      "product_description": "Auxiliary Kit for additional PCIe Gen5 x16 connection, PCIe Gen5 x16 pas sive auxiliary card, two 150mm I-PEX cables",
+      "price": 173.0
+    },
+    {
+      "id": "141",
+      "price_book_organizer": "Accessories",
+      "product_name": "MTMK9100-T25",
+      "product_description": "Auxiliary Kit for additional PCIe Gen4 x16 connection, PCIe Gen4 x16 pas sive auxiliary card, two 250mm I-PEX cables",
+      "price": 173.0
+    },
+    {
+      "id": "142",
+      "price_book_organizer": "Accessories",
+      "product_name": "MTMK9100-T35",
+      "product_description": "Auxiliary Kit for additional PCIe Gen4 x16 connection, PCIe Gen4 x16 pas sive auxiliary card, two 350mm I-PEX cables",
+      "price": 173.0
+    },
+    {
+      "id": "143",
+      "price_book_organizer": "MCS8500 HDR Modular FRU",
+      "product_name": "MTDF-BLK-F",
+      "product_description": "MCS85XX Leaf - Blank",
+      "price": 265.0
+    },
+    {
+      "id": "144",
+      "price_book_organizer": "Bracket",
+      "product_name": "MTM018774",
+      "product_description": "FRU Tall Perforated bracket 1 ZQSFP port 2 leds. Fits MCX651105A/MCX6231 05A/MCX683105A",
+      "price": 7.0
+    },
+    {
+      "id": "145",
+      "price_book_organizer": "Bracket",
+      "product_name": "MTM010153",
+      "product_description": "FRU Short Perforated bracket for 2-port QSFP28 adapter. Fits   MCX456M/ MCX454A/ MCX416A/ MCX456A/ MCX414A/ MCX556A/ MCX556M/ MCX516A/ MCX556N",
+      "price": 6.0
+    },
+    {
+      "id": "146",
+      "price_book_organizer": "Bracket",
+      "product_name": "MTM010154",
+      "product_description": "FRU Tall Perforated bracket for 2-port QSFP28 adapter. Fits  MCX454A/ MC X456A/MCX456M/  MCX416A/ MCX414A/ MCX556A/ MCX556N/ MCX556M/ MCX516A",
+      "price": 6.0
+    },
+    {
+      "id": "147",
+      "price_book_organizer": "Bracket",
+      "product_name": "MTM010192",
+      "product_description": "FRU Short Perforated bracket for 1-port QSFP28 adapter. Fits MCX453A/ MC X455A/ MCX413A/ MCX415A/ MCX4131A/ MCX555A/CX515A",
+      "price": 6.0
+    },
+    {
+      "id": "148",
+      "price_book_organizer": "Bracket",
+      "product_name": "MTM010193",
+      "product_description": "FRU Tall Perforated bracket for 1-port QSFP28 adapter. Fits MCX453A/ MCX 455A/ MCX413A/ MCX415A/ MCX4131A / MCX555A/ MCX515A",
+      "price": 6.0
+    },
+    {
+      "id": "149",
+      "price_book_organizer": "Bracket",
+      "product_name": "MTM016918",
+      "product_description": "FRU Tall bracket 2 ZSFP port 4 leds. Fits CX654106A, CX653106A/CX614106A /CX613106A",
+      "price": 8.0
+    },
+    {
+      "id": "150",
+      "price_book_organizer": "Bracket",
+      "product_name": "MTM016919",
+      "product_description": "FRU Short bracket for 2-port ZQSFP adapter. Fits: MCX654106A, MCX614106A , MCX653106A, MCX613106A, MCX623106A, MCX622106A",
+      "price": 8.0
+    },
+    {
+      "id": "151",
+      "price_book_organizer": "Bracket",
+      "product_name": "MTM016920",
+      "product_description": "FRU Tall Perforated bracket 1 ZQSFP port 2 leds. Fits MCX614105A / MCX65 4105A / MCX613105A /MCX653105A",
+      "price": 8.0
+    },
+    {
+      "id": "152",
+      "price_book_organizer": "Bracket",
+      "product_name": "MTM016921",
+      "product_description": "FRU Short Perforated bracket 1 ZQSFP port 2 leds. Fits MCX653105A/ MCX61 3105A/ MCX654105A/ MCX614105A/ MCX623105A/ MCX683105A/ MCX651105A",
+      "price": 8.0
+    },
+    {
+      "id": "153",
+      "price_book_organizer": "Bracket",
+      "product_name": "MTM018294",
+      "product_description": "FRU, OCP3.0, 10 units of Internal Lock Bracket for 2 QSFP28/56, Fits CX5 66 / CX613436 / CX653436 / CX623436",
+      "price": 138.0
+    },
+    {
+      "id": "154",
+      "price_book_organizer": "Bracket",
+      "product_name": "MTM019137",
+      "product_description": "FRU, OCP3.0 10 units of Internal Lock Bracket for 2 SFP28/56, Fits CX462 1 / CX562 / CX623432 / CX631432",
+      "price": 138.0
+    },
+    {
+      "id": "155",
+      "price_book_organizer": "Bracket",
+      "product_name": "MTM019142",
+      "product_description": "FRU, OCP3.0 10 units of Thumbscrew (Pull Tab) Bracket for 2 SFP28/56, Fi ts CX4621 / CX562 / CX623432 / CX631432A",
+      "price": 138.0
+    },
+    {
+      "id": "156",
+      "price_book_organizer": "Bracket",
+      "product_name": "MTM021142",
+      "product_description": "FRU Short bracket 1 OSFP port 4 leds. Fits MCX75510AA, MCX75210AA, MCX75 310AA",
+      "price": 5.0
+    },
+    {
+      "id": "157",
+      "price_book_organizer": "Bracket",
+      "product_name": "FRU Tall bracket 1 OSFP port 4 leds. Fits MCX75510AA, MCX75210AA, MCX75310AA",
+      "product_description": "FRU Tall bracket for 1 OSFP port 4 leds. Fits MCX75510AA, MCX75210AA, MC X75310AA",
+      "price": 6.0
+    },
+    {
+      "id": "158",
+      "price_book_organizer": "MCS8500 HDR Modular FRU",
+      "product_name": "MTDF-LIQ-B",
+      "product_description": "Modular chassis 19 liters PG25 Coolant",
+      "price": 230.0
+    },
+    {
+      "id": "159",
+      "price_book_organizer": "MCS8500 HDR Modular FRU",
+      "product_name": "MTDF-LIQ-C",
+      "product_description": "MCS85xx director chassis Y pipe splitter for redundant cooling system co nnection",
+      "price": 6095.0
+    },
+    {
+      "id": "160",
+      "price_book_organizer": "EDR Edge Switch Options and Accessories",
+      "product_name": "MTEF-FANF-A",
+      "product_description": "Mellanox Fan Module, 40 x 40 [mm], P2C Airflow For SB7700, SB7800, SB789 0, SN2410, SN2700, SX6710 switches\"\"",
+      "price": 347.0
+    },
+    {
+      "id": "161",
+      "price_book_organizer": "MQM8700 HDR 1U Switch FRU",
+      "product_name": "MTEF-FANF-C",
+      "product_description": "Mellanox Fan Module, 40 x 40 [mm], P2C Airflow For QM8700, QM8780, QM879 0, SN3420, SN3510, SN3700C, SN3700, SN4700 switches\"\"",
+      "price": 259.0
+    },
+    {
+      "id": "162",
+      "price_book_organizer": "MQM97xx Series 1U Switch FRUs",
+      "product_name": "MTEF-FANF-L",
+      "product_description": "400G 1U systems FAN MODULE W/ P2C air flow",
+      "price": 108.0
+    },
+    {
+      "id": "163",
+      "price_book_organizer": "Ethernet Switch Options and Accessories",
+      "product_name": "MTEF-FANF-M",
+      "product_description": "Mellanox Fan Module, 40 x 40 [mm], P2C Airflow For SN4700 switches",
+      "price": 292.0
+    },
+    {
+      "id": "164",
+      "price_book_organizer": "EDR Edge Switch Options and Accessories",
+      "product_name": "MTEF-FANR-A",
+      "product_description": "Mellanox Fan Module, 40 x 40 [mm]\"\", C2P Airflow, For SB7700, SB7800, SB 7890, SN2410, SN2700, SX6710 switches\"\"",
+      "price": 347.0
+    },
+    {
+      "id": "165",
+      "price_book_organizer": "MQM8700 HDR 1U Switch FRU",
+      "product_name": "MTEF-FANR-C",
+      "product_description": "Mellanox Fan Module, 40 x 40 [mm], C2P Airflow, For QM8700, QM8780, QM87 90, SN3420, SN3510, SN3700C, SN3700, SN4700 switches\"\"",
+      "price": 279.0
+    },
+    {
+      "id": "166",
+      "price_book_organizer": "MQM97xx Series 1U Switch FRUs",
+      "product_name": "MTEF-FANR-L",
+      "product_description": "400G 1U systems FAN MODULE W/ C2P air flow",
+      "price": 108.0
+    },
+    {
+      "id": "167",
+      "price_book_organizer": "Ethernet Switch Options and Accessories",
+      "product_name": "MTEF-FANR-M",
+      "product_description": "Mellanox Fan Module, 40 x 40 [mm], C2P Airflow For SN4700 switches",
+      "price": 292.0
+    },
+    {
+      "id": "168",
+      "price_book_organizer": "MCS8500 HDR Modular FRU",
+      "product_name": "MTDF-LCD-A",
+      "product_description": "MCS85xx director systems 7\"\" LCD screen tablet",
+      "price": 1622.0
+    },
+    {
+      "id": "169",
+      "price_book_organizer": "Harness kit",
+      "product_name": "MTMK0051",
+      "product_description": "150mm PCIe GEN4 Harness kit - Black & white Harnesses + Retention clips",
+      "price": 173.0
+    },
+    {
+      "id": "170",
+      "price_book_organizer": "Development or Non-Standard",
+      "product_name": "MTUSB-1",
+      "product_description": "nan",
+      "price": 489.0
+    },
+    {
+      "id": "171",
+      "price_book_organizer": "Options and Accessories",
+      "product_name": "MUA9602H-SD",
+      "product_description": "Nvidia UFM Appliance GEN3.0  Solid-state Drive FRU",
+      "price": 2100.0
+    },
+    {
+      "id": "172",
+      "price_book_organizer": "MCS8500 HDR Modular FRU",
+      "product_name": "MTDF-PS-B",
+      "product_description": "MCS85XX 3KW AC Power Supply w/P2C airflow",
+      "price": 978.0
+    },
+    {
+      "id": "173",
+      "price_book_organizer": "EDR Edge Switch Options and Accessories",
+      "product_name": "MTEF-PSF-AC-I",
+      "product_description": "Mellanox Power-Supply Unit, 550W AC, P2C Airflow, For SB7700, SB7800, SB 7890, SN2410, SN2700, SX6710, SN2740, SX1410, SX1710 switches, Power cor d included\"\"",
+      "price": 646.0
+    },
+    {
+      "id": "174",
+      "price_book_organizer": "Ethernet Switch Options and Accessories",
+      "product_name": "MTEF-PSF-DC-B",
+      "product_description": "Mellanox Power-Supply Unit, 800W DC, P2C Airflow, For SN2410, SN2700 swi tches, Power cord not included\"\"",
+      "price": 805.0
+    },
+    {
+      "id": "175",
+      "price_book_organizer": "Ethernet Switch Options and Accessories",
+      "product_name": "MTEF-PSR-AC-C",
+      "product_description": "Mellanox Power-Supply Unit, 1100W AC, C2P Airflow, For QM8700, QM8780, Q M8790, SN3700, SN3800, SN4600C, TQ8X00 switches, Power cord included\"\"",
+      "price": 627.0
+    },
+    {
+      "id": "176",
+      "price_book_organizer": "EDR Edge Switch Options and Accessories",
+      "product_name": "MTEF-PSR-AC-I",
+      "product_description": "Mellanox Power-Supply Unit, 550W AC, C2P Airflow, For SB7700, SB7800, SB 7890, SN2410, SN2700, SX6710, SN2740 ,SX1410, SX1710 switches, Power cor d included\"\"",
+      "price": 646.0
+    },
+    {
+      "id": "177",
+      "price_book_organizer": "Ethernet Switch Options and Accessories",
+      "product_name": "MTEF-PSR-DC-B",
+      "product_description": "Mellanox Power-Supply Unit, 800W DC, C2P Airflow, For SN2410,SN2700 swit ches, Power cord not included\"\"",
+      "price": 805.0
+    },
+    {
+      "id": "178",
+      "price_book_organizer": "MQM8700 HDR 1U Switch FRU",
+      "product_name": "MTEF-PSF-AC-C",
+      "product_description": "Mellanox Power-Supply Unit, 1100W AC, P2C Airflow, For QM8700, QM8780, Q M8790, SN3700, SN3800, SN4600C, TQ8X00 switches, Power cord included\"\"",
+      "price": 627.0
+    },
+    {
+      "id": "179",
+      "price_book_organizer": "Options and Accessories",
+      "product_name": "MUA96-PF",
+      "product_description": "Power Supply w/ PSU Side to Connector side airflow for Nvidia UFM GEN3.0  Appliance and MetroX-3 XC 1U Servers",
+      "price": 1200.0
+    },
+    {
+      "id": "180",
+      "price_book_organizer": "XDR Switch",
+      "product_name": "NDR/XDR NA power cord",
+      "product_description": "IB/Ethernet switch, Power Cord for 2KW AC Power-Supply Unit, US plug",
+      "price": 25.0
+    },
+    {
+      "id": "181",
+      "price_book_organizer": "XDR Switch",
+      "product_name": "NDR/XDR EU Power Cord",
+      "product_description": "IB/Ethernet switch, Power Cord for 2KW AC Power-Supply Unit, EU plug",
+      "price": 25.0
+    },
+    {
+      "id": "182",
+      "price_book_organizer": "Options and Accessories",
+      "product_name": "MGA100-RKIT",
+      "product_description": "Rail kit for Mellanox Skyway IB to Ethernet gateway or UFM Appliance 4.0  appliances",
+      "price": 299.0
+    },
+    {
+      "id": "183",
+      "price_book_organizer": "MCS8500 HDR Modular FRU",
+      "product_name": "MTDF-CH-D",
+      "product_description": "MCS85XX 800p cable holder",
+      "price": 1208.0
+    },
+    {
+      "id": "184",
+      "price_book_organizer": "MCS8500 HDR Modular FRU",
+      "product_name": "MTDF-KIT-C",
+      "product_description": "MCS85XX systems rail kit",
+      "price": 2565.0
+    },
+    {
+      "id": "185",
+      "price_book_organizer": "EDR Edge Switch Options and Accessories",
+      "product_name": "MTEF-KIT-A",
+      "product_description": "Mellanox 19\"\" racks fixed mounting-kit, for SN2700 system, Short and Sta ndard-depth, Rack size 430-800mm",
+      "price": 46.0
+    },
+    {
+      "id": "186",
+      "price_book_organizer": "Ethernet Switch Options and Accessories",
+      "product_name": "MTEF-KIT-E",
+      "product_description": "Mellanox 19'' racks fixed mounting-kit, for SN2100, SN2010 systems, Sing le switch, Short-depth, Rack size 600-800mm",
+      "price": 138.0
+    },
+    {
+      "id": "187",
+      "price_book_organizer": "MQM8700 Series 1U Switch FRUs",
+      "product_name": "MTEF-KIT-F",
+      "product_description": "Mellanox 19'' racks rail-kit, for SN3700, SN3700C, SN3800, SN4600, SN460 0C systems, Standard-depth, Rack size 600-800mm",
+      "price": 449.0
+    },
+    {
+      "id": "188",
+      "price_book_organizer": "Options and Accessories",
+      "product_name": "MUA96-SKIT",
+      "product_description": "Rack installation kit for Nvidia UFM Appliance GEN3.0 and MetroX-3 XC se rvers standard depth racks",
+      "price": 200.0
+    },
+    {
+      "id": "189",
+      "price_book_organizer": "MQM97xx Series 1U Switch FRUs",
+      "product_name": "MTEF-KIT-T-TL",
+      "product_description": "Mellanox 19\"\" racks ,Tool-less rail-kit for QM97xx system, Rack size 600 -800mm",
+      "price": 170.0
+    },
+    {
+      "id": "190",
+      "price_book_organizer": "Accessories",
+      "product_name": "BlueField 3 SH AUX Gen4",
+      "product_description": "NVIDIA BlueField-3 Auxiliary Kit for additional self-hosted PCIe Gen4.0 x16 connection, two 350mm I-PEX cables",
+      "price": 173.0
+    },
+    {
+      "id": "191",
+      "price_book_organizer": "Accessories",
+      "product_name": "BlueField 3 SH AUX Gen5",
+      "product_description": "NVIDIA BlueField-3 Auxiliary Kit for additional self-hosted PCIe Gen5.0 x16 connection, two 150mm I-PEX cables",
+      "price": 173.0
+    },
+    {
+      "id": "192",
+      "price_book_organizer": "Accessories",
+      "product_name": "BlueField 3 Self Hosted AUX Harness Gen5",
+      "product_description": "NVIDIA BlueField-3 150mm gen5 harness, CABLINE-CAII PLUS 60 pin micro co ax 38AWG",
+      "price": 75.0
+    },
+    {
+      "id": "193",
+      "price_book_organizer": "Accessories",
+      "product_name": "MBF20-DKIT",
+      "product_description": "NVIDIA BlueField-2 boards debug and management cables kit. Kit is includ ing NC-SI 30p and mini-USB type B",
+      "price": 81.0
+    },
+    {
+      "id": "194",
+      "price_book_organizer": "Accessories",
+      "product_name": "MBF25-DKIT",
+      "product_description": "NVIDIA BlueField-2 board debug and management cables kit. The kit includ es a 30-pin shrouded connector cable and a 4-pin USB to female USB Type A cable",
+      "price": 81.0
+    },
+    {
+      "id": "195",
+      "price_book_organizer": "Accessories",
+      "product_name": "MBF35-DKIT",
+      "product_description": "NVIDIA BlueField-3 boards debug and management cables kit. Kit is includ ing USB type A to 20p connector for UART and USB type A to USB 4P",
+      "price": 70.0
+    },
+    {
+      "id": "196",
+      "price_book_organizer": "Ethernet Switch Options and Accessories",
+      "product_name": "MTEF-FANF-G",
+      "product_description": "NVIDIA Fan Module, 80 x 80 [mm], P2C Airflow, For SN4600C switch\"",
+      "price": 292.0
+    },
+    {
+      "id": "197",
+      "price_book_organizer": "Ethernet Switch Options and Accessories",
+      "product_name": "MTEF-FANF-K",
+      "product_description": "Nvidia Fan module, P2C Airflow, For SN2201 switch",
+      "price": 99.0
+    },
+    {
+      "id": "198",
+      "price_book_organizer": "Ethernet Switch Options and Accessories",
+      "product_name": "MTEF-FANR-G",
+      "product_description": "NVIDIA Fan Module, 80 x 80 [mm], C2P Airflow, For SN4600C switch\"",
+      "price": 292.0
+    },
+    {
+      "id": "199",
+      "price_book_organizer": "Ethernet Switch Options and Accessories",
+      "product_name": "MTEF-FANR-K",
+      "product_description": "Nvidia Fan module, C2P Airflow, For SN2201 switch",
+      "price": 99.0
+    },
+    {
+      "id": "200",
+      "price_book_organizer": "Ethernet Switch Options and Accessories",
+      "product_name": "MTEF-PSF-AC-E",
+      "product_description": "NVIDIA Power-Supply Unit, 550W AC, P2C Airflow, For SN3420 switch, Power  cord included\"\"",
+      "price": 575.0
+    },
+    {
+      "id": "201",
+      "price_book_organizer": "Ethernet Switch Options and Accessories",
+      "product_name": "MTEF-PSF-AC-F",
+      "product_description": "NVIDIA Power-Supply Unit, 1500W AC, P2C Airflow, For SN4600, SN4700 swit ches, Power cord included",
+      "price": 776.0
+    },
+    {
+      "id": "202",
+      "price_book_organizer": "MQM97xx Series 1U Switch FRUs",
+      "product_name": "MTEF-PSF-AC-K",
+      "product_description": "NVIDIA Mellanox Power-Supply Unit, 2000W AC, P2C Airflow, For QM97xx swi tches, Power cord included",
+      "price": 679.0
+    },
+    {
+      "id": "203",
+      "price_book_organizer": "Ethernet Switch Options and Accessories",
+      "product_name": "MTEF-PSF-AC-M",
+      "product_description": "Nvidia Power-Supply Unit, 250W AC, P2C Airflow, For SN2201 switch, Power  cord included",
+      "price": 250.0
+    },
+    {
+      "id": "204",
+      "price_book_organizer": "Ethernet Switch Options and Accessories",
+      "product_name": "MTEF-PSR-AC-E",
+      "product_description": "NVIDIA Power-Supply Unit, 550W AC, C2P Airflow, For SN3420 switch, Power  cord included\"\"",
+      "price": 575.0
+    },
+    {
+      "id": "205",
+      "price_book_organizer": "Ethernet Switch Options and Accessories",
+      "product_name": "MTEF-PSR-AC-F",
+      "product_description": "NVIDIA Power-Supply Unit, 1500W AC, C2P Airflow,  For SN4600V, SN4700 sw itches, Power cord included",
+      "price": 776.0
+    },
+    {
+      "id": "206",
+      "price_book_organizer": "MQM97xx Series 1U Switch FRUs",
+      "product_name": "MTEF-PSR-AC-K",
+      "product_description": "Nvidia Mellanox Power-Supply Unit, 2000W AC, C2P Airflow, For QM97xx swi tches, Power cord included",
+      "price": 679.0
+    },
+    {
+      "id": "207",
+      "price_book_organizer": "Ethernet Switch Options and Accessories",
+      "product_name": "MTEF-PSR-AC-M",
+      "product_description": "Nvidia Power-Supply Unit, 250W AC, C2P Airflow, For SN2201 switch, Power  cord included",
+      "price": 250.0
+    },
+    {
+      "id": "208",
+      "price_book_organizer": "Ethernet Switch Options and Accessories",
+      "product_name": "MTEF-KIT-D",
+      "product_description": "NVIDIA 19? racks fixed mounting-kit, for SN2100, SN2010 systems, Dual sw itch side-by-side, Short-depth, Rack size 600-800mm",
+      "price": 449.0
+    },
+    {
+      "id": "209",
+      "price_book_organizer": "Ethernet Switch Options and Accessories",
+      "product_name": "MTEF-KIT-J",
+      "product_description": "NVIDIA 19\"\" racks fixed mounting-kit, for SN3700, SN3700C, SN3800, SN460 0, SN4600C, MQM87xx systems, Standard-depth, Rack size 600-800mm",
+      "price": 109.0
+    },
+    {
+      "id": "210",
+      "price_book_organizer": "Ethernet Switch Options and Accessories",
+      "product_name": "MTEF-KIT-M-TL",
+      "product_description": "Nvidia Tool-less rack installation kit, 4-post rack, For SN2201 switch",
+      "price": 199.0
+    },
+    {
+      "id": "211",
+      "price_book_organizer": "EDR Edge Switch Options and Accessories",
+      "product_name": "MTEF-KIT-S",
+      "product_description": "NVIDIA 19? racks rail-kit, for SN2700 system, Short and Standard-depth, Rack size 430-800mm",
+      "price": 132.0
+    },
+    {
+      "id": "212",
+      "price_book_organizer": "Ethernet Switch Options and Accessories",
+      "product_name": "MTEF-KIT-SP",
+      "product_description": "NVIDIA 19? racks fixed mounting-kit, for SN2410, SN3420 systems, Short-d epth, Rack size 600-800mm",
+      "price": 115.0
+    },
+    {
+      "id": "213",
+      "price_book_organizer": "Ethernet Switch Options and Accessories",
+      "product_name": "RKIT-85-4610",
+      "product_description": "Rack mount kit for AS4610-54T",
+      "price": 87.0
+    },
+    {
+      "id": "214",
+      "price_book_organizer": "10GbE SFP+ transceiver",
+      "product_name": "MFM1T02A-LR",
+      "product_description": "Mellanox SFP+ optical module for 10GBASE-LR",
+      "price": 114.0
+    },
+    {
+      "id": "215",
+      "price_book_organizer": "10GbE SFP+ transceiver",
+      "product_name": "MFM1T02A-SR",
+      "product_description": "Mellanox SFP+ optical module for 10GBASE-SR",
+      "price": 79.0
+    },
+    {
+      "id": "216",
+      "price_book_organizer": "Bracket",
+      "product_name": "MTM017689",
+      "product_description": "FRU, OCP3.0, 10 units of Ejector latch Bracket for 2 QSFP28/56, Fits CX5 66 / CX613436 / CX653436 / CX623436",
+      "price": 138.0
+    },
+    {
+      "id": "217",
+      "price_book_organizer": "Ethernet Switch Options and Accessories",
+      "product_name": "NVIDIA FAN Unit, Reverse Airflow for SN5600/SN5400",
+      "product_description": "NVIDIA FAN Unit, C2P Airflow, for 64x400G and 64x800G switch",
+      "price": 317.0
+    },
+    {
+      "id": "218",
+      "price_book_organizer": "Ethernet Switch Options and Accessories",
+      "product_name": "NVIDIA Tool-Less Rail-Kit for SN5600/SN5400",
+      "product_description": "NVIDIA Mellanox Tool-Less Rail-Kit for 64x400G and 64x800G Switch",
+      "price": 206.0
+    },
+    {
+      "id": "219",
+      "price_book_organizer": "Ethernet Switch Options and Accessories",
+      "product_name": "NVIDIA Power-Supply Unit, 3KW AC, Reverse Airflow, for SN5600/SN5400",
+      "product_description": "NVIDIA Power-Supply Unit, 3KW AC, C2P Airflow, for 64x800G switch, Power  cord included",
+      "price": 1598.0
+    },
+    {
+      "id": "220",
+      "price_book_organizer": "Accessories",
+      "product_name": "ConnectX-8 Auxiliary Kit",
+      "product_description": "NVIDIA SocketDirect/MultiHost Auxiliary Kit for Additional PCIe Gen6x16 Connection, 250mm MCIO Harnes",
+      "price": 173.0
+    },
+    {
+      "id": "221",
+      "price_book_organizer": "Bracket",
+      "product_name": "MTM010641",
+      "product_description": "FRU Tall Perforated bracket for 2-port SFP28 adapter. Fits MCX4121A /MCX 512A/MCX512F",
+      "price": 6.0
+    },
+    {
+      "id": "222",
+      "price_book_organizer": "Bracket",
+      "product_name": "MTM010642",
+      "product_description": "FRU Short Perforated bracket for 2-port SFP28 adapter. Fits MCX4121A/ MC X512A / MCX512F",
+      "price": 6.0
+    },
+    {
+      "id": "223",
+      "price_book_organizer": "Bracket",
+      "product_name": "MTM026793",
+      "product_description": "FRU Short Bracket 4 SFP56 ports. Fits MCX713104A family of cards",
+      "price": 8.0
+    },
+    {
+      "id": "224",
+      "price_book_organizer": "Bracket",
+      "product_name": "MTM018633",
+      "product_description": "FRU, OCP3.0, 10 units of Thumbscrew (Pull Tab) Bracket for 1 QSFP28/56, Fits CX565 / CX613435 / CX653435 / CX623435 / CX631435",
+      "price": 138.0
+    },
+    {
+      "id": "225",
+      "price_book_organizer": "Bracket",
+      "product_name": "MTM018771",
+      "product_description": "FRU Tall bracket for 2-port QSFP56 adapter. Fits MCX623106A/CX622106A",
+      "price": 8.0
+    },
+    {
+      "id": "226",
+      "price_book_organizer": "Bracket",
+      "product_name": "MTM019260",
+      "product_description": "FRU, BlueField-2, 10 units of HHHL brackets for 2 SFP56 cages, fits BF2M 322A, BF2M332A, BF2H322A, BF2H332A",
+      "price": 81.0
+    },
+    {
+      "id": "227",
+      "price_book_organizer": "Bracket",
+      "product_name": "MTM021260",
+      "product_description": "FRU, BlueField-2, 10 units of HHHL brackets for 1 QSFP56 cage, fits BF2M 345A",
+      "price": 81.0
+    },
+    {
+      "id": "228",
+      "price_book_organizer": "Bracket",
+      "product_name": "MTM020718",
+      "product_description": "FRU, ConnectX, 10 units of PCIe CEM NIC assembly separator",
+      "price": 7.0
+    },
+    {
+      "id": "229",
+      "price_book_organizer": "Bracket",
+      "product_name": "MTM017962-M",
+      "product_description": "FRU Short Perforated bracket for 2-port SFP+ adapter. Fits MCX623102A/ M CX621102A/ MCX631102A",
+      "price": 8.0
+    },
+    {
+      "id": "230",
+      "price_book_organizer": "100GbE/IB EDR QSFP28 Transceiver",
+      "product_name": "MMS1V70-CM",
+      "product_description": "Mellanox transceiver, 100GbE, QSFP28, LC-LC, 1310nm, DR1",
+      "price": 270.0
+    },
+    {
+      "id": "231",
+      "price_book_organizer": "200GbE/IB HDR QSFP56 Transceiver",
+      "product_name": "MMS1W50-HM",
+      "product_description": "Mellanox transceiver, IB HDR, up to 200Gb/s, QSFP56, LC-LC, 1310nm, FR4",
+      "price": 1484.0
+    },
+    {
+      "id": "232",
+      "price_book_organizer": "NDR transceivers",
+      "product_name": "MMS1X00-NS400",
+      "product_description": "NVIDIA single port transceiver, 400Gbps, NDR, QSFP112, MPO, 1310nm SMF, up to 500m, flat top",
+      "price": 1065.0
+    },
+    {
+      "id": "233",
+      "price_book_organizer": "400GbE QSFP-DD Active Optical Cable",
+      "product_name": "C-DQ8FNM003-H0-M",
+      "product_description": "Mellanox Select 400GbE QSFP-DD AOC 3m",
+      "price": 845.0
+    },
+    {
+      "id": "234",
+      "price_book_organizer": "400GbE QSFP-DD Active Optical Cable",
+      "product_name": "C-DQ8FNM005-H0-M",
+      "product_description": "Mellanox Select 400GbE QSFP-DD AOC 5m",
+      "price": 855.0
+    },
+    {
+      "id": "235",
+      "price_book_organizer": "400GbE QSFP-DD Active Optical Cable",
+      "product_name": "C-DQ8FNM010-H0-M",
+      "product_description": "Mellanox Select 400GbE QSFP-DD AOC 10m",
+      "price": 880.0
+    },
+    {
+      "id": "236",
+      "price_book_organizer": "400GbE QSFP-DD Active Optical Cable",
+      "product_name": "C-DQ8FNM020-H0-M",
+      "product_description": "Mellanox Select 400GbE QSFP-DD AOC 20m",
+      "price": 940.0
+    },
+    {
+      "id": "237",
+      "price_book_organizer": "400GbE QSFP-DD Active Optical Cable",
+      "product_name": "C-DQ8FNM050-H0-M",
+      "product_description": "Mellanox Select 400GbE QSFP-DD AOC 50m",
+      "price": 1060.0
+    },
+    {
+      "id": "238",
+      "price_book_organizer": "25GbE SFP28 Transceiver",
+      "product_name": "MMA2L20-AR",
+      "product_description": "Mellanox optical transceiver, 25GbE, 25Gb/s, SFP28, LC-LC, 1310nm, LR up  to 10km",
+      "price": 265.0
+    },
+    {
+      "id": "239",
+      "price_book_organizer": "NDR backward compatibility AOC splitters",
+      "product_name": "MFA7U10-H005-FLT",
+      "product_description": "NVIDIA AOC splitter, IB twin port HDR, 400Gb/s to 2x200Gb/s, OSFP to 2xQ SFP56, 5m, flat top",
+      "price": 1582.0
+    },
+    {
+      "id": "240",
+      "price_book_organizer": "NDR backward compatibility AOC splitters",
+      "product_name": "MFA7U40-H005",
+      "product_description": "NVIDIA AOC splitter, 200(2x100)Gbps to 2x100Gbps, OSFP to 2xQSFP56, 5m, fin to flat",
+      "price": 1232.0
+    },
+    {
+      "id": "241",
+      "price_book_organizer": "NDR backward compatibility AOC splitters",
+      "product_name": "MFA7U10-H010",
+      "product_description": "NVIDIA AOC splitter, IB twin port HDR, 400Gb/s to 2x200Gb/s, OSFP to 2xQ SFP56, 10m",
+      "price": 1663.0
+    },
+    {
+      "id": "242",
+      "price_book_organizer": "NDR backward compatibility AOC splitters",
+      "product_name": "MFA7U10-H010-FLT",
+      "product_description": "NVIDIA AOC splitter, IB twin port HDR, 400Gb/s to 2x200Gb/s, OSFP to 2xQ SFP56, 10m, flat top",
+      "price": 1663.0
+    },
+    {
+      "id": "243",
+      "price_book_organizer": "NDR backward compatibility AOC splitters",
+      "product_name": "MFA7U40-H010",
+      "product_description": "NVIDIA AOC splitter, 200(2x100)Gbps to 2x100Gbps, OSFP to 2xQSFP56, 10m,  fin to flat",
+      "price": 1313.0
+    },
+    {
+      "id": "244",
+      "price_book_organizer": "NDR backward compatibility AOC splitters",
+      "product_name": "MFA7U10-H015",
+      "product_description": "NVIDIA AOC splitter, IB twin port HDR, 400Gb/s to 2x200Gb/s, OSFP to 2xQ SFP56, 15m",
+      "price": 1670.0
+    },
+    {
+      "id": "245",
+      "price_book_organizer": "NDR backward compatibility AOC splitters",
+      "product_name": "MFA7U10-H015-FLT",
+      "product_description": "NVIDIA AOC splitter, IB twin port HDR, 400Gb/s to 2x200Gb/s, OSFP to 2xQ SFP56, 15m, flat top",
+      "price": 1670.0
+    },
+    {
+      "id": "246",
+      "price_book_organizer": "NDR backward compatibility AOC splitters",
+      "product_name": "MFA7U40-H015",
+      "product_description": "NVIDIA AOC splitter, 200(2x100)Gbps to 2x100Gbps, OSFP to 2xQSFP56, 15m,  fin to flat",
+      "price": 1320.0
+    },
+    {
+      "id": "247",
+      "price_book_organizer": "NDR backward compatibility AOC splitters",
+      "product_name": "MFA7U10-H020",
+      "product_description": "NVIDIA AOC splitter, IB twin port HDR, 400Gb/s to 2x200Gb/s, OSFP to 2xQ SFP56, 20m",
+      "price": 1677.0
+    },
+    {
+      "id": "248",
+      "price_book_organizer": "NDR backward compatibility AOC splitters",
+      "product_name": "MFA7U10-H020-FLT",
+      "product_description": "NVIDIA AOC splitter, IB twin port HDR, 400Gb/s to 2x200Gb/s, OSFP to 2xQ SFP56, 20m, flat top",
+      "price": 1677.0
+    },
+    {
+      "id": "249",
+      "price_book_organizer": "NDR backward compatibility AOC splitters",
+      "product_name": "MFA7U40-H020",
+      "product_description": "NVIDIA AOC splitter, 200(2x100)Gbps to 2x100Gbps, OSFP to 2xQSFP56, 20m,  fin to flat",
+      "price": 1327.0
+    },
+    {
+      "id": "250",
+      "price_book_organizer": "NDR backward compatibility AOC splitters",
+      "product_name": "MFA7U10-H030",
+      "product_description": "NVIDIA AOC splitter, IB twin port HDR, 400Gb/s to 2x200Gb/s, OSFP to 2xQ SFP56, 30m",
+      "price": 1691.0
+    },
+    {
+      "id": "251",
+      "price_book_organizer": "NDR backward compatibility AOC splitters",
+      "product_name": "MFA7U10-H030-FLT",
+      "product_description": "NVIDIA AOC splitter, IB twin port HDR, 400Gb/s to 2x200Gb/s, OSFP to 2xQ SFP56, 30m, flat top",
+      "price": 1691.0
+    },
+    {
+      "id": "252",
+      "price_book_organizer": "NDR backward compatibility AOC splitters",
+      "product_name": "MFA7U40-H030",
+      "product_description": "NVIDIA AOC splitter, 200(2x100)Gbps to 2x100Gbps, OSFP to 2xQSFP56, 30m,  fin to flat",
+      "price": 1341.0
+    },
+    {
+      "id": "253",
+      "price_book_organizer": "NDR backward compatibility AOC splitters",
+      "product_name": "MFA7U10-H005",
+      "product_description": "NVIDIA AOC splitter, IB twin port HDR, 400Gb/s to 2x200Gb/s, OSFP to 2xQ SFP56, 5m",
+      "price": 1582.0
+    },
+    {
+      "id": "254",
+      "price_book_organizer": "100GbE/IB EDR QSFP28 Active Optical Cable",
+      "product_name": "MFA1A00-C010",
+      "product_description": "Mellanox active fiber cable, ETH 100GbE, 100Gb/s, QSFP, LSZH, 10m",
+      "price": 273.0
+    },
+    {
+      "id": "255",
+      "price_book_organizer": "100GbE/IB EDR QSFP28 Active Optical Cable",
+      "product_name": "MFA1A00-C020",
+      "product_description": "Mellanox active fiber cable, ETH 100GbE, 100Gb/s, QSFP, LSZH, 20m",
+      "price": 288.0
+    },
+    {
+      "id": "256",
+      "price_book_organizer": "100GbE/IB EDR QSFP28 Active Optical Cable",
+      "product_name": "MFA1A00-E005",
+      "product_description": "Mellanox active fiber cable, IB EDR, up to 100Gb/s, QSFP, LSZH, 5m",
+      "price": 406.0
+    },
+    {
+      "id": "257",
+      "price_book_organizer": "100GbE/IB EDR QSFP28 Active Optical Cable",
+      "product_name": "MFA1A00-C030",
+      "product_description": "Mellanox active fiber cable, ETH 100GbE, 100Gb/s, QSFP, LSZH, 30m",
+      "price": 298.0
+    },
+    {
+      "id": "258",
+      "price_book_organizer": "100GbE/IB EDR QSFP28 Active Optical Cable",
+      "product_name": "MFA1A00-E010",
+      "product_description": "Mellanox active fiber cable, IB EDR, up to 100Gb/s, QSFP, LSZH, 10m",
+      "price": 422.0
+    },
+    {
+      "id": "259",
+      "price_book_organizer": "100GbE/IB EDR QSFP28 Active Optical Cable",
+      "product_name": "MFA1A00-E020",
+      "product_description": "Mellanox active fiber cable, IB EDR, up to 100Gb/s, QSFP, LSZH, 20m",
+      "price": 470.0
+    },
+    {
+      "id": "260",
+      "price_book_organizer": "100GbE/IB EDR QSFP28 Active Optical Cable",
+      "product_name": "MFA1A00-C005",
+      "product_description": "Mellanox active fiber cable, ETH 100GbE, 100Gb/s, QSFP, LSZH, 5m",
+      "price": 266.0
+    },
+    {
+      "id": "261",
+      "price_book_organizer": "100GbE/IB EDR QSFP28 Active Optical Cable",
+      "product_name": "MFA1A00-E030",
+      "product_description": "Mellanox active fiber cable, IB EDR, up to 100Gb/s, QSFP, LSZH, 30m",
+      "price": 531.0
+    },
+    {
+      "id": "262",
+      "price_book_organizer": "100GbE/IB EDR QSFP28 Transceiver",
+      "product_name": "MMA1B00-C100D",
+      "product_description": "Mellanox transceiver, 100GbE, QSFP28, MPO, 850nm, SR4, up to 100m, DDMI",
+      "price": 114.0
+    },
+    {
+      "id": "263",
+      "price_book_organizer": "400GbE QSFP-DD transceivers",
+      "product_name": "MMS1V50-WM",
+      "product_description": "Mellanox Select Transceiver, 400GbE, QSFP-DD, LC-LC, 1310nm, FR4",
+      "price": 1100.0
+    },
+    {
+      "id": "264",
+      "price_book_organizer": "400GbE QSFP-DD transceivers",
+      "product_name": "MMS1V00-WM",
+      "product_description": "Mellanox transceiver, 400GbE, QSFP-DD, MPO, 1310nm, DR4",
+      "price": 750.0
+    },
+    {
+      "id": "265",
+      "price_book_organizer": "100GbE/IB EDR QSFP28 Transceiver",
+      "product_name": "MMA1B00-E100",
+      "product_description": "Mellanox transceiver, IB EDR, up to 100Gb/s, QSFP28, MPO, 850nm, SR4, up  to 100m",
+      "price": 431.0
+    },
+    {
+      "id": "266",
+      "price_book_organizer": "100GbE/IB EDR QSFP28 Transceiver",
+      "product_name": "MMA1L10-CR",
+      "product_description": "Mellanox optical transceiver, 100GbE, 100Gb/s, QSFP28, LC-LC, 1310nm, LR 4 up to 10km",
+      "price": 861.0
+    },
+    {
+      "id": "267",
+      "price_book_organizer": "100GbE/IB EDR QSFP28 Transceiver",
+      "product_name": "MMA1L30-CM",
+      "product_description": "Mellanox optical module, 100GbE, 100Gb/s, QSFP28, LC-LC, 1310nm, CWDM4, up to 2km",
+      "price": 461.0
+    },
+    {
+      "id": "268",
+      "price_book_organizer": "200GbE/IB HDR QSFP56 Transceiver",
+      "product_name": "MMA1T00-HS",
+      "product_description": "Mellanox transceiver, HDR, QSFP56, MPO, 850nm, SR4, up to 100m",
+      "price": 759.0
+    },
+    {
+      "id": "269",
+      "price_book_organizer": "200GbE/IB HDR QSFP56 Transceiver",
+      "product_name": "MMA1T00-VS",
+      "product_description": "Mellanox transceiver, 200GbE, up to 200Gb/s, QSFP56, MPO, 850nm, SR4, up  to 100m",
+      "price": 512.0
+    },
+    {
+      "id": "270",
+      "price_book_organizer": "1GbE SFP to Base-T adapter",
+      "product_name": "MC3208411-T",
+      "product_description": "Mellanox module, ETH 1GbE, 1Gb/s, SFP, Base-T, up to 100m",
+      "price": 70.0
+    },
+    {
+      "id": "271",
+      "price_book_organizer": "NDR Transceivers",
+      "product_name": "MMS4X00-NM-FLT",
+      "product_description": "NVIDIA twin port transceiver, 800Gbps,2xNDR, OSFP, 2xMPO12 APC, 1310nm S MF, up to 500m, flat top",
+      "price": 2416.0
+    },
+    {
+      "id": "272",
+      "price_book_organizer": "NDR Transceivers",
+      "product_name": "MMS4X00-NM",
+      "product_description": "NVIDIA twin port transceiver, 800Gbps,2xNDR, OSFP, 2xMPO, 1310nm SMF, up  to 500m, finned",
+      "price": 2416.0
+    },
+    {
+      "id": "273",
+      "price_book_organizer": "NDR Transceivers",
+      "product_name": "MMS4X00-NS",
+      "product_description": "NVIDIA twin port transceiver, 800Gbps,2xNDR, OSFP, 2xMPO12 APC, 1310nm S MF, up to 100m, finned",
+      "price": 2186.0
+    },
+    {
+      "id": "274",
+      "price_book_organizer": "NDR Transceivers",
+      "product_name": "MMS4X00-NS-T",
+      "product_description": "TWIN PORT TRANSCEIVER, 800GBPS,2X400GbE, OSFP, 2XMPO12 APC, 1310NM SMF, UP TO 100M, FINNED",
+      "price": 1472.0
+    },
+    {
+      "id": "275",
+      "price_book_organizer": "NDR Transceivers",
+      "product_name": "MMS4X00-NS-FLT",
+      "product_description": "NVIDIA twin port transceiver, 800Gbps,2xNDR, OSFP, 2xMPO12 APC, 1310nm S MF, up to 100m, flat top",
+      "price": 2186.0
+    },
+    {
+      "id": "276",
+      "price_book_organizer": "NDR Transceivers",
+      "product_name": "MMS4X50-NM",
+      "product_description": "NVIDIA twin port transceiver, 800Gbps, 2xFR4, 2xNDR, OSFP, 2xLC-LC, 1310 nm SMF, up to 2km, finned",
+      "price": 2200.0
+    },
+    {
+      "id": "277",
+      "price_book_organizer": "NDR Transceivers",
+      "product_name": "MMS4X00-NS400",
+      "product_description": "NVIDIA single port transceiver, 400Gbps,NDR, OSFP, MPO12 APC, 1310nm SMF , up to 100m, flat top",
+      "price": 1723.0
+    },
+    {
+      "id": "278",
+      "price_book_organizer": "400GbE QSFP-DD transceivers",
+      "product_name": "MMS1V90-WR",
+      "product_description": "Mellanox Select Transceiver, 400GbE, QSFP-DD, LC-LC, 1310nm, LR4",
+      "price": 1230.0
+    },
+    {
+      "id": "279",
+      "price_book_organizer": "IB HDR to 2xHDR100 QSFP56 to 2xQSFP56 Splitter Copper Cable",
+      "product_name": "MCP7H50-H001R30",
+      "product_description": "Nvidia Passive copper splitter cable,  200Gbps to 2x100Gbps, QSFP56 to 2 xQSFP56, 1m",
+      "price": 124.0
+    },
+    {
+      "id": "280",
+      "price_book_organizer": "NDR backward compatibility AOC splitters",
+      "product_name": "MFA7U10-H003",
+      "product_description": "NVIDIA AOC splitter, IB twin port HDR, 400Gb/s to 2x200Gb/s, OSFP to 2xQ SFP56, 3m",
+      "price": 1578.0
+    },
+    {
+      "id": "281",
+      "price_book_organizer": "NDR backward compatibility AOC splitters",
+      "product_name": "MFA7U10-H003-FLT",
+      "product_description": "NVIDIA AOC splitter, IB twin port HDR, 400Gb/s to 2x200Gb/s, OSFP to 2xQ SFP56, 3m, flat top",
+      "price": 1578.0
+    },
+    {
+      "id": "282",
+      "price_book_organizer": "NDR backward compatibility AOC splitters",
+      "product_name": "MFA7U40-H003",
+      "product_description": "NVIDIA AOC splitter, 200(2x100)Gbps to 2x100Gbps, OSFP to 2xQSFP56, 3m, fin to flat",
+      "price": 1228.0
+    },
+    {
+      "id": "283",
+      "price_book_organizer": "Splitter DAC NDR Twin PORT to 2 NDR ports",
+      "product_name": "MCP7Y00-N001",
+      "product_description": "NVIDIA passive copper splitter cable, IB twin port NDR 800Gb/s to 2x400G b/s, OSFP to 2xOSFP,1m",
+      "price": 342.0
+    },
+    {
+      "id": "284",
+      "price_book_organizer": "Splitter DAC NDR Twin PORT to 2 NDR ports",
+      "product_name": "MCP7Y00-N001-FLT",
+      "product_description": "NVIDIA passive copper splitter cable, IB twin port NDR 800Gb/s to 2x400G b/s, OSFP to 2xOSFP,1m, flat top",
+      "price": 342.0
+    },
+    {
+      "id": "285",
+      "price_book_organizer": "IB HDR QSFP56 Active Optical Cable",
+      "product_name": "MFS1S00-H030V",
+      "product_description": "Nvidia active optical cable, up to 200Gbps , QSFP56 to QSFP56, 30m",
+      "price": 845.0
+    },
+    {
+      "id": "286",
+      "price_book_organizer": "IB HDR to 2xHDR100 QSFP56 to 2xQSFP56 Splitter Active Optical Cable (Y-Cable)",
+      "product_name": "MFS1S50-H003V",
+      "product_description": "Nvidia active optical splitter cable, 200Gbps to 2x100Gbps , QSFP56 to 2 x QSFP56, 3m",
+      "price": 1224.0
+    },
+    {
+      "id": "287",
+      "price_book_organizer": "IB HDR QSFP56 Active Optical Cable",
+      "product_name": "MFS1S00-H050V",
+      "product_description": "Nvidia active optical cable, up to 200Gbps , QSFP56 to QSFP56, 50m",
+      "price": 1395.0
+    },
+    {
+      "id": "288",
+      "price_book_organizer": "IB HDR QSFP56 Active Optical Cable",
+      "product_name": "MFS1S00-H100V",
+      "product_description": "Nvidia active optical cable, up to 200Gbps , QSFP56 to QSFP56, 100m",
+      "price": 1955.0
+    },
+    {
+      "id": "289",
+      "price_book_organizer": "IB HDR QSFP56 Active Optical Cable",
+      "product_name": "MFS1S00-H130V",
+      "product_description": "Nvidia active optical cable, up to 200Gbps , QSFP56 to QSFP56, 130m",
+      "price": 2299.0
+    },
+    {
+      "id": "290",
+      "price_book_organizer": "IB HDR QSFP56 Active Optical Cable",
+      "product_name": "MFS1S00-H150V",
+      "product_description": "Nvidia active optical cable, up to 200Gbps , QSFP56 to QSFP56, 150m",
+      "price": 2529.0
+    },
+    {
+      "id": "291",
+      "price_book_organizer": "IB HDR QSFP56 Active Optical Cable",
+      "product_name": "MFS1S00-H003V",
+      "product_description": "Nvidia active optical cable, up to 200Gbps , QSFP56 to QSFP56, 3m",
+      "price": 789.0
+    },
+    {
+      "id": "292",
+      "price_book_organizer": "IB HDR QSFP56 Active Optical Cable",
+      "product_name": "MFS1S00-H005V",
+      "product_description": "Nvidia active optical cable, up to 200Gbps , QSFP56 to QSFP56, 5m",
+      "price": 791.0
+    },
+    {
+      "id": "293",
+      "price_book_organizer": "IB HDR QSFP56 Active Optical Cable",
+      "product_name": "MFS1S00-H090V",
+      "product_description": "Mellanox active optical cable, up to 200Gb/s IB HDR, QSFP56, 90m",
+      "price": 1843.0
+    },
+    {
+      "id": "294",
+      "price_book_organizer": "IB HDR QSFP56 Active Optical Cable",
+      "product_name": "MFS1S00-H010V",
+      "product_description": "Nvidia active optical cable, up to 200Gbps , QSFP56 to QSFP56, 10m",
+      "price": 831.0
+    },
+    {
+      "id": "295",
+      "price_book_organizer": "IB HDR QSFP56 Active Optical Cable",
+      "product_name": "MFS1S00-H015V",
+      "product_description": "Nvidia active optical cable, up to 200Gbps , QSFP56 to QSFP56, 15m",
+      "price": 835.0
+    },
+    {
+      "id": "296",
+      "price_book_organizer": "IB HDR QSFP56 Active Optical Cable",
+      "product_name": "MFS1S00-H020V",
+      "product_description": "Nvidia active optical cable, up to 200Gbps , QSFP56 to QSFP56, 20m",
+      "price": 838.0
+    },
+    {
+      "id": "297",
+      "price_book_organizer": "Splitter DAC NDR Twin PORT to 4 NDR200 ports",
+      "product_name": "MCP7Y50-N002",
+      "product_description": "NVIDIA passive copper splitter cable, IB twin port NDR 800Gb/s to 4x200G b/s, OSFP to 4xOSFP, 2m",
+      "price": 532.0
+    },
+    {
+      "id": "298",
+      "price_book_organizer": "Splitter DAC NDR Twin PORT to 4 NDR200 ports",
+      "product_name": "MCP7Y50-N002-FLT",
+      "product_description": "NVIDIA passive copper splitter cable, IB twin port NDR 800Gb/s to 4x200G b/s, OSFP to 4xOSFP, 2m, flat top",
+      "price": 532.0
+    },
+    {
+      "id": "299",
+      "price_book_organizer": "Splitter DAC NDR Twin PORT to 4 NDR200 ports",
+      "product_name": "MCP7Y50-N01A",
+      "product_description": "NVIDIA passive copper splitter cable, IB twin port NDR 800Gb/s to 4x200G b/s, OSFP to 4xOSFP, 1.5m",
+      "price": 486.0
+    },
+    {
+      "id": "300",
+      "price_book_organizer": "Splitter DAC NDR Twin PORT to 4 NDR200 ports",
+      "product_name": "MCP7Y50-N01A-FLT",
+      "product_description": "NVIDIA passive copper splitter cable, IB twin port NDR 800Gb/s to 4x200G b/s, OSFP to 4xOSFP, 1.5m, flat top",
+      "price": 486.0
+    },
+    {
+      "id": "301",
+      "price_book_organizer": "NDR backward compatability DAC splitters",
+      "product_name": "MCP7Y60-H001",
+      "product_description": "NVIDIA passive copper splitter cable, 400(2x200)Gbps to 2x200Gbps, OSFP to 2xQSFP56, 1m, fin to flat",
+      "price": 228.0
+    },
+    {
+      "id": "302",
+      "price_book_organizer": "NDR backward compatability DAC splitters",
+      "product_name": "MCP7Y60-H002",
+      "product_description": "NVIDIA passive copper splitter cable, 400(2x200)Gbps to 2x200Gbps, OSFP to 2xQSFP56, 2m, fin to flat",
+      "price": 274.0
+    },
+    {
+      "id": "303",
+      "price_book_organizer": "Splitter DAC NDR Twin PORT to 4 NDR200 ports",
+      "product_name": "MCP7Y50-N003",
+      "product_description": "NVIDIA passive copper splitter cable, IB twin port NDR 800Gb/s to 4x200G b/s, OSFP to 4xOSFP, 3m",
+      "price": 803.0
+    },
+    {
+      "id": "304",
+      "price_book_organizer": "Splitter DAC NDR Twin PORT to 4 NDR200 ports",
+      "product_name": "MCP7Y50-N02A",
+      "product_description": "NVIDIA passive copper splitter cable, IB twin port NDR 800Gb/s to 4x200G b/s, OSFP to 4xOSFP, 2.5m",
+      "price": 691.0
+    },
+    {
+      "id": "305",
+      "price_book_organizer": "NDR backward compatability DAC splitters",
+      "product_name": "MCP7Y70-H01A",
+      "product_description": "NVIDIA passive copper splitter cable, 400(2x200)Gbps to 4x100Gbps, OSFP to 4xQSFP56, 1.5m, fin to flat",
+      "price": 271.0
+    },
+    {
+      "id": "306",
+      "price_book_organizer": "Splitter ACC NDR Twin PORT to 4 NDR200 ports",
+      "product_name": "MCA7J70-N004",
+      "product_description": "NVIDIA active copper splitter cable, IB twin port NDR 800Gb/s to 4x200Gb /s, OSFP to 4xOSFP, 4m",
+      "price": 1371.0
+    },
+    {
+      "id": "307",
+      "price_book_organizer": "Splitter ACC NDR Twin PORT to 4 NDR200 ports",
+      "product_name": "MCA7J70-N005",
+      "product_description": "NVIDIA active copper splitter cable, IB twin port NDR 800Gb/s to 4x200Gb /s, OSFP to 4xOSFP, 5m",
+      "price": 1432.0
+    },
+    {
+      "id": "308",
+      "price_book_organizer": "NDR transceivers",
+      "product_name": "MMA4Z00-NS",
+      "product_description": "NVIDIA twin port transceiver, 800Gbps,2xNDR, OSFP, 2xMPO12 APC, 850nm MM F, up to 50m, finned",
+      "price": 1280.0
+    },
+    {
+      "id": "309",
+      "price_book_organizer": "NDR transceivers",
+      "product_name": "MMA4Z00-NS-T",
+      "product_description": "TWIN PORT TRANSCEIVER, 800GBPS,2X400GbE, OSFP, 2XMPO12 APC, 850NM MMF, U P TO 50M, FINNED",
+      "price": 890.0
+    },
+    {
+      "id": "310",
+      "price_book_organizer": "NDR Transceivers",
+      "product_name": "MMA4Z00-NS-FLT",
+      "product_description": "NVIDIA twin port transceiver, 800Gbps,2xNDR, OSFP, 2xMPO12 APC, 850nm MM F, up to 50m, flat top",
+      "price": 1280.0
+    },
+    {
+      "id": "311",
+      "price_book_organizer": "NDR transceivers",
+      "product_name": "MMA4Z00-NS400",
+      "product_description": "NVIDIA single port transceiver, 400Gbps,NDR, OSFP, MPO12 APC, 850nm MMF,  up to 50m, flat top",
+      "price": 926.0
+    },
+    {
+      "id": "312",
+      "price_book_organizer": "NDR transceivers",
+      "product_name": "MMA4Z00-NS400-T",
+      "product_description": "SINGLE PORT TRANSCEIVER, 400GBPS,400GbE, OSFP, MPO12 APC, 850NM MMF, UP TO 50M, FLAT TOP",
+      "price": 600.0
+    },
+    {
+      "id": "313",
+      "price_book_organizer": "400GbE QSFP-DD transceivers",
+      "product_name": "T-DQ8FNS-N00-M",
+      "product_description": "Mellanox Select 400GbE QSFP-DD SR8 Transceiver",
+      "price": 495.0
+    },
+    {
+      "id": "314",
+      "price_book_organizer": "100GbE/IB EDR QSFP28 Transceiver",
+      "product_name": "SPQ-CE-ER-CDFL-M",
+      "product_description": "40km 100G QSFP28 ER Optical Transceiver",
+      "price": 6900.0
+    },
+    {
+      "id": "315",
+      "price_book_organizer": "200GbE/IB HDR QSFP56 Direct Attach Copper Cable",
+      "product_name": "MCP1650-H001E30",
+      "product_description": "Nvidia Passive Copper cable, up to 200Gbps, QSFP56 to QSFP56, 1m",
+      "price": 114.0
+    },
+    {
+      "id": "316",
+      "price_book_organizer": "200GbE/IB HDR QSFP56 Direct Attach Copper Cable",
+      "product_name": "MCP1650-H002E26",
+      "product_description": "Nvidia Passive Copper cable,up to 200Gbps, QSFP56 to QSFP56,  2m",
+      "price": 137.0
+    },
+    {
+      "id": "317",
+      "price_book_organizer": "200GbE/IB HDR QSFP56 Direct Attach Copper Cable",
+      "product_name": "MCP1650-H00AE30",
+      "product_description": "Nvidia Passive Copper cable, up to 200Gbps, QSFP56 to QSFP56,  0.5m",
+      "price": 105.0
+    },
+    {
+      "id": "318",
+      "price_book_organizer": "200GbE/IB HDR QSFP56 Direct Attach Copper Cable",
+      "product_name": "MCP1650-H01AE30",
+      "product_description": "Nvidia Passive Copper cable, up to 200Gbps, QSFP56 to QSFP56, 1.5 m",
+      "price": 124.0
+    },
+    {
+      "id": "319",
+      "price_book_organizer": "Multi-MODE passive fiber splitter cable MPO12 to 2xMPO12",
+      "product_name": "MFP7E20-N010",
+      "product_description": "NVIDIA passive fiber cable, MMF, MPO12 APC to 2xMPO12 APC, 10m",
+      "price": 72.0
+    },
+    {
+      "id": "320",
+      "price_book_organizer": "Multi-MODE passive fiber splitter cable MPO12 to 2xMPO12",
+      "product_name": "MFP7E20-N015",
+      "product_description": "NVIDIA passive fiber cable, MMF, MPO12 APC to 2xMPO12 APC, 15m",
+      "price": 79.0
+    },
+    {
+      "id": "321",
+      "price_book_organizer": "Multi-MODE passive fiber splitter cable MPO12 to 2xMPO12",
+      "product_name": "MFP7E20-N020",
+      "product_description": "NVIDIA passive fiber cable, MMF, MPO12 APC to 2xMPO12 APC, 20m",
+      "price": 86.0
+    },
+    {
+      "id": "322",
+      "price_book_organizer": "Multi-MODE passive fiber splitter cable MPO12 to 2xMPO12",
+      "product_name": "MFP7E20-N030",
+      "product_description": "NVIDIA passive fiber cable, MMF, MPO12 APC to 2xMPO12 APC, 30m",
+      "price": 100.0
+    },
+    {
+      "id": "323",
+      "price_book_organizer": "Single-Mode passive fiber cable MPO12 to MPO12",
+      "product_name": "MFP7E30-N002",
+      "product_description": "NVIDIA passive fiber cable, SMF, MPO12 APC to MPO12 APC, 2m",
+      "price": 51.0
+    },
+    {
+      "id": "324",
+      "price_book_organizer": "Single-Mode passive fiber cable MPO12 to MPO12",
+      "product_name": "MFP7E30-N003",
+      "product_description": "NVIDIA passive fiber cable, SMF, MPO12 APC to MPO12 APC, 3m",
+      "price": 52.0
+    },
+    {
+      "id": "325",
+      "price_book_organizer": "Single-Mode passive fiber cable MPO12 to MPO12",
+      "product_name": "MFP7E30-N005",
+      "product_description": "NVIDIA passive fiber cable, SMF, MPO12 APC to MPO12 APC, 5m",
+      "price": 54.0
+    },
+    {
+      "id": "326",
+      "price_book_organizer": "Multi-MODE passive fiber splitter cable MPO12 to 2xMPO12",
+      "product_name": "MFP7E20-N050",
+      "product_description": "NVIDIA passive fiber cable, MMF, MPO12 APC to 2xMPO12 APC, 50m",
+      "price": 133.0
+    },
+    {
+      "id": "327",
+      "price_book_organizer": "Single-Mode passive fiber splitter cable MPO12 to 2xMPO12",
+      "product_name": "MFP7E40-N015",
+      "product_description": "NVIDIA passive fiber cable, SMF, MPO12 APC to 2xMPO12 APC, 15m",
+      "price": 100.0
+    },
+    {
+      "id": "328",
+      "price_book_organizer": "Single-Mode passive fiber splitter cable MPO12 to 2xMPO12",
+      "product_name": "MFP7E40-N020",
+      "product_description": "NVIDIA passive fiber cable, SMF, MPO12 APC to 2xMPO12 APC, 20m",
+      "price": 108.0
+    },
+    {
+      "id": "329",
+      "price_book_organizer": "Single-Mode passive fiber splitter cable MPO12 to 2xMPO12",
+      "product_name": "MFP7E40-N030",
+      "product_description": "NVIDIA passive fiber cable, SMF, MPO12 APC to 2xMPO12 APC, 30m",
+      "price": 136.0
+    },
+    {
+      "id": "330",
+      "price_book_organizer": "Single-Mode passive fiber splitter cable MPO12 to 2xMPO12",
+      "product_name": "MFP7E40-N050",
+      "product_description": "NVIDIA passive fiber cable, SMF, MPO12 APC to 2xMPO12 APC, 50m",
+      "price": 150.0
+    },
+    {
+      "id": "331",
+      "price_book_organizer": "Multi-MODE passive fiber cable MPO12 to MPO12",
+      "product_name": "MFP7E10-N030",
+      "product_description": "NVIDIA passive fiber cable, MMF, MPO12 APC to MPO12 APC, 30m",
+      "price": 67.0
+    },
+    {
+      "id": "332",
+      "price_book_organizer": "Multi-MODE passive fiber cable MPO12 to MPO12",
+      "product_name": "MFP7E10-N035",
+      "product_description": "NVIDIA passive fiber cable, MMF, MPO12 APC to MPO12 APC, 35m",
+      "price": 73.0
+    },
+    {
+      "id": "333",
+      "price_book_organizer": "Multi-MODE passive fiber cable MPO12 to MPO12",
+      "product_name": "MFP7E10-N040",
+      "product_description": "NVIDIA passive fiber cable, MMF, MPO12 APC to MPO12 APC, 40m",
+      "price": 79.0
+    },
+    {
+      "id": "334",
+      "price_book_organizer": "Multi-MODE passive fiber splitter cable MPO12 to 2xMPO12",
+      "product_name": "MFP7E20-N003",
+      "product_description": "NVIDIA passive fiber cable, MMF, MPO12 APC to 2xMPO12 APC, 3m",
+      "price": 61.0
+    },
+    {
+      "id": "335",
+      "price_book_organizer": "Multi-MODE passive fiber splitter cable MPO12 to 2xMPO12",
+      "product_name": "MFP7E20-N005",
+      "product_description": "NVIDIA passive fiber cable, MMF, MPO12 APC to 2xMPO12 APC, 5m",
+      "price": 64.0
+    },
+    {
+      "id": "336",
+      "price_book_organizer": "Multi-MODE passive fiber splitter cable MPO12 to 2xMPO12",
+      "product_name": "MFP7E20-N007",
+      "product_description": "NVIDIA passive fiber cable, MMF, MPO12 APC to 2xMPO12 APC, 7m",
+      "price": 68.0
+    },
+    {
+      "id": "337",
+      "price_book_organizer": "Multi-MODE passive fiber cable MPO12 to MPO12",
+      "product_name": "MFP7E10-N025",
+      "product_description": "NVIDIA passive fiber cable, MMF, MPO12 APC to MPO12 APC, 25m",
+      "price": 63.0
+    },
+    {
+      "id": "338",
+      "price_book_organizer": "Multi-MODE passive fiber cable MPO12 to MPO12",
+      "product_name": "MFP7E10-N007",
+      "product_description": "NVIDIA passive fiber cable, MMF, MPO12 APC to MPO12 APC, 7m",
+      "price": 45.0
+    },
+    {
+      "id": "339",
+      "price_book_organizer": "Multi-MODE passive fiber cable MPO12 to MPO12",
+      "product_name": "MFP7E10-N010",
+      "product_description": "NVIDIA passive fiber cable, MMF, MPO12 APC to MPO12 APC, 10m",
+      "price": 48.0
+    },
+    {
+      "id": "340",
+      "price_book_organizer": "Multi-MODE passive fiber cable MPO12 to MPO12",
+      "product_name": "MFP7E10-N015",
+      "product_description": "NVIDIA passive fiber cable, MMF , MPO12 APC to MPO12 APC, 15m",
+      "price": 53.0
+    },
+    {
+      "id": "341",
+      "price_book_organizer": "Multi-MODE passive fiber cable MPO12 to MPO12",
+      "product_name": "MFP7E10-N050",
+      "product_description": "NVIDIA passive fiber cable, MMF, MPO12 APC to MPO12 APC, 50m",
+      "price": 90.0
+    },
+    {
+      "id": "342",
+      "price_book_organizer": "Multi-MODE passive fiber cable MPO12 to MPO12",
+      "product_name": "MFP7E10-N020",
+      "product_description": "NVIDIA passive fiber cable, MMF, MPO12 APC to MPO12 APC, 20m",
+      "price": 58.0
+    },
+    {
+      "id": "343",
+      "price_book_organizer": "Single-Mode passive fiber cable MPO12 to MPO12",
+      "product_name": "MFP7E30-N040",
+      "product_description": "NVIDIA passive fiber cable, SMF, MPO12 APC to MPO12 APC, 40m",
+      "price": 98.0
+    },
+    {
+      "id": "344",
+      "price_book_organizer": "Single-Mode passive fiber cable MPO12 to MPO12",
+      "product_name": "MFP7E30-N060",
+      "product_description": "NVIDIA passive fiber cable, SMF, MPO12 APC to MPO12 APC, 60m",
+      "price": 125.0
+    },
+    {
+      "id": "345",
+      "price_book_organizer": "Single-Mode passive fiber cable MPO12 to MPO12",
+      "product_name": "MFP7E30-N070",
+      "product_description": "NVIDIA passive fiber cable, SMF, MPO12 APC to MPO12 APC, 70m",
+      "price": 137.0
+    },
+    {
+      "id": "346",
+      "price_book_organizer": "Single-Mode passive fiber cable MPO12 to MPO12",
+      "product_name": "MFP7E30-N007",
+      "product_description": "NVIDIA passive fiber cable, SMF, MPO12 APC to MPO12 APC, 7m",
+      "price": 56.0
+    },
+    {
+      "id": "347",
+      "price_book_organizer": "Single-Mode passive fiber cable MPO12 to MPO12",
+      "product_name": "MFP7E30-N010",
+      "product_description": "NVIDIA passive fiber cable, SMF, MPO12 APC to MPO12 APC, 10m",
+      "price": 60.0
+    },
+    {
+      "id": "348",
+      "price_book_organizer": "Single-Mode passive fiber cable MPO12 to MPO12",
+      "product_name": "MFP7E30-N015",
+      "product_description": "NVIDIA passive fiber cable, SMF, MPO12 APC to MPO12 APC, 15m",
+      "price": 64.0
+    },
+    {
+      "id": "349",
+      "price_book_organizer": "Single-Mode passive fiber cable MPO12 to MPO12",
+      "product_name": "MFP7E30-N020",
+      "product_description": "NVIDIA passive fiber cable, SMF, MPO12 APC to MPO12 APC, 20m",
+      "price": 69.0
+    },
+    {
+      "id": "350",
+      "price_book_organizer": "Single-Mode passive fiber cable MPO12 to MPO12",
+      "product_name": "MFP7E30-N030",
+      "product_description": "NVIDIA passive fiber cable, SMF, MPO12 APC to MPO12 APC, 30m",
+      "price": 81.0
+    },
+    {
+      "id": "351",
+      "price_book_organizer": "Single-Mode passive fiber cable MPO12 to MPO12",
+      "product_name": "MFP7E30-N050",
+      "product_description": "NVIDIA passive fiber cable, SMF, MPO12 APC to MPO12 APC, 50m",
+      "price": 114.0
+    },
+    {
+      "id": "352",
+      "price_book_organizer": "Single-Mode passive fiber cable MPO12 to MPO12",
+      "product_name": "MFP7E30-N100",
+      "product_description": "NVIDIA passive fiber cable, SMF, MPO12 APC to MPO12 APC, 100m",
+      "price": 169.0
+    },
+    {
+      "id": "353",
+      "price_book_organizer": "Single-Mode passive fiber cable MPO12 to MPO12",
+      "product_name": "MFP7E30-N150",
+      "product_description": "NVIDIA passive fiber cable, SMF, MPO12 APC to MPO12 APC, 150m",
+      "price": 227.0
+    },
+    {
+      "id": "354",
+      "price_book_organizer": "Single-Mode passive fiber splitter cable MPO12 to 2xMPO12",
+      "product_name": "MFP7E40-N003",
+      "product_description": "NVIDIA passive fiber cable, SMF, MPO12 APC to 2xMPO12 APC, 3m",
+      "price": 78.0
+    },
+    {
+      "id": "355",
+      "price_book_organizer": "Single-Mode passive fiber splitter cable MPO12 to 2xMPO12",
+      "product_name": "MFP7E40-N005",
+      "product_description": "NVIDIA passive fiber cable, SMF, MPO12 APC to 2xMPO12 APC, 5m",
+      "price": 82.0
+    },
+    {
+      "id": "356",
+      "price_book_organizer": "Single-Mode passive fiber splitter cable MPO12 to 2xMPO12",
+      "product_name": "MFP7E40-N007",
+      "product_description": "NVIDIA passive fiber cable, SMF, MPO12 APC to 2xMPO12 APC, 7m",
+      "price": 85.0
+    },
+    {
+      "id": "357",
+      "price_book_organizer": "Single-Mode passive fiber splitter cable MPO12 to 2xMPO12",
+      "product_name": "MFP7E40-N010",
+      "product_description": "NVIDIA passive fiber cable, SMF, MPO12 APC to 2xMPO12 APC, 10m",
+      "price": 90.0
+    },
+    {
+      "id": "358",
+      "price_book_organizer": "25GbE SFP28 Transceiver",
+      "product_name": "MMA2P00-AS",
+      "product_description": "Mellanox transceiver, 25GbE, SFP28, LC-LC, 850nm, SR",
+      "price": 78.0
+    },
+    {
+      "id": "359",
+      "price_book_organizer": "Interlink ACC - OSFP to OSFP",
+      "product_name": "MCA4J80-N003-FLT",
+      "product_description": "Active copper cable, IB twin port NDR, up to 800Gb/s, OSFP, 3m, flat top",
+      "price": 831.0
+    },
+    {
+      "id": "360",
+      "price_book_organizer": "Interlink ACC - OSFP to OSFP",
+      "product_name": "MCA4J80-N003-FTF",
+      "product_description": "NVIDIA Active copper cable, IB twin port NDR, up to 800Gb/s, OSFP, 3m, f lat to finned",
+      "price": 831.0
+    },
+    {
+      "id": "361",
+      "price_book_organizer": "Interlink ACC - OSFP to OSFP",
+      "product_name": "MCA4J80-N004",
+      "product_description": "NVIDIA active copper cable, IB twin port NDR, up to 800Gb/s, OSFP, 4m",
+      "price": 912.0
+    },
+    {
+      "id": "362",
+      "price_book_organizer": "Interlink ACC - OSFP to OSFP",
+      "product_name": "MCA4J80-N005",
+      "product_description": "NVIDIA active copper cable, IB twin port NDR, up to 800Gb/s, OSFP, 5m",
+      "price": 995.0
+    },
+    {
+      "id": "363",
+      "price_book_organizer": "Interlink ACC - OSFP to OSFP",
+      "product_name": "MCA4J80-N003",
+      "product_description": "NVIDIA active copper cable, IB twin port NDR, up to 800Gb/s, OSFP, 3m",
+      "price": 831.0
+    },
+    {
+      "id": "364",
+      "price_book_organizer": "100GbE/IB EDR QSFP28 Direct Attach Copper Cable phase 3",
+      "product_name": "MCP1600-C001E30N",
+      "product_description": "Mellanox Passive Copper cable, ETH 100GbE, 100Gb/s, QSFP28, 1m, Black, 3 0AWG, CA-N",
+      "price": 66.0
+    },
+    {
+      "id": "365",
+      "price_book_organizer": "100GbE/IB EDR QSFP28 Direct Attach Copper Cable phase 3",
+      "product_name": "MCP1600-C003E30L",
+      "product_description": "Mellanox Passive Copper cable, ETH 100GbE, 100Gb/s, QSFP28, 3m, Black, 3 0AWG, CA-L",
+      "price": 82.0
+    },
+    {
+      "id": "366",
+      "price_book_organizer": "100GbE/IB EDR QSFP28 Direct Attach Copper Cable phase 3",
+      "product_name": "MCP1600-E01AE30",
+      "product_description": "Mellanox Passive Copper cable, IB EDR, up to 100Gb/s, QSFP28, 1.5m, Blac k, 30AWG",
+      "price": 79.0
+    },
+    {
+      "id": "367",
+      "price_book_organizer": "100GbE/IB EDR QSFP28 Direct Attach Copper Cable phase 3",
+      "product_name": "MCP1600-C005E26L",
+      "product_description": "Mellanox Passive Copper cable, ETH 100GbE, 100Gb/s, QSFP28, 5m, Black, 2 6AWG, CA-L",
+      "price": 150.0
+    },
+    {
+      "id": "368",
+      "price_book_organizer": "100GbE/IB EDR QSFP28 Direct Attach Copper Cable phase 3",
+      "product_name": "MCP1600-E02AE26",
+      "product_description": "Mellanox Passive Copper cable, IB EDR, up to 100Gb/s, QSFP28, 2.5m, Blac k, 26AWG",
+      "price": 93.0
+    },
+    {
+      "id": "369",
+      "price_book_organizer": "100GbE/IB EDR QSFP28 Direct Attach Copper Cable phase 3",
+      "product_name": "MCP1600-C01AE30N",
+      "product_description": "Mellanox Passive Copper cable, ETH 100GbE, 100Gb/s, QSFP28, 1.5m, Black,  30AWG, CA-N",
+      "price": 70.0
+    },
+    {
+      "id": "370",
+      "price_book_organizer": "100GbE/IB EDR QSFP28 Direct Attach Copper Cable phase 3",
+      "product_name": "MCP1600-C02AE30L",
+      "product_description": "Mellanox Passive Copper cable, ETH 100GbE, 100Gb/s, QSFP28,2.5m, Black, 30AWG, CA-L",
+      "price": 78.0
+    },
+    {
+      "id": "371",
+      "price_book_organizer": "100GbE/IB EDR QSFP28 Direct Attach Copper Cable phase 3",
+      "product_name": "MCP1600-E001E30",
+      "product_description": "Mellanox Passive Copper cable, IB EDR, up to 100Gb/s, QSFP28, 1m, Black,  30AWG",
+      "price": 74.0
+    },
+    {
+      "id": "372",
+      "price_book_organizer": "100GbE/IB EDR QSFP28 Direct Attach Copper Cable phase 3",
+      "product_name": "MCP1600-E002E30",
+      "product_description": "Mellanox Passive Copper cable, IB EDR, up to 100Gb/s, QSFP28, 2m, Black,  30AWG",
+      "price": 89.0
+    },
+    {
+      "id": "373",
+      "price_book_organizer": "100GbE/IB EDR QSFP28 Direct Attach Copper Cable phase 3",
+      "product_name": "MCP1600-C002E30N",
+      "product_description": "Mellanox Passive Copper cable, ETH 100GbE, 100Gb/s, QSFP28, 2m, Black, 3 0AWG, CA-N",
+      "price": 74.0
+    },
+    {
+      "id": "374",
+      "price_book_organizer": "100GbE/IB EDR QSFP28 Direct Attach Copper Cable phase 3",
+      "product_name": "MCP1600-E003E26",
+      "product_description": "Mellanox Passive Copper cable, IB EDR, up to 100Gb/s, QSFP28, 3m, Black,  26AWG",
+      "price": 99.0
+    },
+    {
+      "id": "375",
+      "price_book_organizer": "100GbE/IB EDR QSFP28 Direct Attach Copper Cable phase 3",
+      "product_name": "MCP1600-E005E26",
+      "product_description": "Mellanox Passive Copper cable, IB EDR, up to 100Gb/s, QSFP28, 5m, Black,  26AWG",
+      "price": 187.0
+    },
+    {
+      "id": "376",
+      "price_book_organizer": "NDR Transceivers",
+      "product_name": "MMA1Z00-NS400",
+      "product_description": "NVIDIA single port transceiver, 400Gbps,NDR, QSFP112, MPO12 APC, 850nm M MF, up to 50m, flat top",
+      "price": 926.0
+    },
+    {
+      "id": "377",
+      "price_book_organizer": "NDR Transceivers",
+      "product_name": "MMA1Z00-NS400-T",
+      "product_description": "SINGLE PORT TRANSCEIVER, 400GBPS,400GbE, QSFP112, MPO12 APC, 850NM MMF, UP TO 50M, FLAT TOP",
+      "price": 600.0
+    },
+    {
+      "id": "378",
+      "price_book_organizer": "Dynamix QSA",
+      "product_name": "MAM1Q00A-QSA",
+      "product_description": "Mellanox cable module, ETH 10GbE, 40Gb/s to 10Gb/s, QSFP to SFP+",
+      "price": 46.0
+    },
+    {
+      "id": "379",
+      "price_book_organizer": "Multi-MODE passive fiber cable MPO12 to MPO12",
+      "product_name": "MFP7E10-N003",
+      "product_description": "NVIDIA passive fiber cable, MMF , MPO12 APC to MPO12 APC, 3m",
+      "price": 40.0
+    },
+    {
+      "id": "380",
+      "price_book_organizer": "Multi-MODE passive fiber cable MPO12 to MPO12",
+      "product_name": "MFP7E10-N005",
+      "product_description": "NVIDIA passive fiber cable, MMF, MPO12 APC to MPO12 APC, 5m",
+      "price": 43.0
+    },
+    {
+      "id": "381",
+      "price_book_organizer": "Splitter DAC NDR Twin PORT to 4 NDR200 ports",
+      "product_name": "MCP7Y40-N01A",
+      "product_description": "NVIDIA passive copper splitter cable, 800(2x400)Gbps to 4x200Gbps, OSFP to 4xQSFP112, 1.5m, fin to flat",
+      "price": 486.0
+    },
+    {
+      "id": "382",
+      "price_book_organizer": "Splitter DAC NDR Twin PORT to 4 NDR200 ports",
+      "product_name": "MCP7Y50-N001",
+      "product_description": "NVIDIA passive copper splitter cable, IB twin port NDR 800Gb/s to 4x200G b/s, OSFP to 4xOSFP, 1m",
+      "price": 463.0
+    },
+    {
+      "id": "383",
+      "price_book_organizer": "Splitter DAC NDR Twin PORT to 4 NDR200 ports",
+      "product_name": "MCP7Y50-N001-FLT",
+      "product_description": "NVIDIA passive copper splitter cable, IB twin port NDR 800Gb/s to 4x200G b/s, OSFP to 4xOSFP, 1m, flat top",
+      "price": 463.0
+    },
+    {
+      "id": "384",
+      "price_book_organizer": "Splitter DAC NDR Twin PORT to 4 NDR200 ports",
+      "product_name": "MCP7Y40-N003",
+      "product_description": "NVIDIA passive copper splitter cable, 800(2x400)Gbps to 4x200Gbps, OSFP to 4xQSFP112, 3m, fin to flat",
+      "price": 804.0
+    },
+    {
+      "id": "385",
+      "price_book_organizer": "Splitter DAC NDR Twin PORT to 4 NDR200 ports",
+      "product_name": "MCP7Y40-N02A",
+      "product_description": "NVIDIA passive copper splitter cable, 800(2x400)Gbps to 4x200Gbps, OSFP to 4xQSFP112, 2.5m, fin to flat",
+      "price": 691.0
+    },
+    {
+      "id": "386",
+      "price_book_organizer": "Splitter ACC NDR Twin PORT to 4 NDR200 ports",
+      "product_name": "MCA7J75-N004",
+      "product_description": "NVIDIA Active copper splitter cable, IB twin port NDR 800Gb/s to 4x200Gb /s, OSFP to 4xQSFP112, 4m",
+      "price": 1371.0
+    },
+    {
+      "id": "387",
+      "price_book_organizer": "Splitter ACC NDR Twin PORT to 4 NDR200 ports",
+      "product_name": "MCA7J75-N005",
+      "product_description": "NVIDIA Active copper splitter cable, IB twin port NDR 800Gb/s to 4x200Gb /s, OSFP to 4xQSFP112, 5m",
+      "price": 1432.0
+    },
+    {
+      "id": "388",
+      "price_book_organizer": "Dynamix QSA",
+      "product_name": "MAM1Q00A-QSA28",
+      "product_description": "Mellanox cable module, ETH 25GbE, 100Gb/s to 25Gb/s, QSFP28 to SFP28",
+      "price": 49.0
+    },
+    {
+      "id": "389",
+      "price_book_organizer": "Splitter DAC NDR Twin PORT to 2 NDR ports",
+      "product_name": "MCP7Y10-N01A",
+      "product_description": "NVIDIA passive copper splitter cable, 800(2x400)Gbps to 2x400Gbps, OSFP to 2xQSFP112,1.5m, fin to flat",
+      "price": 373.0
+    },
+    {
+      "id": "390",
+      "price_book_organizer": "Splitter DAC NDR Twin PORT to 4 NDR200 ports",
+      "product_name": "MCP7Y40-N001",
+      "product_description": "NVIDIA passive copper splitter cable, 800(2x400)Gbps to 4x200Gbps, OSFP to 4xQSFP112, 1m, fin to flat",
+      "price": 463.0
+    },
+    {
+      "id": "391",
+      "price_book_organizer": "Splitter DAC NDR Twin PORT to 4 NDR200 ports",
+      "product_name": "MCP7Y40-N002",
+      "product_description": "NVIDIA passive copper splitter cable, 800(2x400)Gbps to 4x200Gbps, OSFP to 4xQSFP112, 2m, fin to flat",
+      "price": 532.0
+    },
+    {
+      "id": "392",
+      "price_book_organizer": "Splitter DAC NDR Twin PORT to 2 NDR ports",
+      "product_name": "MCP7Y10-N003",
+      "product_description": "NVIDIA passive copper splitter cable, 800(2x400)Gbps to 2x400Gbps, OSFP to 2xQSFP112,3m, fin to flat",
+      "price": 589.0
+    },
+    {
+      "id": "393",
+      "price_book_organizer": "Splitter DAC NDR Twin PORT to 2 NDR ports",
+      "product_name": "MCP7Y10-N02A",
+      "product_description": "NVIDIA passive copper splitter cable, 800(2x400)Gbps to 2x400Gbps, OSFP to 2xQSFP112,2.5m, fin to flat",
+      "price": 526.0
+    },
+    {
+      "id": "394",
+      "price_book_organizer": "Splitter ACC NDR Twin PORT to 2 NDR ports",
+      "product_name": "MCA7J65-N004",
+      "product_description": "NVIDIA Active copper splitter cable, IB twin port NDR 800Gb/s to 2x400Gb /s, OSFP to 2xQSFP112, 4m",
+      "price": 1025.0
+    },
+    {
+      "id": "395",
+      "price_book_organizer": "Splitter ACC NDR Twin PORT to 2 NDR ports",
+      "product_name": "MCA7J65-N005",
+      "product_description": "NVIDIA Active copper splitter cable, IB twin port NDR 800Gb/s to 2x400Gb /s, OSFP to 2xQSFP112, 5m",
+      "price": 1103.0
+    },
+    {
+      "id": "396",
+      "price_book_organizer": "Splitter DAC NDR Twin PORT to 2 NDR ports",
+      "product_name": "MCP7Y00-N002",
+      "product_description": "NVIDIA passive copper splitter cable, IB twin port NDR 800Gb/s to 2x400G b/s, OSFP to 2xOSFP, 2m",
+      "price": 411.0
+    },
+    {
+      "id": "397",
+      "price_book_organizer": "Splitter DAC NDR Twin PORT to 2 NDR ports",
+      "product_name": "MCP7Y00-N002-FLT",
+      "product_description": "NVIDIA passive copper splitter cable, IB twin port NDR 800Gb/s to 2x400G b/s, OSFP to 2xOSFP, 2m, flat top",
+      "price": 411.0
+    },
+    {
+      "id": "398",
+      "price_book_organizer": "Splitter DAC NDR Twin PORT to 2 NDR ports",
+      "product_name": "MCP7Y00-N01A",
+      "product_description": "NVIDIA passive copper splitter cable, IB twin port NDR 800Gb/s to 2x400G b/s, OSFP to 2xOSFP,1.5m",
+      "price": 373.0
+    },
+    {
+      "id": "399",
+      "price_book_organizer": "Splitter DAC NDR Twin PORT to 2 NDR ports",
+      "product_name": "MCP7Y00-N01A-FLT",
+      "product_description": "NVIDIA passive copper splitter cable, IB twin port NDR 800Gb/s to 2x400G b/s, OSFP to 2xOSFP,1.5m, flat top",
+      "price": 373.0
+    },
+    {
+      "id": "400",
+      "price_book_organizer": "Splitter DAC NDR Twin PORT to 2 NDR ports",
+      "product_name": "MCP7Y10-N001",
+      "product_description": "NVIDIA passive copper splitter cable, 800(2x400)Gbps to 2x400Gbps, OSFP to 2xQSFP112,1m, fin to flat",
+      "price": 342.0
+    },
+    {
+      "id": "401",
+      "price_book_organizer": "Splitter DAC NDR Twin PORT to 2 NDR ports",
+      "product_name": "MCP7Y10-N002",
+      "product_description": "NVIDIA passive copper splitter cable, 800(2x400)Gbps to 2x400Gbps, OSFP to 2xQSFP112,2m, fin to flat",
+      "price": 411.0
+    },
+    {
+      "id": "402",
+      "price_book_organizer": "Splitter DAC NDR Twin PORT to 2 NDR ports",
+      "product_name": "MCP7Y00-N003",
+      "product_description": "NVIDIA passive copper splitter cable, IB twin port NDR 800Gb/s to 2x400G b/s, OSFP to 2xOSFP, 3m",
+      "price": 589.0
+    },
+    {
+      "id": "403",
+      "price_book_organizer": "Splitter DAC NDR Twin PORT to 2 NDR ports",
+      "product_name": "MCP7Y00-N02A",
+      "product_description": "NVIDIA passive copper splitter cable, IB twin port NDR 800Gb/s to 2x400G b/s, OSFP to 2xOSFP, 2.5m",
+      "price": 526.0
+    },
+    {
+      "id": "404",
+      "price_book_organizer": "NDR backward compatability DAC splitters",
+      "product_name": "MCP7Y60-H01A",
+      "product_description": "NVIDIA passive copper splitter cable, 400(2x200)Gbps to 2x200Gbps, OSFP to 2xQSFP56, 1.5m, fin to flat",
+      "price": 248.0
+    },
+    {
+      "id": "405",
+      "price_book_organizer": "NDR backward compatability DAC splitters",
+      "product_name": "MCP7Y70-H001",
+      "product_description": "NVIDIA passive copper splitter cable, 400(2x200)Gbps to 4x100Gbps, OSFP to 4xQSFP56, 1m, fin to flat",
+      "price": 248.0
+    },
+    {
+      "id": "406",
+      "price_book_organizer": "NDR backward compatability DAC splitters",
+      "product_name": "MCP7Y70-H002",
+      "product_description": "NVIDIA passive copper splitter cable, 400(2x200)Gbps to 4x100Gbps, OSFP to 4xQSFP56, 2m, fin to flat",
+      "price": 297.0
+    },
+    {
+      "id": "407",
+      "price_book_organizer": "Splitter ACC NDR Twin PORT to 2 NDR ports",
+      "product_name": "MCA7J60-N004",
+      "product_description": "NVIDIA active copper splitter cable, IB twin port NDR 800Gb/s to 2x400Gb /s, OSFP to 2xOSFP, 4m",
+      "price": 1025.0
+    },
+    {
+      "id": "408",
+      "price_book_organizer": "Splitter ACC NDR Twin PORT to 2 NDR ports",
+      "product_name": "MCA7J60-N005",
+      "product_description": "NVIDIA active copper splitter cable, IB twin port NDR 800Gb/s to 2x400Gb /s, OSFP to 2xOSFP, 5m",
+      "price": 1103.0
+    },
+    {
+      "id": "409",
+      "price_book_organizer": "IB HDR to 2xHDR100 QSFP56 to 2xQSFP56 Splitter Active Optical Cable (Y-Cable)",
+      "product_name": "MFS1S50-H005V",
+      "product_description": "Nvidia active optical splitter cable, 200Gbps to 2x100Gbps , QSFP56 to 2 x QSFP56, 5m",
+      "price": 1226.0
+    },
+    {
+      "id": "410",
+      "price_book_organizer": "IB HDR to 2xHDR100 QSFP56 to 2xQSFP56 Splitter Active Optical Cable (Y-Cable)",
+      "product_name": "MFS1S50-H010V",
+      "product_description": "Nvidia active optical splitter cable, 200Gbps to 2x100Gbps , QSFP56 to 2 x QSFP56, 10m",
+      "price": 1289.0
+    },
+    {
+      "id": "411",
+      "price_book_organizer": "IB HDR to 2xHDR100 QSFP56 to 2xQSFP56 Splitter Active Optical Cable (Y-Cable)",
+      "product_name": "MFS1S50-H015V",
+      "product_description": "Nvidia active optical splitter cable, 200Gbps to 2x100Gbps , QSFP56 to 2 x QSFP56, 15m",
+      "price": 1294.0
+    },
+    {
+      "id": "412",
+      "price_book_organizer": "IB HDR to 2xHDR100 QSFP56 to 2xQSFP56 Splitter Active Optical Cable (Y-Cable)",
+      "product_name": "MFS1S50-H020V",
+      "product_description": "Nvidia active optical splitter cable, 200Gbps to 2x100Gbps , QSFP56 to 2 x QSFP56, 20m",
+      "price": 1300.0
+    },
+    {
+      "id": "413",
+      "price_book_organizer": "IB HDR to 2xHDR100 QSFP56 to 2xQSFP56 Splitter Active Optical Cable (Y-Cable)",
+      "product_name": "MFS1S50-H030V",
+      "product_description": "Nvidia active optical splitter cable, 200Gbps to 2x100Gbps , QSFP56 to 2 x QSFP56, 30m",
+      "price": 1310.0
+    },
+    {
+      "id": "414",
+      "price_book_organizer": "IB HDR to 2xHDR100 QSFP56 to 2xQSFP56 Splitter Copper Cable",
+      "product_name": "MCP7H50-H01AR30",
+      "product_description": "Nvidia Passive copper splitter cable,  200Gbps to 2x100Gbps, QSFP56 to 2 xQSFP56, 1.5m",
+      "price": 136.0
+    },
+    {
+      "id": "415",
+      "price_book_organizer": "IB HDR to 2xHDR100 QSFP56 to 2xQSFP56 Splitter Copper Cable",
+      "product_name": "MCP7H50-H002R26",
+      "product_description": "Nvidia Passive copper splitter cable,  200Gbps to 2x100Gbps, QSFP56 to 2 xQSFP56, 2m",
+      "price": 148.0
+    },
+    {
+      "id": "416",
+      "price_book_organizer": "Interlink DAC - OSFP to OSFP",
+      "product_name": "MCP4Y10-N001",
+      "product_description": "NVIDIA passive Copper cable, IB twin port NDR, up to 800Gb/s, OSFP, 1m",
+      "price": 342.0
+    },
+    {
+      "id": "417",
+      "price_book_organizer": "Interlink DAC - OSFP to OSFP",
+      "product_name": "MCP4Y10-N001-FLT",
+      "product_description": "NVIDIA Passive Copper cable, IB twin port NDR, up to 800Gb/s, OSFP, 1m, flat top",
+      "price": 342.0
+    },
+    {
+      "id": "418",
+      "price_book_organizer": "Interlink DAC - OSFP to OSFP",
+      "product_name": "MCP4Y10-N001-FTF",
+      "product_description": "NVIDIA Passive Copper cable, IB twin port NDR, up to 800Gb/s, OSFP, 1m, flat to finned",
+      "price": 342.0
+    },
+    {
+      "id": "419",
+      "price_book_organizer": "Interlink DAC - OSFP to OSFP",
+      "product_name": "MCP4Y10-N002",
+      "product_description": "NVIDIA passive Copper cable, IB twin port NDR, up to 800Gb/s, OSFP, 2m",
+      "price": 411.0
+    },
+    {
+      "id": "420",
+      "price_book_organizer": "Interlink DAC - OSFP to OSFP",
+      "product_name": "MCP4Y10-N002-FLT",
+      "product_description": "NVIDIA passive Copper cable, IB twin port NDR, up to 800Gb/s, OSFP, 2m, flat top",
+      "price": 411.0
+    },
+    {
+      "id": "421",
+      "price_book_organizer": "Interlink DAC - OSFP to OSFP",
+      "product_name": "MCP4Y10-N00A",
+      "product_description": "NVIDIA passive Copper cable, IB twin port NDR, up to 800Gb/s, OSFP, 0.5m",
+      "price": 314.0
+    },
+    {
+      "id": "422",
+      "price_book_organizer": "Interlink DAC - OSFP to OSFP",
+      "product_name": "MCP4Y10-N00A-FLT",
+      "product_description": "NVIDIA Passive Copper cable, IB twin port NDR, up to 800Gb/s, OSFP, 0.5m , flat top",
+      "price": 314.0
+    },
+    {
+      "id": "423",
+      "price_book_organizer": "Interlink DAC - OSFP to OSFP",
+      "product_name": "MCP4Y10-N01A",
+      "product_description": "NVIDIA passive Copper cable, IB twin port NDR, up to 800Gb/s, OSFP, 1.5m",
+      "price": 373.0
+    },
+    {
+      "id": "424",
+      "price_book_organizer": "Interlink DAC - OSFP to OSFP",
+      "product_name": "MCP4Y10-N01A-FLT",
+      "product_description": "NVIDIA passive Copper cable, IB twin port NDR, up to 800Gb/s, OSFP, 1.5m , flat top",
+      "price": 373.0
+    },
+    {
+      "id": "425",
+      "price_book_organizer": "Mellanox Interconnect TIA ICs",
+      "product_name": "IPTA3X4-WB",
+      "product_description": "IPTA3x4 WB -Transimp. Ampl, 12 ch, Wire Bond - Bare die",
+      "price": 20.0
+    },
+    {
+      "id": "426",
+      "price_book_organizer": "Mellanox Interconnect VCSEL DRIVER ICs",
+      "product_name": "IPVD3X4-WB",
+      "product_description": "IPVD3x4 WB -VCSEL driver, 12 ch, Wire Bond - Bare die",
+      "price": 20.0
+    },
+    {
+      "id": "427",
+      "price_book_organizer": "Mellanox BlueField-2 Ics",
+      "product_name": "M42M08P22A1-CDTTEV",
+      "product_description": "BlueField-2 P-Series SoC, 8 Cores, Dual 100GbE/EDR VPI Ports, PCIe 3.0/4 .0 x16, Crypto",
+      "price": 1378.0
+    },
+    {
+      "id": "428",
+      "price_book_organizer": "Mellanox BlueField-2 Ics",
+      "product_name": "M42M08P22A1-NDTTEV",
+      "product_description": "BlueField-2 P-Series SoC, 8 Cores, Dual 100GbE/EDR VPI Ports, PCIe 3.0/4 .0 x16, No Crypto",
+      "price": 1148.0
+    },
+    {
+      "id": "429",
+      "price_book_organizer": "Mellanox BlueField-2 Ics",
+      "product_name": "M42M08T22A1-CDTTEV",
+      "product_description": "BlueField-2 E-Series SoC, 8 Cores, Dual 100GbE/EDR VPI Ports, PCIe 3.0/4 .0 x16, Crypto",
+      "price": 872.0
+    },
+    {
+      "id": "430",
+      "price_book_organizer": "Mellanox BlueField-2 Ics",
+      "product_name": "M42M08T22A1-NDTTEV",
+      "product_description": "BlueField-2 E-Series SoC, 8 Cores, Dual 100GbE/EDR VPI Ports, PCIe 3.0/4 .0 x16, No Crypto",
+      "price": 726.0
+    },
+    {
+      "id": "431",
+      "price_book_organizer": "Mellanox ConnectX-4 Lx IC",
+      "product_name": "MT27711A0-FDCF-BEM",
+      "product_description": "ConnectX-4 Lx EN, 1-port IC, 40GbE, Multi-Host, PCIe 3.0 x8, 8GT/s",
+      "price": 129.0
+    },
+    {
+      "id": "432",
+      "price_book_organizer": "Mellanox ConnectX-4 Lx IC",
+      "product_name": "MT27711A0-FDCF-GE",
+      "product_description": "ConnectX-4 Lx EN, 1-port IC, 50GbE, PCIe 3.0 x8, 8GT/s",
+      "price": 121.0
+    },
+    {
+      "id": "433",
+      "price_book_organizer": "Mellanox ConnectX-4 Lx IC",
+      "product_name": "MT27712A0-FDCF-AE",
+      "product_description": "ConnectX-4 Lx EN, 2-port IC, 25GbE, PCIe 3.0 x8, 8GT/s",
+      "price": 118.0
+    },
+    {
+      "id": "434",
+      "price_book_organizer": "Mellanox ConnectX-4 Lx IC",
+      "product_name": "MT27712A0-FDCF-GE",
+      "product_description": "ConnectX-4 Lx EN, 2-port IC, 50GbE, PCIe 3.0 x8, 8GT/s",
+      "price": 151.0
+    },
+    {
+      "id": "435",
+      "price_book_organizer": "Mellanox ConnectX-5 - EN",
+      "product_name": "MT27804A0-FDCF-CE",
+      "product_description": "ConnectX-5 EN, 1-port IC, 100GbE, PCIe 3.0 x16",
+      "price": 357.0
+    },
+    {
+      "id": "436",
+      "price_book_organizer": "Mellanox ConnectX-5 - VPI",
+      "product_name": "MT27804A0-FDCF-EV",
+      "product_description": "ConnectX-5 VPI, 1-port IC, EDR/100GbE, PCIe 3.0 x16",
+      "price": 535.0
+    },
+    {
+      "id": "437",
+      "price_book_organizer": "Mellanox ConnectX-5 - EN",
+      "product_name": "MT27808A0-FCIF-CE",
+      "product_description": "ConnectX-5 EN, 2-port IC, 100GbE, PCIe 3.0 x16, Industrial Temperature",
+      "price": 1339.0
+    },
+    {
+      "id": "438",
+      "price_book_organizer": "Mellanox ConnectX-5 - EN",
+      "product_name": "MT27808A0-FDCF-AE",
+      "product_description": "ConnectX-5 EN, 2-port IC, 25GbE, PCIe 3.0 x16",
+      "price": 160.0
+    },
+    {
+      "id": "439",
+      "price_book_organizer": "Mellanox ConnectX-5 - EN",
+      "product_name": "MT27808A0-FDCF-CE",
+      "product_description": "ConnectX-5 EN, 2-port IC, 100GbE, PCIe 3.0 x16",
+      "price": 446.0
+    },
+    {
+      "id": "440",
+      "price_book_organizer": "Mellanox ConnectX-5 - EN",
+      "product_name": "MT27808A0-FDCF-CEM",
+      "product_description": "ConnectX-5 EN, 2-port IC, 100GbE, Multi-Host, PCIe 3.0 x16",
+      "price": 491.0
+    },
+    {
+      "id": "441",
+      "price_book_organizer": "Mellanox ConnectX-5 - VPI",
+      "product_name": "MT27808A0-FDCF-EV",
+      "product_description": "ConnectX-5 VPI, 2-port IC, EDR/100GbE, PCIe 3.0 x16",
+      "price": 669.0
+    },
+    {
+      "id": "442",
+      "price_book_organizer": "NVIDIA ConnectX-7 IC",
+      "product_name": "MT28108A0-CCCF-AE",
+      "product_description": "NVIDIA ConnectX-7 Ethernet IC, 4x25GbE, PCIe 4.0  x16, Crypto Enabled",
+      "price": 1354.0
+    },
+    {
+      "id": "443",
+      "price_book_organizer": "Mellanox ConnectX-7 - EN",
+      "product_name": "MT28108A0-NCCF-AE",
+      "product_description": "NVIDIA ConnectX-7 Ethernet IC, 4x25GbE, PCIe 4.0  x16, No Crypto",
+      "price": 699.0
+    },
+    {
+      "id": "444",
+      "price_book_organizer": "Mellanox ConnectX-5 - VPI",
+      "product_name": "MT28808A0-FDCF-EV",
+      "product_description": "ConnectX-5 Ex VPI, 2-port IC, EDR/100GbE, PCIe 4.0 x16",
+      "price": 837.0
+    },
+    {
+      "id": "445",
+      "price_book_organizer": "Mellanox ConnectX-6 VPI",
+      "product_name": "MT28908A0-CCCF-EVM",
+      "product_description": "ConnectX-6 VPI, 2-port IC, HDR100/EDR/100GbE, Multi-Host, PCIe 4.0 / 3.0  x32, Crypto",
+      "price": 1013.0
+    },
+    {
+      "id": "446",
+      "price_book_organizer": "Mellanox ConnectX-6 EN",
+      "product_name": "MT28908A0-NCCF-CE",
+      "product_description": "ConnectX-6 EN, 2-port IC, 100GbE, PCIe 4.0 / 3.0 x32, No Crypto",
+      "price": 535.0
+    },
+    {
+      "id": "447",
+      "price_book_organizer": "Mellanox ConnectX-6 VPI",
+      "product_name": "MT28908A0-NCCF-EV",
+      "product_description": "ConnectX-6 VPI, 2-port IC, HDR100/EDR/100GbE, PCIe 4.0 / 3.0 x32, No Cry pto",
+      "price": 837.0
+    },
+    {
+      "id": "448",
+      "price_book_organizer": "Mellanox ConnectX-6 VPI",
+      "product_name": "MT28908A0-NCCF-EVM",
+      "product_description": "ConnectX-6 VPI, 2-port IC, HDR100/EDR/100GbE, Multi-Host, PCIe 4.0 / 3.0  x32, No Crypto",
+      "price": 921.0
+    },
+    {
+      "id": "449",
+      "price_book_organizer": "Mellanox ConnectX-6 VPI",
+      "product_name": "MT28908A0-NCCF-HV",
+      "product_description": "ConnectX-6 VPI, 2-port IC, HDR/200GbE, PCIe 4.0 / 3.0 x32, No Crypto",
+      "price": 1004.0
+    },
+    {
+      "id": "450",
+      "price_book_organizer": "Mellanox ConnectX-6  EN",
+      "product_name": "MT28908A0-NCCF-VE",
+      "product_description": "ConnectX-6 EN, 2-port IC, 200GbE, PCIe 4.0 / 3.0 x32, No Crypto",
+      "price": 641.0
+    },
+    {
+      "id": "451",
+      "price_book_organizer": "ConnectX-6 Dx EN",
+      "product_name": "MT28924A0-NCCF-VE",
+      "product_description": "ConnectX-6 Dx EN, 1-port IC, 200GbE, PCIe 3.0/4.0 x16, No Crypto",
+      "price": 987.0
+    },
+    {
+      "id": "452",
+      "price_book_organizer": "ConnectX-6 Dx EN",
+      "product_name": "MT28928A0-CCCF-CE",
+      "product_description": "ConnectX-6 Dx EN, 2-port IC, 100GbE, PCIe 3.0/4.0 x16, Crypto",
+      "price": 1075.0
+    },
+    {
+      "id": "453",
+      "price_book_organizer": "ConnectX-6 Dx EN",
+      "product_name": "MT28928A0-CCCF-CEM",
+      "product_description": "ConnectX-6 Dx EN, 2-port IC, 100GbE, Multi-Host, PCIe 3.0/4.0 x16, Crypt o",
+      "price": 1302.0
+    },
+    {
+      "id": "454",
+      "price_book_organizer": "ConnectX-6 Dx EN",
+      "product_name": "MT28928A0-NCCF-CE",
+      "product_description": "ConnectX-6 Dx EN, 2-port IC, 100GbE, PCIe 3.0/4.0 x16, No Crypto",
+      "price": 896.0
+    },
+    {
+      "id": "455",
+      "price_book_organizer": "ConnectX-6 Dx EN",
+      "product_name": "MT28928A0-NCCF-CEM",
+      "product_description": "ConnectX-6 Dx EN, 2-port IC, 100GbE, Multi-Host, PCIe 3.0/4.0 x16, No Cr ypto",
+      "price": 987.0
+    },
+    {
+      "id": "456",
+      "price_book_organizer": "Mellanox ConnectX-6 - EN",
+      "product_name": "MT28942A0-CCCF-AE",
+      "product_description": "ConnectX-6 Lx EN, 2-port IC, 25GbE, PCIe 3.0/4.0 x8, Crypto",
+      "price": 276.0
+    },
+    {
+      "id": "457",
+      "price_book_organizer": "Mellanox ConnectX-6 Lx IC",
+      "product_name": "MT28942A0-NCCF-AE",
+      "product_description": "ConnectX-6 Lx EN, 2-port IC, 25GbE, PCIe 3.0/4.0 x8, No Crypto",
+      "price": 230.0
+    },
+    {
+      "id": "458",
+      "price_book_organizer": "Mellanox ConnectX-7 VPI",
+      "product_name": "MT29108A0-CCCF-NVM",
+      "product_description": "NVIDIA ConnectX-7 VPI, IC, 400Gb/s bandwidth, up to 4 ports, Multi-Host capable, PCIe 5.0 x32, Crypto",
+      "price": 1857.0
+    },
+    {
+      "id": "459",
+      "price_book_organizer": "Mellanox ConnectX-7 - EN",
+      "product_name": "MT29108A0-CCCF-VVM",
+      "product_description": "NVIDIA ConnectX-7 VPI, IC, 200Gb/s bandwidth, up to 4 ports, PCIe 5.0 x3 2 Multi-Host capable, Crypto",
+      "price": 1477.0
+    },
+    {
+      "id": "460",
+      "price_book_organizer": "Mellanox ConnectX-7 VPI",
+      "product_name": "MT29108A0-NCCF-NV",
+      "product_description": "NVIDIA ConnectX-7 VPI, IC, 400Gb/s bandwidth, up to 4 ports, PCIe 5.0 x3 2, No Crypto",
+      "price": 1406.0
+    },
+    {
+      "id": "461",
+      "price_book_organizer": "Mellanox ConnectX-7 VPI",
+      "product_name": "MT29108A0-NCCF-NVM",
+      "product_description": "NVIDIA ConnectX-7 VPI, IC, 400Gb/s bandwidth, up to 4 ports, Multi-Host capable, PCIe 5.0 x32, No Crypto",
+      "price": 1546.0
+    },
+    {
+      "id": "462",
+      "price_book_organizer": "Mellanox ConnectX-7 - EN",
+      "product_name": "MT29108A0-NCCF-VVM",
+      "product_description": "NVIDIA ConnectX-7 VPI, IC, 200Gb/s bandwidth, up to 4 ports, PCIe 5.0 x3 2, Multi-Host capable, No Crypto",
+      "price": 1196.0
+    },
+    {
+      "id": "463",
+      "price_book_organizer": "Mellanox ConnectX-7 VPI",
+      "product_name": "MT29108A0-NCIF-NV",
+      "product_description": "NVIDIA ConnectX-7 VPI, IC, 400Gb/s bandwidth, up to 4 ports, Multi-Host capable, PCIe 5.0 x32, Industrial temperature, Crypto enabled",
+      "price": 2408.0
+    },
+    {
+      "id": "464",
+      "price_book_organizer": "BlueField IC",
+      "product_name": "MT41M16P23B0-CD-EV",
+      "product_description": "BlueField P-Series SoC, 16 Cores, Dual 100GbE/EDR VPI Ports, PCIe 4.0 x3 2, Crypto (ROHS-2)",
+      "price": 2347.0
+    },
+    {
+      "id": "465",
+      "price_book_organizer": "BlueField IC",
+      "product_name": "MT41M16T23B0-CD-EV",
+      "product_description": "BlueField E-Series SoC, 16 Cores, Dual 100GbE/EDR VPI Ports, PCIe 4.0 x3 2, Crypto (ROHS-2)",
+      "price": 1139.0
+    },
+    {
+      "id": "466",
+      "price_book_organizer": "Mellanox Quantum IC",
+      "product_name": "MT54240A0-FCCR-H",
+      "product_description": "Mellanox Quantum 40 Ports InfiniBand HDR Switch IC",
+      "price": 13283.0
+    },
+    {
+      "id": "467",
+      "price_book_organizer": "Mellanox Quantum IC",
+      "product_name": "MT55264A0-FCCR-N",
+      "product_description": "NVIDIA Quantum-2 64 Port InfiniBand NDR Switch IC",
+      "price": 26565.0
+    },
+    {
+      "id": "468",
+      "price_book_organizer": "Mellanox Interconnect TIA ICs",
+      "product_name": "MTRV28042C20-FTC",
+      "product_description": "Mellanox Interconnect IC, 4-channel Receiver IC, 25Gb/s, solder bump (Di e on Tape & Reel)",
+      "price": 7.0
+    },
+    {
+      "id": "469",
+      "price_book_organizer": "Mellanox Interconnect TIA ICs",
+      "product_name": "MTRV28122C20-FTC",
+      "product_description": "Mellanox Interconnect IC, 12-channel Receiver IC, 25Gb/s, solder bump (D ie on Tape & Reel)",
+      "price": 15.0
+    },
+    {
+      "id": "470",
+      "price_book_organizer": "Mellanox Interconnect VCSEL DRIVER ICs",
+      "product_name": "MTTV28042C2N-FTC",
+      "product_description": "Mellanox Interconnect IC, 4-channel VCSEL driver, 25Gb/s, neg PE, solder  bump (Die on Tape & Reel)",
+      "price": 7.0
+    },
+    {
+      "id": "471",
+      "price_book_organizer": "Mellanox Interconnect VCSEL DRIVER ICs",
+      "product_name": "MTTV28122C2N-FTC",
+      "product_description": "Mellanox Interconnect IC, 12-channel VCSEL driver, 25Gb/s, neg PE, solde r bump (Die on Tape & Reel)",
+      "price": 15.0
+    }
+  ],
+  "metadata": {
+    "total_products": 472,
+    "generated_time": "2025-04-10 00:06:30",
+    "source_file": "Q325 Internal Networking HW Price Book 24-Jul-24.xlsx"
+  }
+}

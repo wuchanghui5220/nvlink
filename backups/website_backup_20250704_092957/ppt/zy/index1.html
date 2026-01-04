@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>北京正阳恒卓科技有限公司</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(220, 240, 230, 0.8);
+            font-family: 'Arial', sans-serif;
+            overflow-x: hidden;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .slide-container {
+            width: 96%;
+            max-width: 1600px;
+            aspect-ratio: 16/9;
+            background: linear-gradient(135deg, #76a67e 0%, #3e703e 100%);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            z-index: 10;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            width: 120px;
+            height: 120px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .company-name {
+            color: white;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .company-name h1 {
+            font-size: 3.2em;
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .company-name h2 {
+            font-size: 1.8em;
+            margin: 5px 0 0 0;
+            font-weight: 400;
+        }
+
+        .subtitle {
+            color: white;
+            font-size: 2em;
+            text-align: center;
+            margin: 40px 0;
+            font-weight: 300;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .info-box {
+            background: rgba(255, 255, 255, 0.85);
+            border-radius: 15px;
+            padding: 20px 40px;
+            max-width: 800px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-box p {
+            color: #2c5e2e;
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin: 10px 0;
+        }
+
+        .decoration {
+            position: absolute;
+            opacity: 0.1;
+            pointer-events: none;
+        }
+
+        .spiral-1 {
+            width: 400px;
+            height: 400px;
+            top: -100px;
+            right: -100px;
+            border: 15px solid #fff;
+            border-radius: 50%;
+            transform: rotate(-45deg);
+        }
+
+        .spiral-2 {
+            width: 300px;
+            height: 300px;
+            bottom: -80px;
+            left: -80px;
+            border: 12px solid #fff;
+            border-radius: 50%;
+            transform: rotate(30deg);
+        }
+
+        .footer {
+            text-align: right;
+            padding: 15px 30px;
+            color: white;
+            font-style: italic;
+            font-size: 1em;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+            background: rgba(62, 112, 62, 0.8);
+        }
+
+        .badge-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+            gap: 20px;
+        }
+
+        .badge {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .badge-icon {
+            width: 40px;
+            height: 40px;
+            background: #3e703e;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 10px;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .badge-text {
+            color: #2c5e2e;
+            font-size: 0.9em;
+            font-weight: 600;
+        }
+
+        @media screen and (max-width: 1200px) {
+            .company-name h1 {
+                font-size: 2.5em;
+            }
+            .company-name h2 {
+                font-size: 1.4em;
+            }
+            .subtitle {
+                font-size: 1.5em;
+            }
+            .info-box p {
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <!-- Decorative elements -->
+        <div class="decoration spiral-1"></div>
+        <div class="decoration spiral-2"></div>
+        
+        <div class="content">
+            <div class="logo-container">
+                <div class="logo" style="width: 180px; height: 180px; background: transparent; box-shadow: none;">
+                    <img src="/api/placeholder/180/180" alt="正阳恒卓科技" style="max-width: 100%; max-height: 100%;">
+                </div>
+                <div class="company-name">
+                    <h1>北京正阳恒卓科技有限公司</h1>
+                    <h2>Beijing Zhengyang Hengzhuo Technology Co., Ltd.</h2>
+                </div>
+            </div>
+            
+            <div class="subtitle">公司简介 | 企业架构 | 产品与解决方案</div>
+            
+            <div class="info-box">
+                <p>成立于2015年 · 总部位于北京</p>
+                <p>NVIDIA networking精英级合作伙伴 · compute注册级合作伙伴</p>
+                <p>中国投资协会大中型企业投资专业委员会成员 · 北京自然资源资产协会成员</p>
+            </div>
+            
+            <div class="badge-container">
+                <div class="badge">
+                    <div class="badge-icon">AI</div>
+                    <div class="badge-text">人工智能<br>解决方案</div>
+                </div>
+                <div class="badge">
+                    <div class="badge-icon">HPC</div>
+                    <div class="badge-text">高性能<br>计算</div>
+                </div>
+                <div class="badge">
+                    <div class="badge-icon">DC</div>
+                    <div class="badge-text">数据中心<br>网络优化</div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 30px; background: rgba(255, 255, 255, 0.9); border-radius: 12px; padding: 10px 20px; display: flex; align-items: center; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+                <img src="/api/placeholder/120/60" alt="NVIDIA Elite Partner" style="height: 60px;">
+            </div>
+        </div>
+        
+        <div class="footer">
+            致力于深度理解客户需求，提供定制化技术解决方案，助力客户实现数字化转型
+        </div>
+    </div>
+</body>
+</html>

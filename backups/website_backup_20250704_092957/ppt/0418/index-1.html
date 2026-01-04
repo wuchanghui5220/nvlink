@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>NVIDIA InfiniBand智算中心组网创新与Quantum-X800高性能交换解决方案</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, rgba(175, 233, 207, 0.8) 0%, rgba(145, 210, 185, 0.8) 100%);
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+        }
+
+        .cover-container {
+            width: 90%;
+            height: 85%;
+            background: #222;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Dark theme with neon accents */
+        .bg-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: linear-gradient(rgba(0, 155, 119, 0.1) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(0, 155, 119, 0.1) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: 1;
+        }
+
+        /* Split design - half perspective effect */
+        .perspective-split {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 2;
+        }
+
+        .perspective-panel {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 65%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0, 118, 82, 0.9) 0%, rgba(0, 155, 119, 0.8) 100%);
+            clip-path: polygon(100px 0, 100% 0, 100% 100%, 350px 100%);
+            z-index: 2;
+        }
+
+        .glow-edge {
+            position: absolute;
+            top: 0;
+            right: 65%;
+            width: 5px;
+            height: 100%;
+            background: #00E676;
+            filter: blur(5px);
+            box-shadow: 0 0 20px 5px rgba(0, 230, 118, 0.8);
+            z-index: 3;
+        }
+
+        /* Content areas */
+        .content-wrapper {
+            position: relative;
+            flex: 1;
+            display: flex;
+            z-index: 5;
+        }
+
+        .left-content {
+            width: 40%;
+            padding: 60px 0 60px 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .right-content {
+            width: 60%;
+            padding: 60px 60px 60px 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-end;
+            color: white;
+            position: relative;
+        }
+
+        /* Title and subtitle styles */
+        .main-title {
+            color: white;
+            font-size: 3.2em;
+            font-weight: 700;
+            margin: 0 0 30px 0;
+            line-height: 1.2;
+            text-shadow: 0 0 10px rgba(0, 230, 118, 0.3);
+        }
+
+        .highlight-text {
+            color: #00E676;
+            font-weight: 800;
+        }
+
+        /* Key product title with futuristic design */
+        .product-title-container {
+            padding: 5px;
+            border: 2px solid rgba(0, 230, 118, 0.5);
+            border-radius: 10px;
+            margin: 20px 0 40px 0;
+            position: relative;
+            background: rgba(0, 0, 0, 0.4);
+            width: fit-content;
+            max-width: 95%;
+        }
+
+        .product-title-glow {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 8px;
+            box-shadow: 0 0 15px 2px rgba(0, 230, 118, 0.4);
+            z-index: -1;
+            animation: pulseGlow 3s infinite alternate;
+        }
+
+        .product-title {
+            margin: 0;
+            padding: 15px 25px;
+            font-size: 1.6em;
+            font-weight: 600;
+            line-height: 1.4;
+            color: white;
+            position: relative;
+        }
+
+        /* Tech code section */
+        .tech-code-container {
+            position: relative;
+            margin-top: 30px;
+            font-family: 'Courier New', monospace;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+
+        .code-line {
+            margin: 5px 0;
+        }
+
+        .code-comment {
+            color: #00E676;
+        }
+
+        .code-keyword {
+            color: #64B5F6;
+        }
+
+        .code-value {
+            color: #FFD54F;
+        }
+
+        /* Brand logo with neon effect */
+        .logo-container {
+            position: absolute;
+            top: 40px;
+            left: 60px;
+            display: flex;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .logo-text {
+            color: #00E676;
+            font-size: 2.4em;
+            font-weight: 700;
+            text-shadow: 0 0 10px rgba(0, 230, 118, 0.5);
+        }
+
+        .divider {
+            width: 2px;
+            height: 40px;
+            background-color: #00E676;
+            margin: 0 15px;
+            box-shadow: 0 0 10px rgba(0, 230, 118, 0.5);
+        }
+
+        .product-name {
+            color: white;
+            font-size: 2em;
+            font-weight: 400;
+            text-shadow: 0 0 10px rgba(0, 230, 118, 0.3);
+        }
+
+        /* Footer with glass effect */
+        .footer {
+            padding: 20px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            color: white;
+            z-index: 10;
+            position: relative;
+            border-top: 1px solid rgba(0, 230, 118, 0.3);
+        }
+
+        .presenter-info {
+            font-size: 1.1em;
+        }
+
+        .presenter-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .presenter-title {
+            font-style: italic;
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .company-info {
+            text-align: right;
+            font-style: italic;
+        }
+
+        /* 3D visualization for right panel */
+        .visualization-container {
+            position: relative;
+            width: 80%;
+            height: 300px;
+            margin-bottom: 20px;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInLeft {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 15px 2px rgba(0, 230, 118, 0.4); }
+            100% { box-shadow: 0 0 25px 5px rgba(0, 230, 118, 0.7); }
+        }
+
+        @keyframes neonFlicker {
+            0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% {
+                opacity: 0.99;
+            }
+            20%, 21.999%, 63%, 63.999%, 65%, 69.999% {
+                opacity: 0.4;
+            }
+        }
+
+        @keyframes dataFlow {
+            from { stroke-dashoffset: 1000; }
+            to { stroke-dashoffset: 0; }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        .fade-in-left {
+            animation: fadeInLeft 0.8s ease-out forwards;
+        }
+
+        .delay-1 {
+            animation-delay: 0.3s;
+        }
+
+        .delay-2 {
+            animation-delay: 0.6s;
+        }
+
+        .delay-3 {
+            animation-delay: 0.9s;
+        }
+
+        .neon-flicker {
+            animation: neonFlicker 3s infinite alternate;
+        }
+
+        .data-flow {
+            animation: dataFlow 15s linear infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="cover-container">
+        <!-- Background elements -->
+        <div class="bg-grid"></div>
+        <div class="perspective-split">
+            <div class="perspective-panel"></div>
+            <div class="glow-edge"></div>
+        </div>
+        
+        <!-- Logo with neon effect -->
+        <div class="logo-container fade-in">
+            <div class="logo-text neon-flicker">NVIDIA</div>
+            <div class="divider"></div>
+            <div class="product-name">InfiniBand</div>
+        </div>
+        
+        <!-- Main content -->
+        <div class="content-wrapper">
+            <!-- Left side with title -->
+            <div class="left-content">
+                <h1 class="main-title fade-in">
+                    智算中心<br>
+                    <span class="highlight-text">高性能网络</span><br>
+                    革新
+                </h1>
+                
+                <!-- Product title container with glow effect -->
+                <div class="product-title-container fade-in delay-1">
+                    <div class="product-title-glow"></div>
+                    <p class="product-title">NVIDIA InfiniBand智算中心组网创新与<br>Quantum-X800高性能交换解决方案</p>
+                </div>
+                
+                <!-- Tech code section - simulated command line -->
+                <div class="tech-code-container fade-in delay-2">
+                    <div class="code-line"><span class="code-comment">// 智算中心网络性能指标</span></div>
+                    <div class="code-line"><span class="code-keyword">const</span> bandwidth = <span class="code-value">"800Gb/s"</span>;</div>
+                    <div class="code-line"><span class="code-keyword">const</span> latency = <span class="code-value">"0.6μs"</span>;</div>
+                    <div class="code-line"><span class="code-keyword">const</span> ports = <span class="code-value">144</span>;</div>
+                    <div class="code-line"><span class="code-comment">// Quantum-X800: 新一代智能互连</span></div>
+                </div>
+            </div>
+            
+            <!-- Right side with data visualization -->
+            <div class="right-content">
+                <div class="visualization-container fade-in-left delay-1">
+                    <svg width="100%" height="100%" viewBox="0 0 500 350" preserveAspectRatio="xMidYMid meet">
+                        <!-- Abstract network concept visualization -->
+                        <defs>
+                            <!-- Glowing point filter -->
+                            <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                                <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
+                                <feMerge>
+                                    <feMergeNode in="coloredBlur"/>
+                                    <feMergeNode in="SourceGraphic"/>
+                                </feMerge>
+                            </filter>
+                            
+                            <!-- Data flow gradient -->
+                            <linearGradient id="dataGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" style="stop-color:rgba(0,230,118,0.1);stop-opacity:1" />
+                                <stop offset="50%" style="stop-color:rgba(0,230,118,0.7);stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:rgba(0,230,118,0.1);stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        
+                        <!-- Central structure - Quantum X800 representation -->
+                        <g filter="url(#glow)">
+                            <!-- 3D-like structure with perspective -->
+                            <polygon points="250,50 350,100 350,250 250,300 150,250 150,100" 
+                                    fill="rgba(0,10,20,0.7)" stroke="#00E676" stroke-width="2" />
+                            
+                            <!-- Inner structure -->
+                            <polygon points="250,100 300,125 300,225 250,250 200,225 200,125" 
+                                    fill="rgba(0,50,30,0.5)" stroke="#00E676" stroke-width="1" />
+                            
+                            <!-- Core center -->
+                            <circle cx="250" cy="175" r="30" fill="rgba(0,230,118,0.2)" stroke="#00E676" stroke-width="1.5" />
+                            
+                            <!-- Core specs -->
+                            <text x="250" y="170" text-anchor="middle" font-size="14" fill="#FFF" font-weight="bold">XDR</text>
+                            <text x="250" y="190" text-anchor="middle" font-size="16" fill="#FFF" font-weight="bold">800G</text>
+                        </g>
+                        
+                        <!-- Network connections - data paths -->
+                        <g class="data-flow">
+                            <!-- Connection paths with animated data flow -->
+                            <path d="M250,50 C180,80 120,150 100,225" fill="none" stroke="url(#dataGradient)" stroke-width="1.5" stroke-dasharray="5,10" stroke-dashoffset="0" />
+                            
+                            <path d="M350,100 C380,150 400,200 450,225" fill="none" stroke="url(#dataGradient)" stroke-width="1.5" stroke-dasharray="5,10" stroke-dashoffset="200" />
+                            
+                            <path d="M350,250 C380,230 420,200 450,175" fill="none" stroke="url(#dataGradient)" stroke-width="1.5" stroke-dasharray="5,10" stroke-dashoffset="400" />
+                            
+                            <path d="M250,300 C200,280 150,250 125,200" fill="none" stroke="url(#dataGradient)" stroke-width="1.5" stroke-dasharray="5,10" stroke-dashoffset="600" />
+                            
+                            <path d="M150,250 C120,220 100,180 75,150" fill="none" stroke="url(#dataGradient)" stroke-width="1.5" stroke-dasharray="5,10" stroke-dashoffset="800" />
+                            
+                            <path d="M150,100 C100,120 75,150 50,200" fill="none" stroke="url(#dataGradient)" stroke-width="1.5" stroke-dasharray="5,10" stroke-dashoffset="1000" />
+                        </g>
+                        
+                        <!-- Connection nodes -->
+                        <g filter="url(#glow)">
+                            <circle cx="100" cy="225" r="8" fill="#111" stroke="#00E676" stroke-width="1.5" />
+                            <circle cx="450" cy="225" r="8" fill="#111" stroke="#00E676" stroke-width="1.5" />
+                            <circle cx="450" cy="175" r="8" fill="#111" stroke="#00E676" stroke-width="1.5" />
+                            <circle cx="125" cy="200" r="8" fill="#111" stroke="#00E676" stroke-width="1.5" />
+                            <circle cx="75" cy="150" r="8" fill="#111" stroke="#00E676" stroke-width="1.5" />
+                            <circle cx="50" cy="200" r="8" fill="#111" stroke="#00E676" stroke-width="1.5" />
+                        </g>
+                        
+                        <!-- Ports/Endpoints -->
+                        <g>
+                            <text x="85" y="235" text-anchor="middle" font-size="10" fill="#FFF">端口</text>
+                            <text x="460" y="235" text-anchor="middle" font-size="10" fill="#FFF">端口</text>
+                            <text x="460" y="185" text-anchor="middle" font-size="10" fill="#FFF">端口</text>
+                            <text x="110" y="210" text-anchor="middle" font-size="10" fill="#FFF">端口</text>
+                            <text x="60" y="160" text-anchor="middle" font-size="10" fill="#FFF">端口</text>
+                            <text x="35" y="210" text-anchor="middle" font-size="10" fill="#FFF">端口</text>
+                        </g>
+                        
+                        <!-- Data flow particles -->
+                        <circle cx="175" cy="65" r="3" fill="#00E676">
+                            <animate attributeName="cx" values="250;180;120;100" dur="3s" repeatCount="indefinite"/>
+                            <animate attributeName="cy" values="50;80;150;225" dur="3s" repeatCount="indefinite"/>
+                        </circle>
+                        
+                        <circle cx="350" cy="150" r="3" fill="#00E676">
+                            <animate attributeName="cx" values="350;380;400;450" dur="2s" repeatCount="indefinite"/>
+                            <animate attributeName="cy" values="100;150;200;225" dur="2s" repeatCount="indefinite"/>
+                        </circle>
+                        
+                        <circle cx="350" cy="250" r="3" fill="#00E676">
+                            <animate attributeName="cx" values="350;380;420;450" dur="2.5s" repeatCount="indefinite"/>
+                            <animate attributeName="cy" values="250;230;200;175" dur="2.5s" repeatCount="indefinite"/>
+                        </circle>
+                    </svg>
+                </div>
+                
+                <div class="fade-in-left delay-2">
+                    <h2 style="font-size: 2em; margin: 0 0 10px 0; color: white;">智能网络<span style="color:#00E676;">突破</span>极限</h2>
+                    <p style="font-size: 1.2em; margin: 0; opacity: 0.8; max-width: 400px; text-align: right;">
+                        超大规模AI训练的新一代网络基础设施
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="footer fade-in delay-3">
+            <div class="presenter-info">
+                <div class="presenter-name">[讲师姓名]</div>
+                <div class="presenter-title">NVIDIA 网络解决方案架构师</div>
+            </div>
+            <div class="company-info">
+                2024 NVIDIA Corporation
+            </div>
+        </div>
+    </div>
+</body>
+</html>

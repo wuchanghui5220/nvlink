@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>问答环节 - NVIDIA Spectrum-X网络研讨会</title>
+    <style>
+        /* CSS Reset and Global Styles */
+        :root {
+            --nvidia-green: #76B900;
+            --glow-gold: #FFD700;
+            --primary-text: #E0E0E0;
+            --secondary-text: #B0B0B0;
+            --dark-bg: #0A0A0A;
+            --card-bg: rgba(20, 25, 40, 0.6);
+            --border-color: rgba(118, 185, 0, 0.2);
+            --border-hover-color: rgba(118, 185, 0, 0.5);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Microsoft YaHei", sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--primary-text);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Animated Background Grid */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                linear-gradient(rgba(118, 185, 0, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(118, 185, 0, 0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
+            z-index: 0;
+        }
+
+        @keyframes gridMove {
+            from { background-position: 0 0; }
+            to { background-position: 50px 50px; }
+        }
+        
+        /* Mouse Follow Glow Effect */
+        .mouse-glow {
+            position: fixed;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(118, 185, 0, 0.1) 0%, transparent 70%);
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            transition: transform 0.1s ease-out;
+            z-index: 0;
+        }
+
+        /* Main Container */
+        .slide-container {
+            width: 100%;
+            max-width: 1200px;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+            z-index: 1;
+            animation: fadeIn 1.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Header Section */
+        .header {
+            text-align: center;
+        }
+        
+        .page-title {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--glow-gold), var(--nvidia-green));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 25px rgba(255, 215, 0, 0.3);
+            margin-bottom: 8px;
+        }
+
+        .page-subtitle {
+            font-size: 1.2rem;
+            color: var(--secondary-text);
+            font-weight: 400;
+        }
+
+        /* Main Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            width: 100%;
+        }
+
+        /* Universal Card Style */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            border-color: var(--border-hover-color);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title.thanks { color: var(--glow-gold); }
+        .section-title.contact { color: var(--nvidia-green); }
+
+        .section-title::before {
+            font-size: 1.5rem;
+        }
+        .section-title.thanks::before { content: '🎉'; }
+        .section-title.contact::before { content: '💬'; }
+        
+        .info-point {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: left;
+        }
+        
+        .thank-you-section .info-point {
+            background: rgba(255, 215, 0, 0.05);
+            border-left: 3px solid var(--glow-gold);
+        }
+        
+        .contact-section .info-point {
+            background: rgba(118, 185, 0, 0.05);
+            border-left: 3px solid var(--nvidia-green);
+        }
+
+        .info-icon {
+            font-size: 1.2rem;
+            min-width: 20px;
+        }
+
+        .info-text strong {
+            display: block;
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--primary-text);
+        }
+
+        .info-text {
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: var(--secondary-text);
+        }
+
+        /* Footer Section: Logo and Stats */
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            gap: 30px;
+        }
+        
+        .logo-container {
+            padding: 15px;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .logo-container:hover {
+            transform: scale(1.05);
+        }
+
+        .nvidia-logo {
+            width: 100px;
+            height: auto;
+        }
+
+        .final-stats {
+            display: flex;
+            gap: 20px;
+            flex-grow: 1;
+            justify-content: flex-end;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 15px 20px;
+            background: linear-gradient(145deg, rgba(255, 215, 0, 0.05), rgba(118, 185, 0, 0.05));
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+        }
+
+        .stat-number {
+            font-size: 1.4rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--glow-gold), var(--nvidia-green));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--secondary-text);
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 900px) {
+            body { height: auto; padding: 20px 0; }
+            .slide-container { padding: 20px; gap: 20px; }
+            .page-title { font-size: 2.2rem; }
+            .content-grid { grid-template-columns: 1fr; }
+            .footer { flex-direction: column; gap: 20px; }
+            .final-stats { width: 100%; justify-content: center; flex-wrap: wrap; }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="mouse-glow"></div>
+
+    <div class="slide-container">
+
+        <header class="header">
+            <h1 class="page-title">问答环节</h1>
+            <p class="page-subtitle">开放交流，答疑解惑</p>
+        </header>
+
+        <main class="content-grid">
+            <!-- Left Column: Thank You & Summary -->
+            <section class="card thank-you-section">
+                <h2 class="section-title thanks">感谢您的参与</h2>
+                <div class="info-point">
+                    <div class="info-icon">💡</div>
+                    <div class="info-text">
+                        <strong>研讨会圆满结束</strong>
+                        深度探讨了AI数据中心网络解决方案的创新技术与应用。
+                    </div>
+                </div>
+                <div class="info-point">
+                    <div class="info-icon">🚀</div>
+                    <div class="info-text">
+                        <strong>Spectrum-X技术分享</strong>
+                        全面介绍了专为AI设计的以太网平台优势。
+                    </div>
+                </div>
+                <div class="info-point">
+                    <div class="info-icon">⚡</div>
+                    <div class="info-text">
+                        <strong>RoCE性能突破</strong>
+                        展示了4.3倍带宽提升与2.2倍延迟降低的卓越表现。
+                    </div>
+                </div>
+            </section>
+
+            <!-- Right Column: Contact & Follow-up -->
+            <section class="card contact-section">
+                <h2 class="section-title contact">技术交流与支持</h2>
+                <div class="info-point">
+                    <div class="info-icon">👨‍💼</div>
+                    <div class="info-text">
+                        <strong>Vincent Wu</strong>
+                        NVIDIA NCP AIN 认证专家 | 网络研讨会主讲人
+                    </div>
+                </div>
+                <div class="info-point">
+                    <div class="info-icon">🔧</div>
+                    <div class="info-text">
+                        <strong>专业领域</strong>
+                        Spectrum-X平台架构、DPU加速技术、RoCE网络优化。
+                    </div>
+                </div>
+                <div class="info-point">
+                    <div class="info-icon">📞</div>
+                    <div class="info-text">
+                        <strong>技术支持</strong>
+                        随时欢迎您的技术问题和方案讨论。
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <div class="logo-container">
+                <svg class="nvidia-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 32" fill="none">
+                    <path d="M17.9101 9.54961V6.65962C18.1893 6.64003 18.4704 6.624 18.7567 6.6151C26.6044 6.36581 31.7531 13.4083 31.7531 13.4083C31.7531 13.4083 26.1926 21.1897 20.2308 21.1897C19.3718 21.1897 18.6029 21.0508 17.9101 20.8158V12.0496C20.9661 12.4218 21.5794 13.7804 23.4158 16.8645L27.5005 13.394C27.5005 13.394 24.5188 9.45345 19.492 9.45345C18.9458 9.45345 18.4227 9.49263 17.9083 9.54783L17.9101 9.54961ZM17.9083 0V4.31807C18.1893 4.29492 18.4721 4.27711 18.7549 4.26643C29.6675 3.89606 36.7781 13.2836 36.7781 13.2836C36.7781 13.2836 28.6123 23.2873 20.1035 23.2873C19.3241 23.2873 18.5941 23.2143 17.9083 23.0932V25.7624C18.4951 25.8372 19.1031 25.8817 19.7359 25.8817C27.6525 25.8817 33.3792 21.8094 38.9239 16.9874C39.843 17.7281 43.606 19.5319 44.3802 20.3225C39.1077 24.7688 26.8236 28.3515 19.8579 28.3515C19.1862 28.3515 18.5411 28.3105 17.9083 28.25V32H48V0.00178103H17.9101L17.9083 0ZM17.9083 20.814V23.0932C10.5856 21.7773 8.55293 14.1098 8.55293 14.1098C8.55293 14.1098 12.0685 10.1853 17.9083 9.54961V12.0496C17.9083 12.0496 17.9012 12.0496 17.8977 12.0496C14.8329 11.6793 12.4397 14.5639 12.4397 14.5639C12.4397 14.5639 13.7812 19.4197 17.9101 20.8175L17.9083 20.814ZM4.90481 13.7804C4.90481 13.7804 9.24403 7.32914 17.9101 6.6614V4.32163C8.31255 5.09799 0 13.2872 0 13.2872C0 13.2872 4.70685 26.9982 17.9101 28.2535V25.766C8.22064 24.5373 4.90481 13.7804 4.90481 13.7804Z" fill="#76B900"/>
+                </svg>
+            </div>
+            <div class="final-stats">
+                <div class="stat-item">
+                    <div class="stat-number">Spectrum-X</div>
+                    <div class="stat-label">核心技术</div>
+                </div>
+            </div>
+        </footer>
+        
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mouse Glow Effect
+            const mouseGlow = document.querySelector('.mouse-glow');
+            if (mouseGlow) {
+                document.addEventListener('mousemove', function(e) {
+                    // Using requestAnimationFrame for performance
+                    window.requestAnimationFrame(() => {
+                        mouseGlow.style.left = `${e.clientX}px`;
+                        mouseGlow.style.top = `${e.clientY}px`;
+                    });
+                });
+            }
+
+            // Keyboard navigation
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'ArrowLeft') {
+                    window.location.href = 'summary-outlook.html';
+                } else if (e.key === 'Home') {
+                    window.location.href = 'index.html';
+                } else if (e.key === 'ArrowRight') {
+                    // 问答环节是最后一页，可以循环回到首页
+                    window.location.href = 'index.html';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

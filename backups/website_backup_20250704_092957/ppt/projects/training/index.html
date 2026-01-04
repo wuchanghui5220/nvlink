@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NVIDIA EVPN Training Presentation</title>
+    
+    <!-- 基础样式 -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body, html {
+            height: 100vh;
+            width: 100vw;
+            font-family: 'Noto Sans SC', sans-serif;
+            background: #0a0a0a;
+            color: white;
+            overflow: hidden;
+        }
+
+        .presentation-player {
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* 页面内容区域 */
+        .page-content {
+            flex: 1;
+            width: 100%;
+            height: calc(100vh - 80px);
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .page-content .slide-container {
+            width: 100vw;
+            height: 56.25vw;
+            max-height: 100vh;
+            max-width: 177.78vh;
+            border-radius: 0;
+        }
+
+        /* 导航栏 */
+        .navigation-bar {
+            height: 80px;
+            background: rgba(17, 24, 39, 0.95);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+            position: relative;
+            z-index: 1000;
+        }
+
+        /* 页码导航 */
+        .page-numbers {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .page-numbers button {
+            width: 40px;
+            height: 40px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.7);
+            border-radius: 50%;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .page-numbers button:hover {
+            background: rgba(118, 185, 0, 0.2);
+            border-color: #76b900;
+            color: #76b900;
+            transform: scale(1.1);
+        }
+
+        .page-numbers button.active {
+            background: linear-gradient(135deg, #76b900 0%, #3e703e 100%);
+            border-color: #76b900;
+            color: white;
+            box-shadow: 0 0 20px rgba(118, 185, 0, 0.5);
+        }
+
+        /* 控制按钮 */
+        .controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .controls button {
+            width: 50px;
+            height: 50px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .controls button:hover:not(:disabled) {
+            background: rgba(118, 185, 0, 0.2);
+            border-color: #76b900;
+            color: #76b900;
+            transform: scale(1.05);
+        }
+
+        .controls button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* 项目信息 */
+        .project-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .project-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #76b900;
+            margin-bottom: 4px;
+        }
+
+        .page-indicator {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* 加载状态 */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .loading::after {
+            content: "";
+            width: 30px;
+            height: 30px;
+            border: 3px solid rgba(118, 185, 0, 0.3);
+            border-top-color: #76b900;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 15px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* 全屏模式 */
+        .fullscreen-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.5);
+            color: rgba(255, 255, 255, 0.8);
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1001;
+            transition: all 0.3s ease;
+        }
+
+        .fullscreen-btn:hover {
+            background: rgba(118, 185, 0, 0.2);
+            border-color: #76b900;
+            color: #76b900;
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .navigation-bar {
+                padding: 0 20px;
+                height: 70px;
+            }
+
+            .page-numbers button {
+                width: 35px;
+                height: 35px;
+                font-size: 12px;
+            }
+
+            .controls button {
+                width: 45px;
+                height: 45px;
+                font-size: 16px;
+            }
+
+            .project-title {
+                font-size: 14px;
+            }
+
+            .page-indicator {
+                font-size: 11px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-player">
+        <!-- 全屏按钮 -->
+        <button class="fullscreen-btn" onclick="toggleFullscreen()" title="全屏/退出全屏">
+            ⛶
+        </button>
+
+        <!-- 页面内容区域 -->
+        <div class="page-content" id="page-content">
+            <div class="loading">正在加载页面...</div>
+        </div>
+        
+        <!-- 底部导航栏 -->
+        <div class="navigation-bar">
+            <!-- 页码导航 -->
+            <div class="page-numbers" id="page-numbers">
+                <!-- 动态生成页码按钮 -->
+            </div>
+
+            <!-- 项目信息 -->
+            <div class="project-info">
+                <div class="project-title" id="project-title">NVIDIA EVPN Training</div>
+                <div class="page-indicator" id="page-indicator">1 / 5</div>
+            </div>
+            
+            <!-- 控制按钮 -->
+            <div class="controls">
+                <button id="prev-btn" title="上一页 (←)">◀</button>
+                <button id="next-btn" title="下一页 (→)">▶</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 演示配置 - 页面编排
+        const presentationConfig = {
+            title: "NVIDIA EVPN Training",
+            pages: [
+                "/ppt/templates/covers/nvidia-evpn.html",          // 封面
+                "/ppt/templates/technical/evpn-overview.html",     // EVPN概述  
+                "/ppt/templates/technical/vxlan-arch.html",        // VXLAN架构
+                "/ppt/templates/technical/evpn-route-types.html",  // EVPN Route Types
+                "/ppt/templates/technical/air-demo-ip-design.html",  // air Demo ip 规划
+                "/ppt/templates/technical/nvue-cli-on-cumulus.html",  // air Demo ip 规划
+                "/ppt/templates/technical/cumulus-linux-nclu.html",  // air Demo ip 规划
+                "/ppt/templates/technical/cumulus-linux-evpn-vxlan-demo-configurations.html",  // air Demo ip 规划
+                "/ppt/templates/products/qm9700.html",             // QM9700产品介绍
+                "/ppt/templates/endings/contact1.html"             // 联系方式
+            ],
+            theme: "nvidia-green"
+        };
+
+        // 播放器类
+        class PresentationPlayer {
+            constructor(config) {
+                this.config = config;
+                this.currentPage = 0;
+                this.totalPages = config.pages.length;
+                this.init();
+            }
+
+            async init() {
+                this.updateProjectTitle();
+                this.generatePageNumbers();
+                await this.loadPage(0);
+                this.bindEvents();
+            }
+
+            // 更新项目标题
+            updateProjectTitle() {
+                document.getElementById('project-title').textContent = this.config.title;
+                document.title = this.config.title;
+            }
+
+            // 生成页码导航
+            generatePageNumbers() {
+                const numbersContainer = document.getElementById('page-numbers');
+                numbersContainer.innerHTML = '';
+                
+                for (let i = 0; i < this.totalPages; i++) {
+                    const pageNum = document.createElement('button');
+                    pageNum.textContent = i + 1;
+                    pageNum.className = i === 0 ? 'active' : '';
+                    pageNum.onclick = () => this.goToPage(i);
+                    pageNum.title = `第 ${i + 1} 页`;
+                    numbersContainer.appendChild(pageNum);
+                }
+            }
+
+            // 加载指定页面
+            async loadPage(pageIndex) {
+                const contentContainer = document.getElementById('page-content');
+                
+                // 显示加载状态
+                contentContainer.innerHTML = '<div class="loading">正在加载页面...</div>';
+                
+                try {
+                    const response = await fetch(this.config.pages[pageIndex]);
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    
+                    const html = await response.text();
+                    const content = this.extractPageContent(html);
+                    contentContainer.innerHTML = content;
+                    
+                    this.updateNavigation(pageIndex);
+                    
+                    // 添加页面切换动画
+                    contentContainer.style.opacity = '0';
+                    setTimeout(() => {
+                        contentContainer.style.transition = 'opacity 0.3s ease';
+                        contentContainer.style.opacity = '1';
+                    }, 50);
+                    
+                } catch (error) {
+                    console.error('Failed to load page:', error);
+                    contentContainer.innerHTML = `
+                        <div style="text-align: center; padding: 50px; color: #EF4444;">
+                            <h3>页面加载失败</h3>
+                            <p style="margin-top: 10px; opacity: 0.8;">无法加载: ${this.config.pages[pageIndex]}</p>
+                            <p style="margin-top: 5px; font-size: 14px; opacity: 0.6;">${error.message}</p>
+                        </div>
+                    `;
+                }
+            }
+
+            // 提取页面内容
+            extractPageContent(html) {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                
+                // 优先获取slide-container，否则获取body内容
+                const slideContainer = doc.querySelector('.slide-container');
+                if (slideContainer) {
+                    return slideContainer.outerHTML;
+                }
+                
+                return doc.body.innerHTML;
+            }
+
+            // 更新导航状态
+            updateNavigation(pageIndex) {
+                // 更新页码按钮状态
+                document.querySelectorAll('.page-numbers button').forEach((btn, index) => {
+                    btn.className = index === pageIndex ? 'active' : '';
+                });
+
+                // 更新前后按钮状态
+                const prevBtn = document.getElementById('prev-btn');
+                const nextBtn = document.getElementById('next-btn');
+                
+                prevBtn.disabled = pageIndex === 0;
+                nextBtn.disabled = pageIndex === this.totalPages - 1;
+                
+                // 更新页面指示器
+                document.getElementById('page-indicator').textContent = 
+                    `${pageIndex + 1} / ${this.totalPages}`;
+                
+                this.currentPage = pageIndex;
+            }
+
+            // 绑定事件
+            bindEvents() {
+                const prevBtn = document.getElementById('prev-btn');
+                const nextBtn = document.getElementById('next-btn');
+                
+                prevBtn.onclick = () => this.previousPage();
+                nextBtn.onclick = () => this.nextPage();
+                
+                // 键盘导航
+                document.addEventListener('keydown', (e) => {
+                    switch(e.key) {
+                        case 'ArrowLeft':
+                        case 'ArrowUp':
+                            e.preventDefault();
+                            this.previousPage();
+                            break;
+                        case 'ArrowRight':
+                        case 'ArrowDown':
+                        case ' ':
+                            e.preventDefault();
+                            this.nextPage();
+                            break;
+                        case 'Home':
+                            e.preventDefault();
+                            this.goToPage(0);
+                            break;
+                        case 'End':
+                            e.preventDefault();
+                            this.goToPage(this.totalPages - 1);
+                            break;
+                        case 'F11':
+                            e.preventDefault();
+                            toggleFullscreen();
+                            break;
+                    }
+                });
+
+                // 鼠标滚轮导航
+                document.addEventListener('wheel', (e) => {
+                    if (Math.abs(e.deltaY) > 50) { // 防止过于敏感
+                        if (e.deltaY > 0) {
+                            this.nextPage();
+                        } else {
+                            this.previousPage();
+                        }
+                    }
+                }, { passive: true });
+            }
+
+            previousPage() {
+                if (this.currentPage > 0) {
+                    this.loadPage(this.currentPage - 1);
+                }
+            }
+
+            nextPage() {
+                if (this.currentPage < this.totalPages - 1) {
+                    this.loadPage(this.currentPage + 1);
+                }
+            }
+
+            goToPage(pageIndex) {
+                if (pageIndex >= 0 && pageIndex < this.totalPages) {
+                    this.loadPage(pageIndex);
+                }
+            }
+        }
+
+        // 全屏功能
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.log('无法进入全屏模式:', err);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        // 初始化播放器
+        function initPlayer(config) {
+            return new PresentationPlayer(config);
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            window.player = initPlayer(presentationConfig);
+        });
+
+        // 全屏状态变化处理
+        document.addEventListener('fullscreenchange', () => {
+            const fullscreenBtn = document.querySelector('.fullscreen-btn');
+            fullscreenBtn.textContent = document.fullscreenElement ? '⛶' : '⛶';
+        });
+    </script>
+</body>
+</html>

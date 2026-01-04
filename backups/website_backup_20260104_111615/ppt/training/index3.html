@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IB智算网络开局整体流程介绍</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700;800&display=swap');
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+      font-family: 'Noto Sans SC', sans-serif;
+      overflow: hidden;
+    }
+
+    .slide-container {
+      width: 100vw;
+      height: 56.25vw; /* 16:9 aspect ratio */
+      max-height: 100vh;
+      max-width: 177.78vh; /* 16:9 aspect ratio (reversed) */
+      position: relative;
+      background: #111827;
+      color: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    /* 动态背景元素 */
+    .bg-elements {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    .bg-grid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image:
+        radial-gradient(circle at 25% 25%, rgba(0, 162, 255, 0.1) 1px, transparent 1px),
+        radial-gradient(circle at 75% 75%, rgba(72, 52, 212, 0.08) 1px, transparent 1px);
+      background-size: 50px 50px;
+      animation: grid-pulse 4s ease-in-out infinite;
+    }
+
+    @keyframes grid-pulse {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 0.6; }
+    }
+
+    .network-connections {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+    }
+
+    .connection-line {
+      position: absolute;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(0, 162, 255, 0.4), transparent);
+      animation: data-flow 3s linear infinite;
+    }
+
+    .line1 {
+      top: 30%;
+      left: 10%;
+      width: 80%;
+      animation-delay: 0s;
+    }
+
+    .line2 {
+      top: 70%;
+      left: 15%;
+      width: 70%;
+      animation-delay: 1s;
+    }
+
+    .line3 {
+      top: 50%;
+      left: 20%;
+      width: 60%;
+      animation-delay: 2s;
+    }
+
+    @keyframes data-flow {
+      0% { background-position: -100% 0; opacity: 0; }
+      50% { opacity: 1; }
+      100% { background-position: 200% 0; opacity: 0; }
+    }
+
+    /* 主要内容 */
+    .content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    /* 顶部标识栏 */
+    .header {
+      padding: 1.5% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.2));
+      backdrop-filter: blur(15px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      flex-shrink: 0;
+    }
+
+    .day-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .day-badge {
+      width: 35px;
+      height: 35px;
+      background: linear-gradient(135deg, #00a2ff, #0078d4);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+      box-shadow: 0 5px 15px rgba(0, 162, 255, 0.3);
+    }
+
+    .day-text {
+      font-size: clamp(15px, 1.8vw, 18px);
+      font-weight: 600;
+      color: #00a2ff;
+    }
+
+    .section-indicator {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 8px 20px;
+      border-radius: 25px;
+      font-size: clamp(12px, 1.3vw, 14px);
+      font-weight: 500;
+      backdrop-filter: blur(10px);
+    }
+
+    /* 主体内容区域 */
+    .main-content {
+      flex: 1;
+      padding: 2% 4%;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    /* 页面标题 */
+    .page-title {
+      text-align: center;
+      margin-bottom: 3%;
+    }
+
+    .title-main {
+      font-size: clamp(28px, 4vw, 36px);
+      font-weight: 800;
+      background: linear-gradient(135deg, #ffffff 0%, #00a2ff 50%, #4834d4 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 1%;
+      text-shadow: 0 0 30px rgba(0, 162, 255, 0.3);
+    }
+
+    .title-sub {
+      font-size: clamp(13px, 1.5vw, 16px);
+      color: rgba(255, 255, 255, 0.75);
+      font-weight: 300;
+    }
+
+    /* 流程图容器 */
+    .process-flow {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 3%;
+    }
+
+    /* 流程阶段 */
+    .flow-stages {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2%;
+      margin-bottom: 3%;
+    }
+
+    .stage-card {
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 15px;
+      padding: 4% 3%;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.4s ease;
+      cursor: pointer;
+    }
+
+    .stage-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(0, 162, 255, 0.1), transparent);
+      transition: left 0.8s ease;
+    }
+
+    .stage-card:hover::before {
+      left: 100%;
+    }
+
+    .stage-card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(0, 162, 255, 0.4);
+      background: rgba(255, 255, 255, 0.1);
+      box-shadow: 0 15px 35px rgba(0, 162, 255, 0.2);
+    }
+
+    .stage-number {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #00a2ff, #0078d4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: clamp(14px, 1.6vw, 16px);
+      margin: 0 auto 12px;
+      box-shadow: 0 8px 20px rgba(0, 162, 255, 0.3);
+    }
+
+    .stage-card:nth-child(2) .stage-number {
+      background: linear-gradient(135deg, #4834d4, #686de0);
+      box-shadow: 0 8px 20px rgba(72, 52, 212, 0.3);
+    }
+
+    .stage-card:nth-child(3) .stage-number {
+      background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+      box-shadow: 0 8px 20px rgba(255, 107, 107, 0.3);
+    }
+
+    .stage-card:nth-child(4) .stage-number {
+      background: linear-gradient(135deg, #76b900, #3e703e);
+      box-shadow: 0 8px 20px rgba(118, 185, 0, 0.3);
+    }
+
+    .stage-title {
+      font-size: clamp(13px, 1.5vw, 15px);
+      font-weight: 600;
+      color: #ffffff;
+      margin-bottom: 8px;
+      line-height: 1.2;
+    }
+
+    .stage-desc {
+      font-size: clamp(10px, 1.1vw, 11px);
+      color: rgba(255, 255, 255, 0.7);
+      line-height: 1.4;
+    }
+
+    /* 详细流程步骤 */
+    .detailed-steps {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 3%;
+    }
+
+    .steps-timeline {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 5%;
+    }
+
+    .timeline-title {
+      font-size: clamp(15px, 1.8vw, 18px);
+      font-weight: 600;
+      color: #00a2ff;
+      margin-bottom: 5%;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .timeline-title::before {
+      content: '';
+      width: 4px;
+      height: 20px;
+      background: linear-gradient(180deg, #00a2ff, #0078d4);
+      border-radius: 2px;
+    }
+
+    .step-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      position: relative;
+    }
+
+    .step-list::before {
+      content: '';
+      position: absolute;
+      left: 12px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: linear-gradient(180deg, #00a2ff, #4834d4, #ff6b6b);
+      border-radius: 1px;
+    }
+
+    .step-item {
+      position: relative;
+      padding-left: 40px;
+      margin-bottom: 4%;
+    }
+
+    .step-item::before {
+      content: '';
+      position: absolute;
+      left: 8px;
+      top: 6px;
+      width: 10px;
+      height: 10px;
+      background: #00a2ff;
+      border-radius: 50%;
+      box-shadow: 0 0 0 3px rgba(0, 162, 255, 0.2);
+    }
+
+    .step-item:nth-child(2n)::before {
+      background: #4834d4;
+      box-shadow: 0 0 0 3px rgba(72, 52, 212, 0.2);
+    }
+
+    .step-item:nth-child(3n)::before {
+      background: #ff6b6b;
+      box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.2);
+    }
+
+    .step-text {
+      font-size: clamp(11px, 1.3vw, 13px);
+      color: rgba(255, 255, 255, 0.9);
+      line-height: 1.4;
+      font-weight: 500;
+    }
+
+    .flow-diagram {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      padding: 5%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .diagram-title {
+      font-size: clamp(15px, 1.8vw, 18px);
+      font-weight: 600;
+      color: #00a2ff;
+      margin-bottom: 5%;
+      text-align: center;
+    }
+
+    .diagram-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    .flow-arrows {
+      display: flex;
+      align-items: center;
+      gap: 2%;
+    }
+
+    .flow-box {
+      background: rgba(0, 162, 255, 0.1);
+      border: 2px solid rgba(0, 162, 255, 0.3);
+      border-radius: 10px;
+      padding: 3% 4%;
+      text-align: center;
+      min-width: 120px;
+      transition: all 0.3s ease;
+    }
+
+    .flow-box:hover {
+      background: rgba(0, 162, 255, 0.2);
+      border-color: rgba(0, 162, 255, 0.6);
+      transform: scale(1.05);
+    }
+
+    .flow-box-title {
+      font-size: clamp(11px, 1.2vw, 12px);
+      font-weight: 600;
+      color: #87ceeb;
+      margin-bottom: 2%;
+    }
+
+    .flow-box-desc {
+      font-size: clamp(9px, 1vw, 10px);
+      color: rgba(255, 255, 255, 0.8);
+      line-height: 1.3;
+    }
+
+    .arrow {
+      font-size: clamp(16px, 2vw, 20px);
+      color: #00a2ff;
+      animation: arrow-pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes arrow-pulse {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
+    }
+
+    /* 底部信息栏 */
+    .footer {
+      padding: 1.5% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.2));
+      backdrop-filter: blur(15px);
+      flex-shrink: 0;
+      min-height: 50px;
+    }
+
+    .footer-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: clamp(12px, 1.3vw, 13px);
+      color: rgba(255, 255, 255, 0.9);
+      font-weight: 500;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: #00a2ff;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(0, 162, 255, 0.7); }
+      70% { box-shadow: 0 0 0 8px rgba(0, 162, 255, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(0, 162, 255, 0); }
+    }
+
+    .footer-badges {
+      display: flex;
+      gap: 10px;
+    }
+
+    .footer-badge {
+      padding: 5px 12px;
+      border-radius: 15px;
+      font-size: clamp(9px, 1vw, 10px);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: white;
+    }
+
+    .badge-ib {
+      background: linear-gradient(90deg, #00a2ff, #0078d4);
+      box-shadow: 0 0 15px rgba(0, 162, 255, 0.3);
+    }
+
+    .badge-network {
+      background: linear-gradient(90deg, #4834d4, #686de0);
+      box-shadow: 0 0 15px rgba(72, 52, 212, 0.3);
+    }
+
+    /* 响应式调整 */
+    @media (max-height: 600px) {
+      .main-content {
+        padding: 1.5% 4%;
+      }
+      
+      .page-title {
+        margin-bottom: 2%;
+      }
+      
+      .flow-stages {
+        margin-bottom: 2%;
+      }
+      
+      .stage-card {
+        padding: 3% 2%;
+      }
+      
+      .steps-timeline, .flow-diagram {
+        padding: 4%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <!-- 背景元素 -->
+    <div class="bg-elements">
+      <div class="bg-grid"></div>
+      <div class="network-connections">
+        <div class="connection-line line1"></div>
+        <div class="connection-line line2"></div>
+        <div class="connection-line line3"></div>
+      </div>
+    </div>
+
+    <!-- 主要内容 -->
+    <div class="content">
+      <!-- 顶部标识 -->
+      <div class="header">
+        <div class="day-info">
+          <div class="day-badge">1</div>
+          <div class="day-text">第一天：智算网络组网设计与部署</div>
+        </div>
+        <div class="section-indicator">1.1 整体流程介绍</div>
+      </div>
+
+      <!-- 主体内容 -->
+      <div class="main-content">
+        <!-- 页面标题 -->
+        <div class="page-title">
+          <div class="title-main">IB智算网络开局整体流程</div>
+          <div class="title-sub">从规划设计到部署运维的完整生命周期</div>
+        </div>
+
+        <!-- 流程图内容 -->
+        <div class="process-flow">
+          <!-- 四个主要阶段 -->
+          <div class="flow-stages">
+            <div class="stage-card">
+              <div class="stage-number">1</div>
+              <div class="stage-title">需求分析与规划</div>
+              <div class="stage-desc">业务需求分析、性能规格确定、网络拓扑设计</div>
+            </div>
+
+            <div class="stage-card">
+              <div class="stage-number">2</div>
+              <div class="stage-title">硬件部署与连接</div>
+              <div class="stage-desc">设备上架、线缆连接、硬件配置验证</div>
+            </div>
+
+            <div class="stage-card">
+              <div class="stage-number">3</div>
+              <div class="stage-title">软件配置与调试</div>
+              <div class="stage-desc">驱动安装、网络配置、UFM部署</div>
+            </div>
+
+            <div class="stage-card">
+              <div class="stage-number">4</div>
+              <div class="stage-title">测试验证与运维</div>
+              <div class="stage-desc">性能测试、故障排查、运维监控</div>
+            </div>
+          </div>
+
+          <!-- 详细流程步骤 -->
+          <div class="detailed-steps">
+            <div class="steps-timeline">
+              <div class="timeline-title">关键实施步骤</div>
+              <ul class="step-list">
+                <li class="step-item">
+                  <div class="step-text">业务需求调研与带宽计算</div>
+                </li>
+                <li class="step-item">
+                  <div class="step-text">网络拓扑设计与设备选型</div>
+                </li>
+                <li class="step-item">
+                  <div class="step-text">机房布局规划与线缆设计</div>
+                </li>
+                <li class="step-item">
+                  <div class="step-text">IB交换机与网卡安装部署</div>
+                </li>
+                <li class="step-item">
+                  <div class="step-text">驱动程序与固件版本管理</div>
+                </li>
+                <li class="step-item">
+                  <div class="step-text">子网管理器配置与优化</div>
+                </li>
+                <li class="step-item">
+                  <div class="step-text">UFM平台部署与监控配置</div>
+                </li>
+                <li class="step-item">
+                  <div class="step-text">网络性能测试与调优验证</div>
+                </li>
+              </ul>
+            </div>
+
+            <div class="flow-diagram">
+              <div class="diagram-title">核心流程图</div>
+              <div class="diagram-content">
+                <div class="flow-arrows">
+                  <div class="flow-box">
+                    <div class="flow-box-title">需求分析</div>
+                    <div class="flow-box-desc">业务场景<br>性能要求</div>
+                  </div>
+                  <div class="arrow">→</div>
+                  <div class="flow-box">
+                    <div class="flow-box-title">拓扑设计</div>
+                    <div class="flow-box-desc">网络架构<br>设备选型</div>
+                  </div>
+                  <div class="arrow">→</div>
+                  <div class="flow-box">
+                    <div class="flow-box-title">硬件部署</div>
+                    <div class="flow-box-desc">设备安装<br>线缆连接</div>
+                  </div>
+                </div>
+                
+                <div style="margin: 3% 0; text-align: center;">
+                  <div class="arrow" style="transform: rotate(90deg);">↓</div>
+                </div>
+                
+                <div class="flow-arrows">
+                  <div class="flow-box">
+                    <div class="flow-box-title">运维监控</div>
+                    <div class="flow-box-desc">UFM管理<br>故障处理</div>
+                  </div>
+                  <div class="arrow">←</div>
+                  <div class="flow-box">
+                    <div class="flow-box-title">测试验证</div>
+                    <div class="flow-box-desc">性能测试<br>稳定性验证</div>
+                  </div>
+                  <div class="arrow">←</div>
+                  <div class="flow-box">
+                    <div class="flow-box-title">软件配置</div>
+                    <div class="flow-box-desc">驱动安装<br>网络配置</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 底部信息 -->
+      <div class="footer">
+        <div class="footer-left">
+          <div class="status-dot"></div>
+          <span>第一天 - 整体流程概览</span>
+        </div>
+        <div class="footer-badges">
+          <div class="footer-badge badge-ib">IB Network</div>
+          <div class="footer-badge badge-network">Process Flow</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+    <!-- 导航按钮 - 独立于主内容区 -->
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+    <a href="index2.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+    <a href="index4.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+  </div>
+
+</body>
+</html>

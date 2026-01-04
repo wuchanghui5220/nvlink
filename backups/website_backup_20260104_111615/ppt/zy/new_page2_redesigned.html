@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>北京正阳恒卓科技有限公司 - 业务服务</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'WenQuanYi Micro Hei', sans-serif;
+            background: linear-gradient(135deg, #0c4a3e 0%, #134e4a 25%, #065f46 50%, #047857 75%, #059669 100%);
+            color: #fff;
+            overflow: hidden;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            background: linear-gradient(135deg, #0c4a3e 0%, #134e4a 25%, #065f46 50%, #047857 75%, #059669 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .slide-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background:
+                radial-gradient(circle at 20% 80%, rgba(34, 197, 94, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.12) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(6, 95, 70, 0.2) 0%, transparent 50%);
+            animation: pulseLight 20s ease-in-out infinite;
+            z-index: 1;
+        }
+
+        @keyframes pulseLight {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.8; }
+        }
+
+        .decorative-elements {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .corner-decoration {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            border: 2px solid rgba(34, 197, 94, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .corner-decoration::before {
+            content: '';
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: rgba(34, 197, 94, 0.6);
+            border-radius: 50%;
+            animation: cornerPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes cornerPulse {
+            0%, 100% {
+                transform: scale(0.8);
+                opacity: 0.6;
+            }
+            50% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+        }
+
+        .corner-decoration.top-left {
+            top: 25px;
+            left: 25px;
+            border-right: none;
+            border-bottom: none;
+        }
+
+        .corner-decoration.top-left::before {
+            top: -6px;
+            left: -6px;
+        }
+
+        .corner-decoration.top-right {
+            top: 25px;
+            right: 25px;
+            border-left: none;
+            border-bottom: none;
+        }
+
+        .corner-decoration.top-right::before {
+            top: -6px;
+            right: -6px;
+            animation-delay: 0.5s;
+        }
+
+        .corner-decoration.bottom-left {
+            bottom: 25px;
+            left: 25px;
+            border-right: none;
+            border-top: none;
+        }
+
+        .corner-decoration.bottom-left::before {
+            bottom: -6px;
+            left: -6px;
+            animation-delay: 1s;
+        }
+
+        .corner-decoration.bottom-right {
+            bottom: 25px;
+            right: 25px;
+            border-left: none;
+            border-top: none;
+        }
+
+        .corner-decoration.bottom-right::before {
+            bottom: -6px;
+            right: -6px;
+            animation-delay: 1.5s;
+        }
+
+        .main-content {
+            z-index: 10;
+            padding: 30px 40px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .header-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .page-title {
+            font-size: clamp(2.2rem, 4vw, 3.2rem);
+            font-weight: 700;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #ffffff 0%, #76a67e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .page-subtitle {
+            font-size: clamp(1rem, 1.8vw, 1.3rem);
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 20px;
+        }
+
+        .content-layout {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            flex: 1;
+            height: 100%;
+        }
+
+        .main-column {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .service-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid rgba(76, 166, 126, 0.3);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            flex: 1;
+        }
+
+        .service-section:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(76, 166, 126, 0.5);
+            box-shadow: 0 15px 40px rgba(76, 166, 126, 0.2);
+        }
+
+        .section-title {
+            font-size: clamp(1.3rem, 2.2vw, 1.6rem);
+            font-weight: 600;
+            color: #76a67e;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .service-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            height: 100%;
+        }
+
+        .service-item {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 15px;
+            padding: 18px;
+            border: 1px solid rgba(76, 166, 126, 0.2);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .service-item:hover {
+            transform: translateY(-3px);
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(76, 166, 126, 0.4);
+            box-shadow: 0 8px 25px rgba(76, 166, 126, 0.2);
+        }
+
+        .service-title {
+            font-weight: 600;
+            font-size: 15px;
+            margin-bottom: 8px;
+            color: #76a67e;
+        }
+
+        .service-desc {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.4;
+            flex: 1;
+        }
+
+        .solutions-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid rgba(76, 166, 126, 0.3);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .solutions-section:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(76, 166, 126, 0.5);
+            box-shadow: 0 15px 40px rgba(76, 166, 126, 0.2);
+        }
+
+        .solution-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .solution-item {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid rgba(76, 166, 126, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .solution-item:hover {
+            transform: translateY(-3px);
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(76, 166, 126, 0.4);
+            box-shadow: 0 8px 25px rgba(76, 166, 126, 0.2);
+        }
+
+        .solution-icon {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            color: #76a67e;
+        }
+
+        .solution-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .solution-desc {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.4;
+        }
+
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .partnership-section {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(76, 166, 126, 0.12) 100%);
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            border: 2px solid rgba(76, 166, 126, 0.4);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .partnership-section:hover {
+            border-color: rgba(76, 166, 126, 0.6);
+            box-shadow: 0 15px 40px rgba(34, 197, 94, 0.3);
+        }
+
+        .partnership-title {
+            font-size: clamp(1.2rem, 2vw, 1.5rem);
+            font-weight: 700;
+            color: #76a67e;
+            margin-bottom: 20px;
+        }
+
+        .partnership-badges {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .badge {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid rgba(34, 197, 94, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .badge:hover {
+            transform: scale(1.02);
+            border-color: rgba(34, 197, 94, 0.7);
+            box-shadow: 0 5px 20px rgba(34, 197, 94, 0.3);
+        }
+
+        .badge-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #76a67e;
+            margin-bottom: 5px;
+        }
+
+        .badge-desc {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .team-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid rgba(76, 166, 126, 0.3);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            flex: 1;
+        }
+
+        .team-section:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(76, 166, 126, 0.5);
+            box-shadow: 0 15px 40px rgba(76, 166, 126, 0.2);
+        }
+
+        .team-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            height: 100%;
+        }
+
+        .team-item {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 18px;
+            text-align: center;
+            border: 1px solid rgba(76, 166, 126, 0.2);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .team-item-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #76a67e;
+            margin-bottom: 10px;
+        }
+
+        .team-item-desc {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 1.5;
+        }
+
+        .footer-info {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            z-index: 10;
+        }
+
+        .page-indicator {
+            position: absolute;
+            bottom: 30px;
+            right: 40px;
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.8);
+            z-index: 10;
+        }
+
+        .slide-number {
+            font-weight: 700;
+            color: #76a67e;
+        }
+
+        .nav-controls {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 42px;
+            color: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            user-select: none;
+            z-index: 15;
+            transition: all 0.3s ease;
+            padding: 20px;
+        }
+
+        .nav-controls:hover {
+            color: #76a67e;
+            transform: translateY(-50%) scale(1.2);
+        }
+
+        .nav-prev {
+            left: 30px;
+        }
+
+        .nav-next {
+            right: 30px;
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .main-content > * {
+            animation: slideIn 0.8s ease-out forwards;
+        }
+
+        .main-content > *:nth-child(1) { animation-delay: 0.1s; }
+        .main-content > *:nth-child(2) { animation-delay: 0.2s; }
+
+        @media (max-width: 1200px) {
+            .content-layout {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+
+            .service-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .sidebar {
+                flex-direction: row;
+                gap: 25px;
+            }
+
+            .partnership-section,
+            .team-section {
+                flex: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 20px 15px;
+            }
+
+            .corner-decoration {
+                width: 80px;
+                height: 80px;
+            }
+
+            .corner-decoration.top-left,
+            .corner-decoration.top-right {
+                top: 15px;
+            }
+
+            .corner-decoration.top-left,
+            .corner-decoration.bottom-left {
+                left: 15px;
+            }
+
+            .corner-decoration.top-right,
+            .corner-decoration.bottom-right {
+                right: 15px;
+            }
+
+            .corner-decoration.bottom-left,
+            .corner-decoration.bottom-right {
+                bottom: 15px;
+            }
+
+            .sidebar {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .team-content {
+                flex-direction: row;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="decorative-elements">
+            <div class="corner-decoration top-left"></div>
+            <div class="corner-decoration top-right"></div>
+            <div class="corner-decoration bottom-left"></div>
+            <div class="corner-decoration bottom-right"></div>
+        </div>
+
+        <div class="main-content">
+            <div class="header-section">
+                <h1 class="page-title">业务服务与解决方案</h1>
+                <p class="page-subtitle">贯穿项目全周期的技术服务与支持</p>
+            </div>
+
+            <div class="content-layout">
+                <div class="main-column">
+                    <div class="service-section">
+                        <h2 class="section-title">全周期技术服务</h2>
+                        <div class="service-grid">
+                            <div class="service-item">
+                                <div class="service-title">前期规划与设计</div>
+                                <div class="service-desc">根据客户需求，进行计算集群规模评估和整体架构设计</div>
+                            </div>
+                            <div class="service-item">
+                                <div class="service-title">集成部署</div>
+                                <div class="service-desc">负责软硬件系统集成、安装调试与一体化交付</div>
+                            </div>
+                            <div class="service-item">
+                                <div class="service-title">性能优化</div>
+                                <div class="service-desc">通过深度调优，充分发挥硬件平台的计算潜能</div>
+                            </div>
+                            <div class="service-item">
+                                <div class="service-title">后期运维支持</div>
+                                <div class="service-desc">提供安全监控、版本升级、故障诊断与排除等服务</div>
+                            </div>
+                            <div class="service-item">
+                                <div class="service-title">增值服务</div>
+                                <div class="service-desc">技术培训及自研智能化运维软件，提升管理效率</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="solutions-section">
+                        <h2 class="section-title">核心解决方案</h2>
+                        <div class="solution-grid">
+                            <div class="solution-item">
+                                <div class="solution-icon">🚀</div>
+                                <div class="solution-title">高性能计算解决方案</div>
+                                <div class="solution-desc">基于NVIDIA平台的高性能计算集群构建与优化</div>
+                            </div>
+                            <div class="solution-item">
+                                <div class="solution-icon">🧠</div>
+                                <div class="solution-title">AI深度学习平台</div>
+                                <div class="solution-desc">人工智能深度学习平台构建与优化服务</div>
+                            </div>
+                            <div class="solution-item">
+                                <div class="solution-icon">🌐</div>
+                                <div class="solution-title">数据中心网络优化</div>
+                                <div class="solution-desc">企业级数据中心网络架构设计与性能优化</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sidebar">
+                    <div class="partnership-section">
+                        <h2 class="partnership-title">NVIDIA 战略合作伙伴</h2>
+                        <div class="partnership-badges">
+                            <div class="badge">
+                                <div class="badge-title">Networking 精英级合作伙伴</div>
+                                <div class="badge-desc">NVIDIA合作体系中的最高级别</div>
+                            </div>
+                            <div class="badge">
+                                <div class="badge-title">Compute 注册级合作伙伴</div>
+                                <div class="badge-desc">获得前沿技术产品支持</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="team-section">
+                        <h2 class="section-title">团队实力与荣誉</h2>
+                        <div class="team-content">
+                            <div class="team-item">
+                                <div class="team-item-title">专业团队</div>
+                                <div class="team-item-desc">
+                                    50+名经验丰富的工程师团队<br>
+                                    深厚的高性能计算、深度学习平台构建<br>
+                                    以及数据中心网络技术专业背景
+                                </div>
+                            </div>
+                            <div class="team-item">
+                                <div class="team-item-title">行业认可</div>
+                                <div class="team-item-desc">
+                                    连续3年获评"A级纳税人"<br>
+                                    中国投资协会大中型企业投资专业委员会成员<br>
+                                    北京自然资源资产协会成员单位
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-info">
+            致力于成为客户在数字化转型过程中值得信赖的技术合作伙伴
+        </div>
+
+        <div class="page-indicator">
+            <span class="slide-number">02</span> / 02
+        </div>
+
+        <div class="nav-controls nav-prev" onclick="window.location.href='new_page1.html'">‹</div>
+        <div class="nav-controls nav-next">›</div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 添加页面加载动画
+            document.body.style.opacity = '0';
+            document.body.style.transition = 'opacity 0.8s ease';
+
+            setTimeout(() => {
+                document.body.style.opacity = '1';
+            }, 100);
+
+            // 添加交互效果
+            const interactiveElements = document.querySelectorAll('.service-item, .solution-item, .team-item, .badge');
+            interactiveElements.forEach(element => {
+                element.addEventListener('mouseenter', () => {
+                    element.style.transform = 'translateY(-5px) scale(1.02)';
+                });
+
+                element.addEventListener('mouseleave', () => {
+                    element.style.transform = 'translateY(0) scale(1)';
+                });
+            });
+        });
+
+        // 添加键盘导航
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft') {
+                window.location.href = 'new_page1.html';
+            }
+            if (e.key === 'ArrowRight') {
+                console.log('Last page - no next slide');
+            }
+        });
+    </script>
+</body>
+</html>

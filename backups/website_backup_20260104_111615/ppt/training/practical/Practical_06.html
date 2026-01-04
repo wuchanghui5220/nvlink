@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>宁夏培训实操总结 - GPU驱动和CUDA安装</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700;800&display=swap');
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 30%, #16213e 70%, #0f3460 100%);
+      font-family: 'Noto Sans SC', sans-serif;
+      overflow: hidden;
+    }
+
+    .slide-container {
+      width: 100vw;
+      height: 56.25vw;
+      max-height: 100vh;
+      max-width: 177.78vh;
+      position: relative;
+      background: #111827;
+      color: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    .animated-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(0, 162, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 162, 255, 0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      animation: grid-move 20s linear infinite;
+      z-index: 1;
+    }
+
+    @keyframes grid-move {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(40px, 40px); }
+    }
+
+    .content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    .header {
+      padding: 2% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(10px);
+      flex-shrink: 0;
+    }
+
+    .mobile-icon {
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(45deg, #00a2ff, #0078d4);
+      border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 700;
+      font-size: 18px;
+      transform: rotate(-5deg);
+    }
+
+    .company-text {
+      font-size: clamp(16px, 2vw, 20px);
+      font-weight: 600;
+      color: #00a2ff;
+    }
+
+    .project-badge {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 8px 20px;
+      border-radius: 25px;
+      font-size: clamp(12px, 1.4vw, 14px);
+      font-weight: 500;
+      backdrop-filter: blur(10px);
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      padding: 3% 4%;
+      overflow-y: auto;
+      min-height: 0;
+    }
+
+    .page-title {
+      font-size: clamp(24px, 3.5vw, 32px);
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 3%;
+      background: linear-gradient(135deg, #ffffff 0%, #00a2ff 50%, #4834d4 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .section {
+      margin-bottom: 4%;
+    }
+
+    .section-title {
+      font-size: clamp(18px, 2.2vw, 22px);
+      font-weight: 600;
+      color: #00a2ff;
+      margin-bottom: 2%;
+      border-left: 4px solid #00a2ff;
+      padding-left: 15px;
+    }
+
+    .step-item {
+      margin-bottom: 2%;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      border-left: 3px solid #ff6b6b;
+    }
+
+    .step-title {
+      font-size: clamp(14px, 1.6vw, 16px);
+      font-weight: 500;
+      color: #ff6b6b;
+      margin-bottom: 8px;
+    }
+
+    .step-desc {
+      font-size: clamp(12px, 1.4vw, 14px);
+      color: rgba(255, 255, 255, 0.8);
+      line-height: 1.4;
+      margin-bottom: 8px;
+    }
+
+    .cmd-block {
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(0, 162, 255, 0.3);
+      border-radius: 8px;
+      padding: 12px;
+      margin: 8px 0;
+      font-family: 'Consolas', 'Monaco', monospace;
+    }
+
+    .cmd-text {
+      font-size: clamp(10px, 1.2vw, 12px);
+      color: #00ff88;
+      line-height: 1.4;
+    }
+
+    .info-box {
+      background: rgba(0, 162, 255, 0.1);
+      border: 1px solid rgba(0, 162, 255, 0.3);
+      border-radius: 8px;
+      padding: 12px;
+      margin: 10px 0;
+    }
+
+    .info-text {
+      font-size: clamp(11px, 1.3vw, 13px);
+      color: #00a2ff;
+      line-height: 1.4;
+    }
+
+    .warning-box {
+      background: rgba(255, 193, 7, 0.1);
+      border: 1px solid rgba(255, 193, 7, 0.5);
+      border-radius: 8px;
+      padding: 12px;
+      margin: 10px 0;
+    }
+
+    .warning-text {
+      font-size: clamp(11px, 1.3vw, 13px);
+      color: #ffc107;
+      line-height: 1.4;
+    }
+
+    .footer {
+      padding: 1.5% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+      flex-shrink: 0;
+    }
+
+    .page-info {
+      font-size: clamp(12px, 1.4vw, 14px);
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .nav-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .nav-btn {
+      padding: 8px 16px;
+      background: linear-gradient(135deg, #00a2ff, #0078d4);
+      color: white;
+      text-decoration: none;
+      border-radius: 20px;
+      font-size: clamp(10px, 1.2vw, 12px);
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .nav-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 162, 255, 0.4);
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <div class="animated-bg"></div>
+    
+    <div class="content">
+      <div class="header">
+        <div style="display: flex; align-items: center; gap: 20px;">
+          <div class="mobile-icon">移动</div>
+          <div class="company-text">中国移动宁夏公司</div>
+        </div>
+        <div class="project-badge">实操培训资料</div>
+      </div>
+
+      <div class="main-content">
+        <div class="page-title">GPU驱动和CUDA安装</div>
+        
+        <div class="section">
+          <div class="section-title">1. 下载CUDA工具包</div>
+          
+          <div class="step-item">
+            <div class="step-title">下载CUDA安装包</div>
+            <div class="cmd-block">
+              <div class="cmd-text">wget https://developer.download.nvidia.com/compute/cuda/13.0.0/local_installers/cuda_13.0.0_580.65.06_linux.run</div>
+            </div>
+            <div class="info-box">
+              <div class="info-text">💡 建议选择runfile格式，便于自定义安装选项</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">2. 安装前准备</div>
+          
+          <div class="step-item">
+            <div class="step-title">检查是否有默认GPU驱动</div>
+            <div class="cmd-block">
+              <div class="cmd-text">lsmod | grep nouveau</div>
+            </div>
+            <div class="step-desc">如果没有输出证明没有加载nouveau模块。如果有输出，需要禁用</div>
+          </div>
+
+          <div class="step-item">
+            <div class="step-title">禁用nouveau驱动（如需要）</div>
+            <div class="cmd-block">
+              <div class="cmd-text">echo "blacklist nouveau" >> /etc/modprobe.d/blacklist.conf<br>echo "options nouveau modeset=0" >> /etc/modprobe.d/blacklist.conf</div>
+            </div>
+            <div class="warning-box">
+              <div class="warning-text">⚠️ 修改后需要重启系统生效</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">3. 安装CUDA</div>
+          
+          <div class="step-item">
+            <div class="step-title">运行CUDA安装程序</div>
+            <div class="cmd-block">
+              <div class="cmd-text">sh cuda_13.0.0_580.65.06_linux.run --silent --driver --toolkit --override-driver-check</div>
+            </div>
+            <div class="step-desc">--silent: 静默安装 | --driver: 安装驱动 | --toolkit: 安装工具包</div>
+          </div>
+
+          <div class="step-item">
+            <div class="step-title">配置环境变量</div>
+            <div class="cmd-block">
+              <div class="cmd-text">echo "export PATH=/usr/local/cuda-13.0/bin${PATH:+:${PATH}}" >> ~/.bashrc<br>echo "export LD_LIBRARY_PATH=/usr/local/cuda-13.0/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}" >> ~/.bashrc<br>source ~/.bashrc</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">4. 配置GPU持久化</div>
+          
+          <div class="step-item">
+            <div class="step-title">安装持久化服务</div>
+            <div class="cmd-block">
+              <div class="cmd-text">cd /usr/share/doc/NVIDIA_GLX-1.0/samples/<br>tar -xvf nvidia-persistenced-init.tar.bz2<br>cd nvidia-persistenced-init/<br>./install.sh</div>
+            </div>
+          </div>
+
+          <div class="step-item">
+            <div class="step-title">启动并设置开机自启</div>
+            <div class="cmd-block">
+              <div class="cmd-text">systemctl start nvidia-persistenced.service<br>systemctl enable nvidia-persistenced.service</div>
+            </div>
+            <div class="info-box">
+              <div class="info-text">💡 持久化可以保持GPU状态，提高多进程访问GPU的性能</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">5. 验证安装</div>
+          
+          <div class="step-item">
+            <div class="step-title">检查CUDA版本</div>
+            <div class="cmd-block">
+              <div class="cmd-text">nvcc --version<br>nvidia-smi</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="page-info">第 6 页 / 共 12 页</div>
+        <div class="nav-buttons">
+          <a href="Practical_05.html" class="nav-btn">← 上一页</a>
+          <a href="Practical_07.html" class="nav-btn">下一页 →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

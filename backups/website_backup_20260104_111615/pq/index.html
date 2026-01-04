@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>产品报价管理系统</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- SheetJS for Excel export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link href="css/styles.css" rel="stylesheet">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-chart-line me-2"></i>产品报价管理系统
+            </a>
+            <div class="navbar-nav ms-auto">
+                <span class="navbar-text">Vincent的报价助手</span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- 标签页导航 -->
+        <ul class="nav nav-tabs" id="mainTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="dashboard-tab" data-bs-toggle="tab" data-bs-target="#dashboard" type="button" role="tab">
+                    仪表板
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="products-tab" data-bs-toggle="tab" data-bs-target="#products" type="button" role="tab">
+                    产品管理
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="quotes-tab" data-bs-toggle="tab" data-bs-target="#quotes" type="button" role="tab">
+                    报价记录
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="analysis-tab" data-bs-toggle="tab" data-bs-target="#analysis" type="button" role="tab">
+                    价格分析
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content mt-3" id="mainTabContent">
+            <!-- 仪表板 -->
+            <div class="tab-pane fade show active" id="dashboard" role="tabpanel">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h5 class="card-title">产品总数</h5>
+                                <h2 class="text-primary" id="totalProducts">0</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h5 class="card-title">报价记录</h5>
+                                <h2 class="text-success" id="totalQuotes">0</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h5 class="card-title">本月报价</h5>
+                                <h2 class="text-warning" id="monthlyQuotes">0</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h5 class="card-title">本月报价总额</h5>
+                                <h2 class="text-info" id="monthlyTotal">0万元</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 数据管理 -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">数据管理</h5>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="d-grid">
+                                    <button type="button" class="btn btn-primary" onclick="exportAllData()">
+                                        📥 导出所有数据
+                                    </button>
+                                    <small class="text-muted mt-1">将所有产品和报价数据导出为JSON文件</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-grid">
+                                    <button type="button" class="btn btn-success" onclick="document.getElementById('importFileInput').click()">
+                                        📤 导入数据
+                                    </button>
+                                    <small class="text-muted mt-1">从JSON文件导入产品和报价数据</small>
+                                    <input type="file" id="importFileInput" accept=".json" style="display: none;" onchange="importAllData(this)">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 最近报价记录 -->
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">最近报价记录</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="recentQuotes">
+                            <p class="text-muted text-center">暂无报价记录</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 产品管理 -->
+            <div class="tab-pane fade" id="products" role="tabpanel">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4>产品管理</h4>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#productModal">
+                        添加产品
+                    </button>
+                </div>
+
+                <!-- 筛选控件 -->
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0">筛选条件</h6>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="clearProductFilters()">
+                                清除筛选
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label for="filterProductModel" class="form-label">产品型号</label>
+                                <input type="text" class="form-control form-control-sm" id="filterProductModel" placeholder="搜索产品型号...">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="filterManufacturer" class="form-label">厂商</label>
+                                <select class="form-select form-select-sm" id="filterManufacturer">
+                                    <option value="">全部厂商</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="filterProductDateFrom" class="form-label">创建起始日期</label>
+                                <input type="date" class="form-control form-control-sm" id="filterProductDateFrom">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="filterProductDateTo" class="form-label">创建结束日期</label>
+                                <input type="date" class="form-control form-control-sm" id="filterProductDateTo">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover" id="productsTable">
+                                <thead>
+                                    <tr>
+                                        <th>产品型号</th>
+                                        <th>厂商</th>
+                                        <th>描述</th>
+                                        <th>创建日期</th>
+                                        <th>报价次数</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="productsTableBody">
+                                    <tr>
+                                        <td colspan="6" class="text-center text-muted">暂无产品数据</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- 查看更多/收起按钮区域 -->
+                        <div id="productTableControls" class="text-center mt-3" style="display: none;">
+                            <button type="button" class="btn btn-outline-primary btn-sm" id="toggleProductViewBtn" onclick="toggleProductView()">
+                                <i class="fas fa-chevron-down me-1"></i>查看更多产品
+                            </button>
+                            <div class="text-muted small mt-2" id="productCountInfo">
+                                显示 <span id="displayedProductCount">0</span> / <span id="totalProductCount">0</span> 个产品
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 报价记录 -->
+            <div class="tab-pane fade" id="quotes" role="tabpanel">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4>报价记录</h4>
+                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#quoteModal">
+                        添加报价
+                    </button>
+                </div>
+
+                <!-- 筛选控件 -->
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0">筛选条件</h6>
+                            <div>
+                                <button type="button" class="btn btn-sm btn-outline-primary me-2" onclick="document.getElementById('excelImportInput').click()">
+                                    <i class="fas fa-upload me-1"></i>导入Excel
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-success me-2" onclick="exportQuoteData()">
+                                    <i class="fas fa-download me-1"></i>导出数据
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="clearQuoteFilters()">
+                                    清除筛选
+                                </button>
+                                <input type="file" id="excelImportInput" accept=".xlsx,.xls" style="display: none;" onchange="importExcelData(this)">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label for="filterProduct" class="form-label">产品</label>
+                                <select class="form-select form-select-sm" id="filterProduct">
+                                    <option value="">全部产品</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="filterCustomer" class="form-label">客户</label>
+                                <select class="form-select form-select-sm" id="filterCustomer">
+                                    <option value="">全部客户</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="filterDateFrom" class="form-label">起始日期</label>
+                                <input type="date" class="form-control form-control-sm" id="filterDateFrom">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="filterDateTo" class="form-label">结束日期</label>
+                                <input type="date" class="form-control form-control-sm" id="filterDateTo">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0">报价记录列表</h6>
+                            <button type="button" class="btn btn-sm btn-outline-info" onclick="debugQuotes()">
+                                🔍 调试报价数据
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover" id="quotesTable">
+                                <thead>
+                                    <tr>
+                                        <th>产品型号</th>
+                                        <th>客户</th>
+                                        <th>数量</th>
+                                        <th>单价</th>
+                                        <th>总价</th>
+                                        <th>日期</th>
+                                        <th>备注</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="quotesTableBody">
+                                    <tr>
+                                        <td colspan="8" class="text-center text-muted">暂无报价记录</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- 查看更多/收起按钮区域 -->
+                        <div id="quoteTableControls" class="text-center mt-3" style="display: none;">
+                            <button type="button" class="btn btn-outline-primary btn-sm" id="toggleQuoteViewBtn" onclick="toggleQuoteView()">
+                                <i class="fas fa-chevron-down me-1"></i>查看更多记录
+                            </button>
+                            <div class="text-muted small mt-2" id="quoteCountInfo">
+                                显示最近 <span id="displayedQuoteCount">0</span> / <span id="totalQuoteCount">0</span> 条记录
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 价格分析 -->
+            <div class="tab-pane fade" id="analysis" role="tabpanel">
+                <h4 class="mb-3">价格走势分析</h4>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6>产品选择</h6>
+                            </div>
+                            <div class="card-body">
+                                <select class="form-select" id="analysisProductSelect">
+                                    <option value="">选择产品查看价格走势</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6>时间范围</h6>
+                            </div>
+                            <div class="card-body">
+                                <select class="form-select" id="timeRange">
+                                    <option value="30">最近30天</option>
+                                    <option value="90">最近90天</option>
+                                    <option value="180">最近6个月</option>
+                                    <option value="365">最近一年</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card mt-3">
+                    <div class="card-body">
+                        <canvas id="priceChart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 产品添加模态框 -->
+    <div class="modal fade" id="productModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">添加产品</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="productForm">
+                        <div class="mb-3">
+                            <label for="productModel" class="form-label">产品型号 *</label>
+                            <input type="text" class="form-control" id="productModel" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="productManufacturer" class="form-label">厂商 *</label>
+                            <div class="input-group">
+                                <select class="form-select" id="manufacturerSelect" style="max-width: 120px;">
+                                    <option value="Nvidia">Nvidia</option>
+                                    <option value="AMD">AMD</option>
+                                    <option value="Intel">Intel</option>
+                                    <option value="custom">其他</option>
+                                </select>
+                                <input type="text" class="form-control" id="productManufacturer" value="Nvidia" required>
+                            </div>
+                            <div class="form-text">选择常用厂商或在右侧输入框手动输入</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="productDescription" class="form-label">产品描述</label>
+                            <textarea class="form-control" id="productDescription" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" onclick="saveProduct()">保存产品</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 报价添加模态框 -->
+    <div class="modal fade" id="quoteModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">添加报价</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="quoteForm">
+                        <div class="mb-3">
+                            <label for="quoteProduct" class="form-label">选择产品 *</label>
+                            <select class="form-select" id="quoteProduct" required>
+                                <option value="">请选择产品</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="quoteCustomer" class="form-label">客户名称</label>
+                            <div class="input-group">
+                                <select class="form-select" id="customerSelect" style="max-width: 120px;">
+                                    <option value="new">新客户</option>
+                                </select>
+                                <input type="text" class="form-control" id="quoteCustomer" placeholder="输入客户名称">
+                            </div>
+                            <div class="form-text">选择常用客户或在右侧输入框手动输入</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="quoteQuantity" class="form-label">数量 *</label>
+                            <input type="number" class="form-control" id="quoteQuantity" min="1" value="1" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="quoteUnitPrice" class="form-label">单价 *</label>
+                            <div class="input-group">
+                                <span class="input-group-text">¥</span>
+                                <input type="number" class="form-control" id="quoteUnitPrice" step="0.01" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="quoteTotalPrice" class="form-label">总价</label>
+                            <div class="input-group">
+                                <span class="input-group-text">¥</span>
+                                <input type="number" class="form-control" id="quoteTotalPrice" step="0.01" readonly>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="quoteDate" class="form-label">报价日期 *</label>
+                            <input type="date" class="form-control" id="quoteDate" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="quoteNotes" class="form-label">备注</label>
+                            <textarea class="form-control" id="quoteNotes" rows="2"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-success" onclick="saveQuote()">保存报价</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Excel导入预览模态框 -->
+    <div class="modal fade" id="excelImportModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Excel导入预览</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- 文件信息 -->
+                    <div class="alert alert-info" id="fileInfo">
+                        <h6>文件信息</h6>
+                        <p id="fileInfoContent">文件：-</p>
+                    </div>
+
+                    <!-- 客户和日期设置 -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="importCustomer" class="form-label">客户名称 *</label>
+                            <input type="text" class="form-control" id="importCustomer" placeholder="请输入客户名称" required>
+                            <div class="form-text">从文件名自动识别或手动输入</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="importDate" class="form-label">报价日期 *</label>
+                            <input type="date" class="form-control" id="importDate" required>
+                            <div class="form-text">从文件名自动识别或手动输入</div>
+                        </div>
+                    </div>
+
+                    <!-- 数据预览 -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="mb-0">数据预览 <span id="previewCount" class="badge bg-primary">0</span></h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive" style="max-height: 300px;">
+                                <table class="table table-sm table-hover" id="importPreviewTable">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>产品型号</th>
+                                            <th>厂商</th>
+                                            <th>数量</th>
+                                            <th>单价</th>
+                                            <th>总价</th>
+                                            <th>状态</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="importPreviewBody">
+                                        <tr>
+                                            <td colspan="6" class="text-center text-muted">暂无数据</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 导入状态 -->
+                    <div id="importStatus" class="mt-3" style="display: none;">
+                        <div class="alert alert-warning">
+                            <strong>注意：</strong>
+                            <ul class="mb-0" id="importWarnings">
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="confirmImportBtn" onclick="confirmExcelImport()" disabled>
+                        确认导入 <span id="importCountBadge" class="badge bg-light text-dark">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="js/app.js"></script>
+    <script src="js/product.js"></script>
+    <script src="js/quote.js"></script>
+    <script src="js/chart.js"></script>
+
+    <!-- 数据导出/导入功能 -->
+    <script>
+    function exportAllData() {
+        if (!app) {
+            alert('应用未初始化');
+            return;
+        }
+
+        try {
+            // 准备导出数据
+            const exportData = {
+                version: '1.0',
+                exportDate: new Date().toISOString(),
+                products: app.products,
+                quotes: app.quotes,
+                statistics: {
+                    totalProducts: app.products.length,
+                    totalQuotes: app.quotes.length
+                }
+            };
+
+            // 创建下载链接
+            const dataStr = JSON.stringify(exportData, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+
+            // 生成文件名
+            const now = new Date();
+            const timestamp = now.toISOString().split('T')[0].replace(/-/g, '');
+            const filename = `产品报价系统数据备份_${timestamp}.json`;
+
+            // 创建下载链接并触发下载
+            const downloadLink = document.createElement('a');
+            downloadLink.href = url;
+            downloadLink.download = filename;
+            downloadLink.style.display = 'none';
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+
+            // 清理URL对象
+            URL.revokeObjectURL(url);
+
+            app.showAlert(`数据导出成功！已导出 ${app.products.length} 个产品和 ${app.quotes.length} 条报价记录`, 'success');
+
+        } catch (error) {
+            console.error('数据导出失败:', error);
+            app.showAlert('数据导出失败，请重试', 'danger');
+        }
+    }
+
+    function importAllData(input) {
+        if (!app) {
+            alert('应用未初始化');
+            return;
+        }
+
+        const file = input.files[0];
+        if (!file) {
+            return;
+        }
+
+        // 检查文件类型
+        if (!file.name.toLowerCase().endsWith('.json')) {
+            app.showAlert('请选择JSON格式的数据文件', 'danger');
+            input.value = '';
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const importData = JSON.parse(e.target.result);
+
+                // 验证数据格式
+                if (!importData.products || !importData.quotes) {
+                    app.showAlert('数据文件格式不正确，缺少必要的数据字段', 'danger');
+                    return;
+                }
+
+                // 确认导入操作
+                const confirmMessage = `准备导入数据：\n产品数量：${importData.products.length}\n报价记录：${importData.quotes.length}\n\n注意：这将覆盖当前所有数据，是否继续？`;
+
+                if (!confirm(confirmMessage)) {
+                    return;
+                }
+
+                // 导入数据
+                app.products = importData.products || [];
+                app.quotes = importData.quotes || [];
+
+                // 保存到localStorage
+                app.saveData();
+
+                // 刷新界面
+                if (app.updateDashboard) app.updateDashboard();
+                if (typeof refreshProductTable === 'function') refreshProductTable();
+                if (typeof refreshQuoteTable === 'function') refreshQuoteTable();
+                if (typeof updateQuoteProductSelect === 'function') updateQuoteProductSelect();
+                if (typeof updateFilterProductSelect === 'function') updateFilterProductSelect();
+                if (typeof updateFilterCustomerSelect === 'function') updateFilterCustomerSelect();
+                if (typeof updateCustomerSelect === 'function') updateCustomerSelect();
+                if (app.updatePriceChart) app.updatePriceChart();
+
+                // 强制更新报价表格显示
+                setTimeout(() => {
+                    const tableBody = document.getElementById('quotesTableBody');
+                    if (tableBody && app.quotes.length > 0) {
+                        console.log('强制刷新报价表格，数据量:', app.quotes.length);
+                        if (typeof refreshQuoteTable === 'function') {
+                            refreshQuoteTable();
+                        }
+                    }
+                }, 500);
+
+                app.showAlert(`数据导入成功！已导入 ${app.products.length} 个产品和 ${app.quotes.length} 条报价记录`, 'success');
+
+            } catch (error) {
+                console.error('数据导入失败:', error);
+                app.showAlert('数据文件解析失败，请检查文件格式', 'danger');
+            } finally {
+                // 清空文件输入
+                input.value = '';
+            }
+        };
+
+        reader.onerror = function() {
+            app.showAlert('文件读取失败，请重试', 'danger');
+            input.value = '';
+        };
+
+        reader.readAsText(file);
+    }
+
+    function debugQuotes() {
+        console.log('=== 报价数据调试 ===');
+        console.log('app对象存在:', !!app);
+
+        if (app) {
+            console.log('app.quotes长度:', app.quotes.length);
+            console.log('前3条报价:', app.quotes.slice(0, 3));
+
+            // 检查localStorage
+            const savedQuotes = localStorage.getItem('quote_quotes');
+            console.log('localStorage中的报价数据:', savedQuotes ? JSON.parse(savedQuotes).length : '无');
+
+            // 检查表格元素
+            const tableBody = document.getElementById('quotesTableBody');
+            console.log('表格body元素存在:', !!tableBody);
+            if (tableBody) {
+                console.log('当前表格内容:', tableBody.innerHTML.substring(0, 100));
+            }
+
+            // 手动刷新
+            if (typeof refreshQuoteTable === 'function') {
+                console.log('调用refreshQuoteTable函数...');
+                refreshQuoteTable();
+                console.log('refreshQuoteTable调用完成');
+            } else {
+                console.log('refreshQuoteTable函数不存在');
+            }
+        }
+
+        alert('调试信息已输出到控制台');
+    }
+
+    // Excel导入相关全局变量
+    let importData = [];
+    let currentFile = null;
+
+    // 解析文件名获取客户名称和日期
+    function parseFileName(fileName) {
+        const result = {
+            customer: '',
+            date: ''
+        };
+
+        // 移除文件扩展名
+        const nameWithoutExt = fileName.replace(/\.(xlsx|xls)$/i, '');
+
+        // 匹配日期模式（支持多种格式）
+        const datePatterns = [
+            /(\d{4}[-\.]?\d{2}[-\.]?\d{2})/,  // YYYY-MM-DD 或 YYYYMMDD 或 YYYY.MM.DD
+            /(\d{2}[-\.]?\d{2}[-\.]?\d{4})/,  // MM-DD-YYYY 等
+            /(\d{8})/,                        // YYYYMMDD
+            /(\d{4}年\d{1,2}月\d{1,2}日)/      // 中文日期格式
+        ];
+
+        for (let pattern of datePatterns) {
+            const match = nameWithoutExt.match(pattern);
+            if (match) {
+                let dateStr = match[1];
+
+                // 转换为标准日期格式
+                if (dateStr.includes('年')) {
+                    // 处理中文日期
+                    dateStr = dateStr.replace(/年/, '-').replace(/月/, '-').replace(/日/, '');
+                } else if (dateStr.length === 8 && /^\d{8}$/.test(dateStr)) {
+                    // 处理YYYYMMDD格式
+                    dateStr = `${dateStr.substring(0,4)}-${dateStr.substring(4,6)}-${dateStr.substring(6,8)}`;
+                } else {
+                    // 标准化分隔符
+                    dateStr = dateStr.replace(/\./g, '-');
+                }
+
+                // 验证日期有效性
+                const testDate = new Date(dateStr);
+                if (!isNaN(testDate.getTime())) {
+                    result.date = dateStr;
+                    break;
+                }
+            }
+        }
+
+        // 提取客户名称（去除日期部分和常见的描述词）
+        let customerPart = nameWithoutExt;
+        if (result.date) {
+            // 去除找到的日期部分
+            for (let pattern of datePatterns) {
+                customerPart = customerPart.replace(pattern, '');
+            }
+        }
+
+        // 清理客户名称
+        customerPart = customerPart
+            .replace(/[-\._\s]+/g, ' ')  // 替换连字符、下划线、点为空格
+            .replace(/\b(清单|报价|设备|组网|台|个|件|批|次)\b/g, '')  // 去除常见描述词
+            .trim();
+
+        if (customerPart) {
+            result.customer = customerPart;
+        }
+
+        return result;
+    }
+
+    // 智能识别表头
+    function identifyColumns(headerRow) {
+        const columnMap = {
+            model: -1,        // 产品型号
+            manufacturer: -1, // 厂商
+            quantity: -1,     // 数量
+            unitPrice: -1,    // 单价
+            totalPrice: -1    // 总价
+        };
+
+        const modelPatterns = ['产品型号', '型号', '产品', '设备型号', '设备名称', 'model', 'product'];
+        const manufacturerPatterns = ['厂商', '制造商', '品牌', '供应商', '厂家', 'manufacturer', 'brand', 'vendor', 'supplier'];
+        const quantityPatterns = ['数量', '台数', '个数', '件数', 'quantity', 'qty', 'count'];
+        const unitPricePatterns = ['单价', '价格', '单位价格', 'price', 'unit price', 'unitprice'];
+        const totalPricePatterns = ['总价', '总金额', '合计', 'total', 'total price', 'amount'];
+
+        headerRow.forEach((cell, index) => {
+            if (!cell) return;
+
+            const cellText = cell.toString().toLowerCase().trim();
+
+            // 匹配产品型号
+            if (columnMap.model === -1 && modelPatterns.some(pattern =>
+                cellText.includes(pattern.toLowerCase())
+            )) {
+                columnMap.model = index;
+            }
+
+            // 匹配厂商
+            if (columnMap.manufacturer === -1 && manufacturerPatterns.some(pattern =>
+                cellText.includes(pattern.toLowerCase())
+            )) {
+                columnMap.manufacturer = index;
+            }
+
+            // 匹配数量
+            if (columnMap.quantity === -1 && quantityPatterns.some(pattern =>
+                cellText.includes(pattern.toLowerCase())
+            )) {
+                columnMap.quantity = index;
+            }
+
+            // 匹配单价
+            if (columnMap.unitPrice === -1 && unitPricePatterns.some(pattern =>
+                cellText.includes(pattern.toLowerCase())
+            )) {
+                columnMap.unitPrice = index;
+            }
+
+            // 匹配总价
+            if (columnMap.totalPrice === -1 && totalPricePatterns.some(pattern =>
+                cellText.includes(pattern.toLowerCase())
+            )) {
+                columnMap.totalPrice = index;
+            }
+        });
+
+        return columnMap;
+    }
+
+    // 处理Excel文件导入
+    function importExcelData(input) {
+        const file = input.files[0];
+        if (!file) return;
+
+        // 检查文件类型
+        if (!file.name.toLowerCase().match(/\.(xlsx|xls)$/)) {
+            app.showAlert('请选择Excel格式的文件（.xlsx或.xls）', 'danger');
+            input.value = '';
+            return;
+        }
+
+        currentFile = file;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                // 读取Excel文件
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+
+                // 获取第一个工作表
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+
+                // 转换为JSON数组
+                const rawData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+                if (rawData.length < 2) {
+                    app.showAlert('Excel文件数据不足，至少需要包含表头和一行数据', 'danger');
+                    input.value = '';
+                    return;
+                }
+
+                // 解析文件名
+                const fileInfo = parseFileName(file.name);
+
+                // 处理数据
+                processExcelData(rawData, fileInfo);
+
+            } catch (error) {
+                console.error('Excel文件解析失败:', error);
+                app.showAlert('Excel文件解析失败，请检查文件格式', 'danger');
+                input.value = '';
+            }
+        };
+
+        reader.onerror = function() {
+            app.showAlert('文件读取失败，请重试', 'danger');
+            input.value = '';
+        };
+
+        reader.readAsArrayBuffer(file);
+    }
+
+    // 处理Excel数据
+    function processExcelData(rawData, fileInfo) {
+        const headerRow = rawData[0];
+        const dataRows = rawData.slice(1);
+
+        // 识别列位置
+        const columnMap = identifyColumns(headerRow);
+
+        console.log('识别的列位置:', columnMap);
+        console.log('表头:', headerRow);
+
+        // 验证必要列是否都找到了
+        const missingColumns = [];
+        if (columnMap.model === -1) missingColumns.push('产品型号');
+        if (columnMap.quantity === -1) missingColumns.push('数量');
+        if (columnMap.unitPrice === -1 && columnMap.totalPrice === -1) {
+            missingColumns.push('单价或总价');
+        }
+
+        if (missingColumns.length > 0) {
+            app.showAlert(`无法识别以下必要列：${missingColumns.join('、')}。请确保Excel文件包含"产品型号"、"数量"以及"单价"或"总价"列`, 'danger');
+            return;
+        }
+
+        // 解析数据行
+        importData = [];
+        const warnings = [];
+
+        dataRows.forEach((row, index) => {
+            if (!row || row.length === 0) return;
+
+            const rowNum = index + 2; // Excel行号（从1开始，加上表头）
+
+            // 提取数据
+            const model = row[columnMap.model] ? row[columnMap.model].toString().trim() : '';
+            const manufacturer = columnMap.manufacturer !== -1 && row[columnMap.manufacturer] ?
+                row[columnMap.manufacturer].toString().trim() : null;
+            const quantity = row[columnMap.quantity] ? parseFloat(row[columnMap.quantity]) : null;
+            const unitPrice = columnMap.unitPrice !== -1 ? parseFloat(row[columnMap.unitPrice]) : null;
+            const totalPrice = columnMap.totalPrice !== -1 ? parseFloat(row[columnMap.totalPrice]) : null;
+
+            // 验证数据
+            if (!model) {
+                warnings.push(`第${rowNum}行：产品型号为空`);
+                return;
+            }
+
+            if (!quantity || quantity <= 0) {
+                warnings.push(`第${rowNum}行：数量无效`);
+                return;
+            }
+
+            // 计算缺失的价格
+            let finalUnitPrice = unitPrice;
+            let finalTotalPrice = totalPrice;
+
+            if (unitPrice && !totalPrice) {
+                finalTotalPrice = unitPrice * quantity;
+            } else if (totalPrice && !unitPrice) {
+                finalUnitPrice = totalPrice / quantity;
+            } else if (!unitPrice && !totalPrice) {
+                warnings.push(`第${rowNum}行：缺少价格信息`);
+                return;
+            }
+
+            // 查找匹配的产品
+            const matchedProduct = app.products.find(p =>
+                p.model.toLowerCase().includes(model.toLowerCase()) ||
+                model.toLowerCase().includes(p.model.toLowerCase())
+            );
+
+            importData.push({
+                model: model,
+                manufacturer: manufacturer,
+                quantity: quantity,
+                unitPrice: finalUnitPrice,
+                totalPrice: finalTotalPrice,
+                matchedProduct: matchedProduct,
+                rowNumber: rowNum
+            });
+        });
+
+        // 显示预览
+        showImportPreview(fileInfo, warnings);
+    }
+
+    // 显示导入预览
+    function showImportPreview(fileInfo, warnings) {
+        // 设置文件信息
+        document.getElementById('fileInfoContent').textContent =
+            `文件：${currentFile.name} (${importData.length} 条记录)`;
+
+        // 设置客户名称和日期
+        document.getElementById('importCustomer').value = fileInfo.customer || '';
+        document.getElementById('importDate').value = fileInfo.date || new Date().toISOString().split('T')[0];
+
+        // 更新预览计数
+        document.getElementById('previewCount').textContent = importData.length;
+        document.getElementById('importCountBadge').textContent = importData.length;
+
+        // 填充预览表格
+        const tbody = document.getElementById('importPreviewBody');
+        tbody.innerHTML = '';
+
+        importData.forEach(item => {
+            const row = document.createElement('tr');
+            const statusClass = item.matchedProduct ? 'text-success' : 'text-warning';
+            const statusText = item.matchedProduct ? '✓ 已匹配' : '⚠ 新产品';
+
+            row.innerHTML = `
+                <td>${escapeHtml(item.model)}</td>
+                <td><span class="badge bg-secondary">${escapeHtml(item.manufacturer || '未知')}</span></td>
+                <td>${item.quantity}</td>
+                <td>¥${item.unitPrice.toFixed(2)}</td>
+                <td>¥${item.totalPrice.toFixed(2)}</td>
+                <td class="${statusClass}">${statusText}</td>
+            `;
+            tbody.appendChild(row);
+        });
+
+        // 显示警告信息
+        const statusDiv = document.getElementById('importStatus');
+        const warningsUl = document.getElementById('importWarnings');
+
+        if (warnings.length > 0) {
+            warningsUl.innerHTML = warnings.map(w => `<li>${escapeHtml(w)}</li>`).join('');
+            statusDiv.style.display = 'block';
+        } else {
+            statusDiv.style.display = 'none';
+        }
+
+        // 启用确认按钮
+        document.getElementById('confirmImportBtn').disabled = importData.length === 0;
+
+        // 显示模态框
+        const modal = new bootstrap.Modal(document.getElementById('excelImportModal'));
+        modal.show();
+    }
+
+    // 确认导入Excel数据
+    function confirmExcelImport() {
+        const customer = document.getElementById('importCustomer').value.trim();
+        const date = document.getElementById('importDate').value;
+
+        if (!customer) {
+            app.showAlert('请输入客户名称', 'danger');
+            return;
+        }
+
+        if (!date) {
+            app.showAlert('请选择报价日期', 'danger');
+            return;
+        }
+
+        let addedCount = 0;
+        let newProductCount = 0;
+
+        // 创建一个映射表来跟踪本次导入中创建的产品，避免重复创建
+        const newProductsMap = new Map(); // model -> productId
+
+        importData.forEach(item => {
+            let productId;
+
+            // 如果没有匹配的产品，检查是否在本次导入中已创建过相同型号的产品
+            if (!item.matchedProduct) {
+                const modelKey = item.model.toLowerCase().trim();
+
+                // 检查是否在本次导入中已经创建过这个型号的产品
+                if (newProductsMap.has(modelKey)) {
+                    productId = newProductsMap.get(modelKey);
+                } else {
+                    // 创建新产品
+                    const newProduct = {
+                        id: 'product_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                        model: item.model,
+                        manufacturer: item.manufacturer || 'Unknown', // 使用Excel中的厂商信息，如果没有则默认为Unknown
+                        description: `从Excel导入: ${currentFile.name}`,
+                        createDate: new Date().toISOString(),
+                        updateDate: new Date().toISOString()
+                    };
+
+                    app.products.push(newProduct);
+                    productId = newProduct.id;
+                    newProductsMap.set(modelKey, productId);
+                    newProductCount++;
+                }
+            } else {
+                productId = item.matchedProduct.id;
+            }
+
+            // 创建报价记录
+            const newQuote = {
+                id: 'quote_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+                productId: productId,
+                customer: customer,
+                quantity: item.quantity,
+                unitPrice: item.unitPrice,
+                totalPrice: item.totalPrice,
+                price: item.unitPrice, // 向后兼容字段
+                date: date,
+                notes: `从Excel导入: ${currentFile.name}`,
+                createDate: new Date().toISOString(),
+                updateDate: new Date().toISOString()
+            };
+
+            app.quotes.push(newQuote);
+            addedCount++;
+        });
+
+        // 保存数据
+        app.saveData();
+
+        // 刷新界面
+        if (app.updateDashboard) app.updateDashboard();
+        if (typeof refreshProductTable === 'function') refreshProductTable();
+        if (typeof refreshQuoteTable === 'function') refreshQuoteTable();
+        if (typeof updateQuoteProductSelect === 'function') updateQuoteProductSelect();
+        if (typeof updateFilterProductSelect === 'function') updateFilterProductSelect();
+        if (typeof updateFilterCustomerSelect === 'function') updateFilterCustomerSelect();
+        if (typeof updateCustomerSelect === 'function') updateCustomerSelect();
+
+        // 关闭模态框
+        const modal = bootstrap.Modal.getInstance(document.getElementById('excelImportModal'));
+        modal.hide();
+
+        // 清空文件输入
+        document.getElementById('excelImportInput').value = '';
+
+        // 显示成功消息
+        let message = `成功导入 ${addedCount} 条报价记录`;
+        if (newProductCount > 0) {
+            message += `，创建 ${newProductCount} 个新产品`;
+        }
+        app.showAlert(message, 'success');
+
+        // 清理
+        importData = [];
+        currentFile = null;
+    }
+
+    // HTML转义函数
+    function escapeHtml(text) {
+        const map = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        };
+        return text.replace(/[&<>"']/g, function(m) { return map[m]; });
+    }
+
+    // 清理重复产品的函数
+    function cleanupDuplicateProducts() {
+        if (!app || !app.products || !app.quotes) {
+            console.error('应用数据不可用');
+            return;
+        }
+
+        // 创建产品型号映射表，找出重复的产品
+        const productGroups = {};
+        app.products.forEach(product => {
+            const modelKey = product.model.toLowerCase().trim();
+            if (!productGroups[modelKey]) {
+                productGroups[modelKey] = [];
+            }
+            productGroups[modelKey].push(product);
+        });
+
+        let cleanedCount = 0;
+        let mergedGroups = 0;
+
+        // 处理每个产品组
+        Object.keys(productGroups).forEach(modelKey => {
+            const group = productGroups[modelKey];
+
+            // 如果该型号有多个产品（重复）
+            if (group.length > 1) {
+                mergedGroups++;
+
+                // 按创建时间排序，保留最早的产品
+                group.sort((a, b) => new Date(a.createDate) - new Date(b.createDate));
+                const keepProduct = group[0];
+                const duplicateProducts = group.slice(1);
+
+                console.log(`处理重复产品: ${keepProduct.model}, 保留ID: ${keepProduct.id}, 删除${duplicateProducts.length}个重复项`);
+
+                // 更新所有指向重复产品的报价记录
+                duplicateProducts.forEach(duplicateProduct => {
+                    const relatedQuotes = app.quotes.filter(quote => quote.productId === duplicateProduct.id);
+                    relatedQuotes.forEach(quote => {
+                        quote.productId = keepProduct.id;
+                        quote.updateDate = new Date().toISOString();
+                    });
+
+                    console.log(`将${relatedQuotes.length}条报价记录从产品${duplicateProduct.id}迁移到${keepProduct.id}`);
+                });
+
+                // 从产品列表中删除重复的产品
+                app.products = app.products.filter(product =>
+                    !duplicateProducts.some(dup => dup.id === product.id)
+                );
+
+                cleanedCount += duplicateProducts.length;
+            }
+        });
+
+        // 保存清理后的数据
+        if (cleanedCount > 0) {
+            app.saveData();
+
+            // 刷新界面
+            if (app.updateDashboard) app.updateDashboard();
+            if (typeof refreshProductTable === 'function') refreshProductTable();
+            if (typeof refreshQuoteTable === 'function') refreshQuoteTable();
+            if (typeof updateQuoteProductSelect === 'function') updateQuoteProductSelect();
+            if (typeof updateFilterProductSelect === 'function') updateFilterProductSelect();
+            if (typeof updateFilterCustomerSelect === 'function') updateFilterCustomerSelect();
+            if (typeof updateCustomerSelect === 'function') updateCustomerSelect();
+
+            const message = `清理完成：合并了${mergedGroups}组重复产品，删除了${cleanedCount}个重复项`;
+            console.log(message);
+            app.showAlert(message, 'success');
+        } else {
+            const message = '没有发现重复的产品';
+            console.log(message);
+            app.showAlert(message, 'info');
+        }
+
+        return { mergedGroups, cleanedCount };
+    }
+
+    // 将清理函数暴露到全局作用域，方便在控制台调用
+    window.cleanupDuplicateProducts = cleanupDuplicateProducts;
+    </script>
+</body>
+</html>

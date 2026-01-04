@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlueField技术架构演进 - NVIDIA DPU</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Microsoft YaHei", sans-serif;
+            background: #000;
+            color: white;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 复用背景效果 */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(ellipse at top left, rgba(118, 185, 0, 0.1) 0%, transparent 60%),
+                radial-gradient(ellipse at bottom right, rgba(118, 185, 0, 0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at center, rgba(100, 149, 237, 0.04) 0%, transparent 70%),
+                linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 25%, #0f0f0f 50%, #1a1a1a 75%, #0a0a0a 100%);
+            animation: backgroundFlow 18s ease-in-out infinite;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(rgba(118, 185, 0, 0.01) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(118, 185, 0, 0.01) 1px, transparent 1px);
+            background-size: 80px 80px;
+            animation: gridShift 40s linear infinite;
+        }
+
+        .data-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #76B900;
+            border-radius: 50%;
+            opacity: 0;
+            animation: particleFloat 15s infinite;
+        }
+
+        .circuit-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(45deg, transparent 49%, rgba(118, 185, 0, 0.03) 50%, transparent 51%);
+            background-size: 400px 400px;
+            animation: circuitPulse 35s ease-in-out infinite;
+            opacity: 0.5;
+        }
+
+        /* 主容器 */
+        .slide-container {
+            width: 100%;
+            max-width: 1400px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 30px 40px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 页面标题 */
+        .page-title {
+            font-size: 2.8rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, #76B900, #a4d633);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(118, 185, 0, 0.3);
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .page-subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            color: #b0b0b0;
+            margin-bottom: 40px;
+            animation: fadeInDown 1s ease-out 0.2s both;
+        }
+
+        /* 主要内容区域 */
+        .evolution-content {
+            display: flex;
+            gap: 40px;
+            align-items: center;
+            height: calc(100vh - 200px);
+        }
+
+        /* 左侧架构演进时间线 */
+        .timeline-section {
+            flex: 1;
+            max-width: 500px;
+        }
+
+        .timeline-container {
+            position: relative;
+            padding-left: 40px;
+        }
+
+        /* 时间线主轴 */
+        .timeline-axis {
+            position: absolute;
+            left: 20px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, 
+                rgba(100, 149, 237, 0.3) 0%, 
+                rgba(118, 185, 0, 0.6) 50%, 
+                #76B900 100%);
+            animation: timelineGrow 2s ease-out 0.5s both;
+        }
+
+        @keyframes timelineGrow {
+            from { height: 0; }
+            to { height: 100%; }
+        }
+
+        /* 时间线节点 */
+        .timeline-item {
+            position: relative;
+            margin-bottom: 60px;
+            animation: fadeInLeft 1s ease-out both;
+        }
+
+        .timeline-item:nth-child(1) { animation-delay: 0.8s; }
+        .timeline-item:nth-child(2) { animation-delay: 1.2s; }
+
+        .timeline-dot {
+            position: absolute;
+            left: -28px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 3px solid;
+            background: #000;
+            z-index: 1;
+        }
+
+        .bf2-dot {
+            border-color: rgba(100, 149, 237, 0.8);
+            box-shadow: 0 0 20px rgba(100, 149, 237, 0.4);
+        }
+
+        .bf3-dot {
+            border-color: #76B900;
+            box-shadow: 0 0 20px rgba(118, 185, 0, 0.6);
+        }
+
+        .timeline-card {
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid;
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .bf2-card {
+            border-color: rgba(100, 149, 237, 0.3);
+        }
+
+        .bf2-card:hover {
+            border-color: rgba(100, 149, 237, 0.6);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(100, 149, 237, 0.2);
+        }
+
+        .bf3-card {
+            border-color: rgba(118, 185, 0, 0.4);
+        }
+
+        .bf3-card:hover {
+            border-color: rgba(118, 185, 0, 0.7);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(118, 185, 0, 0.3);
+        }
+
+        .timeline-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .bf2-card .timeline-title {
+            color: rgba(100, 149, 237, 0.9);
+        }
+
+        .bf3-card .timeline-title {
+            color: #76B900;
+        }
+
+        .timeline-year {
+            font-size: 0.9rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 4px 10px;
+            border-radius: 10px;
+            font-weight: 500;
+        }
+
+        .bf2-card .timeline-year {
+            background: rgba(100, 149, 237, 0.2);
+            color: rgba(100, 149, 237, 0.9);
+        }
+
+        .bf3-card .timeline-year {
+            background: rgba(118, 185, 0, 0.2);
+            color: #76B900;
+        }
+
+        .timeline-description {
+            font-size: 1rem;
+            line-height: 1.5;
+            color: #e0e0e0;
+            margin-bottom: 15px;
+        }
+
+        .timeline-features {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .feature-tag {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            padding: 6px 12px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            transition: all 0.2s ease;
+        }
+
+        .feature-tag:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+
+        .bf2-card .feature-tag:hover {
+            background: rgba(100, 149, 237, 0.1);
+        }
+
+        .bf3-card .feature-tag:hover {
+            background: rgba(118, 185, 0, 0.1);
+        }
+
+        .feature-icon {
+            font-size: 0.8rem;
+        }
+
+        .bf2-card .feature-icon {
+            color: rgba(100, 149, 237, 0.8);
+        }
+
+        .bf3-card .feature-icon {
+            color: #76B900;
+        }
+
+        /* 右侧架构图区域 */
+        .architecture-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .architecture-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #76B900;
+            text-align: center;
+            margin-bottom: 10px;
+            animation: fadeInDown 1s ease-out 0.6s both;
+        }
+
+        /* 架构图占位 */
+        .architecture-diagram-placeholder {
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(135deg, rgba(118, 185, 0, 0.08), rgba(100, 149, 237, 0.05));
+            border: 2px dashed rgba(118, 185, 0, 0.4);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 12px;
+            transition: all 0.3s ease;
+            animation: fadeInRight 1.2s ease-out 0.8s both;
+        }
+
+        .architecture-diagram-placeholder:hover {
+            transform: scale(1.02);
+            box-shadow: 0 20px 40px rgba(118, 185, 0, 0.2);
+        }
+
+        .diagram-text {
+            color: #76B900;
+            font-weight: 700;
+            font-size: 1.3rem;
+            text-align: center;
+        }
+
+        .diagram-subtitle {
+            color: #888;
+            font-size: 0.95rem;
+            text-align: center;
+            max-width: 85%;
+            line-height: 1.5;
+        }
+
+        /* 关键改进点 */
+        .improvements-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            animation: fadeInUp 1.2s ease-out 1s both;
+        }
+
+        .improvement-card {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(118, 185, 0, 0.3);
+            border-radius: 12px;
+            padding: 18px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .improvement-card:hover {
+            border-color: rgba(118, 185, 0, 0.6);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(118, 185, 0, 0.2);
+        }
+
+        .improvement-metric {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #76B900, #a4d633);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .improvement-label {
+            font-size: 0.9rem;
+            color: #b0b0b0;
+            font-weight: 500;
+        }
+
+        /* 导航提示 */
+        .navigation-hint {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 30px;
+            font-size: 0.9rem;
+            color: #888;
+            animation: fadeIn 1.5s ease-out 1.2s both;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-key {
+            background: rgba(118, 185, 0, 0.2);
+            color: #76B900;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-weight: 600;
+        }
+
+        /* 动画定义 */
+        @keyframes backgroundFlow {
+            0%, 100% { filter: hue-rotate(0deg) brightness(1); }
+            50% { filter: hue-rotate(3deg) brightness(1.05); }
+        }
+
+        @keyframes gridShift {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(80px, 80px); }
+        }
+
+        @keyframes particleFloat {
+            0% { opacity: 0; transform: translateY(100vh) scale(0); }
+            25% { opacity: 1; transform: translateY(75vh) scale(1); }
+            75% { opacity: 1; transform: translateY(-25vh) scale(1); }
+            100% { opacity: 0; transform: translateY(-50vh) scale(0); }
+        }
+
+        @keyframes circuitPulse {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 0.6; }
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInLeft {
+            from { opacity: 0; transform: translateX(-40px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes fadeInRight {
+            from { opacity: 0; transform: translateX(40px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .evolution-content {
+                flex-direction: column;
+                gap: 30px;
+            }
+            
+            .timeline-section {
+                max-width: none;
+            }
+            
+            .architecture-diagram-placeholder {
+                height: 300px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .slide-container {
+                padding: 20px;
+            }
+            
+            .page-title {
+                font-size: 2.2rem;
+            }
+            
+            .timeline-item {
+                margin-bottom: 40px;
+            }
+            
+            .improvements-container {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 动态背景元素 -->
+    <div class="data-particles" id="particles"></div>
+    <div class="circuit-lines"></div>
+    
+    <div class="slide-container">
+        <h1 class="page-title">BlueField技术架构演进</h1>
+        <div class="page-subtitle">从第二代到第三代的技术跨越</div>
+        
+        <div class="evolution-content">
+            <!-- 左侧时间线 -->
+            <div class="timeline-section">
+                <div class="timeline-container">
+                    <div class="timeline-axis"></div>
+                    
+                    <!-- BlueField-2 -->
+                    <div class="timeline-item">
+                        <div class="timeline-dot bf2-dot"></div>
+                        <div class="timeline-card bf2-card">
+                            <div class="timeline-title">
+                                BlueField-2
+                                <div class="timeline-year">2020</div>
+                            </div>
+                            <div class="timeline-description">
+                                首个商用DPU产品，奠定了数据处理单元的基础架构，
+                                实现了网络、存储、安全功能的硬件卸载。
+                            </div>
+                            <div class="timeline-features">
+                                <div class="feature-tag">
+                                    <span class="feature-icon">🔧</span>
+                                    <span>8核ARM Cortex-A72 @ 2.5GHz</span>
+                                </div>
+                                <div class="feature-tag">
+                                    <span class="feature-icon">🌐</span>
+                                    <span>25/50Gbps网络接口</span>
+                                </div>
+                                <div class="feature-tag">
+                                    <span class="feature-icon">🔒</span>
+                                    <span>硬件加密卸载</span>
+                                </div>
+                                <div class="feature-tag">
+                                    <span class="feature-icon">💾</span>
+                                    <span>8GB DDR4内存</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BlueField-3 -->
+                    <div class="timeline-item">
+                        <div class="timeline-dot bf3-dot"></div>
+                        <div class="timeline-card bf3-card">
+                            <div class="timeline-title">
+                                BlueField-3
+                                <div class="timeline-year">2023</div>
+                            </div>
+                            <div class="timeline-description">
+                                革命性的第三代架构，集成AI加速器，支持高达200Gbps网络，
+                                为现代数据中心提供全面的基础设施加速能力。
+                            </div>
+                            <div class="timeline-features">
+                                <div class="feature-tag">
+                                    <span class="feature-icon">⚡</span>
+                                    <span>16核ARM Cortex-A78 @ 3.0GHz</span>
+                                </div>
+                                <div class="feature-tag">
+                                    <span class="feature-icon">🚀</span>
+                                    <span>100/200Gbps SuperNIC</span>
+                                </div>
+                                <div class="feature-tag">
+                                    <span class="feature-icon">🤖</span>
+                                    <span>集成AI推理加速器</span>
+                                </div>
+                                <div class="feature-tag">
+                                    <span class="feature-icon">🧠</span>
+                                    <span>16GB DDR5内存</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧架构图和改进点 -->
+            <div class="architecture-section">
+                <div class="architecture-title">架构演进图</div>
+                
+                <!-- 架构图占位 -->
+                <div class="architecture-diagram-placeholder">
+                    <div class="diagram-text">BF2 → BF3 架构对比图</div>
+                    <div class="diagram-subtitle">
+                        【手工替换】建议使用并排对比的架构图，展示从BF2到BF3的技术演进
+                        <br>推荐尺寸：700x400px
+                        <br>包含：CPU核心、网络接口、加速器、内存等组件对比
+                    </div>
+                </div>
+
+                <!-- 关键改进指标 -->
+                <div class="improvements-container">
+                    <div class="improvement-card">
+                        <div class="improvement-metric">4x</div>
+                        <div class="improvement-label">网络吞吐量提升</div>
+                    </div>
+                    <div class="improvement-card">
+                        <div class="improvement-metric">2x</div>
+                        <div class="improvement-label">CPU核心数量</div>
+                    </div>
+                    <div class="improvement-card">
+                        <div class="improvement-metric">DDR5</div>
+                        <div class="improvement-label">内存技术升级</div>
+                    </div>
+                    <div class="improvement-card">
+                        <div class="improvement-metric">AI</div>
+                        <div class="improvement-label">新增推理加速</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="navigation-hint">
+        <div class="nav-item">
+            <span class="nav-key">←</span>
+            <span>产品对比</span>
+        </div>
+        <div class="nav-item">
+            <span class="nav-key">→</span>
+            <span>性能亮点</span>
+        </div>
+    </div>
+
+    <script>
+        // 创建动态粒子效果
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 15;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 15 + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            createParticles();
+            
+            // 改进指标数字动画
+            const metrics = document.querySelectorAll('.improvement-metric');
+            metrics.forEach((metric, index) => {
+                const text = metric.textContent;
+                if (!isNaN(text.charAt(0))) {
+                    metric.textContent = '0';
+                    setTimeout(() => {
+                        let current = 0;
+                        const target = parseInt(text);
+                        const duration = 1500;
+                        const steps = 30;
+                        const increment = target / steps;
+                        
+                        const timer = setInterval(() => {
+                            current += increment;
+                            if (current >= target) {
+                                current = target;
+                                clearInterval(timer);
+                            }
+                            metric.textContent = Math.floor(current) + 'x';
+                        }, duration / steps);
+                    }, 1500 + index * 200);
+                }
+            });
+            
+            // 时间线点击效果
+            document.querySelectorAll('.timeline-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const ripple = document.createElement('div');
+                    ripple.style.cssText = `
+                        position: absolute;
+                        width: 50px;
+                        height: 50px;
+                        background: radial-gradient(circle, rgba(118, 185, 0, 0.3) 0%, transparent 70%);
+                        border-radius: 50%;
+                        pointer-events: none;
+                        z-index: 1000;
+                        left: 50%;
+                        top: 50%;
+                        transform: translate(-50%, -50%) scale(0);
+                        animation: rippleEffect 0.8s ease-out;
+                    `;
+                    
+                    this.style.position = 'relative';
+                    this.appendChild(ripple);
+                    
+                    setTimeout(() => ripple.remove(), 800);
+                });
+            });
+            
+            // 键盘导航
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'ArrowRight' || e.key === ' ') {
+                    // 切换到性能亮点页面
+                    window.location.href = 'bf-performance.html';
+                } else if (e.key === 'ArrowLeft') {
+                    // 返回产品对比页面
+                    window.location.href = 'bf-comparison.html';
+                }
+            });
+        });
+        
+        // CSS动画定义
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes rippleEffect {
+                0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+                100% { transform: translate(-50%, -50%) scale(4); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

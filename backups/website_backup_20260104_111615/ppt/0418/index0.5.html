@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>NVIDIA InfiniBand智算中心组网创新与Quantum-X800高性能交换解决方案</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, rgba(175, 233, 207, 0.8) 0%, rgba(145, 210, 185, 0.8) 100%);
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+        }
+
+        .cover-container {
+            width: 90%;
+            height: 85%;
+            overflow: hidden;
+            position: relative;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 87, 65, 0.25);
+            background: linear-gradient(135deg, #ffffff 0%, #f8f8f8 100%);
+        }
+
+        /* Spiral background inspired by logo */
+        .spiral-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.12;
+            z-index: 1;
+        }
+
+        /* Content overlay */
+        .content-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header area with logo and product name */
+        .header {
+            padding: 40px 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-text {
+            color: #333;
+            font-size: 2.4em;
+            font-weight: 700;
+        }
+
+        .divider {
+            width: 2px;
+            height: 40px;
+            background-color: #00A2E8;
+            margin: 0 15px;
+        }
+
+        .product-name {
+            color: #00A2E8;
+            font-size: 2em;
+            font-weight: 500;
+        }
+
+        /* Big logo display on the right */
+        .logo-display {
+            margin-right: 20px;
+        }
+
+        /* Main content area */
+        .main-content {
+            flex: 1;
+            display: flex;
+            padding: 20px 60px;
+        }
+
+        /* Left content with titles */
+        .text-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* Main title styling */
+        .title-wrapper {
+            margin-bottom: 40px;
+        }
+
+        .main-title {
+            font-size: 3.8em;
+            font-weight: 700;
+            margin: 0;
+            line-height: 1.2;
+            color: #333;
+            position: relative;
+        }
+
+        /* Highlighted box for subtitle */
+        .subtitle-wrapper {
+            background: linear-gradient(90deg, rgba(0, 162, 232, 0.1) 0%, rgba(0, 162, 232, 0.05) 100%);
+            border-left: 6px solid #00A2E8;
+            padding: 25px 30px;
+            margin-top: 30px;
+            max-width: 90%;
+            position: relative;
+        }
+
+        .subtitle-text {
+            font-size: 1.6em;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+            line-height: 1.4;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Spiral logo on the right */
+        .visual-content {
+            flex: 0.9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .spiral-visual {
+            width: 90%;
+            height: 90%;
+            position: relative;
+        }
+
+        /* Footer area */
+        .footer {
+            padding: 30px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .presenter-info {
+            color: #333;
+        }
+
+        .presenter-name {
+            font-weight: 600;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+
+        .presenter-title {
+            font-style: italic;
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        .company-info {
+            text-align: right;
+            font-style: italic;
+            color: #555;
+        }
+
+        /* Animation keyframes */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInRight {
+            from { opacity: 0; transform: translateX(30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes floatAnimation {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0); }
+        }
+
+        @keyframes rotateAnimation {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Animation classes */
+        .fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        .fade-in-right {
+            animation: fadeInRight 0.8s ease-out forwards;
+        }
+
+        .float {
+            animation: floatAnimation 8s ease-in-out infinite;
+        }
+
+        .slow-rotate {
+            animation: rotateAnimation 40s linear infinite;
+        }
+
+        .delay-1 {
+            animation-delay: 0.3s;
+        }
+
+        .delay-2 {
+            animation-delay: 0.6s;
+        }
+
+        .delay-3 {
+            animation-delay: 0.9s;
+        }
+
+        .highlight-green {
+            color: #00BF63;
+        }
+
+        .highlight-blue {
+            color: #00A2E8;
+        }
+
+        /* Animated highlight underline */
+        .title-underline {
+            display: inline-block;
+            position: relative;
+        }
+
+        .title-underline::after {
+            content: '';
+            position: absolute;
+            bottom: 5px;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, #00A2E8, #00BF63);
+            z-index: -1;
+            opacity: 0.3;
+        }
+    </style>
+</head>
+<body>
+    <div class="cover-container">
+        <!-- Spiral background pattern inspired by logo -->
+        <div class="spiral-background">
+            <svg width="100%" height="100%" viewBox="0 0 1000 800" preserveAspectRatio="xMidYMid slice">
+                <!-- Large spiral patterns -->
+                <path d="M500,100 Q800,150 700,400 T300,500 Q100,600 300,700" fill="none" stroke="#00A2E8" stroke-width="10" opacity="0.2"/>
+                <path d="M500,150 Q250,250 400,450 T600,500 Q900,550 700,650" fill="none" stroke="#00BF63" stroke-width="10" opacity="0.2"/>
+                
+                <!-- Smaller echoing spirals -->
+                <path d="M300,200 Q400,250 350,350 T250,400 Q150,450 250,500" fill="none" stroke="#00A2E8" stroke-width="6" opacity="0.2"/>
+                <path d="M700,300 Q600,350 650,450 T750,500 Q850,550 750,600" fill="none" stroke="#00BF63" stroke-width="6" opacity="0.2"/>
+            </svg>
+        </div>
+
+        <!-- Main content overlay -->
+        <div class="content-overlay">
+            <!-- Header with branding -->
+            <div class="header fade-in">
+                <div class="brand">
+                    <div class="logo-text">NVIDIA</div>
+                    <div class="divider"></div>
+                    <div class="product-name">InfiniBand</div>
+                </div>
+                
+                <!-- Company logo display -->
+                <div class="logo-display">
+                    <svg width="60" height="60" viewBox="0 0 200 200">
+                        <!-- Spiral logo recreated from image -->
+                        <path d="M100,20 C150,20 180,50 180,100 C180,150 150,180 100,180 C50,180 20,150 20,100 C20,50 50,20 100,20" fill="none" stroke="#00BF63" stroke-width="12" stroke-linecap="round"/>
+                        <path d="M100,50 C130,50 150,70 150,100 C150,130 130,150 100,150 C70,150 50,130 50,100 C50,70 70,50 100,50" fill="none" stroke="#00A2E8" stroke-width="12" stroke-linecap="round"/>
+                        <path d="M100,80 C110,80 120,90 120,100 C120,110 110,120 100,120 C90,120 80,110 80,100 C80,90 90,80 100,80" fill="none" stroke="#00BF63" stroke-width="8" stroke-linecap="round"/>
+                    </svg>
+                </div>
+            </div>
+            
+            <!-- Main content area -->
+            <div class="main-content">
+                <!-- Text content on the left -->
+                <div class="text-content">
+                    <!-- Main title -->
+                    <div class="title-wrapper fade-in delay-1">
+                        <h1 class="main-title">
+                            <span class="highlight-blue">智算</span>中心<br>
+                            高性能<span class="highlight-green">网络</span>
+                            <span class="title-underline">革新</span>
+                        </h1>
+                    </div>
+                    
+                    <!-- Subtitle in highlighted box -->
+                    <div class="subtitle-wrapper fade-in delay-2">
+                        <p class="subtitle-text">NVIDIA InfiniBand智算中心组网创新与<br>Quantum-X800高性能交换解决方案</p>
+                    </div>
+                </div>
+                
+                <!-- Visual content on the right - animated spiral -->
+                <div class="visual-content">
+                    <div class="spiral-visual fade-in-right delay-2 float">
+                        <svg width="100%" height="100%" viewBox="0 0 500 500">
+                            <!-- Recreating the logo in a larger animated version -->
+                            <!-- Outer spiral - green -->
+                            <path d="M250,50 C350,50 450,150 450,250 C450,350 350,450 250,450 C150,450 50,350 50,250 C50,150 150,50 250,50" 
+                                  fill="none" stroke="#00BF63" stroke-width="12" stroke-linecap="round" class="slow-rotate" transform="rotate(0 250 250)"/>
+                            
+                            <!-- Middle spiral - blue -->
+                            <path d="M250,100 C320,100 400,180 400,250 C400,320 320,400 250,400 C180,400 100,320 100,250 C100,180 180,100 250,100" 
+                                  fill="none" stroke="#00A2E8" stroke-width="12" stroke-linecap="round" class="slow-rotate" transform="rotate(15 250 250)"/>
+                            
+                            <!-- Inner spiral - green -->
+                            <path d="M250,150 C300,150 350,200 350,250 C350,300 300,350 250,350 C200,350 150,300 150,250 C150,200 200,150 250,150" 
+                                  fill="none" stroke="#00BF63" stroke-width="10" stroke-linecap="round" class="slow-rotate" transform="rotate(30 250 250)"/>
+                            
+                            <!-- Center circle - blue -->
+                            <circle cx="250" cy="250" r="20" fill="#00A2E8"/>
+                            
+                            <!-- Animated data points -->
+                            <circle cx="150" cy="250" r="6" fill="#00A2E8">
+                                <animateTransform attributeName="transform" type="rotate" from="0 250 250" to="360 250 250" dur="10s" repeatCount="indefinite"/>
+                            </circle>
+                            
+                            <circle cx="250" cy="150" r="6" fill="#00BF63">
+                                <animateTransform attributeName="transform" type="rotate" from="0 250 250" to="360 250 250" dur="15s" repeatCount="indefinite"/>
+                            </circle>
+                            
+                            <circle cx="350" cy="250" r="6" fill="#00A2E8">
+                                <animateTransform attributeName="transform" type="rotate" from="0 250 250" to="360 250 250" dur="12s" repeatCount="indefinite"/>
+                            </circle>
+                            
+                            <circle cx="250" cy="350" r="6" fill="#00BF63">
+                                <animateTransform attributeName="transform" type="rotate" from="0 250 250" to="360 250 250" dur="8s" repeatCount="indefinite"/>
+                            </circle>
+                            
+                            <!-- Technology labels -->
+                            <g>
+                                <text x="430" y="230" font-size="18" fill="#00A2E8" font-weight="bold" text-anchor="middle" transform="rotate(90 430 230)">XDR</text>
+                                <text x="430" y="255" font-size="22" fill="#00A2E8" font-weight="bold" text-anchor="middle" transform="rotate(90 430 255)">800G</text>
+                            </g>
+                            
+                            <!-- Network connectivity concept -->
+                            <path d="M250,50 L250,10" stroke="#00BF63" stroke-width="2" stroke-dasharray="4,4"/>
+                            <path d="M450,250 L490,250" stroke="#00A2E8" stroke-width="2" stroke-dasharray="4,4"/>
+                            <path d="M250,450 L250,490" stroke="#00BF63" stroke-width="2" stroke-dasharray="4,4"/>
+                            <path d="M50,250 L10,250" stroke="#00A2E8" stroke-width="2" stroke-dasharray="4,4"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Footer -->
+            <div class="footer fade-in delay-3">
+                <div class="presenter-info">
+                    <div class="presenter-name">[讲师姓名]</div>
+                    <div class="presenter-title">NVIDIA 网络解决方案架构师</div>
+                </div>
+                <div class="company-info">
+                    2024 NVIDIA Corporation
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

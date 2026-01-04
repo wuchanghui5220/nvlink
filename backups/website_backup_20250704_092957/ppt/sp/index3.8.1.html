@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NVIDIA NPN SP技术大比武 - 存储系统设计的核心需求</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f0f0f0;
+      font-family: 'Noto Sans SC', sans-serif;
+      overflow: hidden;
+    }
+
+    .slide-container {
+      width: 100vw;
+      height: 56.25vw; /* 16:9 aspect ratio */
+      max-height: 100vh;
+      max-width: 177.78vh; /* 16:9 aspect ratio (reversed) */
+      position: relative;
+      background: #111827;
+      color: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    /* 背景图形元素 */
+    .bg-grid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image:
+        linear-gradient(rgba(24, 92, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(24, 92, 255, 0.05) 1px, transparent 1px);
+      background-size: 20px 20px;
+      z-index: 0;
+    }
+
+    .bg-gradient {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 120% 45%, rgba(76, 29, 149, 0.7) 0%, rgba(17, 24, 39, 0) 50%);
+      z-index: 1;
+    }
+
+    .bg-circle1 {
+      position: absolute;
+      top: -15%;
+      right: -15%;
+      width: 40%;
+      height: 40%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #76b900 0%, #1a4163 100%);
+      filter: blur(80px);
+      opacity: 0.6;
+      z-index: 2;
+    }
+
+    .bg-circle2 {
+      position: absolute;
+      bottom: -10%;
+      left: -10%;
+      width: 30%;
+      height: 30%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0099da 0%, #1e40af 100%);
+      filter: blur(60px);
+      opacity: 0.5;
+      z-index: 2;
+    }
+
+    /* 主要内容 */
+    .content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    .header {
+      padding: 2.5% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .nvidia-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-box {
+      width: 8%;
+      min-width: 100px;
+      height: 36px;
+      background: #76b900;
+      border-radius: 4px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 700;
+      font-size: clamp(16px, 2vw, 22px);
+      transform: skew(-10deg);
+    }
+
+    .partner-text {
+      font-size: clamp(12px, 1.5vw, 16px);
+      font-weight: 500;
+      opacity: 0.9;
+    }
+
+    .slide-title {
+      font-size: clamp(16px, 1.8vw, 20px);
+      font-weight: 600;
+      padding: 0.5% 4%;
+      background: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(5px);
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 2% 4%;
+      overflow: hidden;
+    }
+
+    .section-title {
+      font-size: clamp(22px, 2.8vw, 30px);
+      font-weight: 700;
+      margin-bottom: 25px;
+      color: #76b900;
+      text-align: center;
+    }
+
+    /* 两行布局，第一行4个，第二行3个 */
+    .requirements-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      flex: 1;
+    }
+
+    .top-row, .bottom-row {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+    }
+
+    .top-row {
+      flex: 1;
+    }
+
+    .bottom-row {
+      flex: 1;
+    }
+
+    .requirement-card {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      max-width: 300px;
+    }
+
+    .bottom-card {
+      max-width: 340px;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .card-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .bandwidth-icon {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      box-shadow: 0 5px 15px rgba(245, 158, 11, 0.3);
+    }
+
+    .latency-icon {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
+    }
+
+    .capacity-icon {
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+      box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
+    }
+
+    .scalability-icon {
+      background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+      box-shadow: 0 5px 15px rgba(139, 92, 246, 0.3);
+    }
+
+    .availability-icon {
+      background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+      box-shadow: 0 5px 15px rgba(239, 68, 68, 0.3);
+    }
+
+    .compatibility-icon {
+      background: linear-gradient(135deg, #ec4899 0%, #be185d 100%);
+      box-shadow: 0 5px 15px rgba(236, 72, 153, 0.3);
+    }
+
+    .management-icon {
+      background: linear-gradient(135deg, #06b6d4 0%, #0369a1 100%);
+      box-shadow: 0 5px 15px rgba(6, 182, 212, 0.3);
+    }
+
+    .card-icon svg {
+      width: 24px;
+      height: 24px;
+      fill: white;
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .bandwidth-title {
+      color: #f59e0b;
+    }
+
+    .latency-title {
+      color: #10b981;
+    }
+
+    .capacity-title {
+      color: #3b82f6;
+    }
+
+    .scalability-title {
+      color: #8b5cf6;
+    }
+
+    .availability-title {
+      color: #ef4444;
+    }
+
+    .compatibility-title {
+      color: #ec4899;
+    }
+
+    .management-title {
+      color: #06b6d4;
+    }
+
+    .card-content {
+      flex: 1;
+      font-size: 14px;
+      line-height: 1.5;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .highlight {
+      font-weight: 600;
+    }
+
+    .bandwidth-highlight {
+      color: #f59e0b;
+    }
+
+    .latency-highlight {
+      color: #10b981;
+    }
+
+    .capacity-highlight {
+      color: #3b82f6;
+    }
+
+    .scalability-highlight {
+      color: #8b5cf6;
+    }
+
+    .availability-highlight {
+      color: #ef4444;
+    }
+
+    .compatibility-highlight {
+      color: #ec4899;
+    }
+
+    .management-highlight {
+      color: #06b6d4;
+    }
+
+    .footer {
+      padding: 1.5% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .page-number {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .company-name {
+      font-weight: 500;
+    }
+
+    .rotating-lines {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 50%;
+      height: 50%;
+      z-index: 5;
+      opacity: 0.15;
+      animation: rotate 60s linear infinite;
+    }
+
+    @keyframes rotate {
+      from {
+        transform: translate(-50%, -50%) rotate(0deg);
+      }
+      to {
+        transform: translate(-50%, -50%) rotate(360deg);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <!-- 背景元素 -->
+    <div class="bg-grid"></div>
+    <div class="bg-gradient"></div>
+    <div class="bg-circle1"></div>
+    <div class="bg-circle2"></div>
+
+    <!-- 旋转线框背景 -->
+    <svg class="rotating-lines" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+      <path d="M250,10 L490,250 L250,490 L10,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,50 L450,250 L250,450 L50,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,90 L410,250 L250,410 L90,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,130 L370,250 L250,370 L130,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,170 L330,250 L250,330 L170,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,210 L290,250 L250,290 L210,250 Z" fill="none" stroke="white" stroke-width="1" />
+    </svg>
+
+    <!-- 主要内容 -->
+    <div class="content">
+      <div class="header">
+        <div class="nvidia-logo">
+          <div class="logo-box">NVIDIA</div>
+          <div class="partner-text">Networking NPN Elite Partner</div>
+        </div>
+        <div class="slide-title">3. 客户需求方案汇报 - 题目A：存储系统选型</div>
+      </div>
+
+      <div class="main-content">
+        <div class="section-title">存储系统设计的核心需求</div>
+        
+        <div class="requirements-container">
+          <!-- 第一行：4个卡片 -->
+          <div class="top-row">
+            <div class="requirement-card">
+              <div class="card-header">
+                <div class="card-icon bandwidth-icon">
+                  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M15.9 18.45c1.35 0 2.45-1.1 2.45-2.45s-1.1-2.45-2.45-2.45c-1.35 0-2.45 1.1-2.45 2.45s1.1 2.45 2.45 2.45zm3.45-6.5c.8 0 1.55.2 2.2.55V5c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h9.5c-.55-.65-.87-1.5-.87-2.4 0-2.08 1.68-3.76 3.77-3.76 1.2 0 2.27.58 2.95 1.47V11.5c0-.66-.54-1.2-1.2-1.2h-7.3c-.85 0-1.54-.64-1.63-1.47V6.17c.09-.83.78-1.47 1.63-1.47h7.3c.85 0 1.53.64 1.63 1.47v1.93c.09.83.78 1.47 1.63 1.47h1.74z"/>
+                  </svg>
+                </div>
+                <h3 class="card-title bandwidth-title">超高带宽</h3>
+              </div>
+              <div class="card-content">
+                大语言模型训练涉及PB级数据集，要求：<br>
+                • 单节点带宽：<span class="highlight bandwidth-highlight">≥50 GB/s</span><br>
+                • 集群总带宽：<span class="highlight bandwidth-highlight">≥2.5 TB/s</span><br>
+                满足大规模分布式训练的高并发数据需求
+              </div>
+            </div>
+            
+            <div class="requirement-card">
+              <div class="card-header">
+                <div class="card-icon latency-icon">
+                  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M13 5.08c3.06.44 5.48 2.86 5.92 5.92h3.03c-.47-4.72-4.23-8.48-8.95-8.95v3.03zM18.92 13c-.44 3.06-2.86 5.48-5.92 5.92v3.03c4.72-.47 8.48-4.23 8.95-8.95h-3.03zM11 18.92c-3.39-.49-6-3.4-6-6.92s2.61-6.43 6-6.92V2.05c-5.05.5-9 4.76-9 9.95 0 5.19 3.95 9.45 9 9.95v-3.03z"/>
+                  </svg>
+                </div>
+                <h3 class="card-title latency-title">超低延迟</h3>
+              </div>
+              <div class="card-content">
+                支持<span class="highlight latency-highlight">GPUDirect Storage</span>技术<br>
+                • 通过RDMA直接从存储到H100 GPU内存<br>
+                • 减少CPU开销，优化数据访问路径<br>
+                • 实现微秒级延迟，加速模型训练
+              </div>
+            </div>
+            
+            <div class="requirement-card">
+              <div class="card-header">
+                <div class="card-icon capacity-icon">
+                  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M2 20h20v-4H2v4zm2-3h2v2H4v-2zM2 4v4h20V4H2zm4 3H4V5h2v2zm-4 7h20v-4H2v4zm2-3h2v2H4v-2z"/>
+                  </svg>
+                </div>
+                <h3 class="card-title capacity-title">超大容量</h3>
+              </div>
+              <div class="card-content">
+                支持<span class="highlight capacity-highlight">3-10 PB</span>存储容量<br>
+                • 适应大规模LLM训练数据集需求<br>
+                • 满足模型检查点存储需求（TB级）<br>
+                • 支持数据集和模型版本管理
+              </div>
+            </div>
+            
+            <div class="requirement-card">
+              <div class="card-header">
+                <div class="card-icon scalability-icon">
+                  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M23 17c0 3.31-2.69 6-6 6v-1.5c2.48 0 4.5-2.02 4.5-4.5H23zM1 7c0-3.31 2.69-6 6-6v1.5C4.52 2.5 2.5 4.52 2.5 7H1zm8 13c-2.48 0-4.5-2.02-4.5-4.5S6.52 11 9 11s4.5 2.02 4.5 4.5S11.48 20 9 20zm7.5-13c0 2.48-2.02 4.5-4.5 4.5S7.5 9.48 7.5 7 9.52 2.5 12 2.5s4.5 2.02 4.5 4.5zM9 12.5c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3zm3-7c0-1.66-1.34-3-3-3S6 3.84 6 5.5 7.34 8.5 9 8.5s3-1.34 3-3zM21 3h-6v1.5h6V3zm-6 18h6v-1.5h-6V21z"/>
+                  </svg>
+                </div>
+                <h3 class="card-title scalability-title">可扩展性</h3>
+              </div>
+              <div class="card-content">
+                支持<span class="highlight scalability-highlight">320节点</span>的高并发访问<br>
+                • 具备向更大规模集群扩展的能力<br>
+                • 线性扩展性能，无性能衰减<br>
+                • 支持动态资源分配和优化
+              </div>
+            </div>
+          </div>
+          
+          <!-- 第二行：3个卡片 -->
+          <div class="bottom-row">
+            <div class="requirement-card bottom-card">
+              <div class="card-header">
+                <div class="card-icon availability-icon">
+                  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/>
+                  </svg>
+                </div>
+                <h3 class="card-title availability-title">高可用性</h3>
+              </div>
+              <div class="card-content">
+                采用<span class="highlight availability-highlight">冗余设计</span><br>
+                • 支持纠删码或RAID 6配置<br>
+                • 确保硬件故障不中断训练<br>
+                • 数据完整性保障机制
+              </div>
+            </div>
+            
+            <div class="requirement-card bottom-card">
+              <div class="card-header">
+                <div class="card-icon compatibility-icon">
+                  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/>
+                  </svg>
+                </div>
+                <h3 class="card-title compatibility-title">兼容性</h3>
+              </div>
+              <div class="card-content">
+                与NVIDIA生态系统<span class="highlight compatibility-highlight">无缝集成</span><br>
+                • InfiniBand NDR 400Gb/s网络<br>
+                • NVLink 4.0高速互联<br>
+                • Magnum IO软件栈支持
+              </div>
+            </div>
+            
+            <div class="requirement-card bottom-card">
+              <div class="card-header">
+                <div class="card-icon management-icon">
+                  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/>
+                  </svg>
+                </div>
+                <h3 class="card-title management-title">数据管理</h3>
+              </div>
+              <div class="card-content">
+                支持<span class="highlight management-highlight">分布式文件系统</span><br>
+                • Lustre、WEKA或BeeGFS等<br>
+                • 实时I/O监控和优化工具<br>
+                • 高效的数据分发机制
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="company-name">北京正阳恒卓科技有限公司</div>
+        <div class="page-number">21</div>
+      </div>
+    </div>
+  </div>
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+        <a href="index3.7.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+        <a href="index3.8.2.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+    </div>
+</body>
+</html>

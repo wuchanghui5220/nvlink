@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DGX Spark中文文档</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #76b900; /* NVIDIA绿色 */
+            color: white;
+            padding: 15px 20px;
+            margin-bottom: 30px;
+            border-radius: 5px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        h2 {
+            color: #76b900;
+            border-bottom: 2px solid #76b900;
+            padding-bottom: 5px;
+            margin-top: 30px;
+        }
+        .question {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        .answer {
+            margin-bottom: 20px;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f8f8f8;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .spec-category {
+            font-weight: bold;
+            color: #76b900;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">DGX Spark</div>
+
+    <h2>什么是DGX Spark？</h2>
+    <div class="answer">
+        NVIDIA DGX Spark属于为AI时代创建的新型计算机。DGX Spark从底层设计用于构建和运行AI，是AI开发人员的理想平台，这些开发人员由于内存不足或缺乏其工作负载所需的最佳软件堆栈访问权限，常常需要在公有云或私有云上工作。
+    </div>
+
+    <h2>DGX Spark的主要特点是什么？</h2>
+    <div class="answer">
+        <ul>
+            <li>由GB10超级芯片提供动力</li>
+            <li>使用FP4提供1,000 TOPS的AI性能</li>
+            <li>配备第五代Tensor Core技术的NVIDIA Blackwell GPU</li>
+            <li>NVIDIA Grace CPU实现，采用20核高性能Arm架构</li>
+            <li>128 GB的一致性统一内存</li>
+            <li>高达4 TB的NVMe存储</li>
+            <li>支持参数量高达200B的大型语言模型</li>
+            <li>通过NVIDIA Connect-X网络连接，可链接两个Project DIGITS单元，支持高达405B参数的模型</li>
+            <li>紧凑设计，占用最少的桌面空间</li>
+            <li>可插入标准墙壁插座</li>
+        </ul>
+    </div>
+
+    <h2>DGX Spark的规格是什么？</h2>
+    <div class="answer">
+        <p>初步信息，可能变更：</p>
+        
+        <table>
+            <tr>
+                <th colspan="2">计算性能</th>
+            </tr>
+            <tr>
+                <td class="spec-category">Blackwell GPU</td>
+                <td>高达1,000 AI TOPS FP4</td>
+            </tr>
+            <tr>
+                <td class="spec-category">Tensor Cores</td>
+                <td>第5代</td>
+            </tr>
+            <tr>
+                <td class="spec-category">RT Cores</td>
+                <td>第4代</td>
+            </tr>
+            <tr>
+                <td class="spec-category">CUDA Cores</td>
+                <td>Blackwell世代</td>
+            </tr>
+            <tr>
+                <td class="spec-category">Grace CPU</td>
+                <td>10个性能核心（P-Cores）Cortex-X925 + 10个能效核心（E-Cores）Cortex-A725</td>
+            </tr>
+            <tr>
+                <th colspan="2">内存与存储</th>
+            </tr>
+            <tr>
+                <td class="spec-category">NVLink-C2C</td>
+                <td>芯片到芯片互连带宽是PCIe 5的5倍</td>
+            </tr>
+            <tr>
+                <td class="spec-category">内存</td>
+                <td>128GB一致性统一LPDDR5X低功耗内存</td>
+            </tr>
+            <tr>
+                <td class="spec-category">内存带宽</td>
+                <td>273 GB/s</td>
+            </tr>
+            <tr>
+                <td class="spec-category">存储</td>
+                <td>高达4TB SSD存储</td>
+            </tr>
+            <tr>
+                <th colspan="2">连接与接口</th>
+            </tr>
+            <tr>
+                <td class="spec-category">网络连接</td>
+                <td>10-GbE（RJ-45）和Connect-X（x 2 QSFP）</td>
+            </tr>
+            <tr>
+                <td class="spec-category">显示</td>
+                <td>HDMI 2.1</td>
+            </tr>
+            <tr>
+                <td class="spec-category">网卡</td>
+                <td>ConnectX-7 SmartNIC</td>
+            </tr>
+            <tr>
+                <td class="spec-category">USB</td>
+                <td>4个USB Type C</td>
+            </tr>
+            <tr>
+                <td class="spec-category">WiFi</td>
+                <td>WiFi-7</td>
+            </tr>
+            <tr>
+                <td class="spec-category">蓝牙</td>
+                <td>BT 5.3</td>
+            </tr>
+            <tr>
+                <td class="spec-category">音频输出</td>
+                <td>HDMI多通道音频输出</td>
+            </tr>
+            <tr>
+                <td class="spec-category">NVENC | NVDEC</td>
+                <td>1个 | 1个</td>
+            </tr>
+            <tr>
+                <th colspan="2">系统信息</th>
+            </tr>
+            <tr>
+                <td class="spec-category">操作系统</td>
+                <td>NVIDIA DGX OS</td>
+            </tr>
+            <tr>
+                <td class="spec-category">系统尺寸</td>
+                <td>150mm长 x 150mm宽 x 50.5mm高</td>
+            </tr>
+            <tr>
+                <td class="spec-category">重量</td>
+                <td>1.2kg</td>
+            </tr>
+        </table>
+    </div>
+    <div class="answer">
+	    <p>&nbsp; </p>
+    </div>
+    <h2>功率要求是多少？</h2>
+    <div class="answer">
+        DGX Spark可以通过标准墙壁插座供电。
+    </div>
+
+    <h2>什么是GB10 Grace Blackwell超级芯片？</h2>
+    <div class="answer">
+        GB10超级芯片是基于Grace Blackwell架构的片上系统，配备128GB统一内存。它在FP4精度下提供高达一petaflop的AI性能，配备最新第五代Tensor Core和RT Core技术的NVIDIA Blackwell GPU，以及由20个Arm核心构建的高性能Grace CPU。
+    </div>
+
+    <h2>GB10架构提供了哪些优势？</h2>
+    <div class="answer">
+        GB10架构允许企业和研究人员在本地DGX Spark系统上进行原型设计、微调和测试模型，并在数据中心或云端部署。这使得在保持开发和部署环境一致性的同时，能够高效地进行微调和推理工作负载。
+    </div>
+
+    <h2>GB10使用了哪些Arm核心？</h2>
+    <div class="answer">
+        <table>
+            <tr>
+                <th>核心类型</th>
+                <th>数量</th>
+                <th>型号</th>
+            </tr>
+            <tr>
+                <td>性能核心</td>
+                <td>10个</td>
+                <td>Cortex-X925</td>
+            </tr>
+            <tr>
+                <td>能效核心</td>
+                <td>10个</td>
+                <td>Cortex-A725</td>
+            </tr>
+        </table>
+    </div>
+    <div class="answer">
+	    <p>&nbsp; </p>
+    </div>
+
+    <h2>NVIDIA DGX Spark的各种用例是什么？</h2>
+    <div class="answer">
+        <p>DGX Spark设计用于AI开发工作负载，包括：</p>
+        <ul>
+            <li>原型设计</li>
+            <li>模型微调</li>
+            <li>推理</li>
+            <li>数据科学</li>
+        </ul>
+        <p>DGX Spark系统可以在以下配置中使用：</p>
+        <ul>
+            <li><strong>独立配置</strong>：直接连接显示器、键盘和鼠标</li>
+            <li><strong>无头配置</strong>：作为网络连接的计算设备，没有直接连接的显示器、鼠标或键盘</li>
+        </ul>
+    </div>
+
+    <h2>使用了什么Blackwell GPU？</h2>
+    <div class="answer">
+        1 PetaFLOP FP4 Blackwell GPU。
+    </div>
+
+    <h2>DGX Spark提供什么软件支持？</h2>
+    <div class="answer">
+        <p>DGX Spark预装DGX OS和额外的NVIDIA工具。DGX OS基于Ubuntu，与在其他DGX平台上运行的Linux发行版保持一致。</p>
+        <p>DGX Spark预装和/或支持大量用于开发的工具、框架、模型和软件。</p>
+        <p>DGX Spark用户可以免费注册NVIDIA开发者计划和NVIDIA NGC，以获取SDK、工具包、训练模型、工作流程等更多资源。</p>
+    </div>
+
+    <h2>DGX Spark有多少内存和存储？</h2>
+    <div class="answer">
+        <table>
+            <tr>
+                <th>配置</th>
+                <th>内存</th>
+                <th>存储</th>
+            </tr>
+            <tr>
+                <td>单个DGX Spark</td>
+                <td>128 GB一致性统一LPDDR5X内存</td>
+                <td>高达4 TB的NVMe存储</td>
+            </tr>
+            <tr>
+                <td>两个连接的DGX Spark</td>
+                <td>256 GB内存</td>
+                <td>高达8 TB总存储空间</td>
+            </tr>
+        </table>
+    </div>
+
+    <h2>它运行什么操作系统（OS）？</h2>
+    <div class="answer">
+        DGX Spark运行DGX OS，基于Ubuntu，与DGX平台上运行的OS发行版保持一致。
+    </div>
+
+    <h2>DGX Spark提供什么客户支持？</h2>
+    <div class="answer">
+        <table>
+            <tr>
+                <th>支持类型</th>
+                <th>提供方</th>
+                <th>详情</th>
+            </tr>
+            <tr>
+                <td>软件支持</td>
+                <td>NVIDIA开发者计划</td>
+                <td>广泛的软件支持、文档和开发者社区，提供丰富的社区支持</td>
+            </tr>
+            <tr>
+                <td>硬件支持</td>
+                <td>供应商</td>
+                <td>由设备供应商提供</td>
+            </tr>
+        </table>
+    </div>
+
+    <h2>哪些DGX Spark组件可由客户升级？（内存、存储、电源等）</h2>
+    <div class="answer">
+        客户可以在销售时选择可用的选项。我们目前不支持对DGX Spark进行升级。任何尝试篡改或更改组件的行为都将使保修失效。
+    </div>
+
+    <h2>DGX Spark套装支持两台设备的堆叠。是否计划支持额外的堆叠/集群？</h2>
+    <div class="answer">
+        我们目前支持使用经批准的QSFP电缆连接最多2台DGX Spark。
+    </div>
+</body>
+</html>

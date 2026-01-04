@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>NVIDIA GB200软件生态与应用场景</title>
+    <style>
+    /* NVIDIA GB200 PPT全局样式 */
+    body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(220, 240, 230, 0.8);
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+        }
+
+    .slide-container {
+            width: 96%;
+            max-width: 1600px;
+            aspect-ratio: 16/9;
+            background: #76a67e;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+    .header {
+        padding: 20px 40px;
+        background: rgba(0, 100, 0, 0.85);
+        color: white;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    h1 {
+        margin: 0;
+        font-size: 2.2em;
+        font-weight: 600;
+        letter-spacing: 1px;
+    }
+
+    h2 {
+        margin: 5px 0 0 0;
+        font-size: 1.3em;
+        font-weight: 400;
+        letter-spacing: 0.5px;
+    }
+
+    .content {
+        display: flex;
+        flex: 1;
+        padding: 20px;
+    }
+
+    .left-panel, .right-panel {
+        flex: 1;
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .panel-title {
+        font-size: 1.4em;
+        color: #005741;
+        margin-bottom: 15px;
+        font-weight: 600;
+    }
+
+    .chart-container {
+        flex: 1;
+        background: rgba(255, 255, 255, 0.5);
+        border-radius: 10px;
+        padding: 15px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        position: relative;
+    }
+
+    .key-points {
+        margin-top: 20px;
+        background: rgba(255, 255, 255, 0.5);
+        border-radius: 10px;
+        padding: 15px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .key-points ul {
+        margin: 0;
+        padding-left: 20px;
+    }
+
+    .key-points li {
+        margin-bottom: 8px;
+        color: #333;
+    }
+
+    .footer {
+        text-align: right;
+        padding: 10px 20px;
+        color: #005741;
+        font-style: italic;
+        font-size: 0.9em;
+    }
+
+    /* 悬停效果单独添加 */
+    .nav-button:hover {
+            background-color: #4a854c !important;
+            transform: scale(1.05);
+        }
+
+    .tooltip {
+        position: absolute;
+        padding: 8px 12px;
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        border-radius: 4px;
+        font-size: 12px;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+
+    .advantage-box {
+        background: rgba(255, 255, 255, 0.7);
+        border-radius: 8px;
+        margin-bottom: 10px;
+        padding: 10px;
+        border-left: 4px solid #009B77;
+    }
+
+    .advantage-title {
+        font-weight: bold;
+        color: #005741;
+        margin-bottom: 5px;
+    }
+
+    .advantage-desc {
+        font-size: 0.9em;
+        color: #333;
+    }
+
+    /* 动画效果 */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .left-panel, .right-panel {
+        animation: fadeIn 0.8s ease-out forwards;
+    }
+
+    .right-panel {
+        animation-delay: 0.3s;
+    }
+
+    .nav-dots {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        padding: 10px 0;
+    }
+
+    .nav-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: rgba(0, 87, 65, 0.3);
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+
+    .nav-dot.active {
+        background: rgba(0, 87, 65, 1);
+    }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="header">
+            <h1>NVIDIA GB200软件生态与应用场景</h1>
+            <h2>Mission Control智能控制平面与企业级AI应用</h2>
+        </div>
+        <div class="content">
+            <div class="left-panel">
+                <div class="panel-title">NVIDIA Mission Control架构</div>
+                <div class="chart-container" id="mission-control">
+                    <svg width="100%" height="100%" viewBox="0 0 500 350" preserveAspectRatio="xMidYMid meet">
+                        <!-- Mission Control架构图 -->
+                        <!-- 顶层标题 -->
+                        <text x="250" y="30" text-anchor="middle" font-size="16" font-weight="bold">AI工厂软件全栈</text>
+                        
+                        <!-- 顶层应用 -->
+                        <rect x="100" y="50" width="300" height="40" rx="5" ry="5" fill="#005741" stroke="#333" stroke-width="1"/>
+                        <text x="250" y="75" text-anchor="middle" font-size="16" fill="white">NVIDIA AI Enterprise</text>
+                        
+                        <!-- 中间层标题 -->
+                        <rect x="100" y="100" width="300" height="40" rx="5" ry="5" fill="#009B77" stroke="#333" stroke-width="1"/>
+                        <text x="250" y="125" text-anchor="middle" font-size="16" fill="white">NVIDIA Mission Control</text>
+                        
+                        <!-- 组件层 -->
+                        <!-- AI工作负载管理 -->
+                        <rect x="100" y="150" width="300" height="30" rx="5" ry="5" fill="rgba(0, 155, 119, 0.8)" stroke="#333" stroke-width="1"/>
+                        <text x="250" y="170" text-anchor="middle" font-size="14" fill="white">AI工作负载管理</text>
+                        <text x="420" y="170" text-anchor="start" font-size="10" fill="#333">无缝工作流编排-Run:ai技术</text>
+                        
+                        <!-- 自主恢复引擎 -->
+                        <rect x="100" y="185" width="300" height="30" rx="5" ry="5" fill="rgba(0, 155, 119, 0.7)" stroke="#333" stroke-width="1"/>
+                        <text x="250" y="205" text-anchor="middle" font-size="14" fill="white">自主恢复引擎</text>
+                        <text x="420" y="205" text-anchor="start" font-size="10" fill="#333">问题识别、隔离和恢复</text>
+                        
+                        <!-- 高级集群配置 -->
+                        <rect x="100" y="220" width="300" height="30" rx="5" ry="5" fill="rgba(0, 155, 119, 0.6)" stroke="#333" stroke-width="1"/>
+                        <text x="250" y="240" text-anchor="middle" font-size="14" fill="white">高级集群配置</text>
+                        <text x="420" y="240" text-anchor="start" font-size="10" fill="#333">面向AI的下一代集群管理</text>
+                        
+                        <!-- 遥测和可观测性 -->
+                        <rect x="100" y="255" width="300" height="30" rx="5" ry="5" fill="rgba(0, 155, 119, 0.5)" stroke="#333" stroke-width="1"/>
+                        <text x="250" y="275" text-anchor="middle" font-size="14" fill="white">遥测和可观测性</text>
+                        <text x="420" y="275" text-anchor="start" font-size="10" fill="#333">可自定义仪表板</text>
+                        
+                        <!-- 验证和诊断 -->
+                        <rect x="100" y="290" width="300" height="30" rx="5" ry="5" fill="rgba(0, 155, 119, 0.4)" stroke="#333" stroke-width="1"/>
+                        <text x="250" y="310" text-anchor="middle" font-size="14" fill="white">验证和诊断</text>
+                        <text x="420" y="310" text-anchor="start" font-size="10" fill="#333">按需健康检查</text>
+                        
+                        <!-- 底层 -->
+                        <rect x="100" y="325" width="300" height="30" rx="5" ry="5" fill="#333" stroke="#333" stroke-width="1"/>
+                        <text x="250" y="345" text-anchor="middle" font-size="14" fill="white">AI工厂基础设施</text>
+                        
+                        <!-- 左侧角色 -->
+                        <text x="80" y="100" text-anchor="end" font-size="12" fill="#333">AI实践者</text>
+                        <line x1="85" y1="110" x2="85" y2="240" stroke="#00A3E0" stroke-width="3"/>
+                        
+                        <text x="80" y="290" text-anchor="end" font-size="12" fill="#333">企业IT</text>
+                        <line x1="85" y1="300" x2="85" y2="340" stroke="#76B900" stroke-width="3"/>
+                    </svg>
+                </div>
+                <div class="key-points">
+                    <ul>
+                        <li>Mission Control提供全栈智能调度与运维能力</li>
+                        <li>自动化恢复机制可避免系统停机时间</li>
+                        <li>与NVIDIA AI Enterprise集成，提供完整软件堆栈</li>
+                        <li>支持NVIDIA NIM微服务用于最佳模型部署</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="right-panel">
+                <div class="panel-title">Blackwell超级计算性能优势</div>
+                <div class="chart-container" id="blackwell-performance">
+                    <svg width="100%" height="100%" viewBox="0 0 500 300" preserveAspectRatio="xMidYMid meet">
+                        <!-- 性能比较图表 -->
+                        <!-- 标题 -->
+                        <text x="250" y="30" text-anchor="middle" font-size="16" font-weight="bold">与H100相比的性能提升</text>
+                        
+                        <!-- 左侧：训练性能对比 -->
+                        <text x="120" y="60" text-anchor="middle" font-size="14" fill="#333">大型语言模型训练性能</text>
+                        
+                        <!-- 训练性能柱状图 -->
+                        <rect x="50" y="230" width="100" height="30" rx="5" ry="5" fill="rgba(0, 155, 119, 0.3)"/>
+                        <text x="100" y="250" text-anchor="middle" fill="#333" font-size="12">H100</text>
+                        <rect x="50" y="170" width="100" height="60" rx="5" ry="5" fill="rgba(0, 155, 119, 0.7)"/>
+                        <text x="100" y="200" text-anchor="middle" fill="white" font-size="12">Blackwell</text>
+                        <text x="100" y="215" text-anchor="middle" fill="white" font-size="12">3倍</text>
+                        <text x="60" y="150" text-anchor="start" fill="#333" font-size="12">GPT-MoE-1.8T模型</text>
+                        <text x="60" y="165" text-anchor="start" fill="#333" font-size="12">训练速度提升</text>
+                        
+                        <!-- 右侧：推理性能对比 -->
+                        <text x="380" y="60" text-anchor="middle" font-size="14" fill="#333">实时推理性能</text>
+                        
+                        <!-- 推理性能柱状图 -->
+                        <rect x="320" y="230" width="100" height="10" rx="5" ry="5" fill="rgba(0, 155, 119, 0.3)"/>
+                        <text x="370" y="255" text-anchor="middle" fill="#333" font-size="12">H100 (3.5 tokens/sec)</text>
+                        <rect x="320" y="80" width="100" height="150" rx="5" ry="5" fill="rgba(0, 155, 119, 0.7)"/>
+                        <text x="370" y="150" text-anchor="middle" fill="white" font-size="12">Blackwell</text>
+                        <text x="370" y="165" text-anchor="middle" fill="white" font-size="12">15倍</text>
+                        <text x="370" y="180" text-anchor="middle" fill="white" font-size="12">(58 tokens/sec)</text>
+                        <text x="330" y="95" text-anchor="start" fill="#333" font-size="12">每GPU实时吞吐量</text>
+                        
+                        <!-- 中间分隔线 -->
+                        <line x1="250" y1="70" x2="250" y2="260" stroke="#ccc" stroke-width="1" stroke-dasharray="5,5"/>
+                    </svg>
+                </div>
+                <div class="key-points">
+                    <ul>
+                        <li>Blackwell架构显著提升训练和推理性能</li>
+                        <li>DGX B200推理性能是DGX H100的15倍</li>
+                        <li>全新的第二代Transformer Engine进一步加速AI工作负载</li>
+                        <li>第四代Tensor Core支持FP4/FP6精度，优化推理性能</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="nav-dots">
+            <div class="nav-dot"></div>
+            <div class="nav-dot"></div>
+            <div class="nav-dot active"></div>
+        </div>
+        <div class="footer">
+            NVIDIA GB200 NVL系统 — 面向万亿参数级生成式AI的超级计算基础设施
+        </div>
+    </div>
+    
+    <script>
+        // 添加导航点的交互效果
+        document.querySelectorAll('.nav-dot').forEach((dot, index) => {
+            dot.addEventListener('click', () => {
+                document.querySelectorAll('.nav-dot').forEach(d => d.classList.remove('active'));
+                dot.classList.add('active');
+                // 这里可以添加切换页面的逻辑
+            });
+        });
+    </script>
+    <!-- 导航按钮 - 独立于主内容区 -->
+    <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+        <a href="index2.html" class="nav-button" style="display: inline-block; width: 40px; height: 40px; line-height: 40px; text-align: center; background-color: #3e703e; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+        <a href="index4.html" class="nav-button" style="display: inline-block; width: 40px; height: 40px; line-height: 40px; text-align: center; background-color: #3e703e; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+    </div>
+</body>
+</html>

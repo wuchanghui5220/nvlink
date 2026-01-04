@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>宁夏培训实操总结 - BIOS设置</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700;800&display=swap');
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 30%, #16213e 70%, #0f3460 100%);
+      font-family: 'Noto Sans SC', sans-serif;
+      overflow: hidden;
+    }
+
+    .slide-container {
+      width: 100vw;
+      height: 56.25vw;
+      max-height: 100vh;
+      max-width: 177.78vh;
+      position: relative;
+      background: #111827;
+      color: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    .animated-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(rgba(0, 162, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 162, 255, 0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      animation: grid-move 20s linear infinite;
+      z-index: 1;
+    }
+
+    @keyframes grid-move {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(40px, 40px); }
+    }
+
+    .content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    .header {
+      padding: 2% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(10px);
+      flex-shrink: 0;
+    }
+
+    .mobile-icon {
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(45deg, #00a2ff, #0078d4);
+      border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 700;
+      font-size: 18px;
+      transform: rotate(-5deg);
+    }
+
+    .company-text {
+      font-size: clamp(16px, 2vw, 20px);
+      font-weight: 600;
+      color: #00a2ff;
+    }
+
+    .project-badge {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 8px 20px;
+      border-radius: 25px;
+      font-size: clamp(12px, 1.4vw, 14px);
+      font-weight: 500;
+      backdrop-filter: blur(10px);
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      padding: 3% 4%;
+      overflow-y: auto;
+      min-height: 0;
+    }
+
+    .page-title {
+      font-size: clamp(24px, 3.5vw, 32px);
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 3%;
+      background: linear-gradient(135deg, #ffffff 0%, #00a2ff 50%, #4834d4 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .section {
+      margin-bottom: 4%;
+    }
+
+    .section-title {
+      font-size: clamp(18px, 2.2vw, 22px);
+      font-weight: 600;
+      color: #00a2ff;
+      margin-bottom: 2%;
+      border-left: 4px solid #00a2ff;
+      padding-left: 15px;
+    }
+
+    .setting-item {
+      margin-bottom: 2%;
+      padding: 15px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      border-left: 3px solid #ff6b6b;
+    }
+
+    .setting-title {
+      font-size: clamp(14px, 1.6vw, 16px);
+      font-weight: 500;
+      color: #ff6b6b;
+      margin-bottom: 8px;
+    }
+
+    .setting-desc {
+      font-size: clamp(12px, 1.4vw, 14px);
+      color: rgba(255, 255, 255, 0.8);
+      line-height: 1.4;
+      margin-bottom: 8px;
+    }
+
+    .cmd-block {
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(0, 162, 255, 0.3);
+      border-radius: 8px;
+      padding: 12px;
+      margin: 8px 0;
+      font-family: 'Consolas', 'Monaco', monospace;
+    }
+
+    .cmd-text {
+      font-size: clamp(10px, 1.2vw, 12px);
+      color: #00ff88;
+      line-height: 1.4;
+    }
+
+    .result-block {
+      background: rgba(255, 107, 107, 0.1);
+      border: 1px solid rgba(255, 107, 107, 0.3);
+      border-radius: 8px;
+      padding: 10px;
+      margin: 8px 0;
+      font-family: 'Consolas', 'Monaco', monospace;
+    }
+
+    .result-text {
+      font-size: clamp(9px, 1.1vw, 11px);
+      color: #ffaa88;
+      line-height: 1.3;
+    }
+
+    .warning-box {
+      background: rgba(255, 193, 7, 0.1);
+      border: 1px solid rgba(255, 193, 7, 0.5);
+      border-radius: 8px;
+      padding: 12px;
+      margin: 10px 0;
+    }
+
+    .warning-text {
+      font-size: clamp(11px, 1.3vw, 13px);
+      color: #ffc107;
+      line-height: 1.4;
+    }
+
+    .footer {
+      padding: 1.5% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+      flex-shrink: 0;
+    }
+
+    .page-info {
+      font-size: clamp(12px, 1.4vw, 14px);
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .nav-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .nav-btn {
+      padding: 8px 16px;
+      background: linear-gradient(135deg, #00a2ff, #0078d4);
+      color: white;
+      text-decoration: none;
+      border-radius: 20px;
+      font-size: clamp(10px, 1.2vw, 12px);
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .nav-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 162, 255, 0.4);
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <div class="animated-bg"></div>
+    
+    <div class="content">
+      <div class="header">
+        <div style="display: flex; align-items: center; gap: 20px;">
+          <div class="mobile-icon">移动</div>
+          <div class="company-text">中国移动宁夏公司</div>
+        </div>
+        <div class="project-badge">实操培训资料</div>
+      </div>
+
+      <div class="main-content">
+        <div class="page-title">BIOS设置配置</div>
+        
+        <div class="section">
+          <div class="section-title">1. 必要设置项目</div>
+          
+          <div class="setting-item">
+            <div class="setting-title">1. 启用 IOMMU / VT-d</div>
+            <div class="setting-desc">虚拟化和GPU直通必需功能</div>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-title">2. CPU 性能模式</div>
+            <div class="setting-desc">将CPU频率策略设置为性能模式以获得最佳性能</div>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-title">3. 关闭 ACS（Access Control Services）</div>
+            <div class="setting-desc">为了NVIDIA GPU和网卡的正常工作</div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">2. 验证命令</div>
+          
+          <div class="setting-item">
+            <div class="setting-title">检查 IOMMU 状态</div>
+            <div class="cmd-block">
+              <div class="cmd-text">dmesg | grep -i iommu</div>
+            </div>
+            <div class="result-block">
+              <div class="result-text">[ 11.287745] DMAR-IR: IOAPIC id 8 under DRHD base 0x9c3fc000 IOMMU 19<br>[ 16.839506] iommu: Default domain type: Translated<br>[ 16.839506] iommu: DMA domain TLB invalidation policy: lazy mode</div>
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-title">检查 CPU 频率信息</div>
+            <div class="cmd-block">
+              <div class="cmd-text">cpupower frequency-info</div>
+            </div>
+            <div class="result-block">
+              <div class="result-text">analyzing CPU 0:<br> driver: intel_pstate<br> CPUs which run at the same hardware frequency: 0<br> CPUs which need to have their frequency coordinated by software: 0<br> maximum transition latency: Cannot determine or is not supported<br> hardware limits: 800 MHz - 3.40 GHz<br> available cpufreq governors: performance powersave<br> current policy: frequency should be within 800 MHz and 3.40 GHz<br> The governor "powersave" may decide which speed to use within this range<br> current CPU frequency: Unable to call hardware<br> current CPU frequency: 768 MHz (asserted by call to kernel)</div>
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <div class="setting-title">检查 ACS 状态</div>
+            <div class="cmd-block">
+              <div class="cmd-text">lspci -vvv | grep ACSCtl</div>
+            </div>
+            <div class="warning-box">
+              <div class="warning-text">⚠️ 如果看到 SrcValid+ 等ACS功能启用，需要在BIOS中关闭或使用命令行禁用</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">3. 运行时关闭ACS（临时方案）</div>
+          
+          <div class="setting-item">
+            <div class="setting-title">查询并关闭 SrcValid+</div>
+            <div class="cmd-block">
+              <div class="cmd-text"># 查询当前ACS状态<br>lspci -vvv | grep ACSCtl | grep SrcValid+<br><br># 关闭SrcValid+<br>lspci -vvv | grep 'PCI bridge' | cut -d' ' -f 1 | xargs -I{} setpci -s {} ECAP_ACS+06.w=0000</div>
+            </div>
+            <div class="warning-box">
+              <div class="warning-text">⚠️ 此方法仅临时有效，重启后需重新执行。建议在BIOS中永久关闭ACS</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="page-info">第 3 页 / 共 12 页</div>
+        <div class="nav-buttons">
+          <a href="Practical_02.html" class="nav-btn">← 上一页</a>
+          <a href="Practical_04.html" class="nav-btn">下一页 →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

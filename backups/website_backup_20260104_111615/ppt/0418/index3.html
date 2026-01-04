@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>InfiniBand技术演进：从HDR到XDR</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, rgba(175, 233, 207, 0.8) 0%, rgba(145, 210, 185, 0.8) 100%);
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+        }
+
+        .slide-container {
+            width: 90%;
+            height: 85%;
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            padding: 20px 40px;
+            background: rgba(0, 118, 82, 0.85);
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2.2em;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        h2 {
+            margin: 5px 0 0 0;
+            font-size: 1.3em;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+        }
+
+        .content {
+            display: flex;
+            flex: 1;
+            padding: 20px;
+        }
+
+        .left-panel, .right-panel {
+            flex: 1;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-title {
+            font-size: 1.4em;
+            color: #005741;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .chart-container {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .key-points {
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .key-points ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .key-points li {
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .footer {
+            text-align: right;
+            padding: 10px 20px;
+            color: #005741;
+            font-style: italic;
+            font-size: 0.9em;
+        }
+
+        .tooltip {
+            position: absolute;
+            padding: 8px 12px;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border-radius: 4px;
+            font-size: 12px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .advantage-box {
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-left: 4px solid #009B77;
+        }
+
+        .advantage-title {
+            font-weight: bold;
+            color: #005741;
+            margin-bottom: 5px;
+        }
+
+        .advantage-desc {
+            font-size: 0.9em;
+            color: #333;
+        }
+
+        /* 动画效果 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .left-panel, .right-panel {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
+        .right-panel {
+            animation-delay: 0.3s;
+        }
+
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 10px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .legend-color {
+            width: 15px;
+            height: 15px;
+            margin-right: 8px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="header">
+            <h1>InfiniBand技术演进：从HDR到XDR</h1>
+            <h2>NVIDIA InfiniBand智算中心组网创新与Quantum-X800高性能交换解决方案</h2>
+        </div>
+        <div class="content">
+            <div class="left-panel">
+                <div class="panel-title">InfiniBand速率发展历程</div>
+                <div class="chart-container" id="infiniband-evolution">
+                    <svg width="100%" height="100%" viewBox="0 0 500 350" preserveAspectRatio="xMidYMid meet">
+                        <!-- Background -->
+                        <rect x="0" y="0" width="500" height="350" fill="rgba(255,255,255,0.3)" rx="10"/>
+                        
+                        <!-- Simplified timeline at the top with no circles -->
+                        <line x1="100" y1="70" x2="400" y2="70" stroke="#666" stroke-width="3" stroke-linecap="round"/>
+                        
+                        <!-- Speed labels -->
+                        <text x="140" y="45" text-anchor="middle" font-size="18" font-weight="bold" fill="#005741">200Gb/s</text>
+                        <text x="270" y="45" text-anchor="middle" font-size="18" font-weight="bold" fill="#005741">400Gb/s</text>
+                        <text x="400" y="45" text-anchor="middle" font-size="18" font-weight="bold" fill="#005741">800Gb/s</text>
+                        
+                        <!-- Version text -->
+                        <text x="140" y="90" text-anchor="middle" font-size="20" fill="#005741" font-weight="bold" stroke="#fff" stroke-width="0.5">HDR</text>
+                        <text x="270" y="90" text-anchor="middle" font-size="20" fill="#005741" font-weight="bold" stroke="#fff" stroke-width="0.5">NDR</text>
+                        <text x="400" y="90" text-anchor="middle" font-size="20" fill="#005741" font-weight="bold" stroke="#fff" stroke-width="0.5">XDR</text>
+                        
+                        <!-- Year labels -->
+                        <text x="140" y="120" text-anchor="middle" font-size="16" fill="#333" font-weight="bold">2019</text>
+                        <text x="270" y="120" text-anchor="middle" font-size="16" fill="#333" font-weight="bold">2022</text>
+                        <text x="400" y="120" text-anchor="middle" font-size="16" fill="#333" font-weight="bold">2024</text>
+                        
+                        <!-- Main chart title -->
+                        <text x="250" y="150" text-anchor="middle" font-size="22" font-weight="bold" fill="#333">每一代性能提升</text>
+                        
+                        <!-- Category labels - larger and more prominent -->
+                        <text x="125" y="180" text-anchor="middle" font-size="18" fill="#005741" font-weight="bold">带宽</text>
+                        <text x="250" y="180" text-anchor="middle" font-size="18" fill="#005741" font-weight="bold">延迟</text>
+                        <text x="375" y="180" text-anchor="middle" font-size="18" fill="#005741" font-weight="bold">端口密度</text>
+                        
+                        <!-- Bandwidth bars -->
+                        <!-- HDR (Light Green) -->
+                        <rect x="90" y="310" width="25" height="20" fill="#6FBE9F" opacity="0.9"/>
+                        <text x="102" y="324" text-anchor="middle" font-size="14" fill="white" font-weight="bold" stroke="#005741" stroke-width="0.2">1x</text>
+                        
+                        <!-- NDR (Medium Green) -->
+                        <rect x="120" y="250" width="25" height="80" fill="#41A77A" opacity="0.9"/>
+                        <text x="132" y="290" text-anchor="middle" font-size="14" fill="white" font-weight="bold" stroke="#005741" stroke-width="0.2">2x</text>
+                        
+                        <!-- XDR (Dark Green) -->
+                        <rect x="150" y="190" width="25" height="140" fill="#009B77" opacity="0.9"/>
+                        <text x="162" y="260" text-anchor="middle" font-size="14" fill="white" font-weight="bold" stroke="#005741" stroke-width="0.2">4x</text>
+                        
+                        <!-- Latency bars -->
+                        <!-- HDR (Light Green) -->
+                        <rect x="215" y="310" width="25" height="20" fill="#6FBE9F" opacity="0.9"/>
+                        <text x="227" y="324" text-anchor="middle" font-size="14" fill="white" font-weight="bold" stroke="#005741" stroke-width="0.2">1x</text>
+                        
+                        <!-- NDR (Medium Green) -->
+                        <rect x="245" y="265" width="25" height="65" fill="#41A77A" opacity="0.9"/>
+                        <text x="257" y="300" text-anchor="middle" font-size="14" fill="white" font-weight="bold" stroke="#005741" stroke-width="0.2">1.5x</text>
+                        
+                        <!-- XDR (Dark Green) -->
+                        <rect x="275" y="220" width="25" height="110" fill="#009B77" opacity="0.9"/>
+                        <text x="287" y="275" text-anchor="middle" font-size="14" fill="white" font-weight="bold" stroke="#005741" stroke-width="0.2">2x</text>
+                        
+                        <!-- Port Density bars -->
+                        <!-- HDR (Light Green) -->
+                        <rect x="340" y="310" width="25" height="20" fill="#6FBE9F" opacity="0.9"/>
+                        <text x="352" y="324" text-anchor="middle" font-size="14" fill="white" font-weight="bold" stroke="#005741" stroke-width="0.2">1x</text>
+                        
+                        <!-- NDR (Medium Green) -->
+                        <rect x="370" y="265" width="25" height="65" fill="#41A77A" opacity="0.9"/>
+                        <text x="382" y="300" text-anchor="middle" font-size="14" fill="white" font-weight="bold" stroke="#005741" stroke-width="0.2">1.5x</text>
+                        
+                        <!-- XDR (Dark Green) -->
+                        <rect x="400" y="200" width="25" height="130" fill="#009B77" opacity="0.9"/>
+                        <text x="412" y="265" text-anchor="middle" font-size="14" fill="white" font-weight="bold" stroke="#005741" stroke-width="0.2">2.5x</text>
+                    </svg>
+                    
+                    <div class="legend">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #6FBE9F;"></div>
+                            <span>HDR (200Gb/s)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #41A77A;"></div>
+                            <span>NDR (400Gb/s)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background-color: #009B77;"></div>
+                            <span>XDR (800Gb/s)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="right-panel">
+                <div class="panel-title">技术代际特点与应用场景</div>
+                <div class="chart-container">
+                    <div class="advantage-box">
+                        <div class="advantage-title">HDR (200Gb/s) 适合中小规模AI推理和训练</div>
+                        <div class="advantage-desc" style="padding: 0;">
+                            <ul style="margin: 8px 0; padding-left: 20px;">
+                                <li>单交换机支持40个200G端口，超低延时</li>
+                                <li>SHARP v2技术加速集合通信</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="advantage-box">
+                        <div class="advantage-title">NDR (400Gb/s) 满足大规模AI需求</div>
+                        <div class="advantage-desc" style="padding: 0;">
+                            <ul style="margin: 8px 0; padding-left: 20px;">
+                                <li>单交换机支持64个端口</li>
+                                <li>SHARP v3技术加速集合通信</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="advantage-box">
+                        <div class="advantage-title">XDR (800Gb/s) 适合超大规模AI模型</div>
+                        <div class="advantage-desc" style="padding: 0;">
+                            <ul style="margin: 8px 0; padding-left: 20px;">
+                                <li>Q3400单交换机144个端口，Q3200单交换机72个端口</li>
+                                <li>SHARP v4与优化的拥塞控制算法提升网络效率</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="key-points">
+                    <ul>
+                        <li>端口密度提升降低了每比特带宽成本，提高投资回报</li>
+                        <li>延迟降低提高了大规模分布式训练的可扩展性</li>
+                        <li>InfiniBand网络设备向下兼容，支持平滑升级路径</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            NVIDIA InfiniBand智算中心组网创新与Quantum-X800高性能交换解决方案
+        </div>
+    </div>
+</body>
+</html>

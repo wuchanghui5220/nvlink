@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>北京正阳恒卓科技有限公司 - 业务与服务</title>
+    <style>
+        :root {
+            --primary-color: #76a67e;
+            --primary-glow-color: rgba(34, 197, 94, 0.4);
+            --bg-gradient: linear-gradient(135deg, #0c4a3e 0%, #134e4a 25%, #065f46 50%, #047857 75%, #059669 100%);
+            --card-bg-color: rgba(255, 255, 255, 0.1);
+            --card-border-color: rgba(76, 166, 126, 0.3);
+            --text-color-primary: #fff;
+            --text-color-secondary: rgba(255, 255, 255, 0.85);
+            --text-color-muted: rgba(255, 255, 255, 0.7);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'WenQuanYi Micro Hei', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-color-primary);
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .slide-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            background: var(--bg-gradient);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            padding: 40px 60px;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .slide-container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background:
+                radial-gradient(circle at 15% 85%, rgba(34, 197, 94, 0.15) 0%, transparent 40%),
+                radial-gradient(circle at 85% 15%, rgba(16, 185, 129, 0.12) 0%, transparent 40%);
+            animation: pulseLight 20s ease-in-out infinite alternate;
+            z-index: 1;
+        }
+
+        @keyframes pulseLight {
+            from { opacity: 0.3; }
+            to { opacity: 0.9; }
+        }
+        
+        /* 装饰元素与导航按钮样式 */
+        .decorative-elements {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            z-index: 2; pointer-events: none;
+        }
+        .corner-decoration {
+            position: absolute; width: 150px; height: 150px;
+            border: 2px solid rgba(34, 197, 94, 0.4);
+        }
+        .corner-decoration.top-left { top: 30px; left: 30px; border-right: none; border-bottom: none; }
+        .corner-decoration.top-right { top: 30px; right: 30px; border-left: none; border-bottom: none; }
+        .corner-decoration.bottom-left { bottom: 30px; left: 30px; border-right: none; border-top: none; }
+        .corner-decoration.bottom-right { bottom: 30px; right: 30px; border-left: none; border-top: none; }
+
+        .page-indicator, .nav-controls { z-index: 15; }
+        .page-indicator {
+            position: absolute; bottom: 40px; right: 40px;
+            font-size: 18px; color: var(--text-color-secondary);
+        }
+        .page-indicator .slide-number { font-weight: 700; color: var(--primary-color); }
+        .nav-controls {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            font-size: 48px; color: rgba(255, 255, 255, 0.6);
+            cursor: pointer; user-select: none; transition: all 0.3s ease;
+            padding: 20px;
+        }
+        .nav-controls:hover { color: var(--primary-color); transform: translateY(-50%) scale(1.2); }
+        .nav-prev { left: 30px; }
+        .nav-next { right: 30px; opacity: 0.5; cursor: not-allowed; }
+
+        /* 主要内容区 */
+        .main-content {
+            z-index: 10;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .header-section {
+            text-align: center;
+            opacity: 0;
+            animation: slideInUp 0.8s ease-out forwards;
+        }
+
+        .page-title {
+            font-size: clamp(2.2rem, 4vw, 2.8rem);
+            font-weight: 700;
+            background: linear-gradient(135deg, #ffffff 0%, var(--primary-color) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+
+        .page-subtitle {
+            font-size: clamp(1rem, 1.5vw, 1.1rem);
+            color: var(--text-color-secondary);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .content-grid {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: auto 1fr;
+            gap: 20px;
+            height: calc(100% - 100px); /* 减去header的高度和gap */
+        }
+        
+        .card {
+            background: var(--card-bg-color);
+            border: 1px solid var(--card-border-color);
+            border-radius: 20px;
+            backdrop-filter: blur(12px);
+            padding: 25px;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            opacity: 0;
+            animation: slideInUp 0.8s ease-out forwards;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            border-color: var(--primary-color);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+
+        .card-title {
+            font-size: clamp(1.2rem, 2vw, 1.5rem);
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        /* 主卡片：技术服务与解决方案 */
+        .main-card {
+            grid-column: 1 / 3;
+            grid-row: 1 / 3;
+            animation-delay: 0.2s;
+            gap: 25px;
+        }
+
+        .service-section, .solution-section {
+            flex: 1;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--card-border-color);
+        }
+        
+        .service-list { list-style: none; }
+        .service-item {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 12px;
+        }
+        .service-item-icon {
+            font-size: 1.5rem; color: var(--primary-color);
+            min-width: 30px; text-align: center; margin-top: 2px;
+        }
+        .service-item-text .title {
+            font-weight: 600; font-size: 0.95rem; margin-bottom: 4px;
+        }
+        .service-item-text .desc {
+            font-size: 0.85rem; color: var(--text-color-secondary); line-height: 1.5;
+        }
+
+        .solution-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .solution-item {
+            background: rgba(0,0,0,0.2);
+            padding: 20px 15px;
+            border-radius: 12px;
+            text-align: center;
+            border: 1px solid transparent;
+            transition: all 0.3s ease;
+        }
+        .solution-item:hover {
+            background: rgba(76, 166, 126, 0.2);
+            border-color: var(--primary-color);
+            transform: translateY(-5px);
+        }
+        .solution-item .icon { font-size: 2.2rem; margin-bottom: 12px; }
+        .solution-item .title { font-size: 1rem; font-weight: 600; margin-bottom: 5px; }
+        .solution-item .desc { font-size: 0.8rem; color: var(--text-color-muted); line-height: 1.4; }
+
+        /* 右侧卡片 */
+        .side-card {
+            grid-column: 3 / 4;
+            grid-row: 1 / 3;
+            animation-delay: 0.4s;
+            justify-content: space-around;
+        }
+        .partner-section, .team-section, .recognition-section {
+            padding: 15px 0;
+        }
+
+        .partner-badges { display: flex; flex-direction: column; gap: 10px; }
+        .badge {
+            background: rgba(255,255,255,0.1); padding: 12px 15px;
+            border-radius: 10px; border: 1px solid var(--card-border-color);
+        }
+        .badge .level { font-size: 0.95rem; font-weight: 700; color: var(--primary-color); }
+        .badge .desc { font-size: 0.8rem; color: var(--text-color-secondary); margin-top: 4px; }
+        .team-desc, .recognition-list {
+            font-size: 0.9rem; color: var(--text-color-secondary); line-height: 1.6;
+        }
+        .recognition-list { list-style-position: inside; padding-left: 5px; }
+        .recognition-list li { margin-bottom: 8px; }
+
+        /* 动画 */
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto;
+                height: auto;
+                overflow-y: auto;
+                padding-bottom: 80px;
+            }
+            .main-card, .side-card { grid-column: auto; grid-row: auto; }
+        }
+        @media (max-width: 768px) {
+            .slide-container { padding: 30px; }
+            .card { padding: 20px; }
+            .nav-controls { bottom: 20px; top: auto; transform: none; }
+            .nav-prev { left: 20px; }
+            .nav-next { right: 20px; }
+            .service-item { flex-direction: column; align-items: flex-start; text-align: left; }
+            .service-item-icon { margin-bottom: 8px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div class="decorative-elements">
+            <div class="corner-decoration top-left"></div>
+            <div class="corner-decoration top-right"></div>
+            <div class="corner-decoration bottom-left"></div>
+            <div class="corner-decoration bottom-right"></div>
+        </div>
+
+        <div class="main-content">
+            <header class="header-section">
+                <h1 class="page-title">业务与服务体系</h1>
+                <p class="page-subtitle">我们致力于成为客户在数字化转型过程中值得信赖的技术合作伙伴</p>
+            </header>
+
+            <div class="content-grid">
+                <div class="card main-card">
+                    <div class="service-section">
+                        <h2 class="card-title" style="text-align: left; margin-bottom: 15px;">贯穿项目全周期的技术服务</h2>
+                        <ul class="service-list">
+                            <li class="service-item">
+                                <div class="service-item-icon">🧭</div>
+                                <div class="service-item-text">
+                                    <div class="title">前期规划与设计</div>
+                                    <div class="desc">根据客户具体需求，进行计算集群的规模评估和整体架构设计。</div>
+                                </div>
+                            </li>
+                            <li class="service-item">
+                                <div class="service-item-icon">⚙️</div>
+                                <div class="service-item-text">
+                                    <div class="title">集成部署</div>
+                                    <div class="desc">负责软硬件的系统集成、安装调试与一体化交付。</div>
+                                </div>
+                            </li>
+                             <li class="service-item">
+                                <div class="service-item-icon">⚡️</div>
+                                <div class="service-item-text">
+                                    <div class="title">性能优化</div>
+                                    <div class="desc">通过对系统配置进行深度调优，充分发挥硬件平台的计算潜能。</div>
+                                </div>
+                            </li>
+                            <li class="service-item">
+                                <div class="service-item-icon">🛡️</div>
+                                <div class="service-item-text">
+                                    <div class="title">后期运维支持</div>
+                                    <div class="desc">提供安全监控、版本升级、故障诊断与排除等长期运维服务。</div>
+                                </div>
+                            </li>
+                             <li class="service-item">
+                                <div class="service-item-icon">🎓</div>
+                                <div class="service-item-text">
+                                    <div class="title">增值服务</div>
+                                    <div class="desc">提供技术培训，并自主研发智能化运维软件，提升系统管理效率。</div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="solution-section">
+                        <h2 class="card-title" style="text-align: left; margin-bottom: 15px;">核心解决方案</h2>
+                         <div class="solution-grid">
+                            <div class="solution-item">
+                                <div class="icon">🚀</div>
+                                <div class="title">高性能计算</div>
+                                <div class="desc">基于NVIDIA平台的HPC解决方案</div>
+                            </div>
+                            <div class="solution-item">
+                                <div class="icon">🧠</div>
+                                <div class="title">AI深度学习</div>
+                                <div class="desc">人工智能深度学习平台构建与优化</div>
+                            </div>
+                            <div class="solution-item">
+                                <div class="icon">🌐</div>
+                                <div class="title">数据中心网络</div>
+                                <div class="desc">企业级数据中心网络优化方案</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card side-card">
+                    <div class="partner-section">
+                         <h2 class="card-title">NVIDIA 战略合作</h2>
+                         <div class="partner-badges">
+                             <div class="badge">
+                                <div class="level">Networking 精英级合作伙伴</div>
+                                <div class="desc">NVIDIA合作体系中的最高级别</div>
+                             </div>
+                             <div class="badge">
+                                <div class="level">Compute 注册级合作伙伴</div>
+                                <div class="desc">获得前沿技术与产品支持</div>
+                             </div>
+                         </div>
+                    </div>
+                    <div class="team-section">
+                        <h2 class="card-title">核心团队实力</h2>
+                        <p class="team-desc">
+                            拥有超过50名员工，核心为经验丰富的工程师团队，在HPC、深度学习平台构建及数据中心网络技术领域具备深厚专业背景。
+                        </p>
+                    </div>
+                     <div class="recognition-section">
+                        <h2 class="card-title">社会与行业认可</h2>
+                        <ul class="recognition-list">
+                            <li>连续3年获评“A级纳税人”</li>
+                            <li>中国投资协会大中型企业投资专业委员会成员</li>
+                            <li>北京自然资源资产协会成员单位</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="page-indicator">
+            <span class="slide-number">02</span> / 02
+        </div>
+
+        <div class="nav-controls nav-prev" onclick="window.location.href='new_page1.html'">‹</div>
+        <div class="nav-controls nav-next">›</div>
+    </div>
+    <script>
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowLeft') {
+                window.location.href = 'new_page1.html';
+            }
+        });
+    </script>
+</body>
+</html>

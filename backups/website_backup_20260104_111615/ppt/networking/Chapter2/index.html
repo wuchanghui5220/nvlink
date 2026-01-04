@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第二章：IB网络拓扑规划 - NVIDIA Networking 基础培训</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #ffffff 0%, #f1f8ff 50%, #f0f9f4 100%);
+            color: #2c3e50;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* 装饰元素 - 右上角圆点网格 */
+        .decoration-dots {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            width: 10px;
+            height: 10px;
+            background: #3b82f6;
+            border-radius: 50%;
+            opacity: 0.6;
+            box-shadow:
+                20px 0 0 rgba(59, 130, 246, 0.5),
+                40px 0 0 rgba(59, 130, 246, 0.4),
+                0 20px 0 rgba(59, 130, 246, 0.4),
+                20px 20px 0 rgba(59, 130, 246, 0.3),
+                40px 20px 0 rgba(59, 130, 246, 0.25),
+                0 40px 0 rgba(59, 130, 246, 0.3),
+                20px 40px 0 rgba(59, 130, 246, 0.2),
+                40px 40px 0 rgba(59, 130, 246, 0.15);
+        }
+
+        /* 装饰元素 - 左下角几何方框 */
+        .decoration-boxes {
+            position: absolute;
+            bottom: 40px;
+            left: 40px;
+            width: 60px;
+            height: 60px;
+            border: 3px solid #22c55e;
+            transform: rotate(15deg);
+            opacity: 0.4;
+        }
+
+        .decoration-boxes::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            width: 40px;
+            height: 40px;
+            border: 3px solid #22c55e;
+            opacity: 0.6;
+        }
+
+        .decoration-boxes::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            right: -8px;
+            width: 30px;
+            height: 30px;
+            border: 3px solid #22c55e;
+            opacity: 0.3;
+        }
+
+        /* 紧凑型页眉 */
+        .slide-header {
+            display: flex;
+            align-items: center;
+            padding: 20px 60px;
+            gap: 20px;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.15);
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        .nvidia-logo svg {
+            height: 30px;
+            width: auto;
+        }
+
+        .title-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .main-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #1e40af, #3b82f6, #22c55e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 0.85rem;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .breadcrumb {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .breadcrumb a {
+            color: #3b82f6;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .breadcrumb a:hover {
+            color: #1e40af;
+        }
+
+        /* 主内容区 */
+        .main-content {
+            padding: 50px 80px;
+            height: calc(100vh - 180px);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chapter-intro {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .chapter-number {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #3b82f6;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+
+        .chapter-title {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #1e40af, #3b82f6, #22c55e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+        }
+
+        .chapter-desc {
+            font-size: 1.1rem;
+            color: #64748b;
+            line-height: 1.6;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        /* 卡片网格 */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            max-width: 1200px;
+            width: 100%;
+        }
+
+        .topic-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 35px 30px;
+            border: 1px solid rgba(59, 130, 246, 0.15);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .topic-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #22c55e);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .topic-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 35px rgba(59, 130, 246, 0.2);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .topic-card:hover::before {
+            opacity: 1;
+        }
+
+        .card-number {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #3b82f6, #22c55e);
+            color: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #1e40af;
+            margin-bottom: 12px;
+        }
+
+        .card-desc {
+            font-size: 0.95rem;
+            color: #64748b;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .card-features {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .card-features li {
+            position: relative;
+            padding-left: 20px;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: #475569;
+        }
+
+        .card-features li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: #22c55e;
+            font-weight: bold;
+        }
+
+        /* 底部信息 */
+        .slide-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 60px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(59, 130, 246, 0.15);
+        }
+
+        .presenter-info {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .presenter-name {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .presenter-title {
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+
+        .slide-number {
+            background: linear-gradient(45deg, rgba(59, 130, 246, 0.1), rgba(34, 197, 94, 0.1));
+            padding: 8px 16px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            color: #475569;
+            font-weight: 500;
+        }
+
+        /* 导航提示 */
+        .navigation-hint {
+            text-align: center;
+            padding: 15px;
+            color: #64748b;
+            font-size: 0.85rem;
+        }
+
+        /* 动画效果 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .chapter-intro {
+            animation: fadeInUp 0.6s ease;
+        }
+
+        .topic-card {
+            animation: fadeInUp 0.6s ease;
+        }
+
+        .topic-card:nth-child(1) { animation-delay: 0.1s; }
+        .topic-card:nth-child(2) { animation-delay: 0.2s; }
+        .topic-card:nth-child(3) { animation-delay: 0.3s; }
+
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .cards-grid {
+                grid-template-columns: 1fr;
+                max-width: 600px;
+            }
+            .chapter-title {
+                font-size: 2.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .slide-header,
+            .main-content,
+            .slide-footer {
+                padding-left: 30px;
+                padding-right: 30px;
+            }
+            .chapter-title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="decoration-dots"></div>
+    <div class="decoration-boxes"></div>
+
+    <!-- 页眉 -->
+    <header class="slide-header">
+        <div class="nvidia-logo">
+            <svg xmlns="http://www.w3.org/2000/svg" width="120" height="80" viewBox="0 0 48 32" fill="none">
+                <path d="M17.9101 9.54961V6.65962C18.1893 6.64003 18.4704 6.624 18.7567 6.6151C26.6044 6.36581 31.7531 13.4083 31.7531 13.4083C31.7531 13.4083 26.1926 21.1897 20.2308 21.1897C19.3718 21.1897 18.6029 21.0508 17.9101 20.8158V12.0496C20.9661 12.4218 21.5794 13.7804 23.4158 16.8645L27.5005 13.394C27.5005 13.394 24.5188 9.45345 19.492 9.45345C18.9458 9.45345 18.4227 9.49263 17.9083 9.54783L17.9101 9.54961ZM17.9083 0V4.31807C18.1893 4.29492 18.4721 4.27711 18.7549 4.26643C29.6675 3.89606 36.7781 13.2836 36.7781 13.2836C36.7781 13.2836 28.6123 23.2873 20.1035 23.2873C19.3241 23.2873 18.5941 23.2143 17.9083 23.0932V25.7624C18.4951 25.8372 19.1031 25.8817 19.7359 25.8817C27.6525 25.8817 33.3792 21.8094 38.9239 16.9874C39.843 17.7281 43.606 19.5319 44.3802 20.3225C39.1077 24.7688 26.8236 28.3515 19.8579 28.3515C19.1862 28.3515 18.5411 28.3105 17.9083 28.25V32H48V0.00178103H17.9101L17.9083 0ZM17.9083 20.814V23.0932C10.5856 21.7773 8.55293 14.1098 8.55293 14.1098C8.55293 14.1098 12.0685 10.1853 17.9083 9.54961V12.0496C17.9083 12.0496 17.9012 12.0496 17.8977 12.0496C14.8329 11.6793 12.4397 14.5639 12.4397 14.5639C12.4397 14.5639 13.7812 19.4197 17.9101 20.8175L17.9083 20.814ZM4.90481 13.7804C4.90481 13.7804 9.24403 7.32914 17.9101 6.6614V4.32163C8.31255 5.09799 0 13.2872 0 13.2872C0 13.2872 4.70685 26.9982 17.9101 28.2535V25.766C8.22064 24.5373 4.90481 13.7804 4.90481 13.7804Z" fill="#76B900"/>
+            </svg>
+        </div>
+        <div class="title-area">
+            <h1 class="main-title">IB网络拓扑规划</h1>
+            <p class="subtitle">NVIDIA Networking 基础培训 - 第二章</p>
+        </div>
+        <nav class="breadcrumb">
+            <a href="../index.html">首页</a> →
+            <a href="../catalog.html">目录</a> →
+            <span>第二章</span>
+        </nav>
+    </header>
+
+    <!-- 主内容 -->
+    <main class="main-content">
+        <div class="chapter-intro">
+            <div class="chapter-number">CHAPTER 2</div>
+            <h1 class="chapter-title">IB网络拓扑规划</h1>
+            <p class="chapter-desc">
+                从简单到复杂，掌握InfiniBand网络的各种拓扑结构设计<br>
+                涵盖单机直连、胖树拓扑、冗余与高可用性等核心知识
+            </p>
+        </div>
+
+        <div class="cards-grid">
+            <!-- 卡片1：单机直连配置 -->
+            <div class="topic-card" onclick="goToPage('direct-connect.html')">
+                <div class="card-number">1</div>
+                <h3 class="card-title">单机直连配置</h3>
+                <p class="card-desc">最简单的IB网络拓扑，两台服务器点对点高速互联</p>
+                <ul class="card-features">
+                    <li>概念与优势</li>
+                    <li>硬件要求</li>
+                    <li>子网管理器配置</li>
+                    <li>IPoIB网络设置</li>
+                </ul>
+            </div>
+
+            <!-- 卡片2：胖树拓扑设计 -->
+            <div class="topic-card" onclick="goToPage('fat-tree.html')">
+                <div class="card-number">2</div>
+                <h3 class="card-title">胖树拓扑设计</h3>
+                <p class="card-desc">HPC和AI集群最常用的网络架构，实现无阻塞通信</p>
+                <ul class="card-features">
+                    <li>Fat-Tree核心思想</li>
+                    <li>Spine-Leaf架构</li>
+                    <li>收敛比与端口分配</li>
+                    <li>规模规划考量</li>
+                </ul>
+            </div>
+
+            <!-- 卡片3：冗余与高可用性 -->
+            <div class="topic-card" onclick="goToPage('redundancy.html')">
+                <div class="card-number">3</div>
+                <h3 class="card-title">冗余与高可用性</h3>
+                <p class="card-desc">生产环境必备，确保网络稳定性和业务连续性</p>
+                <ul class="card-features">
+                    <li>多路径冗余</li>
+                    <li>双交换机拓扑</li>
+                    <li>子网管理器冗余</li>
+                    <li>硬件级冗余设计</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="navigation-hint">
+            点击卡片或使用数字键 1-3 快速跳转 | 按 ESC 返回目录
+        </div>
+    </main>
+
+    <!-- 底部信息 -->
+    <footer class="slide-footer">
+        <div class="presenter-info">
+            <div class="presenter-name">Vincent / CTO</div>
+            <div class="presenter-title">吴昌辉</div>
+        </div>
+        <div class="slide-number">2-0 / 2-3</div>
+    </footer>
+
+    <script>
+        function goToPage(page) {
+            window.location.href = page;
+        }
+
+        // 键盘导航
+        document.addEventListener('keydown', function(e) {
+            if (e.code === 'Digit1' || e.code === 'Numpad1') {
+                e.preventDefault();
+                goToPage('direct-connect.html');
+            } else if (e.code === 'Digit2' || e.code === 'Numpad2') {
+                e.preventDefault();
+                goToPage('fat-tree.html');
+            } else if (e.code === 'Digit3' || e.code === 'Numpad3') {
+                e.preventDefault();
+                goToPage('redundancy.html');
+            } else if (e.code === 'ArrowRight') {
+                e.preventDefault();
+                goToPage('direct-connect.html');
+            } else if (e.code === 'Escape' || e.code === 'ArrowLeft') {
+                e.preventDefault();
+                window.location.href = '../catalog.html';
+            }
+        });
+    </script>
+</body>
+</html>

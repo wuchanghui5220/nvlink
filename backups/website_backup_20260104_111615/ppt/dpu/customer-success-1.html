@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>客户成功案例与PoC（第1部分）</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Microsoft YaHei", sans-serif;
+            background: #000;
+            color: white;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 复用背景效果 */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(ellipse at top left, rgba(255, 215, 0, 0.12) 0%, transparent 60%),
+                radial-gradient(ellipse at bottom right, rgba(118, 185, 0, 0.08) 0%, transparent 60%),
+                radial-gradient(ellipse at center, rgba(0, 150, 255, 0.06) 0%, transparent 70%),
+                linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 25%, #0f0f0f 50%, #1a1a1a 75%, #0a0a0a 100%);
+            animation: backgroundFlow 12s ease-in-out infinite;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255, 215, 0, 0.03) 35px, rgba(255, 215, 0, 0.03) 70px),
+                repeating-linear-gradient(-45deg, transparent, transparent 35px, rgba(118, 185, 0, 0.03) 35px, rgba(118, 185, 0, 0.03) 70px);
+            animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes backgroundFlow {
+            0%, 100% { opacity: 0.8; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.02); }
+        }
+
+        @keyframes gridMove {
+            0% { background-position: 0px 0px, 0px 0px; }
+            100% { background-position: 70px 70px, -70px 70px; }
+        }
+
+        .container {
+            width: 95%;
+            max-width: 1400px;
+            height: 95vh;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        h1 {
+            font-size: 3.2rem;
+            text-align: center;
+            margin-bottom: 40px;
+            background: linear-gradient(135deg, #FFD700, #FFFFFF, #76B900);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+            text-shadow: none;
+            letter-spacing: -0.5px;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            width: 100%;
+            height: calc(100% - 160px);
+        }
+
+        .case-study-section {
+            background: rgba(25, 25, 35, 0.85);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-left: 6px solid #FFD700;
+            border-radius: 16px;
+            padding: 28px;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 8px 32px rgba(255, 215, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .poc-framework-section {
+            background: rgba(25, 25, 35, 0.85);
+            border: 2px solid rgba(118, 185, 0, 0.3);
+            border-left: 6px solid #76B900;
+            border-radius: 16px;
+            padding: 28px;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 8px 32px rgba(118, 185, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .case-study-section .section-title {
+            color: #FFD700;
+        }
+
+        .poc-framework-section .section-title {
+            color: #76B900;
+        }
+
+        .section-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .case-study-section .section-icon {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #000;
+        }
+
+        .poc-framework-section .section-icon {
+            background: linear-gradient(135deg, #76B900, #9ACD32);
+            color: #000;
+        }
+
+        .feature-list {
+            flex-grow: 1;
+        }
+
+        .feature-item {
+            margin-bottom: 18px;
+            line-height: 1.6;
+            font-size: 1.05rem;
+        }
+
+        .case-highlight {
+            background: rgba(255, 215, 0, 0.15);
+            border-left: 4px solid #FFD700;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 18px;
+        }
+
+        .case-highlight-title {
+            font-weight: 700;
+            color: #FFD700;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+
+        .case-highlight-desc {
+            color: #F0F0F0;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        .feature-title {
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .case-study-section .feature-title {
+            color: #FFD700;
+        }
+
+        .poc-framework-section .feature-title {
+            color: #76B900;
+        }
+
+        .feature-desc {
+            color: #E0E0E0;
+            font-size: 0.95rem;
+            margin-left: 16px;
+            line-height: 1.5;
+        }
+
+        .highlight {
+            color: #FFF;
+            font-weight: 600;
+            background: linear-gradient(90deg, rgba(255, 215, 0, 0.15), rgba(118, 185, 0, 0.15));
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .performance-metrics {
+            border-top: 2px solid rgba(255, 255, 255, 0.1);
+            padding-top: 20px;
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .poc-metrics {
+            border-top: 2px solid rgba(255, 255, 255, 0.1);
+            padding-top: 20px;
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .metric-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px 12px;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-weight: 700;
+            font-size: 1.3rem;
+            margin-bottom: 4px;
+        }
+
+        .case-study-section .metric-value {
+            color: #FFD700;
+        }
+
+        .poc-framework-section .metric-value {
+            color: #76B900;
+        }
+
+        .metric-label {
+            color: #B0B0B0;
+            font-size: 0.85rem;
+        }
+
+        .global-deployments {
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 16px;
+        }
+
+        .global-deployments-title {
+            color: #FFD700;
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-bottom: 6px;
+        }
+
+        .global-deployments-list {
+            color: #E0E0E0;
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+
+        .bottom-stats {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            color: #B0B0B0;
+            font-size: 0.9rem;
+        }
+
+        .stats-highlight {
+            color: #FFD700;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        /* 交互动效 */
+        .case-study-section:hover, .poc-framework-section:hover {
+            transform: translateY(-5px);
+            transition: all 0.3s ease;
+        }
+
+        .case-study-section:hover {
+            box-shadow: 0 12px 48px rgba(255, 215, 0, 0.2);
+        }
+
+        .poc-framework-section:hover {
+            box-shadow: 0 12px 48px rgba(118, 185, 0, 0.2);
+        }
+
+        /* 鼠标跟踪光效 */
+        #mouse-glow {
+            position: fixed;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 215, 0, 0.1) 0%, rgba(118, 185, 0, 0.05) 50%, transparent 100%);
+            pointer-events: none;
+            z-index: 0;
+            transition: opacity 0.3s ease;
+            opacity: 0;
+        }
+
+        /* 粒子动画容器 */
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(255, 215, 0, 0.4);
+            border-radius: 50%;
+            animation: float 8s infinite linear;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1024px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            h1 {
+                font-size: 2.8rem;
+                margin-bottom: 30px;
+            }
+
+            .case-study-section, .poc-framework-section {
+                padding: 24px;
+            }
+
+            .section-title {
+                font-size: 1.6rem;
+            }
+
+            .performance-metrics {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                width: 98%;
+                height: 98vh;
+            }
+
+            h1 {
+                font-size: 2.4rem;
+            }
+
+            .case-study-section, .poc-framework-section {
+                padding: 20px;
+            }
+
+            .feature-item {
+                margin-bottom: 15px;
+                font-size: 1rem;
+            }
+        }
+
+        /* 键盘提示 */
+        .keyboard-hint {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            font-size: 0.8rem;
+            color: #666;
+            background: rgba(25, 25, 35, 0.9);
+            padding: 8px 12px;
+            border-radius: 6px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div id="mouse-glow"></div>
+    <div class="particles"></div>
+    
+    <div class="container">
+        <h1>客户成功案例与PoC（第1部分）</h1>
+        
+        <div class="content-grid">
+            <!-- 大规模AI工厂成功案例 -->
+            <div class="case-study-section">
+                <div class="section-title">
+                    <div class="section-icon">🏆</div>
+                    大规模AI工厂成功案例
+                </div>
+                
+                <div class="feature-list">
+                    <div class="case-highlight">
+                        <div class="case-highlight-title">以色列-1 (Israel-1) 数据中心</div>
+                        <div class="case-highlight-desc">NVIDIA验证、优化和基准测试的典型案例，展示Spectrum-X的卓越能力</div>
+                    </div>
+
+                    <div class="feature-item">
+                        <div class="feature-title">极速建设</div>
+                        <div class="feature-desc">构建支持设施和超级计算机的时间从<span class="highlight">数年缩短到122天</span></div>
+                    </div>
+
+                    <div class="feature-item">
+                        <div class="feature-title">零数据流冲突</div>
+                        <div class="feature-desc">在三层网络上实现<span class="highlight">零数据流冲突</span>（对比传统方案的数千次冲突）</div>
+                    </div>
+
+                    <div class="feature-item">
+                        <div class="feature-title">卓越吞吐量</div>
+                        <div class="feature-desc">有效数据吞吐量达到<span class="highlight">95%</span>（对比传统方案的60%）</div>
+                    </div>
+
+                    <div class="feature-item">
+                        <div class="feature-title">快速部署</div>
+                        <div class="feature-desc">从首次机架上架到开始训练的时间从<span class="highlight">数月缩短到19天</span></div>
+                    </div>
+
+                    <div class="global-deployments">
+                        <div class="global-deployments-title">全球部署案例</div>
+                        <div class="global-deployments-list">
+                            • GPU云部署：全球范围成功应用<br>
+                            • 区域AI云：日本、欧洲等地区部署<br>
+                            • 大规模AI工厂：美国等地成功案例
+                        </div>
+                    </div>
+                </div>
+
+                <div class="performance-metrics">
+                    <div class="metric-item">
+                        <div class="metric-value">122天</div>
+                        <div class="metric-label">建设周期</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value">0次</div>
+                        <div class="metric-label">数据流冲突</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value">95%</div>
+                        <div class="metric-label">有效吞吐量</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value">19天</div>
+                        <div class="metric-label">部署到训练</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Spectrum-X PoC框架 -->
+            <div class="poc-framework-section">
+                <div class="section-title">
+                    <div class="section-icon">🔬</div>
+                    Spectrum-X PoC框架
+                </div>
+                
+                <div class="feature-list">
+                    <div class="feature-item">
+                        <div class="feature-title">PoC验证目的</div>
+                        <div class="feature-desc">阐明市场对<span class="highlight">AI Fabric性能</span>的真实期望和标准</div>
+                    </div>
+
+                    <div class="feature-item">
+                        <div class="feature-title">能力展示</div>
+                        <div class="feature-desc">通过实际测试，<span class="highlight">清晰展示Spectrum-X平台</span>的能力和卓越性能</div>
+                    </div>
+
+                    <div class="feature-item">
+                        <div class="feature-title">测试指南</div>
+                        <div class="feature-desc">为客户提供<span class="highlight">可操作的测试指南</span>，支持自行验证或协作测试</div>
+                    </div>
+
+                    <div class="feature-item">
+                        <div class="feature-title">验证框架</div>
+                        <div class="feature-desc">利用NVIDIA内部开发并经过<span class="highlight">严格验证的测试解决方案</span>和框架</div>
+                    </div>
+
+                    <div class="feature-item">
+                        <div class="feature-title">专业支持</div>
+                        <div class="feature-desc">NVIDIA专家团队将<span class="highlight">全程伴随客户测试</span>，提供技术支持</div>
+                    </div>
+
+                    <div class="feature-item">
+                        <div class="feature-title">最小化验证规模</div>
+                        <div class="feature-desc">在<span class="highlight">16个GPU节点以上</span>的两层脊叶Fabric拓扑中即可显示显著性能差异</div>
+                    </div>
+                </div>
+
+                <div class="poc-metrics">
+                    <div class="metric-item">
+                        <div class="metric-value">AI Fabric性能标准</div>
+                        <div class="metric-label">验证目标</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value">16+ GPU节点</div>
+                        <div class="metric-label">最小验证规模</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-value">全程专家支持</div>
+                        <div class="metric-label">NVIDIA团队</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bottom-stats">
+            <div>已在真实世界大规模AI云部署中得到验证 • <span class="stats-highlight">以色列-1</span>数据中心典型案例 • 标准化PoC流程</div>
+        </div>
+    </div>
+
+    <div class="keyboard-hint">
+        ← 返回上页 • → 下一页
+    </div>
+
+    <script>
+        // 鼠标跟踪光效
+        const mouseGlow = document.getElementById('mouse-glow');
+        let mouseX = 0, mouseY = 0;
+        let glowX = 0, glowY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            mouseGlow.style.opacity = '1';
+        });
+
+        document.addEventListener('mouseleave', () => {
+            mouseGlow.style.opacity = '0';
+        });
+
+        function animateGlow() {
+            const dx = mouseX - glowX;
+            const dy = mouseY - glowY;
+            
+            glowX += dx * 0.1;
+            glowY += dy * 0.1;
+            
+            mouseGlow.style.left = (glowX - 100) + 'px';
+            mouseGlow.style.top = (glowY - 100) + 'px';
+            
+            requestAnimationFrame(animateGlow);
+        }
+
+        animateGlow();
+
+        // 粒子系统
+        function createParticles() {
+            const particlesContainer = document.querySelector('.particles');
+            const particleCount = 15;
+
+            for (let i = 0; i < particleCount; i++) {
+                setTimeout(() => {
+                    const particle = document.createElement('div');
+                    particle.classList.add('particle');
+                    particle.style.left = Math.random() * 100 + '%';
+                    particle.style.animationDelay = Math.random() * 8 + 's';
+                    particle.style.animationDuration = (8 + Math.random() * 4) + 's';
+                    
+                    const colors = ['rgba(255, 215, 0, 0.4)', 'rgba(118, 185, 0, 0.3)', 'rgba(0, 150, 255, 0.3)', 'rgba(255, 255, 255, 0.2)'];
+                    particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    
+                    particlesContainer.appendChild(particle);
+
+                    setTimeout(() => {
+                        particle.remove();
+                    }, 12000);
+                }, i * 500);
+            }
+        }
+
+        createParticles();
+        setInterval(createParticles, 12000);
+
+        // 键盘导航
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') {
+                window.location.href = 'operations-management.html';
+            } else if (e.key === 'ArrowRight') {
+                window.location.href = 'customer-success-2.html';
+            }
+        });
+
+        // 卡片悬停音效
+        const sections = document.querySelectorAll('.case-study-section, .poc-framework-section');
+        sections.forEach(section => {
+            section.addEventListener('mouseenter', () => {
+                section.style.transform = 'translateY(-5px)';
+            });
+            
+            section.addEventListener('mouseleave', () => {
+                section.style.transform = 'translateY(0)';
+            });
+        });
+    </script>
+</body>
+</html>

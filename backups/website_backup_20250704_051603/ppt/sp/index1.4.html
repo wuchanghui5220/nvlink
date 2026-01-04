@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NVIDIA NPN SP技术大比武 - 售后支持团队与团队核心优势</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap');
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #f0f0f0;
+      font-family: 'Noto Sans SC', sans-serif;
+      overflow: hidden;
+    }
+
+    .slide-container {
+      width: 100vw;
+      height: 56.25vw; /* 16:9 aspect ratio */
+      max-height: 100vh;
+      max-width: 177.78vh; /* 16:9 aspect ratio (reversed) */
+      position: relative;
+      background: #111827;
+      color: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    /* 背景图形元素 */
+    .bg-grid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image:
+        linear-gradient(rgba(24, 92, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(24, 92, 255, 0.05) 1px, transparent 1px);
+      background-size: 20px 20px;
+      z-index: 0;
+    }
+
+    .bg-gradient {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 120% 45%, rgba(76, 29, 149, 0.7) 0%, rgba(17, 24, 39, 0) 50%);
+      z-index: 1;
+    }
+
+    .bg-circle1 {
+      position: absolute;
+      top: -15%;
+      right: -15%;
+      width: 40%;
+      height: 40%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #76b900 0%, #1a4163 100%);
+      filter: blur(80px);
+      opacity: 0.6;
+      z-index: 2;
+    }
+
+    .bg-circle2 {
+      position: absolute;
+      bottom: -10%;
+      left: -10%;
+      width: 30%;
+      height: 30%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0099da 0%, #1e40af 100%);
+      filter: blur(60px);
+      opacity: 0.5;
+      z-index: 2;
+    }
+
+    /* 主要内容 */
+    .content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    .header {
+      padding: 2.5% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .nvidia-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-box {
+      width: 8%;
+      min-width: 100px;
+      height: 36px;
+      background: #76b900;
+      border-radius: 4px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 700;
+      font-size: clamp(16px, 2vw, 22px);
+      transform: skew(-10deg);
+    }
+
+    .partner-text {
+      font-size: clamp(12px, 1.5vw, 16px);
+      font-weight: 500;
+      opacity: 0.9;
+    }
+
+    .slide-title {
+      font-size: clamp(16px, 1.8vw, 20px);
+      font-weight: 600;
+      padding: 0.5% 4%;
+      background: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(5px);
+    }
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 2% 4%;
+      overflow: hidden;
+    }
+
+    .two-columns {
+      display: flex;
+      gap: 30px;
+      height: 100%;
+    }
+
+    .left-column {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .right-column {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .section-title {
+      font-size: clamp(20px, 2.5vw, 28px);
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section-title.support::before {
+      content: "";
+      width: 6px;
+      height: 28px;
+      background: #9333ea;
+      border-radius: 3px;
+    }
+
+    .section-title.advantage::before {
+      content: "";
+      width: 6px;
+      height: 28px;
+      background: #76b900;
+      border-radius: 3px;
+    }
+
+    .member-card {
+      flex: 0 0 auto;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .member-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .role-badge {
+      font-size: 13px;
+      padding: 4px 10px;
+      border-radius: 30px;
+      margin-bottom: 8px;
+      display: inline-block;
+      font-weight: 500;
+    }
+
+    .support-badge {
+      background: linear-gradient(90deg, rgba(147, 51, 234, 0.2) 0%, rgba(76, 29, 149, 0.2) 100%);
+      border: 1px solid rgba(147, 51, 234, 0.3);
+      color: #9333ea;
+    }
+
+    .member-avatars {
+      display: flex;
+      margin-right: 15px;
+    }
+
+    .member-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 24px;
+      font-weight: 700;
+      color: white;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .member-avatar:nth-child(1) {
+      background: linear-gradient(135deg, #9333ea 0%, #4c1d95 100%);
+      box-shadow: 0 5px 15px rgba(147, 51, 234, 0.3);
+      z-index: 2;
+    }
+
+    .member-avatar:nth-child(2) {
+      background: linear-gradient(135deg, #9333ea 0%, #4c1d95 100%);
+      box-shadow: 0 5px 15px rgba(147, 51, 234, 0.3);
+      margin-left: -20px;
+    }
+
+    .member-title {
+      flex: 1;
+    }
+
+    .member-role {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .member-names {
+      font-size: 22px;
+      font-weight: 600;
+      margin-top: 5px;
+    }
+
+    .member-content {
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 5px;
+    }
+
+    .member-content::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .member-content::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 2px;
+    }
+
+    .member-content::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 2px;
+    }
+
+    .info-section {
+      margin-bottom: 15px;
+    }
+
+    .info-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #9333ea;
+      margin-bottom: 8px;
+    }
+
+    .info-content {
+      font-size: 15px;
+      line-height: 1.5;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .info-content ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .info-content li {
+      margin-bottom: 6px;
+    }
+
+    .advantages-card {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 25px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    }
+
+    .advantage-item {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 20px;
+    }
+
+    .advantage-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .advantage-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(118, 185, 0, 0.2) 0%, rgba(62, 112, 62, 0.2) 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-right: 16px;
+      flex-shrink: 0;
+    }
+
+    .advantage-icon svg {
+      width: 20px;
+      height: 20px;
+      fill: #76b900;
+    }
+
+    .advantage-text {
+      flex: 1;
+    }
+
+    .advantage-title {
+      font-weight: 600;
+      font-size: 17px;
+      margin-bottom: 6px;
+      color: #76b900;
+    }
+
+    .advantage-description {
+      font-size: 15px;
+      color: rgba(255, 255, 255, 0.9);
+      line-height: 1.5;
+    }
+
+    .footer {
+      padding: 1.5% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .page-number {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .company-name {
+      font-weight: 500;
+    }
+
+    .rotating-lines {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 50%;
+      height: 50%;
+      z-index: 5;
+      opacity: 0.15;
+      animation: rotate 60s linear infinite;
+    }
+
+    @keyframes rotate {
+      from {
+        transform: translate(-50%, -50%) rotate(0deg);
+      }
+      to {
+        transform: translate(-50%, -50%) rotate(360deg);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <!-- 背景元素 -->
+    <div class="bg-grid"></div>
+    <div class="bg-gradient"></div>
+    <div class="bg-circle1"></div>
+    <div class="bg-circle2"></div>
+
+    <!-- 旋转线框背景 -->
+    <svg class="rotating-lines" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+      <path d="M250,10 L490,250 L250,490 L10,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,50 L450,250 L250,450 L50,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,90 L410,250 L250,410 L90,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,130 L370,250 L250,370 L130,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,170 L330,250 L250,330 L170,250 Z" fill="none" stroke="white" stroke-width="1" />
+      <path d="M250,210 L290,250 L250,290 L210,250 Z" fill="none" stroke="white" stroke-width="1" />
+    </svg>
+
+    <!-- 主要内容 -->
+    <div class="content">
+      <div class="header">
+        <div class="nvidia-logo">
+          <div class="logo-box">NVIDIA</div>
+          <div class="partner-text">Networking NPN Elite Partner</div>
+        </div>
+        <div class="slide-title">1. 技术团队成员介绍</div>
+      </div>
+
+      <div class="main-content">
+        <div class="two-columns">
+          <div class="left-column">
+            <div class="section-title support">售后支持团队</div>
+            
+            <div class="member-card">
+              <div class="member-header">
+                <div class="member-avatars">
+                  <div class="member-avatar">樊</div>
+                  <div class="member-avatar">汤</div>
+                </div>
+                <div class="member-title">
+                  <div class="role-badge support-badge">技术支持工程师</div>
+                  <div class="member-names">樊生辉 & 汤润泽</div>
+                </div>
+              </div>
+              
+              <div class="member-content">
+                <div class="info-section">
+                  <div class="info-title">履历</div>
+                  <div class="info-content">
+                    3+年网络运维经验，NVIDIA认证网络工程师
+                  </div>
+                </div>
+                
+                <div class="info-section">
+                  <div class="info-title">项目经验</div>
+                  <div class="info-content">
+                    参与多个的智算网络运维与优化
+                  </div>
+                </div>
+                
+                <div class="info-section">
+                  <div class="info-title">贡献</div>
+                  <div class="info-content">
+                    完善公司7x24小时技术支持体系与流程，网络故障快速诊断与恢复方案库
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- 占位图片 -->
+            <div style="flex: 1; display: flex; justify-content: center; align-items: center; padding: 20px;">
+              <svg width="280" height="180" viewBox="0 0 280 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M140 20C151.046 20 160 29.0543 160 40C160 50.9457 151.046 60 140 60C128.954 60 120 50.9457 120 40C120 29.0543 128.954 20 140 20Z" fill="rgba(147, 51, 234, 0.15)" stroke="rgba(147, 51, 234, 0.4)" stroke-width="2"/>
+                <path d="M80 80C91.0457 80 100 89.0543 100 100C100 110.946 91.0457 120 80 120C68.9543 120 60 110.946 60 100C60 89.0543 68.9543 80 80 80Z" fill="rgba(147, 51, 234, 0.15)" stroke="rgba(147, 51, 234, 0.4)" stroke-width="2"/>
+                <path d="M200 80C211.046 80 220 89.0543 220 100C220 110.946 211.046 120 200 120C188.954 120 180 110.946 180 100C180 89.0543 188.954 80 200 80Z" fill="rgba(147, 51, 234, 0.15)" stroke="rgba(147, 51, 234, 0.4)" stroke-width="2"/>
+                <path d="M140 140C151.046 140 160 149.054 160 160C160 170.946 151.046 180 140 180C128.954 180 120 170.946 120 160C120 149.054 128.954 140 140 140Z" fill="rgba(147, 51, 234, 0.15)" stroke="rgba(147, 51, 234, 0.4)" stroke-width="2"/>
+                <path d="M140 60L200 80" stroke="rgba(147, 51, 234, 0.4)" stroke-width="2"/>
+                <path d="M140 60L80 80" stroke="rgba(147, 51, 234, 0.4)" stroke-width="2"/>
+                <path d="M200 120L140 140" stroke="rgba(147, 51, 234, 0.4)" stroke-width="2"/>
+                <path d="M80 120L140 140" stroke="rgba(147, 51, 234, 0.4)" stroke-width="2"/>
+                <path d="M107 54L119 37" stroke="rgba(147, 51, 234, 0.4)" stroke-width="2"/>
+                <path d="M96 94L76 83" stroke="rgba(147, 51, 234, 0.4)" stroke-width="2"/>
+                <path d="M184 94L204 83" stroke="rgba(147, 51, 234, 0.4)" stroke-width="2"/>
+                <path d="M173 54L161 37" stroke="rgba(147, 51, 234, 0.4)" stroke-width="2"/>
+              </svg>
+            </div>
+          </div>
+          
+          <div class="right-column">
+            <div class="section-title advantage">团队核心优势</div>
+            
+            <div class="advantages-card">
+              <div class="advantage-item">
+                <div class="advantage-icon">
+                  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M10 13a2 2 0 1 1 4 0 2 2 0 0 1-4 0zm0-8a2 2 0 1 1 4 0 2 2 0 0 1-4 0zm0 16a2 2 0 1 1 4 0 2 2 0 0 1-4 0zM3 13a2 2 0 1 1 4 0 2 2 0 0 1-4 0zm0-8a2 2 0 1 1 4 0 2 2 0 0 1-4 0zm0 16a2 2 0 1 1 4 0 2 2 0 0 1-4 0zM17 13a2 2 0 1 1 4 0 2 2 0 0 1-4 0zm0-8a2 2 0 1 1 4 0 2 2 0 0 1-4 0zm0 16a2 2 0 1 1 4 0 2 2 0 0 1-4 0z"/>
+                  </svg>
+                </div>
+                <div class="advantage-text">
+                  <div class="advantage-title">专业分工</div>
+                  <div class="advantage-description">售前、交付、售后分工明确，各司其职</div>
+                </div>
+              </div>
+              
+              <div class="advantage-item">
+                <div class="advantage-icon">
+                  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                  </svg>
+                </div>
+                <div class="advantage-text">
+                  <div class="advantage-title">认证保障</div>
+                  <div class="advantage-description">100%团队成员获得NVIDIA相关认证</div>
+                </div>
+              </div>
+              
+              <div class="advantage-item">
+                <div class="advantage-icon">
+                  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M13 4v2.67l-1 1-1-1V4h2zm7 7v2h-2.67l-1-1 1-1H20zM6.67 11l1 1-1 1H4v-2h2.67zM12 16.33l1 1V20h-2v-2.67l1-1zM15 2H9v5.5l3 3 3-3V2zm7 7h-5.5l-3 3 3 3H22V9zM7.5 9H2v6h5.5l3-3-3-3zm4.5 4.5l-3 3V22h6v-5.5l-3-3z"/>
+                  </svg>
+                </div>
+                <div class="advantage-text">
+                  <div class="advantage-title">经验丰富</div>
+                  <div class="advantage-description">团队平均从业经验超过5年</div>
+                </div>
+              </div>
+              
+              <div class="advantage-item">
+                <div class="advantage-icon">
+                  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+                  </svg>
+                </div>
+                <div class="advantage-text">
+                  <div class="advantage-title">技术积累</div>
+                  <div class="advantage-description">建立了完备的技术知识库与最佳实践</div>
+                </div>
+              </div>
+              
+              <div class="advantage-item">
+                <div class="advantage-icon">
+                  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M16 13h-3V3h-2v10H8l4 4 4-4zM4 19v2h16v-2H4z"/>
+                  </svg>
+                </div>
+                <div class="advantage-text">
+                  <div class="advantage-title">持续培养</div>
+                  <div class="advantage-description">实施"传帮带"计划，保证人才梯队建设</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer">
+        <div class="company-name">北京正阳恒卓科技有限公司</div>
+        <div class="page-number">6</div>
+      </div>
+    </div>
+  </div>
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+        <a href="index1.3.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+        <a href="index2.1.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+    </div>
+</body>
+</html>

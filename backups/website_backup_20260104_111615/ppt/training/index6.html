@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>子网管理器认知与原理</title>
+    <script>
+    // 确保函数在页面加载前就定义好
+    function showTopologyImage(imageName, title) {
+      console.log('显示拓扑图片:', imageName, title);
+
+      const modal = document.getElementById('topologyModal');
+      const modalTitle = document.getElementById('modalTitle');
+      const image = document.getElementById('topologyImage');
+      const loading = document.getElementById('imageLoading');
+      const error = document.getElementById('imageError');
+
+      if (!modal) {
+        console.error('找不到模态框元素');
+        return;
+      }
+
+      // 设置标题
+      modalTitle.textContent = title;
+
+      // 重置状态
+      loading.style.display = 'block';
+      image.style.display = 'none';
+      error.style.display = 'none';
+
+      // 显示模态框
+      modal.style.display = 'block';
+
+      // 加载图片
+      image.onload = function() {
+        loading.style.display = 'none';
+        image.style.display = 'block';
+      };
+
+      image.onerror = function() {
+        loading.style.display = 'none';
+        error.style.display = 'block';
+      };
+
+      // 设置图片源
+      image.src = imageName;
+    }
+
+    function closeModal() {
+      const modal = document.getElementById('topologyModal');
+      if (modal) {
+        modal.style.display = 'none';
+      }
+    }
+
+    // 页面加载完成后的初始化
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('页面加载完成，JavaScript功能已准备就绪');
+
+      // 检查模态框是否存在
+      const modal = document.getElementById('topologyModal');
+      if (modal) {
+        console.log('模态框元素找到了');
+      } else {
+        console.error('模态框元素未找到');
+      }
+
+      // 点击模态框外部关闭
+      window.onclick = function(event) {
+        const modal = document.getElementById('topologyModal');
+        if (event.target === modal) {
+          closeModal();
+        }
+      };
+
+      // ESC键关闭模态框
+      document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+          closeModal();
+        }
+      });
+    });
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700;800&display=swap');
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+      font-family: 'Noto Sans SC', sans-serif;
+      overflow: hidden;
+    }
+
+    .slide-container {
+      width: 100vw;
+      height: 56.25vw; /* 16:9 aspect ratio */
+      max-height: 100vh;
+      max-width: 177.78vh; /* 16:9 aspect ratio (reversed) */
+      position: relative;
+      background: #111827;
+      color: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* 动态背景元素 */
+    .bg-elements {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    .brain-pattern {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image:
+        radial-gradient(circle at 25% 25%, rgba(0, 162, 255, 0.06) 2px, transparent 2px),
+        radial-gradient(circle at 75% 75%, rgba(72, 52, 212, 0.05) 2px, transparent 2px),
+        linear-gradient(90deg, rgba(0, 162, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(rgba(0, 162, 255, 0.03) 1px, transparent 1px);
+      background-size: 60px 60px, 80px 80px, 40px 40px, 40px 40px;
+      animation: brain-flow 20s linear infinite;
+    }
+
+    @keyframes brain-flow {
+      0% { background-position: 0 0, 0 0, 0 0, 0 0; }
+      100% { background-position: 60px 60px, -80px -80px, 40px 40px, -40px -40px; }
+    }
+
+    .network-signals {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+    }
+
+    .signal-dot {
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      background: #00a2ff;
+      border-radius: 50%;
+      animation: signal-pulse 3s ease-in-out infinite;
+      opacity: 0.4;
+    }
+
+    .signal-dot:nth-child(1) { top: 20%; left: 15%; animation-delay: 0s; }
+    .signal-dot:nth-child(2) { top: 30%; right: 20%; animation-delay: 1s; background: #4834d4; }
+    .signal-dot:nth-child(3) { bottom: 25%; left: 25%; animation-delay: 2s; background: #ff6b6b; }
+    .signal-dot:nth-child(4) { bottom: 35%; right: 15%; animation-delay: 1.5s; background: #76b900; }
+    .signal-dot:nth-child(5) { top: 50%; left: 50%; animation-delay: 0.5s; background: #00a2ff; }
+
+    @keyframes signal-pulse {
+      0%, 100% { opacity: 0.3; transform: scale(1); }
+      50% { opacity: 0.8; transform: scale(2); }
+    }
+
+    /* 主要内容 */
+    .content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    /* 顶部标识栏 */
+    .header {
+      padding: 0.8% 2.5%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.2));
+      backdrop-filter: blur(15px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      flex-shrink: 0;
+      height: 7%;
+    }
+
+    .day-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .day-badge {
+      width: 30px;
+      height: 30px;
+      background: linear-gradient(135deg, #00a2ff, #0078d4);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: clamp(12px, 1.2vw, 13px);
+      box-shadow: 0 5px 15px rgba(0, 162, 255, 0.3);
+    }
+
+    .day-text {
+      font-size: clamp(14px, 1.6vw, 16px);
+      font-weight: 600;
+      color: #00a2ff;
+    }
+
+    .section-indicator {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: clamp(11px, 1.2vw, 12px);
+      font-weight: 500;
+      backdrop-filter: blur(10px);
+    }
+
+    /* 主体内容区域 */
+    .main-content {
+      flex: 1;
+      padding: 1% 2.5%;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    /* 页面标题 */
+    .page-title {
+      text-align: center;
+      margin-bottom: 1.5%;
+      flex-shrink: 0;
+    }
+
+    .title-main {
+      font-size: clamp(28px, 3.8vw, 36px);
+      font-weight: 800;
+      background: linear-gradient(135deg, #ffffff 0%, #00a2ff 50%, #4834d4 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 0.8%;
+      text-shadow: 0 0 30px rgba(0, 162, 255, 0.3);
+    }
+
+    .title-sub {
+      font-size: clamp(14px, 1.6vw, 17px);
+      color: rgba(255, 255, 255, 0.75);
+      font-weight: 300;
+      margin-bottom: 0.8%;
+    }
+
+    /* 主要内容布局 */
+    .content-layout {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2%;
+      min-height: 0;
+    }
+
+    /* 核心功能区域 */
+    .core-functions {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 1.8%;
+      margin-bottom: 1.5%;
+    }
+
+    .functions-header {
+      text-align: center;
+      margin-bottom: 2%;
+      padding-bottom: 1.5%;
+      border-bottom: 2px solid rgba(0, 162, 255, 0.2);
+    }
+
+    .functions-title {
+      font-size: clamp(18px, 2vw, 20px);
+      font-weight: 700;
+      color: #00a2ff;
+      margin-bottom: 1%;
+    }
+
+    .functions-subtitle {
+      font-size: clamp(13px, 1.4vw, 15px);
+      color: rgba(255, 255, 255, 0.8);
+      font-style: italic;
+    }
+
+    .functions-content {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.8%;
+    }
+
+    .function-item {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 10px;
+      padding: 3%;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+      height: fit-content;
+    }
+
+    .function-item::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(0, 162, 255, 0.1), transparent);
+      transition: left 0.6s ease;
+    }
+
+    .function-item:hover::before {
+      left: 100%;
+    }
+
+    .function-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(0, 162, 255, 0.3);
+      transform: translateX(3px);
+    }
+
+    .function-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 1%;
+    }
+
+    .function-number {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #00a2ff, #0078d4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(10px, 1.1vw, 11px);
+      font-weight: 700;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(0, 162, 255, 0.3);
+    }
+
+    .function-name {
+      font-size: clamp(13px, 1.4vw, 15px);
+      font-weight: 600;
+      color: #87ceeb;
+    }
+
+    .function-desc {
+      font-size: clamp(11px, 1.2vw, 13px);
+      color: rgba(255, 255, 255, 0.85);
+      line-height: 1.4;
+      margin-left: 7%;
+      margin-top: 1%;
+    }
+
+    /* 运行机制和工作流程 */
+    .mechanism-workflow-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2%;
+    }
+
+    /* 运行机制概述 */
+    .mechanism-overview {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 2.5%;
+      height: fit-content;
+    }
+
+    .mechanism-title {
+      font-size: clamp(17px, 1.9vw, 19px);
+      font-weight: 700;
+      color: #4834d4;
+      margin-bottom: 3%;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .mechanism-title::before {
+      content: '';
+      width: 3px;
+      height: 16px;
+      background: linear-gradient(180deg, #4834d4, #686de0);
+      border-radius: 2px;
+    }
+
+    .mechanism-content {
+      display: flex;
+      flex-direction: column;
+      gap: 1.8%;
+    }
+
+    .mechanism-item {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      padding: 2.5%;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(8px);
+    }
+
+    .mechanism-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(72, 52, 212, 0.3);
+    }
+
+    .mechanism-label {
+      font-size: clamp(12px, 1.3vw, 14px);
+      font-weight: 600;
+      color: #b39ddb;
+      margin-bottom: 1%;
+    }
+
+    .mechanism-value {
+      font-size: clamp(11px, 1.2vw, 13px);
+      color: rgba(255, 255, 255, 0.85);
+      line-height: 1.4;
+    }
+
+    /* 工作流程 */
+    .workflow-section {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 2.5%;
+      height: fit-content;
+    }
+
+    .workflow-title {
+      font-size: clamp(16px, 1.7vw, 18px);
+      font-weight: 600;
+      color: #ff6b6b;
+      margin-bottom: 3%;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .workflow-title::before {
+      content: '';
+      width: 3px;
+      height: 14px;
+      background: linear-gradient(180deg, #ff6b6b, #ee5a24);
+      border-radius: 2px;
+    }
+
+    .workflow-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5%;
+    }
+
+    .workflow-step {
+      display: flex;
+      align-items: center;
+      gap: 2.5%;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      padding: 2%;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(8px);
+    }
+
+    .workflow-step:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 107, 107, 0.3);
+    }
+
+    .step-arrow {
+      font-size: clamp(11px, 1.2vw, 12px);
+      color: #ff6b6b;
+      font-weight: 700;
+      min-width: 15px;
+    }
+
+    .step-text {
+      font-size: clamp(11px, 1.2vw, 13px);
+      color: rgba(255, 255, 255, 0.9);
+      line-height: 1.4;
+      flex: 1;
+    }
+    
+    .step-arrow {
+      font-size: clamp(11px, 1.2vw, 12px);
+      color: #ff6b6b;
+      font-weight: 700;
+      min-width: 18px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: rgba(255, 107, 107, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    /* 总结框 */
+    .summary-box {
+      margin-top: 1.5%;
+      background: linear-gradient(135deg, rgba(118, 185, 0, 0.15), rgba(118, 185, 0, 0.05));
+      border: 1px solid rgba(118, 185, 0, 0.3);
+      border-radius: 10px;
+      padding: 2% 3%;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .summary-icon {
+      font-size: clamp(14px, 1.6vw, 16px);
+      margin-bottom: 1%;
+    }
+
+    .summary-text {
+      font-size: clamp(12px, 1.3vw, 14px);
+      color: rgba(255, 255, 255, 0.9);
+      font-weight: 500;
+      line-height: 1.4;
+    }
+
+    .summary-highlight {
+      color: #87ceeb;
+      font-weight: 600;
+    }
+
+    /* 底部信息栏 */
+    .footer {
+      padding: 0.8% 2.5%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.2));
+      backdrop-filter: blur(15px);
+      flex-shrink: 0;
+      height: 5%;
+    }
+
+    .footer-left {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: clamp(11px, 1.2vw, 12px);
+      color: rgba(255, 255, 255, 0.9);
+      font-weight: 500;
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      background: #00a2ff;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(0, 162, 255, 0.7); }
+      70% { box-shadow: 0 0 0 6px rgba(0, 162, 255, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(0, 162, 255, 0); }
+    }
+
+    .footer-badges {
+      display: flex;
+      gap: 8px;
+    }
+
+    .footer-badge {
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: clamp(8px, 0.9vw, 9px);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: white;
+    }
+
+    .badge-concept {
+      background: linear-gradient(90deg, #00a2ff, #0078d4);
+      box-shadow: 0 0 10px rgba(0, 162, 255, 0.3);
+    }
+
+    .badge-mechanism {
+      background: linear-gradient(90deg, #4834d4, #686de0);
+      box-shadow: 0 0 10px rgba(72, 52, 212, 0.3);
+    }
+
+    /* 新的响应式调整 */
+    @media (max-width: 1400px) {
+      .functions-content {
+        grid-template-columns: 1fr;
+        gap: 2%;
+      }
+      
+      .mechanism-workflow-container {
+        grid-template-columns: 1fr;
+        gap: 2%;
+      }
+    }
+    
+    @media (max-height: 700px) {
+      .main-content {
+        padding: 1.5% 3%;
+      }
+      
+      .core-functions {
+        padding: 2%;
+        margin-bottom: 1.5%;
+      }
+      
+      .mechanism-overview, .workflow-section {
+        padding: 2.5%;
+      }
+      
+      .function-item {
+        padding: 3%;
+      }
+      
+      .content-layout {
+        gap: 2%;
+      }
+    }
+
+    @media (max-height: 600px) {
+      .header {
+        height: 10%;
+        padding: 0.5% 3%;
+      }
+      
+      .footer {
+        height: 8%;
+        padding: 0.5% 3%;
+      }
+      
+      .page-title {
+        margin-bottom: 1.5%;
+      }
+      
+      .summary-box {
+        margin-top: 2%;
+        padding: 2.5%;
+      }
+      
+      .functions-content {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5%;
+      }
+      
+      .mechanism-workflow-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2%;
+      }
+    }
+    
+    @media (max-height: 500px) {
+      .functions-content {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5%;
+      }
+      
+      .function-item {
+        padding: 2%;
+      }
+      
+      .function-desc {
+        font-size: clamp(9px, 1vw, 10px);
+        line-height: 1.3;
+      }
+    }
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(0, 162, 255, 0.7); }
+      70% { box-shadow: 0 0 0 8px rgba(0, 162, 255, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(0, 162, 255, 0); }
+    }
+
+    .footer-badges {
+      display: flex;
+      gap: 10px;
+    }
+
+    .footer-badge {
+      padding: 5px 12px;
+      border-radius: 15px;
+      font-size: clamp(9px, 1vw, 10px);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: white;
+    }
+
+    .badge-topology {
+      background: linear-gradient(90deg, #00a2ff, #0078d4);
+      box-shadow: 0 0 15px rgba(0, 162, 255, 0.3);
+    }
+
+    .badge-planning {
+      background: linear-gradient(90deg, #4834d4, #686de0);
+      box-shadow: 0 0 15px rgba(72, 52, 212, 0.3);
+    }
+
+    /* 模态框样式 */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(5px);
+    }
+
+    .modal-content {
+      position: relative;
+      margin: 5% auto;
+      max-width: 90%;
+      max-height: 80%;
+      background: rgba(17, 24, 39, 0.95);
+      border-radius: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+      animation: modalSlideIn 0.3s ease-out;
+    }
+
+    @keyframes modalSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-50px) scale(0.9);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .modal-header {
+      padding: 3% 4%;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-title {
+      font-size: clamp(18px, 2.5vw, 24px);
+      font-weight: 700;
+      color: #00a2ff;
+      margin: 0;
+    }
+
+    .close {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 35px;
+      height: 35px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .close:hover {
+      color: white;
+      background: rgba(255, 255, 255, 0.2);
+      transform: scale(1.1);
+    }
+
+    .modal-body {
+      padding: 4%;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .topology-image {
+      max-width: 100%;
+      max-height: 60vh;
+      border-radius: 10px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: block;
+      margin: 0 auto;
+    }
+
+    .image-loading {
+      font-size: clamp(16px, 2vw, 20px);
+      color: rgba(255, 255, 255, 0.7);
+      padding: 40px;
+    }
+
+    .image-error {
+      font-size: clamp(14px, 1.8vw, 18px);
+      color: rgba(255, 107, 107, 0.8);
+      padding: 40px;
+    }
+
+    /* 响应式调整 */
+    @media (max-height: 600px) {
+      .main-content {
+        padding: 1.5% 4%;
+      }
+
+      .topology-card, .planning-panel {
+        padding: 3%;
+      }
+
+      .content-layout {
+        gap: 2%;
+      }
+
+      .factors-grid {
+        gap: 1.5%;
+      }
+
+      .modal-content {
+        margin: 2% auto;
+        max-height: 90%;
+      }
+
+      .modal-header {
+        padding: 2% 3%;
+      }
+
+      .modal-body {
+        padding: 3%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <!-- 背景元素 -->
+    <div class="bg-elements">
+      <div class="brain-pattern"></div>
+      <div class="network-signals">
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+      </div>
+    </div>
+
+    <!-- 主要内容 -->
+    <div class="content">
+      <!-- 顶部标识 -->
+      <div class="header">
+        <div class="day-info">
+          <div class="day-badge">1</div>
+          <div class="day-text">第一天：智算网络组网设计与部署</div>
+        </div>
+        <div class="section-indicator">1.4 子网管理器概念-核心控制组件（Subnet Manager SM）</div>
+      </div>
+
+      <!-- 主体内容 -->
+      <div class="main-content">
+        <!-- 页面标题 
+        <div class="page-title">
+          <div class="title-main">子网管理器认知与原理</div>
+          <div class="title-sub">InfiniBand网络的核心控制组件 - Subnet Manager (SM)</div>
+	</div>-->
+
+        <!-- 主要内容布局 -->
+        <div class="content-layout">
+          <!-- 核心功能区域 -->
+          <div class="core-functions">
+            <div class="functions-header">
+		    <!-- <div class="functions-title">核心功能与作用</div> -->
+	      <div class="functions-title" onclick="showTopologyImage('sm-init.png', 'IB Subnet Manager Fabric Initialize Stages')" title="点击👀子网管理器核心功能">IB子网管理器-核心功能</div>
+	      <!-- <div class="functions-subtitle">InfiniBand网络的"大脑"</div> -->
+            </div>
+            <div class="functions-content">
+              <div class="function-item">
+                <div class="function-header">
+                  <div class="function-number">1</div>
+                  <div class="function-name">网络拓扑发现</div>
+                </div>
+                <div class="function-desc">自动扫描并识别所有连接的设备（主机、交换机、HCA/NIC），建立完整的网络拓扑图</div>
+              </div>
+
+              <div class="function-item">
+                <div class="function-header">
+                  <div class="function-number">2</div>
+                  <div class="function-name">分配全局唯一的LID</div>
+                </div>
+                <div class="function-desc">相当于InfiniBand网络中的"IP地址"，确保每个端口在子网内的LID唯一</div>
+              </div>
+
+              <div class="function-item">
+                <div class="function-header">
+                  <div class="function-number">3</div>
+                  <div class="function-name">路由计算与表下发</div>
+                </div>
+                <div class="function-desc">根据拓扑结构计算最佳路径，将路由信息下发到交换机的转发表中</div>
+              </div>
+
+              <div class="function-item">
+                <div class="function-header">
+                  <div class="function-number">4</div>
+                  <div class="function-name">网络配置与维护</div>
+                </div>
+                <div class="function-desc">配置端口速率、链路宽度、QoS、P_Key等参数，支持动态修改而不中断业务</div>
+              </div>
+
+              <div class="function-item">
+                <div class="function-header">
+                  <div class="function-number">5</div>
+                  <div class="function-name">故障检测与恢复</div>
+                </div>
+                <div class="function-desc">监控链路状态和设备健康，故障时自动重新计算路由并下发更新</div>
+              </div>
+
+              <div class="function-item">
+                <div class="function-header">
+                  <div class="function-number">6</div>
+                  <div class="function-name">多子网管理</div>
+                </div>
+                <div class="function-desc">在复杂环境下，可运行多个SM进行冗余，防止单点故障</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 运行机制和工作流程 -->
+          <div class="mechanism-workflow-container">
+            <!-- 运行机制概述 -->
+            <div class="mechanism-overview">
+              <div class="mechanism-title">运行机制简述</div>
+              <div class="mechanism-content">
+                <div class="mechanism-item">
+                  <div class="mechanism-label">位置部署</div>
+                  <div class="mechanism-value">通常运行在管理服务器上，也可运行在交换机内（如NVIDIA交换机内置opensm）</div>
+                </div>
+                <div class="mechanism-item">
+                  <div class="mechanism-label">通信协议</div>
+                  <div class="mechanism-value">基于InfiniBand Subnet Management Protocol（SMP）进行通信</div>
+                </div>
+                <div class="mechanism-item">
+                  <div class="mechanism-label">管理范围</div>
+                  <div class="mechanism-value">管理单个子网内的所有IB设备，支持最多65,536个节点</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 工作流程 -->
+            <div class="workflow-section">
+              <div class="workflow-title">工作流程</div>
+              <div class="workflow-steps">
+                <div class="workflow-step">
+                  <div class="step-arrow">1</div>
+                  <div class="step-text">SM启动时扫描网络（通过管理报文SMP）</div>
+                </div>
+                <div class="workflow-step">
+                  <div class="step-arrow">2</div>
+                  <div class="step-text">收集所有节点信息 → 建立拓扑</div>
+                </div>
+                <div class="workflow-step">
+                  <div class="step-arrow">3</div>
+                  <div class="step-text">分配LID → 生成路由表</div>
+                </div>
+                <div class="workflow-step">
+                  <div class="step-arrow">4</div>
+                  <div class="step-text">下发路由表到各交换机 → 数据通信可用</div>
+                </div>
+                <div class="workflow-step">
+                  <div class="step-arrow">5</div>
+                  <div class="step-text">持续监控链路变化并动态调整</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 总结框 
+        <div class="summary-box">
+          <div class="summary-icon">💡</div>
+          <div class="summary-text">
+            <span class="summary-highlight">总结：</span>子网管理器是InfiniBand网络的核心控制组件，负责<span class="summary-highlight">自动发现、地址分配、路由计算、配置下发和故障恢复</span>，确保整个子网高效、稳定地运行。
+          </div>
+	</div>-->
+      </div>
+
+      <!-- 底部信息 -->
+      <div class="footer">
+        <div class="footer-left">
+          <div class="status-dot"></div>
+          <span>第一天 - 子网管理器概念原理</span>
+        </div>
+        <div class="footer-badges">
+          <div class="footer-badge badge-concept">Concept</div>
+          <div class="footer-badge badge-mechanism">Mechanism</div>
+        </div>
+      </div>
+    </div>
+  </div>
+      <!-- 拓扑图片模态框 -->
+    <div id="topologyModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title" id="modalTitle">拓扑架构图</h2>
+          <span class="close" onclick="closeModal()">&times;</span>
+        </div>
+        <div class="modal-body">
+          <div class="image-loading" id="imageLoading">正在加载图片...</div>
+          <img class="topology-image" id="topologyImage" style="display: none;" alt="拓扑架构图">
+          <div class="image-error" id="imageError" style="display: none;">图片加载失败，请检查图片文件是否存在</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 导航按钮 - 独立于主内容区 -->
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+    <a href="index5.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+    <a href="index7.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+  </div>
+</body>
+</html>

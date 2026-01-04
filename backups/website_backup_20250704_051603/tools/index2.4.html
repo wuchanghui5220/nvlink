@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Infiniband Fabric Spine-Leaf Network Calculator</title>
+    <style>
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #2c3e50;
+            --background-color: #f0f4f8;
+            --card-background: #ffffff;
+            --text-color: #333333;
+        }
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background: linear-gradient(45deg, #4a90e2, #2c3e50);
+            color: white;
+            padding: 20px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        .banner {
+            position: relative;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .banner h1 {
+            font-size: 2.5em;
+            text-align: center;
+            z-index: 2;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        .tech-circles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+        .tech-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            animation: float 10s infinite ease-in-out;
+        }
+        .tech-circle:nth-child(1) {
+            width: 100px;
+            height: 100px;
+            left: 10%;
+            top: 20%;
+        }
+        .tech-circle:nth-child(2) {
+            width: 150px;
+            height: 150px;
+            right: 20%;
+            bottom: 10%;
+            animation-delay: -5s;
+        }
+        .tech-circle:nth-child(3) {
+            width: 80px;
+            height: 80px;
+            left: 50%;
+            top: 50%;
+            animation-delay: -7s;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        header {
+            background: linear-gradient(45deg, #4a90e2, #2c3e50, #4a90e2, #2c3e50);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: white;
+            padding: 20px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .avatar {
+            position: absolute;
+            bottom: -30px;
+            left: 50px;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 4px solid white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 3;
+            transition: transform 0.3s ease;
+        }
+        .avatar:hover {
+            transform: scale(1.1);
+        }
+        .card {
+            background-color: var(--card-background);
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .card-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        .card-content {
+            padding: 20px;
+        }
+        h1, h2 {
+            color: var(--primary-color);
+            margin-top: 0;
+        }
+        p {
+            margin-bottom: 0;
+        }
+        footer {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 40px 0;
+            margin-top: 40px;
+        }
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+        .footer-section {
+            flex: 1;
+            margin: 10px;
+            min-width: 200px;
+        }
+        .footer-section h3 {
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+        .footer-section ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .footer-section ul li {
+            margin-bottom: 10px;
+        }
+        .footer-section ul li a {
+            color: #ddd;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        .footer-section ul li a:hover {
+            color: var(--primary-color);
+        }
+        .social-icons {
+            font-size: 1.5em;
+        }
+        .social-icons a {
+            color: white;
+            margin-right: 10px;
+            text-decoration: none;
+        }
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+            .footer-content {
+                flex-direction: column;
+            }
+            .avatar {
+                left: 20px;
+                width: 80px;
+                height: 80px;
+            }
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .left-panel, .right-panel {
+            width: 100%;
+        }
+        .input-group {
+            margin-bottom: 15px;
+        }
+        .input-row {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .input-col {
+            width: 100%;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1em;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1em;
+            margin-top: 15px;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        #results {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+        #diagram {
+            margin-top: 20px;
+            width: 100%;
+            overflow-x: auto;
+        }
+        svg {
+            width: 100%;
+            height: auto;
+            min-width: 300px;
+        }
+        .diagram-container {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .download-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .download-btn {
+            flex: 1;
+            background-color: #27ae60;
+            font-size: 0.9em;
+        }
+        .download-btn:hover {
+            background-color: #2ecc71;
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        
+        @media (min-width: 768px) {
+            .container {
+                flex-direction: row;
+            }
+            .left-panel, .right-panel {
+                width: 48%;
+            }
+            .input-row {
+                flex-direction: row;
+            }
+            .input-col {
+                width: 48%;
+            }
+            .download-buttons {
+                flex-direction: row;
+            }
+        }
+        
+        /* 存储服务器的样式 */
+        .storage-server {
+            fill: #e74c3c;
+        }
+        
+        /* 为连接线添加特定样式 */
+        .storage-connection {
+            stroke: #e74c3c;
+            stroke-width: 0.5;
+        }
+        
+        .section-title {
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #2c3e50;
+            font-size: 1.1em;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+  <header>
+    <div class="banner">
+        <div class="tech-circles">
+            <div class="tech-circle"></div>
+            <div class="tech-circle"></div>
+            <div class="tech-circle"></div>
+        </div>
+        <h1>Network Topology Calculator</h1>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="left-panel">
+      <h2>Results</h2>
+      <div id="results">
+        <!-- Results will be populated here -->
+      </div>
+    </div>
+    
+    <div class="right-panel">
+      <h2>Configuration</h2>
+      <div class="input-row">
+        <div class="input-col">
+          <label for="switchType">Switch Type:</label>
+          <select id="switchType" onchange="updateNetworkCardOptions()">
+            <option value="QM8700">QM8700 (40-port)</option>
+            <option value="QM9700" selected>QM9700 (64-port)</option>
+            <option value="Q3400">Q3400 (144-port)</option>
+            <option value="SN5600">SN5600 (128-port)</option>
+          </select>
+        </div>
+        <div class="input-col">
+          <label for="networkCardType">Network Card Type:</label>
+          <select id="networkCardType">
+            <option value="200G">200G</option>
+            <option value="400G" selected>400G</option>
+            <option value="800G">800G</option>
+          </select>
+        </div>
+      </div>
+      
+      <div class="section-title">Regular Server Configuration</div>
+      <div class="input-row">
+        <div class="input-col">
+          <label for="numServers">Number of Regular Servers:</label>
+          <input type="number" id="numServers" min="1" value="125">
+        </div>
+        <div class="input-col">
+          <label for="numNetworkCardsPerServer">Network Cards per Server:</label>
+          <input type="number" id="numNetworkCardsPerServer" min="1" max="8" value="1">
+        </div>
+      </div>
+      
+      <div class="input-row">
+        <div class="input-col">
+          <label for="regularLeafCount">Number of Leaf Switches for Regular Servers:</label>
+          <input type="number" id="regularLeafCount" min="1" value="9">
+        </div>
+        <div class="input-col">
+          <label for="regularServerColor">Regular Server Color:</label>
+          <input type="color" id="regularServerColor" value="#2ecc71">
+        </div>
+      </div>
+      
+      <div class="section-title">Storage Server Configuration</div>
+      <div class="input-row">
+        <div class="input-col">
+          <label for="numStorageServers">Number of Storage Servers:</label>
+          <input type="number" id="numStorageServers" min="0" value="20">
+        </div>
+        <div class="input-col">
+          <label for="numNetworkCardsPerStorageServer">Network Cards per Storage Server:</label>
+          <input type="number" id="numNetworkCardsPerStorageServer" min="1" max="8" value="1">
+        </div>
+      </div>
+      
+      <div class="input-row">
+        <div class="input-col">
+          <label for="storageServerLeafCount">Number of Leaf Switches for Storage:</label>
+          <input type="number" id="storageServerLeafCount" min="1" value="2">
+        </div>
+        <div class="input-col">
+          <label for="storageServerColor">Storage Server Color:</label>
+          <input type="color" id="storageServerColor" value="#e74c3c">
+        </div>
+      </div>
+      
+      <div class="section-title">Spine Configuration</div>
+      <div class="input-row">
+        <div class="input-col">
+          <label for="numSpineSwitches">Number of Spine Switches:</label>
+          <input type="number" id="numSpineSwitches" min="1" value="10">
+        </div>
+        <div class="input-col">
+          <label for="spineColor">Spine Switch Color:</label>
+          <input type="color" id="spineColor" value="#3498db">
+        </div>
+      </div>
+      
+      <div class="section-title">Layout Configuration</div>
+      <div class="input-row">
+        <div class="input-col">
+          <label for="spineLeafDistance">Spine-Leaf Distance (px):</label>
+          <input type="number" id="spineLeafDistance" min="100" max="500" value="200">
+        </div>
+        <div class="input-col">
+          <label for="leafNodeDistance">Leaf-Node Distance (px):</label>
+          <input type="number" id="leafNodeDistance" min="100" max="500" value="100">
+        </div>
+      </div>
+      
+      <div class="input-row">
+        <div class="input-col">
+          <label for="serversPerRow">Servers per Row:</label>
+          <select id="serversPerRow">
+            <option value="4">4</option>
+            <option value="8" selected>8</option>
+            <option value="10">10</option>
+            <option value="12">12</option>
+            <option value="16">16</option>
+            <option value="18">18</option>
+          </select>
+        </div>
+        <div class="input-col">
+          <label for="diagramHeight">Diagram Height (px):</label>
+          <input type="number" id="diagramHeight" min="600" max="3000" value="1500">
+        </div>
+      </div>
+      
+      <div class="input-row">
+        <div class="input-col">
+          <label for="nodeRowSpacing">Node Row Spacing (px):</label>
+          <input type="number" id="nodeRowSpacing" min="20" max="200" value="60">
+        </div>
+        <div class="input-col">
+          <label for="imageDPI">Image DPI:</label>
+          <input type="number" id="imageDPI" min="72" max="600" value="300">
+        </div>
+      </div>
+      
+      <button onclick="calculateAndDraw()">Calculate and Generate Diagram</button>
+    </div>
+  </div>
+  
+  <div class="diagram-container">
+    <div id="diagram"></div>
+  </div>
+  
+  <div class="download-buttons">
+    <button class="download-btn" onclick="downloadSVG()">Download Topology as SVG</button>
+    <button class="download-btn" onclick="downloadPNG(false)">Download Topology as PNG (Transparent)</button>
+    <button class="download-btn" onclick="downloadPNG(true)">Download Topology as PNG (White Background)</button>
+  </div>
+
+<script>
+// 初始化D3库
+document.addEventListener('DOMContentLoaded', function() {
+  // 模拟D3库函数，简化版本
+  window.d3 = {
+    select: function(selector) {
+      return {
+        selectAll: function(childSelector) {
+          return {
+            remove: function() {
+              const parent = document.querySelector(selector);
+              if (parent) {
+                const children = parent.querySelectorAll(childSelector);
+                children.forEach(child => child.remove());
+              }
+              return this;
+            }
+          };
+        },
+        append: function(elementType) {
+          const parent = document.querySelector(selector);
+          const element = document.createElementNS("http://www.w3.org/2000/svg", elementType);
+          if (parent) {
+            parent.appendChild(element);
+          }
+          return {
+            attr: function(name, value) {
+              element.setAttribute(name, value);
+              return this;
+            },
+            append: function(childType) {
+              const childElement = document.createElementNS("http://www.w3.org/2000/svg", childType);
+              element.appendChild(childElement);
+              return {
+                attr: function(name, value) {
+                  childElement.setAttribute(name, value);
+                  return this;
+                },
+                append: function(grandchildType) {
+                  const grandchildElement = document.createElementNS("http://www.w3.org/2000/svg", grandchildType);
+                  childElement.appendChild(grandchildElement);
+                  return {
+                    attr: function(name, value) {
+                      grandchildElement.setAttribute(name, value);
+                      return this;
+                    }
+                  };
+                }
+              };
+            }
+          };
+        }
+      };
+    },
+    range: function(count) {
+      return Array.from(Array(count).keys());
+    }
+  };
+  
+  // 初始化页面
+  calculateAndDraw();
+});
+
+function updateNetworkCardOptions() {
+  const switchType = document.getElementById('switchType').value;
+  const networkCardSelect = document.getElementById('networkCardType');
+  
+  switch(switchType) {
+    case 'QM8700':
+      networkCardSelect.value = '200G';
+      break;
+    case 'QM9700':
+    case 'SN5600':
+      networkCardSelect.value = '400G';
+      break;
+    case 'Q3400':
+      networkCardSelect.value = '800G';
+      break;
+  }
+  
+  calculateAndDraw();
+}
+
+function calculateAndDraw() {
+  // 获取所有输入值
+  const switchType = document.getElementById('switchType').value;
+  const networkCardType = document.getElementById('networkCardType').value;
+  const numServers = parseInt(document.getElementById('numServers').value);
+  const numNetworkCardsPerServer = parseInt(document.getElementById('numNetworkCardsPerServer').value);
+  const regularLeafCount = parseInt(document.getElementById('regularLeafCount').value);
+  const regularServerColor = document.getElementById('regularServerColor').value;
+  
+  const numStorageServers = parseInt(document.getElementById('numStorageServers').value);
+  const numNetworkCardsPerStorageServer = parseInt(document.getElementById('numNetworkCardsPerStorageServer').value);
+  const storageServerLeafCount = parseInt(document.getElementById('storageServerLeafCount').value);
+  const storageServerColor = document.getElementById('storageServerColor').value;
+  
+  const numSpineSwitches = parseInt(document.getElementById('numSpineSwitches').value);
+  const spineColor = document.getElementById('spineColor').value;
+  
+  const spineLeafDistance = parseInt(document.getElementById('spineLeafDistance').value);
+  const leafNodeDistance = parseInt(document.getElementById('leafNodeDistance').value);
+  const serversPerRow = parseInt(document.getElementById('serversPerRow').value);
+  const diagramHeight = parseInt(document.getElementById('diagramHeight').value);
+  const nodeRowSpacing = parseInt(document.getElementById('nodeRowSpacing').value);
+
+  // 计算拓扑结果
+  const numRegularLeafSwitches = regularLeafCount;
+  const numLeafSwitches = numRegularLeafSwitches + storageServerLeafCount;
+  const totalPorts = numLeafSwitches * 64 + numSpineSwitches * 64; // 假设64端口
+  
+  // 计算总电缆数量
+  const totalCables = 
+    numServers * numNetworkCardsPerServer + 
+    numStorageServers * numNetworkCardsPerStorageServer + 
+    numLeafSwitches * numSpineSwitches;
+  
+  // 更新结果显示
+  const results = `
+    <p><strong>Switch Type:</strong> ${switchType}</p>
+    <p><strong>Network Card Type:</strong> ${networkCardType}</p>
+    <p><strong>Number of Spine Switches:</strong> ${numSpineSwitches}</p>
+    <p><strong>Number of Leaf Switches:</strong> ${numLeafSwitches} (${numRegularLeafSwitches} for regular servers, ${storageServerLeafCount} for storage servers)</p>
+    <p><strong>Total number of servers:</strong> ${numServers} regular + ${numStorageServers} storage = ${numServers + numStorageServers} total</p>
+    <p><strong>Total number of switch ports:</strong> ${totalPorts}</p>
+    <p><strong>Total number of cables:</strong> ${totalCables}</p>
+  `;
+  
+  document.getElementById('results').innerHTML = results;
+  
+  // 绘制网络拓扑图
+  drawTopology(
+    numSpineSwitches,
+    numRegularLeafSwitches,
+    storageServerLeafCount,
+    numServers,
+    numStorageServers,
+    numNetworkCardsPerServer,
+    numNetworkCardsPerStorageServer,
+    serversPerRow,
+    spineLeafDistance,
+    leafNodeDistance,
+    diagramHeight,
+    nodeRowSpacing,
+    spineColor,
+    regularServerColor,
+    storageServerColor
+  );
+}
+
+function drawTopology(
+  numSpine,
+  numRegularLeaf,
+  storageLeafCount,
+  numServers,
+  numStorageServers,
+  numNetworkCardsPerServer,
+  numNetworkCardsPerStorageServer,
+  serversPerRow,
+  spineLeafDistance,
+  leafNodeDistance,
+  diagramHeight,
+  nodeRowSpacing,
+  spineColor,
+  regularServerColor,
+  storageServerColor
+) {
+  // 清除先前的图表
+  const diagramElement = document.getElementById('diagram');
+  diagramElement.innerHTML = '';
+  
+  const numLeaf = numRegularLeaf + storageLeafCount;
+  const width = Math.max(1000, numLeaf * 100);
+  const height = diagramHeight;
+  
+  // 创建SVG元素
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+  svg.setAttribute("width", width);
+  svg.setAttribute("height", height);
+  diagramElement.appendChild(svg);
+  
+  // 创建连接线和节点组
+  const connectionsGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+  connectionsGroup.setAttribute("class", "connections");
+  svg.appendChild(connectionsGroup);
+  
+  const nodesGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+  nodesGroup.setAttribute("class", "nodes");
+  svg.appendChild(nodesGroup);
+  
+  // 设置布局参数
+  const spineY = 100;
+  const leafY = spineY + spineLeafDistance;
+  const serverY = leafY + leafNodeDistance;
+  
+  // 绘制Spine交换机
+  for (let s = 0; s < numSpine; s++) {
+    const spineX = (width / (numSpine + 1)) * (s + 1);
+    
+    // 绘制Spine方块
+    const spineRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    spineRect.setAttribute("x", spineX - 40);
+    spineRect.setAttribute("y", spineY - 15);
+    spineRect.setAttribute("width", 80);
+    spineRect.setAttribute("height", 30);
+    spineRect.setAttribute("fill", spineColor);
+    spineRect.setAttribute("rx", 5);
+    spineRect.setAttribute("ry", 5);
+    nodesGroup.appendChild(spineRect);
+    
+    // 添加Spine标签
+    const spineText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    spineText.setAttribute("x", spineX);
+    spineText.setAttribute("y", spineY + 5);
+    spineText.setAttribute("text-anchor", "middle");
+    spineText.setAttribute("fill", "white");
+    spineText.setAttribute("font-size", "12px");
+    spineText.textContent = `Spine ${s + 1}`;
+    nodesGroup.appendChild(spineText);
+  }
+  
+  // 绘制Leaf交换机
+  for (let l = 0; l < numLeaf; l++) {
+    const leafX = (width / (numLeaf + 1)) * (l + 1);
+    const isStorageLeaf = l >= numRegularLeaf;
+    
+    // 绘制Leaf方块
+    const leafRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    leafRect.setAttribute("x", leafX - 40);
+    leafRect.setAttribute("y", leafY - 15);
+    leafRect.setAttribute("width", 80);
+    leafRect.setAttribute("height", 30);
+    leafRect.setAttribute("fill", isStorageLeaf ? "#2980b9" : spineColor);
+    leafRect.setAttribute("rx", 5);
+    leafRect.setAttribute("ry", 5);
+    nodesGroup.appendChild(leafRect);
+    
+    // 添加Leaf标签
+    const leafText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    leafText.setAttribute("x", leafX);
+    leafText.setAttribute("y", leafY + 5);
+    leafText.setAttribute("text-anchor", "middle");
+    leafText.setAttribute("fill", "white");
+    leafText.setAttribute("font-size", "12px");
+    leafText.textContent = isStorageLeaf ? `Storage Leaf ${l - numRegularLeaf + 1}` : `Leaf ${l + 1}`;
+    nodesGroup.appendChild(leafText);
+    
+    // 创建Spine和Leaf之间的连接
+    for (let s = 0; s < numSpine; s++) {
+      const spineX = (width / (numSpine + 1)) * (s + 1);
+      
+      const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      const startX = spineX;
+      const startY = spineY + 15;
+      const endX = leafX;
+      const endY = leafY - 15;
+      const midY = (startY + endY) / 2;
+      
+      path.setAttribute("d", `M ${startX} ${startY} C ${startX} ${midY}, ${endX} ${midY}, ${endX} ${endY}`);
+      path.setAttribute("fill", "none");
+      path.setAttribute("stroke", "#34495e");
+      path.setAttribute("stroke-width", "0.5");
+      connectionsGroup.appendChild(path);
+    }
+  }
+  
+  // 添加标题
+  const spineTitle = document.createElementNS("http://www.w3.org/2000/svg", "text");
+  spineTitle.setAttribute("x", width / 2);
+  spineTitle.setAttribute("y", spineY - 40);
+  spineTitle.setAttribute("text-anchor", "middle");
+  spineTitle.setAttribute("font-size", "16px");
+  spineTitle.setAttribute("font-weight", "bold");
+  spineTitle.textContent = "Spine Switches";
+  nodesGroup.appendChild(spineTitle);
+  
+  const leafTitle = document.createElementNS("http://www.w3.org/2000/svg", "text");
+  leafTitle.setAttribute("x", width / 2);
+  leafTitle.setAttribute("y", leafY - 40);
+  leafTitle.setAttribute("text-anchor", "middle");
+  leafTitle.setAttribute("font-size", "16px");
+  leafTitle.setAttribute("font-weight", "bold");
+  leafTitle.textContent = "Leaf Switches";
+  nodesGroup.appendChild(leafTitle);
+  
+  // 计算服务器布局
+  const serverWidth = 60;
+  const serverHeight = 25;
+  const serverSpacing = 70;
+  
+  // 绘制常规服务器
+  const regularServerRows = Math.ceil(numServers / serversPerRow);
+  let lastNodeY = serverY;
+  
+  // 添加服务器标题
+  const serverTitle = document.createElementNS("http://www.w3.org/2000/svg", "text");
+  serverTitle.setAttribute("x", width / 2);
+  serverTitle.setAttribute("y", serverY - 40);
+  serverTitle.setAttribute("text-anchor", "middle");
+  serverTitle.setAttribute("font-size", "16px");
+  serverTitle.setAttribute("font-weight", "bold");
+  serverTitle.textContent = "Regular Servers";
+  nodesGroup.appendChild(serverTitle);
+  
+  // 绘制常规服务器
+  for (let s = 0; s < numServers; s++) {
+    const row = Math.floor(s / serversPerRow);
+    const col = s % serversPerRow;
+    
+    // 计算服务器位置
+    const x = width / 2 + (col - serversPerRow / 2 + 0.5) * serverSpacing;
+    const y = serverY + row * nodeRowSpacing;
+    lastNodeY = Math.max(lastNodeY, y + serverHeight/2);
+    
+    // 创建服务器矩形
+    const serverRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+    serverRect.setAttribute("x", x - serverWidth/2);
+    serverRect.setAttribute("y", y - serverHeight/2);
+    serverRect.setAttribute("width", serverWidth);
+    serverRect.setAttribute("height", serverHeight);
+    serverRect.setAttribute("fill", regularServerColor);
+    serverRect.setAttribute("rx", 5);
+    serverRect.setAttribute("ry", 5);
+    nodesGroup.appendChild(serverRect);
+    
+    // 添加服务器标签
+    const serverText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    serverText.setAttribute("x", x);
+    serverText.setAttribute("y", y + 5);
+    serverText.setAttribute("text-anchor", "middle");
+    serverText.setAttribute("fill", "white");
+    serverText.setAttribute("font-size", "10px");
+    serverText.textContent = `Server ${s + 1}`;
+    nodesGroup.appendChild(serverText);
+    
+    // 创建服务器到Leaf交换机的连接
+    for (let nc = 0; nc < numNetworkCardsPerServer; nc++) {
+      // 计算应连接到哪个Leaf交换机
+      // 这里使用简单的轮询方式分配
+      const targetLeaf = (s + nc) % numRegularLeaf;
+      
+      const leafX = (width / (numLeaf + 1)) * (targetLeaf + 1);
+      
+      const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      const startX = leafX;
+      const startY = leafY + 15;
+      const endX = x;
+      const endY = y - serverHeight/2;
+      const midY = (startY + endY) / 2;
+      
+      path.setAttribute("d", `M ${startX} ${startY} C ${startX} ${midY}, ${endX} ${midY}, ${endX} ${endY}`);
+      path.setAttribute("fill", "none");
+      path.setAttribute("stroke", "#95a5a6");
+      path.setAttribute("stroke-width", "0.5");
+      connectionsGroup.appendChild(path);
+    }
+  }
+  
+  // 计算存储服务器起始位置
+  const storageServerY = lastNodeY + nodeRowSpacing * 2;
+  
+  // 添加存储服务器部分
+  if (numStorageServers > 0) {
+    // 添加存储服务器标题
+    const storageTitle = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    storageTitle.setAttribute("x", width / 2);
+    storageTitle.setAttribute("y", storageServerY - 20);
+    storageTitle.setAttribute("text-anchor", "middle");
+    storageTitle.setAttribute("font-size", "16px");
+    storageTitle.setAttribute("font-weight", "bold");
+    storageTitle.textContent = "Storage Servers";
+    nodesGroup.appendChild(storageTitle);
+    
+    // 绘制存储服务器
+    for (let s = 0; s < numStorageServers; s++) {
+      const row = Math.floor(s / serversPerRow);
+      const col = s % serversPerRow;
+      
+      // 计算存储服务器位置
+      const x = width / 2 + (col - serversPerRow / 2 + 0.5) * serverSpacing;
+      const y = storageServerY + row * nodeRowSpacing;
+      
+      // 创建存储服务器矩形
+      const storageRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      storageRect.setAttribute("x", x - serverWidth/2);
+      storageRect.setAttribute("y", y - serverHeight/2);
+      storageRect.setAttribute("width", serverWidth);
+      storageRect.setAttribute("height", serverHeight);
+      storageRect.setAttribute("fill", storageServerColor);
+      storageRect.setAttribute("rx", 5);
+      storageRect.setAttribute("ry", 5);
+      nodesGroup.appendChild(storageRect);
+      
+      // 添加存储服务器标签
+      const storageText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      storageText.setAttribute("x", x);
+      storageText.setAttribute("y", y + 5);
+      storageText.setAttribute("text-anchor", "middle");
+      storageText.setAttribute("fill", "white");
+      storageText.setAttribute("font-size", "10px");
+      storageText.textContent = `Storage ${s + 1}`;
+      nodesGroup.appendChild(storageText);
+      
+      // 创建存储服务器到存储Leaf交换机的连接
+      for (let nc = 0; nc < numNetworkCardsPerStorageServer; nc++) {
+        // 计算存储服务器应连接到哪个存储Leaf交换机
+        const targetLeaf = numRegularLeaf + (s + nc) % storageLeafCount;
+        
+        const leafX = (width / (numLeaf + 1)) * (targetLeaf + 1);
+        
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        const startX = leafX;
+        const startY = leafY + 15;
+        const endX = x;
+        const endY = y - serverHeight/2;
+        const midY = (startY + endY) / 2;
+        
+        path.setAttribute("d", `M ${startX} ${startY} C ${startX} ${midY}, ${endX} ${midY}, ${endX} ${endY}`);
+        path.setAttribute("fill", "none");
+        path.setAttribute("stroke", storageServerColor);
+        path.setAttribute("stroke-opacity", "0.7");
+        path.setAttribute("stroke-width", "0.5");
+        connectionsGroup.appendChild(path);
+      }
+    }
+  }
+}
+
+// 下载SVG函数
+function downloadSVG() {
+  const svgElement = document.querySelector('#diagram svg');
+  const svgData = new XMLSerializer().serializeToString(svgElement);
+  const svgBlob = new Blob([svgData], {type: 'image/svg+xml;charset=utf-8'});
+  const svgUrl = URL.createObjectURL(svgBlob);
+  
+  const downloadLink = document.createElement('a');
+  downloadLink.href = svgUrl;
+  downloadLink.download = 'network_topology.svg';
+  document.body.appendChild(downloadLink);
+  downloadLink.click();
+  document.body.removeChild(downloadLink);
+}
+
+// 下载PNG函数
+function downloadPNG(withBackground) {
+  const svgElement = document.querySelector('#diagram svg');
+  const svgData = new XMLSerializer().serializeToString(svgElement);
+  const svgBlob = new Blob([svgData], {type: 'image/svg+xml;charset=utf-8'});
+  const svgUrl = URL.createObjectURL(svgBlob);
+  
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  const img = new Image();
+  const dpi = parseInt(document.getElementById('imageDPI').value);
+  const scale = dpi / 96;
+  
+  img.onload = function() {
+    canvas.width = img.width * scale;
+    canvas.height = img.height * scale;
+    
+    if (withBackground) {
+      ctx.fillStyle = 'white';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+    
+    ctx.scale(scale, scale);
+    ctx.drawImage(img, 0, 0);
+    
+    canvas.toBlob(function(blob) {
+      const downloadLink = document.createElement('a');
+      downloadLink.href = URL.createObjectURL(blob);
+      downloadLink.download = withBackground ? 'network_topology_white_bg.png' : 'network_topology_transparent.png';
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+    });
+  };
+  
+  img.src = svgUrl;
+}
+
+// 页面加载完成后初始化
+document.addEventListener('DOMContentLoaded', function() {
+  calculateAndDraw();
+});
+
+// 窗口大小变化时重新绘制
+window.addEventListener('resize', calculateAndDraw);

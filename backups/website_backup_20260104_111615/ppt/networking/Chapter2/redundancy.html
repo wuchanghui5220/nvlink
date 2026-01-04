@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>冗余与高可用性 - IB网络拓扑规划</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #ffffff 0%, #f1f8ff 50%, #f0f9f4 100%);
+            color: #2c3e50;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* 装饰元素 - 右上角圆点网格 */
+        .decoration-dots {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            width: 10px;
+            height: 10px;
+            background: #3b82f6;
+            border-radius: 50%;
+            opacity: 0.6;
+            box-shadow:
+                20px 0 0 rgba(59, 130, 246, 0.5),
+                40px 0 0 rgba(59, 130, 246, 0.4),
+                0 20px 0 rgba(59, 130, 246, 0.4),
+                20px 20px 0 rgba(59, 130, 246, 0.3),
+                40px 20px 0 rgba(59, 130, 246, 0.25),
+                0 40px 0 rgba(59, 130, 246, 0.3),
+                20px 40px 0 rgba(59, 130, 246, 0.2),
+                40px 40px 0 rgba(59, 130, 246, 0.15);
+        }
+
+        /* 装饰元素 - 左下角几何方框 */
+        .decoration-boxes {
+            position: absolute;
+            bottom: 40px;
+            left: 40px;
+            width: 60px;
+            height: 60px;
+            border: 3px solid #22c55e;
+            transform: rotate(15deg);
+            opacity: 0.4;
+        }
+
+        .decoration-boxes::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            width: 40px;
+            height: 40px;
+            border: 3px solid #22c55e;
+            opacity: 0.6;
+        }
+
+        .decoration-boxes::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            right: -8px;
+            width: 30px;
+            height: 30px;
+            border: 3px solid #22c55e;
+            opacity: 0.3;
+        }
+
+        /* 紧凑型页眉 */
+        .slide-header {
+            display: flex;
+            align-items: center;
+            padding: 20px 60px;
+            gap: 20px;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.15);
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+        }
+
+        .nvidia-logo svg {
+            height: 30px;
+            width: auto;
+        }
+
+        .title-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .main-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #1e40af, #3b82f6, #22c55e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 0.85rem;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .breadcrumb {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .breadcrumb a {
+            color: #3b82f6;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .breadcrumb a:hover {
+            color: #1e40af;
+        }
+
+        /* 主内容区 */
+        .main-content {
+            padding: 40px 60px;
+            height: calc(100vh - 180px);
+            overflow-y: auto;
+        }
+
+        /* 2x2网格布局 */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .content-section {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 25px;
+            border-radius: 12px;
+            border: 1px solid rgba(59, 130, 246, 0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            max-height: calc((100vh - 280px) / 2);
+            overflow-y: auto;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #1e40af;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3b82f6;
+        }
+
+        .content-section h3 {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: #22c55e;
+            margin: 15px 0 10px 0;
+        }
+
+        .content-section ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .content-section li {
+            position: relative;
+            padding-left: 24px;
+            margin-bottom: 10px;
+            line-height: 1.6;
+            color: #475569;
+            font-size: 0.95rem;
+        }
+
+        .content-section li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: #22c55e;
+            font-weight: bold;
+        }
+
+        .content-section li strong {
+            color: #1e40af;
+            font-weight: 600;
+        }
+
+        /* 对比卡片 */
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .comparison-card {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(34, 197, 94, 0.05));
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .comparison-card h4 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #1e40af;
+            margin-bottom: 8px;
+        }
+
+        .comparison-card p {
+            font-size: 0.85rem;
+            color: #64748b;
+            line-height: 1.5;
+        }
+
+        /* 底部信息 */
+        .slide-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 60px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(59, 130, 246, 0.15);
+        }
+
+        .presenter-info {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .presenter-name {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .presenter-title {
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+
+        .slide-number {
+            background: linear-gradient(45deg, rgba(59, 130, 246, 0.1), rgba(34, 197, 94, 0.1));
+            padding: 8px 16px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            color: #475569;
+            font-weight: 500;
+        }
+
+        /* 导航控制 */
+        .navigation-controls {
+            position: fixed;
+            bottom: 70px;
+            right: 60px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .nav-button {
+            background: linear-gradient(45deg, rgba(59, 130, 246, 0.1), rgba(34, 197, 94, 0.1));
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: #1e40af;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-button:hover {
+            background: linear-gradient(45deg, #3b82f6, #22c55e);
+            color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        /* 动画效果 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .content-section {
+            animation: fadeInUp 0.6s ease;
+        }
+
+        .content-section:nth-child(1) { animation-delay: 0.1s; }
+        .content-section:nth-child(2) { animation-delay: 0.2s; }
+        .content-section:nth-child(3) { animation-delay: 0.3s; }
+        .content-section:nth-child(4) { animation-delay: 0.4s; }
+
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+            .content-section {
+                max-height: none;
+            }
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .slide-header,
+            .main-content,
+            .slide-footer {
+                padding-left: 30px;
+                padding-right: 30px;
+            }
+            .navigation-controls {
+                right: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="decoration-dots"></div>
+    <div class="decoration-boxes"></div>
+
+    <!-- 页眉 -->
+    <header class="slide-header">
+        <div class="nvidia-logo">
+            <svg xmlns="http://www.w3.org/2000/svg" width="120" height="80" viewBox="0 0 48 32" fill="none">
+                <path d="M17.9101 9.54961V6.65962C18.1893 6.64003 18.4704 6.624 18.7567 6.6151C26.6044 6.36581 31.7531 13.4083 31.7531 13.4083C31.7531 13.4083 26.1926 21.1897 20.2308 21.1897C19.3718 21.1897 18.6029 21.0508 17.9101 20.8158V12.0496C20.9661 12.4218 21.5794 13.7804 23.4158 16.8645L27.5005 13.394C27.5005 13.394 24.5188 9.45345 19.492 9.45345C18.9458 9.45345 18.4227 9.49263 17.9083 9.54783L17.9101 9.54961ZM17.9083 0V4.31807C18.1893 4.29492 18.4721 4.27711 18.7549 4.26643C29.6675 3.89606 36.7781 13.2836 36.7781 13.2836C36.7781 13.2836 28.6123 23.2873 20.1035 23.2873C19.3241 23.2873 18.5941 23.2143 17.9083 23.0932V25.7624C18.4951 25.8372 19.1031 25.8817 19.7359 25.8817C27.6525 25.8817 33.3792 21.8094 38.9239 16.9874C39.843 17.7281 43.606 19.5319 44.3802 20.3225C39.1077 24.7688 26.8236 28.3515 19.8579 28.3515C19.1862 28.3515 18.5411 28.3105 17.9083 28.25V32H48V0.00178103H17.9101L17.9083 0ZM17.9083 20.814V23.0932C10.5856 21.7773 8.55293 14.1098 8.55293 14.1098C8.55293 14.1098 12.0685 10.1853 17.9083 9.54961V12.0496C17.9083 12.0496 17.9012 12.0496 17.8977 12.0496C14.8329 11.6793 12.4397 14.5639 12.4397 14.5639C12.4397 14.5639 13.7812 19.4197 17.9101 20.8175L17.9083 20.814ZM4.90481 13.7804C4.90481 13.7804 9.24403 7.32914 17.9101 6.6614V4.32163C8.31255 5.09799 0 13.2872 0 13.2872C0 13.2872 4.70685 26.9982 17.9101 28.2535V25.766C8.22064 24.5373 4.90481 13.7804 4.90481 13.7804Z" fill="#76B900"/>
+            </svg>
+        </div>
+        <div class="title-area">
+            <h1 class="main-title">IB网络拓扑规划</h1>
+            <p class="subtitle">第二章：冗余与高可用性方案</p>
+        </div>
+        <nav class="breadcrumb">
+            <a href="../index.html">首页</a> →
+            <a href="../catalog.html">目录</a> →
+            <a href="index.html">第二章</a> →
+            <span>冗余与高可用</span>
+        </nav>
+    </header>
+
+    <!-- 主内容 -->
+    <main class="main-content">
+        <div class="content-grid">
+            <!-- 多路径冗余 -->
+            <div class="content-section">
+                <h2 class="section-title">多路径冗余</h2>
+
+                <h3>核心机制</h3>
+                <ul>
+                    <li><strong>交换网络架构</strong>：IB天然支持设备间多个通信路径</li>
+                    <li><strong>自动故障恢复</strong>：链路或端口故障时，SM自动重新计算路由</li>
+                    <li><strong>流量引导</strong>：将流量引导至备用路径，实现故障隔离</li>
+                    <li><strong>快速切换</strong>：业务快速恢复，减少服务中断时间</li>
+                </ul>
+
+                <h3>技术优势</h3>
+                <ul>
+                    <li>无需手动干预，自动化故障处理</li>
+                    <li>多条路径同时可用，提高网络容错性</li>
+                    <li>支持动态负载均衡和流量优化</li>
+                    <li>适用于大规模HPC和AI集群部署</li>
+                </ul>
+
+                <h3>实施要点</h3>
+                <ul>
+                    <li>合理规划网络拓扑，确保路径冗余</li>
+                    <li>配置子网管理器自动路由重算</li>
+                    <li>定期监控链路状态和路径健康度</li>
+                    <li>结合胖树拓扑实现最佳冗余效果</li>
+                </ul>
+            </div>
+
+            <!-- 双交换机冗余拓扑 -->
+            <div class="content-section">
+                <h2 class="section-title">双交换机冗余拓扑</h2>
+
+                <h3>部署方案</h3>
+                <ul>
+                    <li><strong>双核心交换机</strong>：使用两台或多台核心交换机</li>
+                    <li><strong>双端口连接</strong>：每个节点通过不同网卡连接不同交换机</li>
+                    <li><strong>设备级冗余</strong>：实现交换机级别的故障隔离</li>
+                    <li><strong>灵活配置</strong>：支持主备和负载均衡两种模式</li>
+                </ul>
+
+                <h3>工作模式对比</h3>
+                <div class="comparison-grid">
+                    <div class="comparison-card">
+                        <h4>主备模式 (Active-Backup)</h4>
+                        <p>一个接口活动，其余待机。故障时自动切换到备用链路，确保连续性。</p>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>负载均衡模式</h4>
+                        <p>流量同时经过多条链路，既实现冗余又提升总带宽，需要更复杂的配置。</p>
+                    </div>
+                </div>
+
+                <h3>设计考量</h3>
+                <ul>
+                    <li><strong>目标定位</strong>：确定是追求冗余还是性能提升</li>
+                    <li><strong>交换机互联</strong>：根据应用需求决定是否需要交换机间互联</li>
+                    <li><strong>布线策略</strong>：优化布线降低单点故障风险</li>
+                    <li><strong>成本平衡</strong>：权衡冗余级别和硬件投资</li>
+                </ul>
+            </div>
+
+            <!-- 子网管理器冗余 -->
+            <div class="content-section">
+                <h2 class="section-title">子网管理器(SM)冗余</h2>
+
+                <h3>重要性</h3>
+                <ul>
+                    <li><strong>网络大脑</strong>：SM是IB网络的核心控制组件</li>
+                    <li><strong>关键任务</strong>：负责链路初始化、路由分配和状态管理</li>
+                    <li><strong>单点风险</strong>：SM失效会导致整个子网瘫痪</li>
+                    <li><strong>必要配置</strong>：生产环境必须配置SM冗余</li>
+                </ul>
+
+                <h3>冗余机制</h3>
+                <ul>
+                    <li><strong>多SM部署</strong>：子网内可存在多个SM实例</li>
+                    <li><strong>Master-Standby</strong>：仅一个Master SM活动，其余Standby待机</li>
+                    <li><strong>自动接管</strong>：Master失效时，Standby自动升级为Master</li>
+                    <li><strong>状态同步</strong>：确保网络管理的连续性和一致性</li>
+                </ul>
+
+                <h3>部署建议</h3>
+                <ul>
+                    <li>至少部署3个SM实例，分布在不同物理位置</li>
+                    <li>配置SM优先级，确保主备顺序明确</li>
+                    <li>定期测试故障切换流程，验证冗余有效性</li>
+                    <li>监控SM健康状态，及时发现异常</li>
+                </ul>
+            </div>
+
+            <!-- 电源与风扇冗余 -->
+            <div class="content-section">
+                <h2 class="section-title">电源与风扇冗余</h2>
+
+                <h3>硬件级高可用</h3>
+                <ul>
+                    <li><strong>企业级特性</strong>：高端IB交换机标配的可靠性设计</li>
+                    <li><strong>冗余电源</strong>：双电源或N+1电源模块配置</li>
+                    <li><strong>冗余风扇</strong>：多风扇模块并联运行，单个故障不影响整体</li>
+                    <li><strong>热插拔能力</strong>：支持在线更换故障模块，无需停机</li>
+                </ul>
+
+                <h3>设计优势</h3>
+                <ul>
+                    <li>单个组件故障不会导致交换机下线</li>
+                    <li>提升系统整体可用性和MTBF(平均无故障时间)</li>
+                    <li>降低维护成本和业务中断风险</li>
+                    <li>符合数据中心Tier III/IV高可用标准</li>
+                </ul>
+
+                <h3>维护实践</h3>
+                <ul>
+                    <li>配置电源和风扇状态告警监控</li>
+                    <li>定期检查硬件健康状态和温度指标</li>
+                    <li>备份常用的电源和风扇模块</li>
+                    <li>建立故障响应流程和备件管理制度</li>
+                </ul>
+
+                <h3>典型配置</h3>
+                <ul>
+                    <li><strong>电源配置</strong>：1+1冗余或N+1冗余电源模块</li>
+                    <li><strong>风扇配置</strong>：N+1或N+2冗余风扇阵列</li>
+                    <li><strong>监控系统</strong>：SNMP、IPMI、Web管理界面</li>
+                    <li><strong>告警机制</strong>：邮件、短信、Syslog多渠道通知</li>
+                </ul>
+            </div>
+        </div>
+    </main>
+
+    <!-- 底部信息 -->
+    <footer class="slide-footer">
+        <div class="presenter-info">
+            <div class="presenter-name">Vincent / CTO</div>
+            <div class="presenter-title">吴昌辉</div>
+        </div>
+        <div class="slide-number">2-3 / 2-3</div>
+    </footer>
+
+    <!-- 导航控制 -->
+    <div class="navigation-controls">
+        <button class="nav-button" onclick="prevPage()">← 上一页</button>
+        <button class="nav-button" onclick="nextChapter()">下一章 →</button>
+    </div>
+
+    <script>
+        function prevPage() {
+            window.location.href = 'fat-tree.html';
+        }
+
+        function nextChapter() {
+            // 返回到目录页面，准备进入下一章
+            window.location.href = '../catalog.html';
+        }
+
+        // 键盘导航
+        document.addEventListener('keydown', function(e) {
+            if (e.code === 'ArrowLeft') {
+                e.preventDefault();
+                prevPage();
+            } else if (e.code === 'ArrowRight') {
+                e.preventDefault();
+                nextChapter();
+            } else if (e.code === 'Escape') {
+                window.location.href = '../catalog.html';
+            }
+        });
+    </script>
+</body>
+</html>

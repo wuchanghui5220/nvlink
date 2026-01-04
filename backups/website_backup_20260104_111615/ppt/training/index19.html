@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>操作系统与基础配置</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    :root {
+      --primary-blue: #00a2ff;
+      --primary-green: #76b900;
+      --primary-red: #ff6b6b;
+      --primary-purple: #4834d4;
+      --text-primary: #ffffff;
+      --text-secondary: rgba(255, 255, 255, 0.87);
+      --glass-light: rgba(255, 255, 255, 0.08);
+      --glass-border: rgba(255, 255, 255, 0.2);
+      --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .main-content { padding: 1% 2%; flex: 1; display: flex; flex-direction: column; min-height: 0; overflow: hidden; max-width: 1400px; margin: 0 auto; width: 100%; }
+    .page-title { text-align: center; margin-bottom: 1.2%; flex-shrink: 0; }
+    .title-main { font-size: clamp(24px, 2.8vw, 30px); font-weight: 800; background: linear-gradient(135deg, var(--primary-green) 0%, var(--primary-blue) 50%, var(--primary-purple) 100%); -webkit-background-clip: text; background-clip: text; color: transparent; margin-bottom: 0.6%; }
+    .title-sub { font-size: clamp(14px, 1.6vw, 18px); color: rgba(255, 255, 255, 0.8); font-weight: 400; margin-bottom: 0.6%; }
+    .content-grid { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 2%; min-height: 0; overflow: hidden; }
+    .content-section { display: flex; flex-direction: column; gap: 1.5%; min-height: 0; overflow-y: auto; }
+    .section-title { font-size: clamp(16px, 1.8vw, 20px); font-weight: 700; color: var(--text-primary); margin-bottom: 1%; padding: 1.5%; border-radius: 8px; text-align: center; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); }
+    .section-title.os { background: linear-gradient(135deg, rgba(118, 185, 0, 0.25), rgba(118, 185, 0, 0.15)); border: 2px solid rgba(118, 185, 0, 0.4); }
+    .section-title.config { background: linear-gradient(135deg, rgba(0, 162, 255, 0.25), rgba(0, 162, 255, 0.15)); border: 2px solid rgba(0, 162, 255, 0.4); }
+    .content-item { background: linear-gradient(135deg, var(--glass-light), rgba(255, 255, 255, 0.04)); border: 1px solid var(--glass-border); border-radius: 10px; padding: 2%; transition: var(--transition-smooth); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); }
+    .content-item:hover { background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06)); border-color: rgba(255, 255, 255, 0.35); transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25); }
+    .item-header { display: flex; align-items: center; gap: 12px; margin-bottom: 1%; }
+    .item-icon { width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: clamp(14px, 1.4vw, 16px); color: white; flex-shrink: 0; box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3); }
+    .os .item-icon { background: linear-gradient(135deg, var(--primary-green), #3e703e); }
+    .kernel .item-icon { background: linear-gradient(135deg, var(--primary-blue), #0078d4); }
+    .service .item-icon { background: linear-gradient(135deg, var(--primary-purple), #686de0); }
+    .security .item-icon { background: linear-gradient(135deg, var(--primary-red), #ee5a24); }
+    .item-title { font-size: clamp(15px, 1.7vw, 18px); font-weight: 700; color: var(--text-primary); flex: 1; line-height: 1.3; }
+    .item-content { font-size: clamp(12px, 1.4vw, 15px); color: var(--text-secondary); line-height: 1.5; margin-bottom: 1%; font-weight: 400; }
+    .config-example { background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.2); border-left: 3px solid; padding: 1.5%; border-radius: 0 6px 6px 0; font-family: 'Courier New', monospace; font-size: clamp(11px, 1.2vw, 13px); color: #e8f4fd; line-height: 1.4; margin-bottom: 0.5%; }
+    .os .config-example { border-left-color: var(--primary-green); }
+    .kernel .config-example { border-left-color: var(--primary-blue); }
+    .service .config-example { border-left-color: var(--primary-purple); }
+    .security .config-example { border-left-color: var(--primary-red); }
+    .summary-note { background: linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(76, 175, 80, 0.1)); border: 2px solid rgba(76, 175, 80, 0.4); border-radius: 8px; padding: 2%; margin-top: 1.5%; text-align: center; box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2); }
+    .summary-text { font-size: clamp(14px, 1.6vw, 17px); color: rgba(255, 255, 255, 0.9); font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px; }
+    .highlight { color: #4caf50; font-weight: 700; }
+    @media (max-width: 1200px) { .content-grid { grid-template-columns: 1fr; gap: 1.5%; } }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <div class="bg-elements">
+      <div class="brain-pattern"></div>
+      <div class="network-signals">
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+      </div>
+    </div>
+    <div class="content">
+      <div class="header" style="padding: 0.6% 2%;">
+        <div class="day-info">
+          <div class="day-badge">3</div>
+          <div class="day-text">第三天：GPU服务器基础测试</div>
+        </div>
+        <div class="section-indicator">操作系统与基础配置</div>
+      </div>
+      <div class="main-content">
+        <div class="page-title">
+          <div class="title-main">操作系统与基础配置</div>
+          <div class="title-sub">GPU服务器操作系统安装和基础优化配置</div>
+        </div>
+        <div class="content-grid">
+          <div class="content-section">
+            <div class="section-title os">操作系统选择与安装</div>
+            <div class="content-item os">
+              <div class="item-header">
+                <div class="item-icon">🐧</div>
+                <div class="item-title">操作系统选择</div>
+              </div>
+              <div class="item-content">
+                **Ubuntu:** 最受欢迎的选择，拥有庞大的社区支持，与NVIDIA驱动、CUDA及主流AI框架（TensorFlow, PyTorch）兼容性极佳。<br>
+                **RHEL/Rocky Linux:** 在企业环境中因其稳定性和长期支持而备受青睐。NVIDIA同样提供官方支持。
+              </div>
+              <div class="config-example">Ubuntu 20.04/22.04 LTS (kernel 5.4+/5.15+)</div>
+              <div class="config-example">RHEL/Rocky Linux 8/9 (kernel 4.18+/5.14+)</div>
+            </div>
+            <div class="content-item kernel">
+              <div class="item-header">
+                <div class="item-icon">⚙️</div>
+                <div class="item-title">基础配置与命令</div>
+              </div>
+              <div class="item-content">
+                **系统更新:** 保持系统最新是安全和稳定的基础。<br>
+                **安装编译工具:** 安装驱动和CUDA Toolkit需要`gcc`等编译工具。<br>
+                **关闭图形化界面:** 对于专用的计算服务器，图形化界面会占用宝贵的GPU资源。
+              </div>
+              <div class="config-example"># Ubuntu/Debian: sudo apt update && sudo apt full-upgrade -y</div>
+              <div class="config-example"># 设置默认启动模式为文本模式: sudo systemctl set-default multi-user.target</div>
+            </div>
+          </div>
+          <div class="content-section">
+            <div class="section-title config">系统优化配置</div>
+            <div class="content-item service">
+              <div class="item-header">
+                <div class="item-icon">🔧</div>
+                <div class="item-title">系统服务配置</div>
+              </div>
+              <div class="item-content">
+                启用必要的系统服务，禁用不需要的后台进程以释放系统资源。<br>
+                配置自动启动服务和系统监控组件，保证系统稳定运行。<br>
+                建立标准化的服务管理和监控机制。
+              </div>
+              <div class="config-example"># 禁用不必要的服务: systemctl disable firewalld</div>
+              <div class="config-example"># 启用GPU持久化服务: systemctl enable nvidia-persistenced</div>
+            </div>
+            <div class="content-item security">
+              <div class="item-header">
+                <div class="item-icon">🛡️</div>
+                <div class="item-title">安全配置</div>
+              </div>
+              <div class="item-content">
+                配置SSH安全访问策略，建议禁用root直接登录和密码认证。<br>
+                设置防火墙和访问控制策略，保护系统安全。<br>
+                建立用户权限管理和审计日志机制，保证系统安全可追溯。
+              </div>
+              <div class="config-example"># SSH配置: PermitRootLogin no</div>
+              <div class="config-example"># 禁用密码认证: PasswordAuthentication no</div>
+            </div>
+          </div>
+        </div>
+        <div class="summary-note">
+          <div class="summary-text">
+            <div>🖥️</div>
+            <span><span class="highlight">配置原则：</span>选择和配置合适的操作系统是后续所有工作的前提</span>
+          </div>
+        </div>
+      </div>
+      <div class="footer" style="padding: 0.6% 2%;">
+        <div class="footer-left">
+          <div class="status-dot"></div>
+          <span>第三天 - 操作系统与基础配置</span>
+        </div>
+        <div class="footer-badges">
+          <div class="footer-badge badge-install">OS</div>
+          <div class="footer-badge badge-config">SETUP</div>
+          <div class="footer-badge badge-command">CONFIG</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+    <a href="index18.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+    <a href="index20.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+  </div>
+</body>
+</html>

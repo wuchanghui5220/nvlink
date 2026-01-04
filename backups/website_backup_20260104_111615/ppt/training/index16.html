@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>第三天：GPU服务器基础测试</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    :root {
+      --primary-blue: #00a2ff;
+      --primary-blue-dark: #0078d4;
+      --primary-purple: #4834d4;
+      --primary-purple-light: #686de0;
+      --primary-red: #ff6b6b;
+      --primary-red-dark: #ee5a24;
+      --primary-green: #76b900;
+      --primary-green-dark: #3e703e;
+      --primary-orange: #ffa500;
+      --primary-orange-dark: #ff8c00;
+      --primary-teal: #17a2b8;
+      --primary-teal-dark: #138496;
+      --text-primary: #ffffff;
+      --text-secondary: rgba(255, 255, 255, 0.85);
+      --text-tertiary: rgba(255, 255, 255, 0.8);
+      --glass-light: rgba(255, 255, 255, 0.08);
+      --glass-lighter: rgba(255, 255, 255, 0.04);
+      --glass-border: rgba(255, 255, 255, 0.2);
+      --glass-border-hover: rgba(255, 255, 255, 0.35);
+      --shadow-base: rgba(0, 0, 0, 0.15);
+      --shadow-elevated: rgba(0, 0, 0, 0.25);
+      --border-accent-width: 6px;
+      --border-radius-card: 12px;
+      --spacing-md: 1.5%;
+      --spacing-lg: 2%;
+      --spacing-xl: 2.2%;
+      --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .main-content {
+      padding: 1% 2%;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .page-title {
+      text-align: center;
+      margin-bottom: var(--spacing-md);
+      flex-shrink: 0;
+    }
+
+    .title-main {
+      font-size: clamp(24px, 2.8vw, 30px);
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary-orange) 0%, var(--primary-teal) 50%, var(--primary-purple) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 0.8%;
+      text-shadow: none;
+    }
+
+    .title-sub {
+      font-size: clamp(14px, 1.6vw, 18px);
+      color: var(--text-tertiary);
+      font-weight: 400;
+      margin-bottom: 0.8%;
+    }
+
+    .menu-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-lg);
+      min-height: 0;
+      overflow-y: auto;
+      max-width: 1100px;
+      margin: 0 auto;
+      width: 100%;
+      scroll-behavior: smooth;
+    }
+
+    .menu-item {
+      background: linear-gradient(135deg, var(--glass-light), var(--glass-lighter));
+      border: 1px solid var(--glass-border);
+      border-radius: var(--border-radius-card);
+      padding: var(--spacing-xl);
+      transition: var(--transition-smooth);
+      position: relative;
+      overflow: visible;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      box-shadow: 0 4px 12px var(--shadow-base);
+      will-change: transform, box-shadow;
+    }
+
+    .menu-item::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: var(--border-accent-width);
+      height: 100%;
+      border-radius: 3px 0 0 3px;
+      transition: var(--transition-smooth);
+    }
+
+    .menu-item:nth-child(1)::before { 
+      background: linear-gradient(180deg, var(--primary-blue), var(--primary-blue-dark)); 
+    }
+    .menu-item:nth-child(2)::before { 
+      background: linear-gradient(180deg, var(--primary-purple), var(--primary-purple-light)); 
+    }
+    .menu-item:nth-child(3)::before { 
+      background: linear-gradient(180deg, var(--primary-red), var(--primary-red-dark)); 
+    }
+    .menu-item:nth-child(4)::before { 
+      background: linear-gradient(180deg, var(--primary-green), var(--primary-green-dark)); 
+    }
+    .menu-item:nth-child(5)::before { 
+      background: linear-gradient(180deg, var(--primary-orange), var(--primary-orange-dark)); 
+    }
+    .menu-item:nth-child(6)::before { 
+      background: linear-gradient(180deg, var(--primary-teal), var(--primary-teal-dark)); 
+    }
+
+    .menu-item:hover {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06));
+      border-color: var(--glass-border-hover);
+      transform: translateX(6px) translateY(-3px);
+      box-shadow: 0 12px 24px var(--shadow-elevated);
+    }
+
+    .menu-item:hover::before {
+      width: 8px;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+    }
+
+    .menu-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: var(--spacing-md);
+    }
+
+    .menu-number {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(14px, 1.6vw, 16px);
+      font-weight: 700;
+      color: var(--text-primary);
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      transition: var(--transition-smooth);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .menu-number::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: inherit;
+      border-radius: inherit;
+      opacity: 0;
+      transition: var(--transition-smooth);
+    }
+
+    .menu-item:hover .menu-number {
+      transform: scale(1.1);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+    }
+
+    .menu-item:hover .menu-number::before {
+      opacity: 0.2;
+      transform: scale(1.5);
+    }
+
+    .menu-item:nth-child(1) .menu-number { 
+      background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-dark)); 
+    }
+    .menu-item:nth-child(2) .menu-number { 
+      background: linear-gradient(135deg, var(--primary-purple), var(--primary-purple-light)); 
+    }
+    .menu-item:nth-child(3) .menu-number { 
+      background: linear-gradient(135deg, var(--primary-red), var(--primary-red-dark)); 
+    }
+    .menu-item:nth-child(4) .menu-number { 
+      background: linear-gradient(135deg, var(--primary-green), var(--primary-green-dark)); 
+    }
+    .menu-item:nth-child(5) .menu-number { 
+      background: linear-gradient(135deg, var(--primary-orange), var(--primary-orange-dark)); 
+    }
+    .menu-item:nth-child(6) .menu-number { 
+      background: linear-gradient(135deg, var(--primary-teal), var(--primary-teal-dark)); 
+    }
+
+    .menu-title {
+      font-size: clamp(16px, 1.8vw, 20px);
+      font-weight: 700;
+      color: var(--text-primary);
+      flex: 1;
+      line-height: 1.3;
+      transition: var(--transition-smooth);
+    }
+
+    .menu-item:hover .menu-title {
+      color: rgba(255, 255, 255, 0.95);
+      text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+    }
+
+    .menu-desc {
+      margin-left: 40px;
+      font-size: clamp(12px, 1.4vw, 15px);
+      color: var(--text-secondary);
+      line-height: 1.6;
+      font-weight: 400;
+      margin-top: 0.5%;
+      transition: var(--transition-smooth);
+    }
+
+    .menu-item:hover .menu-desc {
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .training-note {
+      background: linear-gradient(135deg, rgba(76, 175, 80, 0.25), rgba(76, 175, 80, 0.12));
+      border: 2px solid rgba(76, 175, 80, 0.4);
+      border-radius: 10px;
+      padding: var(--spacing-lg);
+      margin-top: var(--spacing-lg);
+      flex-shrink: 0;
+      text-align: center;
+      max-width: 1100px;
+      margin-left: auto;
+      margin-right: auto;
+      box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
+      transition: var(--transition-smooth);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .training-note::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      transition: left 0.6s ease;
+    }
+
+    .training-note:hover::before {
+      left: 100%;
+    }
+
+    .training-note:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(76, 175, 80, 0.3);
+      border-color: rgba(76, 175, 80, 0.6);
+    }
+
+    .training-text {
+      font-size: clamp(14px, 1.6vw, 17px);
+      color: rgba(255, 255, 255, 0.9);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .training-icon {
+      font-size: 1.3em;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    .highlight-training {
+      color: #4caf50;
+      font-weight: 700;
+    }
+
+    /* 响应式设计优化 */
+    @media (max-height: 700px) {
+      :root {
+        --spacing-md: 1.2%;
+        --spacing-lg: 1.5%;
+        --spacing-xl: 2%;
+      }
+      
+      .main-content {
+        padding: 0.8% 1.5%;
+      }
+    }
+
+    @media (max-height: 600px) {
+      :root {
+        --spacing-md: 1%;
+        --spacing-lg: 1.2%;
+        --spacing-xl: 1.8%;
+      }
+      
+      .main-content {
+        padding: 0.5% 1%;
+      }
+      
+      .menu-number {
+        width: 26px;
+        height: 26px;
+        font-size: clamp(13px, 1.5vw, 15px);
+      }
+      
+      .menu-title {
+        font-size: clamp(15px, 1.7vw, 18px);
+      }
+      
+      .menu-desc {
+        font-size: clamp(11px, 1.3vw, 14px);
+        margin-left: 36px;
+      }
+    }
+
+    @media (max-width: 1200px) {
+      .main-content, .menu-container, .training-note {
+        max-width: 95%;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .menu-item:hover {
+        transform: translateX(3px) translateY(-1px);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .menu-desc {
+        margin-left: 0;
+        margin-top: var(--spacing-md);
+      }
+      
+      .menu-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+    }
+
+    /* 性能优化 */
+    @media (prefers-reduced-motion: reduce) {
+      :root {
+        --transition-smooth: none;
+      }
+      
+      .menu-item, .menu-number, .training-note,
+      .menu-title, .menu-desc, .menu-item::before,
+      .menu-number::before {
+        animation: none;
+        transition: none;
+      }
+      
+      .training-icon {
+        animation: none;
+      }
+    }
+
+    /* 高对比度模式支持 */
+    @media (prefers-contrast: high) {
+      :root {
+        --glass-border: rgba(255, 255, 255, 0.4);
+        --glass-border-hover: rgba(255, 255, 255, 0.6);
+        --text-secondary: rgba(255, 255, 255, 0.95);
+        --text-tertiary: rgba(255, 255, 255, 0.9);
+      }
+      
+      .menu-item {
+        border-width: 2px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <!-- 背景元素 -->
+    <div class="bg-elements">
+      <div class="brain-pattern"></div>
+      <div class="network-signals">
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+      </div>
+    </div>
+
+    <!-- 主要内容 -->
+    <div class="content">
+      <!-- 顶部标识 -->
+      <div class="header" style="padding: 0.6% 2%;">
+        <div class="day-info">
+          <div class="day-badge">3</div>
+          <div class="day-text">第三天：GPU服务器基础测试</div>
+        </div>
+        <div class="section-indicator">培训内容目录</div>
+      </div>
+
+      <!-- 主体内容 -->
+      <div class="main-content">
+        <!-- 页面标题 -->
+        <div class="page-title">
+          <div class="title-main">GPU服务器基础测试</div>
+          <div class="title-sub">GPU服务器集群性能测试及调优技术培训</div>
+        </div>
+
+        <!-- 目录容器 -->
+        <div class="menu-container">
+          <!-- 目录1: GPU服务器硬件介绍 -->
+          <a href="index17.html" class="menu-item">
+            <div class="menu-header">
+              <div class="menu-number">1</div>
+              <div class="menu-title">GPU服务器硬件介绍</div>
+            </div>
+            <div class="menu-desc">
+              深入了解GPU服务器硬件架构和组件配置，掌握硬件规格识别方法<br>
+              学习GPU、CPU、内存、存储等核心组件的性能特点和选型原则<br>
+              熟悉服务器硬件拓扑结构，为后续配置和优化奠定基础
+            </div>
+          </a>
+
+          <!-- 目录2: GPU服务器BIOS与BMC配置 -->
+          <a href="index18.html" class="menu-item">
+            <div class="menu-header">
+              <div class="menu-number">2</div>
+              <div class="menu-title">GPU服务器BIOS与BMC配置</div>
+            </div>
+            <div class="menu-desc">
+              掌握BIOS关键设置项的配置方法，优化硬件初始化和启动过程<br>
+              学习BMC远程管理功能的配置和使用，实现服务器远程监控管理<br>
+              了解固件更新流程和最佳实践，确保系统稳定可靠运行
+            </div>
+          </a>
+
+          <!-- 目录3: 操作系统与基础配置 -->
+          <a href="index19.html" class="menu-item">
+            <div class="menu-header">
+              <div class="menu-number">3</div>
+              <div class="menu-title">操作系统与基础配置</div>
+            </div>
+            <div class="menu-desc">
+              学习适合GPU服务器的操作系统选择和安装配置方法<br>
+              掌握内核参数调优、系统服务配置等基础优化技术<br>
+              建立标准化的操作系统配置模板，提高部署效率和一致性
+            </div>
+          </a>
+
+          <!-- 目录4: 驱动安装与配置 -->
+          <a href="index20.html" class="menu-item">
+            <div class="menu-header">
+              <div class="menu-number">4</div>
+              <div class="menu-title">驱动安装与配置</div>
+            </div>
+            <div class="menu-desc">
+              掌握NVIDIA GPU驱动、CUDA工具包的正确安装和配置方法<br>
+              学习驱动版本管理和兼容性检查，确保软硬件协同工作<br>
+              了解常见驱动问题的诊断和解决方法，提高系统可靠性
+            </div>
+          </a>
+
+          <!-- 目录5: 高级系统配置 -->
+          <a href="index21.html" class="menu-item">
+            <div class="menu-header">
+              <div class="menu-number">5</div>
+              <div class="menu-title">高级系统配置</div>
+            </div>
+            <div class="menu-desc">
+              深入学习GPU服务器性能调优的高级技术和最佳实践<br>
+              掌握NUMA拓扑优化、PCIe配置、功耗管理等关键技术<br>
+              建立完整的系统监控和性能分析方法论
+            </div>
+          </a>
+
+          <!-- 目录6: NCCL测试及性能优化介绍 -->
+          <a href="index22.html" class="menu-item">
+            <div class="menu-header">
+              <div class="menu-number">6</div>
+              <div class="menu-title">NCCL测试及性能优化介绍</div>
+            </div>
+            <div class="menu-desc">
+              深入了解NCCL集合通信库的原理和性能测试方法<br>
+              学习多GPU和多节点环境下的通信性能优化技术<br>
+              掌握AI训练场景中的网络通信调优和故障诊断方法
+            </div>
+          </a>
+        </div>
+
+        <!-- 培训提示 -->
+        <div class="training-note">
+          <div class="training-text">
+            <div class="training-icon">🖥️</div>
+            <span><span class="highlight-training">培训目标：</span>掌握GPU服务器部署、配置和性能优化核心技能</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 底部信息 -->
+      <div class="footer" style="padding: 0.6% 2%;">
+        <div class="footer-left">
+          <div class="status-dot"></div>
+          <span>第三天 - 培训内容目录</span>
+        </div>
+        <div class="footer-badges">
+          <div class="footer-badge badge-install">GPU</div>
+          <div class="footer-badge badge-config">SERVER</div>
+          <div class="footer-badge badge-command">TRAINING</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 导航按钮 -->
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+    <a href="index15.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+    <a href="index17.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+  </div>
+</body>
+</html>

@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>网络交换机 - NVIDIA Networking 培训</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f8fafb;
+            color: #2c3e50;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* PPT 样式背景 */
+        .ppt-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #ffffff 0%, #f1f8ff 50%, #f0f9f4 100%);
+            overflow: hidden;
+        }
+
+        .ppt-background::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 60%;
+            height: 100%;
+            background: linear-gradient(45deg, #22c55e 0%, #76b900 30%, #3b82f6 70%, #06b6d4 100%);
+            clip-path: polygon(30% 0%, 100% 0%, 100% 100%, 0% 100%);
+            opacity: 0.12;
+        }
+
+        /* 创意装饰元素 */
+        .decoration-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        /* 右上角圆点装饰 */
+        .decoration-lines::before {
+            content: '';
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            width: 8px;
+            height: 8px;
+            background: linear-gradient(135deg, #22c55e, #76b900);
+            border-radius: 50%;
+            box-shadow:
+                20px 0 0 rgba(34, 197, 94, 0.4),
+                40px 0 0 rgba(34, 197, 94, 0.3),
+                60px 0 0 rgba(34, 197, 94, 0.2),
+                0 20px 0 rgba(34, 197, 94, 0.4),
+                20px 20px 0 rgba(34, 197, 94, 0.3),
+                40px 20px 0 rgba(34, 197, 94, 0.2),
+                0 40px 0 rgba(34, 197, 94, 0.3),
+                20px 40px 0 rgba(34, 197, 94, 0.2);
+            opacity: 0.6;
+        }
+
+        /* 左下角几何图形装饰 */
+        .decoration-lines::after {
+            content: '';
+            position: absolute;
+            bottom: 40px;
+            left: 40px;
+            width: 60px;
+            height: 60px;
+            border: 3px solid rgba(59, 130, 246, 0.2);
+            border-radius: 12px;
+            transform: rotate(15deg);
+            box-shadow:
+                80px 0 0 rgba(59, 130, 246, 0.15),
+                160px 0 0 rgba(59, 130, 246, 0.1);
+        }
+
+        /* 主容器 */
+        .slide-container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 40px 80px 60px;
+        }
+
+        /* 头部区域 */
+        .slide-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(34, 197, 94, 0.1);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nvidia-logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .nvidia-logo svg {
+            height: 30px;
+            width: auto;
+        }
+
+        /* 标题区域 - 紧凑设计 */
+        .slide-title {
+            display: flex;
+            align-items: center;
+            margin-left: 20px;
+        }
+
+        .title-content {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .main-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            line-height: 1.1;
+            background: linear-gradient(90deg, #22c55e 0%, #76b900 40%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 0.85rem;
+            color: #64748b;
+            font-weight: 400;
+        }
+
+        .breadcrumb {
+            font-size: 0.85rem;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .breadcrumb a {
+            color: #22c55e;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .breadcrumb a:hover {
+            color: #16a34a;
+        }
+
+        /* 内容区域 - 上下布局 */
+        .content-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-bottom: 25px;
+            overflow-y: auto;
+        }
+
+        /* 顶部：两大产品系列对比 */
+        .top-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .series-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .series-card.quantum {
+            border-color: rgba(34, 197, 94, 0.3);
+        }
+
+        .series-card.spectrum {
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .series-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .series-card.quantum:hover {
+            border-color: rgba(34, 197, 94, 0.6);
+            box-shadow: 0 15px 40px rgba(34, 197, 94, 0.2);
+        }
+
+        .series-card.spectrum:hover {
+            border-color: rgba(59, 130, 246, 0.6);
+            box-shadow: 0 15px 40px rgba(59, 130, 246, 0.2);
+        }
+
+        .series-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .series-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .series-card.quantum .series-name {
+            background: linear-gradient(135deg, #22c55e, #76b900);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .series-card.spectrum .series-name {
+            background: linear-gradient(135deg, #3b82f6, #06b6d4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .series-badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .series-card.quantum .series-badge {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(118, 185, 0, 0.1));
+            color: #16a34a;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .series-card.spectrum .series-badge {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(6, 182, 212, 0.1));
+            color: #1e40af;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .series-desc {
+            font-size: 0.9rem;
+            color: #64748b;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .product-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .product-item {
+            padding: 12px 15px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            transition: all 0.2s ease;
+        }
+
+        .series-card.quantum .product-item {
+            background: rgba(34, 197, 94, 0.05);
+            border-left: 3px solid #22c55e;
+        }
+
+        .series-card.spectrum .product-item {
+            background: rgba(59, 130, 246, 0.05);
+            border-left: 3px solid #3b82f6;
+        }
+
+        .product-item:hover {
+            transform: translateX(5px);
+        }
+
+        .product-name {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 3px;
+        }
+
+        .product-spec {
+            color: #64748b;
+            font-size: 0.8rem;
+        }
+
+        /* 底部：核心特性 */
+        .bottom-section {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(34, 197, 94, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(34, 197, 94, 0.15);
+        }
+
+        .feature-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 10px;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #22c55e;
+        }
+
+        .feature-desc {
+            font-size: 0.85rem;
+            color: #64748b;
+            line-height: 1.5;
+        }
+
+        /* 交换机图片展示区域 */
+        .gallery-section {
+            width: 100%;
+            height: 220px;
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(10px);
+            margin-top: 15px;
+        }
+
+        /* 交错双行布局容器 */
+        .gallery-rows {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 10px 0;
+        }
+
+        .gallery-row {
+            display: flex;
+            gap: 15px;
+            width: max-content;
+            animation: scrollRightToLeft 40s linear infinite;
+        }
+
+        /* 第二行反向滚动 */
+        .gallery-row:nth-child(2) {
+            animation: scrollLeftToRight 35s linear infinite;
+        }
+
+        @keyframes scrollRightToLeft {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+
+        @keyframes scrollLeftToRight {
+            0% {
+                transform: translateX(-50%);
+            }
+            100% {
+                transform: translateX(0);
+            }
+        }
+
+        .gallery-row:hover {
+            animation-play-state: paused;
+        }
+
+        .switch-image-card {
+            flex-shrink: 0;
+            width: 280px;
+            height: 90px;
+            background: white;
+            border-radius: 10px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .switch-image-card:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(34, 197, 94, 0.25);
+            z-index: 10;
+        }
+
+        .switch-image-card img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+            cursor: pointer;
+        }
+
+        /* 左右渐变遮罩 */
+        .gallery-section::before,
+        .gallery-section::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            width: 100px;
+            height: 100%;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .gallery-section::before {
+            left: 0;
+            background: linear-gradient(to right, rgba(248, 250, 251, 1), transparent);
+        }
+
+        .gallery-section::after {
+            right: 0;
+            background: linear-gradient(to left, rgba(248, 250, 251, 1), transparent);
+        }
+
+        /* 底部信息 */
+        .slide-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .presenter-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .presenter-name {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .presenter-title {
+            font-size: 0.9rem;
+            background: linear-gradient(90deg, #22c55e, #76b900);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 500;
+        }
+
+        .slide-number {
+            background: linear-gradient(45deg, rgba(34, 197, 94, 0.1), rgba(118, 185, 0, 0.1));
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: #475569;
+        }
+
+        /* 导航控制 */
+        .navigation-controls {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .nav-button {
+            background: linear-gradient(45deg, rgba(34, 197, 94, 0.1), rgba(118, 185, 0, 0.1));
+            border: 1px solid transparent;
+            color: #22c55e;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-button::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            padding: 1px;
+            background: linear-gradient(45deg, #22c55e, #76b900);
+            border-radius: inherit;
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask-composite: xor;
+            -webkit-mask-composite: xor;
+        }
+
+        .nav-button:hover {
+            background: linear-gradient(45deg, #22c55e, #76b900);
+            color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(34, 197, 94, 0.3);
+        }
+
+        .nav-hint {
+            color: #64748b;
+            font-size: 0.8rem;
+        }
+
+        /* 动画效果 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .series-card {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .series-card:nth-child(1) { animation-delay: 0.1s; }
+        .series-card:nth-child(2) { animation-delay: 0.2s; }
+
+        .feature-card {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        .feature-card:nth-child(1) { animation-delay: 0.3s; }
+        .feature-card:nth-child(2) { animation-delay: 0.35s; }
+        .feature-card:nth-child(3) { animation-delay: 0.4s; }
+
+        /* Lightbox 图片放大功能 */
+        .lightbox-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.92);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            cursor: zoom-out;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .lightbox-overlay.active {
+            display: flex;
+        }
+
+        .lightbox-content {
+            max-width: 90%;
+            max-height: 90%;
+            position: relative;
+            animation: zoomIn 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .lightbox-content img {
+            max-width: 100%;
+            max-height: 80vh;
+            object-fit: contain;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 10000;
+            line-height: 1;
+            padding: 0;
+        }
+
+        .lightbox-close:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: rotate(90deg);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .lightbox-caption {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            color: #1e293b;
+            padding: 12px 28px;
+            border-radius: 25px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes zoomIn {
+            from {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1400px) {
+            .slide-container {
+                padding: 30px 60px 50px;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .top-section {
+                grid-template-columns: 1fr;
+            }
+            .bottom-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .slide-container {
+                padding: 30px 40px;
+            }
+            .main-title {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="ppt-background"></div>
+    <div class="decoration-lines"></div>
+
+    <div class="slide-container">
+        <header class="slide-header">
+            <div class="header-left">
+                <div class="nvidia-logo">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="100" height="67" viewBox="0 0 48 32" fill="none">
+                        <path d="M17.9101 9.54961V6.65962C18.1893 6.64003 18.4704 6.624 18.7567 6.6151C26.6044 6.36581 31.7531 13.4083 31.7531 13.4083C31.7531 13.4083 26.1926 21.1897 20.2308 21.1897C19.3718 21.1897 18.6029 21.0508 17.9101 20.8158V12.0496C20.9661 12.4218 21.5794 13.7804 23.4158 16.8645L27.5005 13.394C27.5005 13.394 24.5188 9.45345 19.492 9.45345C18.9458 9.45345 18.4227 9.49263 17.9083 9.54783L17.9101 9.54961ZM17.9083 0V4.31807C18.1893 4.29492 18.4721 4.27711 18.7549 4.26643C29.6675 3.89606 36.7781 13.2836 36.7781 13.2836C36.7781 13.2836 28.6123 23.2873 20.1035 23.2873C19.3241 23.2873 18.5941 23.2143 17.9083 23.0932V25.7624C18.4951 25.8372 19.1031 25.8817 19.7359 25.8817C27.6525 25.8817 33.3792 21.8094 38.9239 16.9874C39.843 17.7281 43.606 19.5319 44.3802 20.3225C39.1077 24.7688 26.8236 28.3515 19.8579 28.3515C19.1862 28.3515 18.5411 28.3105 17.9083 28.25V32H48V0.00178103H17.9101L17.9083 0ZM17.9083 20.814V23.0932C10.5856 21.7773 8.55293 14.1098 8.55293 14.1098C8.55293 14.1098 12.0685 10.1853 17.9083 9.54961V12.0496C17.9083 12.0496 17.9012 12.0496 17.8977 12.0496C14.8329 11.6793 12.4397 14.5639 12.4397 14.5639C12.4397 14.5639 13.7812 19.4197 17.9101 20.8175L17.9083 20.814ZM4.90481 13.7804C4.90481 13.7804 9.24403 7.32914 17.9101 6.6614V4.32163C8.31255 5.09799 0 13.2872 0 13.2872C0 13.2872 4.70685 26.9982 17.9101 28.2535V25.766C8.22064 24.5373 4.90481 13.7804 4.90481 13.7804Z" fill="#76B900"/>
+                    </svg>
+                </div>
+                <div class="slide-title">
+                    <div class="title-content">
+                        <h1 class="main-title">网络交换机</h1>
+                        <p class="subtitle">Quantum InfiniBand 与 Spectrum Ethernet 交换机</p>
+                    </div>
+                </div>
+            </div>
+            <div class="breadcrumb">
+                <a href="catalog.html">培训目录</a>
+                <span>></span>
+                <span>网络交换机</span>
+            </div>
+        </header>
+
+        <main class="content-main">
+            <!-- 顶部：两大产品系列 -->
+            <div class="top-section">
+                <!-- Quantum InfiniBand -->
+                <div class="series-card quantum">
+                    <div class="series-header">
+                        <h2 class="series-name">Quantum 系列</h2>
+                        <span class="series-badge">InfiniBand</span>
+                    </div>
+                    <p class="series-desc">
+                        专为高性能计算和 AI 训练设计的 InfiniBand 交换机，提供超低延迟和极高带宽，支持 RDMA 和 GPUDirect 技术。
+                    </p>
+                    <div class="product-list">
+                        <div class="product-item">
+                            <div class="product-name">Quantum-3 XDR (Q3400/Q3200)</div>
+                            <div class="product-spec">800Gb/s · 72-144端口 · 超大规模AI集群</div>
+                        </div>
+                        <div class="product-item">
+                            <div class="product-name">Quantum-2 NDR (QM9700/QM9790)</div>
+                            <div class="product-spec">400Gb/s · 64端口 · HPC和AI训练</div>
+                        </div>
+                        <div class="product-item">
+                            <div class="product-name">Quantum HDR (QM8700/QM8790)</div>
+                            <div class="product-spec">200Gb/s · 40-80端口 · 企业级HPC</div>
+                        </div>
+                        <div class="product-item">
+                            <div class="product-name">应用场景</div>
+                            <div class="product-spec">超级计算机 · AI大模型训练 · 科学计算 · 金融高频交易</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Spectrum Ethernet -->
+                <div class="series-card spectrum">
+                    <div class="series-header">
+                        <h2 class="series-name">Spectrum 系列</h2>
+                        <span class="series-badge">Ethernet</span>
+                    </div>
+                    <p class="series-desc">
+                        业界领先的以太网交换机平台，支持 RoCE v2 协议，提供云原生网络、AI 推理和企业数据中心解决方案。
+                    </p>
+                    <div class="product-list">
+                        <div class="product-item">
+                            <div class="product-name">Spectrum-4 (SN5000系列)</div>
+                            <div class="product-spec">800GbE · 64端口 · AI推理和云数据中心</div>
+                        </div>
+                        <div class="product-item">
+                            <div class="product-name">Spectrum-3 (SN4000系列)</div>
+                            <div class="product-spec">400GbE · 32-64端口 · 企业核心网络</div>
+                        </div>
+                        <div class="product-item">
+                            <div class="product-name">Spectrum-2 (SN3000系列)</div>
+                            <div class="product-spec">200GbE · 32-64端口 · 边缘和汇聚层</div>
+                        </div>
+                        <div class="product-item">
+                            <div class="product-name">应用场景</div>
+                            <div class="product-spec">云数据中心 · AI推理服务 · 企业网络 · 5G基础设施</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 底部：核心技术特性 -->
+            <div class="bottom-section">
+                <div class="feature-card">
+                    <h3 class="feature-title">超高性能</h3>
+                    <p class="feature-desc">
+                        业界最高的端口密度和交换容量，单端口速率从100G到800G，总交换带宽达128Tbps，满足超大规模AI集群需求。
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <h3 class="feature-title">极低延迟</h3>
+                    <p class="feature-desc">
+                        InfiniBand延迟低至100纳秒，Ethernet RoCE延迟低至300纳秒，配合SHARP和PFC技术实现零丢包高吞吐。
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <h3 class="feature-title">智能管理</h3>
+                    <p class="feature-desc">
+                        Spectrum 交换机支持ONYX/Cumulus/SONIC Linux操作系统。Infiniband Fabric 提供UFM统一网络管理平台，实时监控、自动化部署和智能故障诊断。
+                    </p>
+                </div>
+            </div>
+
+            <!-- 交换机图片展示区域 - 交错双行滚动 -->
+            <div class="gallery-section">
+                <div class="gallery-rows">
+                    <!-- 第一行：从右向左滚动 -->
+                    <div class="gallery-row">
+                        <div class="switch-image-card">
+                            <img src="https://docscontent.nvidia.com/dims4/default/e49d7c6/2147483647/strip/true/crop/1296x520+0+0/resize/1296x520!/quality/90/?url=https%3A%2F%2Fk3-prod-nvidia-docs.s3.us-west-2.amazonaws.com%2Fbrightspot%2Fconfluence%2F00000199-1013-db43-a99b-747bad1a0000%2Fimages%2Fdownload%2Fattachments%2F3205820665%2Fimage-2024-11-18_12-23-30-version-1-modificationdate-1731929010773-api-v2.png" alt="Quantum-3 XDR Switch: Q3400">
+                        </div>
+                        <div class="switch-image-card">
+                            <img src="https://leaderssys.com/img/product-list/networking/infiniband/thumb-quantum-q3200.png" alt="Quantum-3 Switch: Q3200">
+                        </div>
+                        <div class="switch-image-card">
+                            <img src="https://docscontent.nvidia.com/dims4/default/37408c5/2147483647/strip/true/crop/1655x165+0+0/resize/1440x144!/quality/90/?url=https%3A%2F%2Fk3-prod-nvidia-docs.s3.us-west-2.amazonaws.com%2Fbrightspot%2Fconfluence%2F00000197-a6b3-de11-a3b7-b7ffe18d0000%2Fimages%2Fdownload%2Fattachments%2F3356876172%2Fimage2021-11-25_14-4-13-version-1-modificationdate-1732000949003-api-v2.png" alt="Quantum-2 Switch: QM9700">
+                        </div>
+                        <div class="switch-image-card">
+                            <img src="https://docscontent.nvidia.com/dims4/default/be698fd/2147483647/strip/true/crop/1824x182+0+0/resize/1440x144!/quality/90/?url=https%3A%2F%2Fk3-prod-nvidia-docs.s3.us-west-2.amazonaws.com%2Fbrightspot%2Fconfluence%2F00000197-a6b3-de11-a3b7-b7ffe18d0000%2Fimages%2Fdownload%2Fattachments%2F3356876172%2Fimage2021-11-25_14-5-52-version-1-modificationdate-1732000949393-api-v2.png" alt="Quantum-2 Switch: QM9790">
+                        </div>
+                        <div class="switch-image-card">
+                            <img src="https://www.pny.com/image%20library/commercial/explore%20our%20products/mellanox/nns-qm8700.png" alt="Quantum-1 Switch: QM8700">
+                        </div>
+                        <!-- 重复一遍实现无缝循环 -->
+                        <div class="switch-image-card">
+                            <img src="https://docscontent.nvidia.com/dims4/default/e49d7c6/2147483647/strip/true/crop/1296x520+0+0/resize/1296x520!/quality/90/?url=https%3A%2F%2Fk3-prod-nvidia-docs.s3.us-west-2.amazonaws.com%2Fbrightspot%2Fconfluence%2F00000199-1013-db43-a99b-747bad1a0000%2Fimages%2Fdownload%2Fattachments%2F3205820665%2Fimage-2024-11-18_12-23-30-version-1-modificationdate-1731929010773-api-v2.png" alt="Quantum-3 XDR Switch: Q3400">
+                        </div>
+                        <div class="switch-image-card">
+                            <img src="https://leaderssys.com/img/product-list/networking/infiniband/thumb-quantum-q3200.png" alt="Quantum-3 Switch: Q3200">
+                        </div>
+                        <div class="switch-image-card">
+                            <img src="https://docscontent.nvidia.com/dims4/default/37408c5/2147483647/strip/true/crop/1655x165+0+0/resize/1440x144!/quality/90/?url=https%3A%2F%2Fk3-prod-nvidia-docs.s3.us-west-2.amazonaws.com%2Fbrightspot%2Fconfluence%2F00000197-a6b3-de11-a3b7-b7ffe18d0000%2Fimages%2Fdownload%2Fattachments%2F3356876172%2Fimage2021-11-25_14-4-13-version-1-modificationdate-1732000949003-api-v2.png" alt="Quantum-2 Switch: QM9700">
+                        </div>
+                        <div class="switch-image-card">
+                            <img src="https://docscontent.nvidia.com/dims4/default/be698fd/2147483647/strip/true/crop/1824x182+0+0/resize/1440x144!/quality/90/?url=https%3A%2F%2Fk3-prod-nvidia-docs.s3.us-west-2.amazonaws.com%2Fbrightspot%2Fconfluence%2F00000197-a6b3-de11-a3b7-b7ffe18d0000%2Fimages%2Fdownload%2Fattachments%2F3356876172%2Fimage2021-11-25_14-5-52-version-1-modificationdate-1732000949393-api-v2.png" alt="Quantum-2 Switch: QM9790">
+                        </div>
+                        <div class="switch-image-card">
+                            <img src="https://www.pny.com/image%20library/commercial/explore%20our%20products/mellanox/nns-qm8700.png" alt="Quantum-1 Switch: QM8700">
+                        </div>
+                    </div>
+
+                    <!-- 第二行：从左向右滚动 -->
+                    <div class="gallery-row">
+                        <div class="switch-image-card">
+                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQAlBySEgV8oPWIX2tDMrlqQ8YEG03ZKxwPpKNJ3KBcbvdJyX4wTYmBECYrbyzY4HcC-A&usqp=CAU" alt="Spectrum-4 Switch">
+                        </div>
+                        <div class="switch-image-card">
+                            <img src="https://www.chaoqing-i.com/upload/20231128/SB5400.png" alt="Spectrum-4 Switch">
+                        </div>
+                        <div class="switch-image-card">
+                            <img src="https://docscontent.nvidia.com/dims4/default/9450568/2147483647/strip/true/crop/1558x325+0+0/resize/1440x300!/quality/90/?url=https%3A%2F%2Fk3-prod-nvidia-docs.s3.us-west-2.amazonaws.com%2Fbrightspot%2Fconfluence%2F0000018e-7f7a-d6f5-a5bf-7ffae0050000%2Fimages%2Fdownload%2Fattachments%2F2538860697%2Fimage2022-3-23_11-26-3-version-1-modificationdate-1648060292117-api-v2.png" alt="Spectrum-3 Switch">
+                        </div>
+                        <div class="switch-image-card">
+                            <img src="https://docscontent.nvidia.com/dims4/default/a5fafa9/2147483647/strip/true/crop/900x91+0+0/resize/900x91!/quality/90/?url=https%3A%2F%2Fk3-prod-nvidia-docs.s3.us-west-2.amazonaws.com%2Fbrightspot%2Fconfluence%2F00000191-4f53-d665-aff9-ffdf43820000%2Fimages%2Fnetworking%2Fdownload%2Fattachments%2F71030283%2Fworddavef68cf22e03ef8807e772a5071251d8e.png" alt="Spectrum-2 Switch">
+                        </div>
+                        <div class="switch-image-card">
+                            <img src="https://www.servants.co.jp/cms/wp-content/uploads/2024/12/nvidia-spectrum-sn2201-1u-switch-systems.jpg" alt="Spectrum Switch">
+                        </div>
+                        <!-- 重复一遍实现无缝循环 -->
+                        <div class="switch-image-card">
+                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQAlBySEgV8oPWIX2tDMrlqQ8YEG03ZKxwPpKNJ3KBcbvdJyX4wTYmBECYrbyzY4HcC-A&usqp=CAU" alt="Spectrum-4 Switch">
+                        </div>
+                        <div class="switch-image-card">
+                            <img src="https://www.chaoqing-i.com/upload/20231128/SB5400.png" alt="Spectrum-4 Switch">
+                        </div>
+                        <div class="switch-image-card">
+                            <img src="https://docscontent.nvidia.com/dims4/default/9450568/2147483647/strip/true/crop/1558x325+0+0/resize/1440x300!/quality/90/?url=https%3A%2F%2Fk3-prod-nvidia-docs.s3.us-west-2.amazonaws.com%2Fbrightspot%2Fconfluence%2F0000018e-7f7a-d6f5-a5bf-7ffae0050000%2Fimages%2Fdownload%2Fattachments%2F2538860697%2Fimage2022-3-23_11-26-3-version-1-modificationdate-1648060292117-api-v2.png" alt="Spectrum-3 Switch">
+                        </div>
+                        <div class="switch-image-card">
+                            <img src="https://docscontent.nvidia.com/dims4/default/a5fafa9/2147483647/strip/true/crop/900x91+0+0/resize/900x91!/quality/90/?url=https%3A%2F%2Fk3-prod-nvidia-docs.s3.us-west-2.amazonaws.com%2Fbrightspot%2Fconfluence%2F00000191-4f53-d665-aff9-ffdf43820000%2Fimages%2Fnetworking%2Fdownload%2Fattachments%2F71030283%2Fworddavef68cf22e03ef8807e772a5071251d8e.png" alt="Spectrum-2 Switch">
+                        </div>
+                        <div class="switch-image-card">
+                            <img src="https://www.servants.co.jp/cms/wp-content/uploads/2024/12/nvidia-spectrum-sn2201-1u-switch-systems.jpg" alt="Spectrum Switch">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="slide-footer">
+            <div class="presenter-info">
+                <div class="presenter-name">Vincent</div>
+		<div class="presenter-title">正阳恒卓科技</div>
+            </div>
+            <div class="slide-number">8 / 9</div>
+        </footer>
+    </div>
+
+    <div class="navigation-controls">
+        <button class="nav-button" onclick="goBack()">← 返回目录</button>
+        <button class="nav-button" onclick="nextModule()">下一模块 →</button>
+        <div class="nav-hint">使用左右箭头键导航</div>
+    </div>
+
+    <!-- Lightbox 图片放大遮罩层 -->
+    <div class="lightbox-overlay" id="lightboxOverlay">
+        <div class="lightbox-close" onclick="closeLightbox()">×</div>
+        <div class="lightbox-content" id="lightboxContent">
+            <img src="" alt="" id="lightboxImage">
+            <div class="lightbox-caption" id="lightboxCaption"></div>
+        </div>
+    </div>
+
+    <script>
+        function goBack() {
+            window.location.href = 'catalog.html';
+        }
+
+        function nextModule() {
+            window.location.href = 'solutions.html';
+        }
+
+        // 键盘导航
+        document.addEventListener('keydown', function(e) {
+            if (e.code === 'ArrowLeft') {
+                e.preventDefault();
+                goBack();
+            } else if (e.code === 'ArrowRight' || e.code === 'Space') {
+                e.preventDefault();
+                nextModule();
+            } else if (e.code === 'Escape') {
+                goBack();
+            }
+        });
+
+        // 面包屑导航
+        document.querySelector('.breadcrumb a').addEventListener('click', function(e) {
+            e.preventDefault();
+            goBack();
+        });
+
+        // Lightbox 图片放大功能
+        const lightboxOverlay = document.getElementById('lightboxOverlay');
+        const lightboxImage = document.getElementById('lightboxImage');
+        const lightboxCaption = document.getElementById('lightboxCaption');
+
+        // 为所有图片添加点击事件
+        document.querySelectorAll('.switch-image-card img').forEach(img => {
+            img.addEventListener('click', function(e) {
+                e.stopPropagation(); // 防止事件冒泡
+                openLightbox(this.src, this.alt);
+            });
+        });
+
+        function openLightbox(src, alt) {
+            lightboxImage.src = src;
+            lightboxCaption.textContent = alt;
+            lightboxOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden'; // 禁止背景滚动
+        }
+
+        function closeLightbox() {
+            lightboxOverlay.classList.remove('active');
+            document.body.style.overflow = ''; // 恢复滚动
+        }
+
+        // 点击遮罩层关闭
+        lightboxOverlay.addEventListener('click', function(e) {
+            if (e.target === lightboxOverlay) {
+                closeLightbox();
+            }
+        });
+
+        // ESC键关闭 Lightbox（不影响页面导航）
+        document.addEventListener('keydown', function(e) {
+            if (e.code === 'Escape' && lightboxOverlay.classList.contains('active')) {
+                e.stopPropagation();
+                closeLightbox();
+            }
+        });
+    </script>
+</body>
+</html>
