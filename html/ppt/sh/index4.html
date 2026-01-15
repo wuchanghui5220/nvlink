@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IB网络设备硬件介绍</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700;800&display=swap');
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+      font-family: 'Noto Sans SC', sans-serif;
+      overflow: hidden;
+    }
+
+    .slide-container {
+      width: 100vw;
+      height: 56.25vw; /* 16:9 aspect ratio */
+      max-height: 100vh;
+      max-width: 177.78vh; /* 16:9 aspect ratio (reversed) */
+      position: relative;
+      background: #111827;
+      color: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    /* 动态背景元素 */
+    .bg-elements {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    .circuit-pattern {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image:
+        linear-gradient(90deg, rgba(0, 162, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(rgba(0, 162, 255, 0.05) 1px, transparent 1px),
+        radial-gradient(circle at 20% 80%, rgba(72, 52, 212, 0.1) 2px, transparent 2px),
+        radial-gradient(circle at 80% 20%, rgba(255, 107, 107, 0.08) 2px, transparent 2px);
+      background-size: 40px 40px, 40px 40px, 60px 60px, 80px 80px;
+      animation: circuit-flow 15s linear infinite;
+    }
+
+    @keyframes circuit-flow {
+      0% { background-position: 0 0, 0 0, 0 0, 0 0; }
+      100% { background-position: 40px 40px, -40px -40px, 60px 60px, -80px -80px; }
+    }
+
+    .floating-hardware {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+    }
+
+    .hw-element {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: #00a2ff;
+      border-radius: 50%;
+      animation: float-drift 6s ease-in-out infinite;
+      opacity: 0.3;
+    }
+
+    .hw-element:nth-child(1) {
+      top: 20%;
+      left: 10%;
+      animation-delay: 0s;
+    }
+
+    .hw-element:nth-child(2) {
+      top: 60%;
+      right: 15%;
+      animation-delay: 2s;
+      background: #4834d4;
+    }
+
+    .hw-element:nth-child(3) {
+      bottom: 30%;
+      left: 20%;
+      animation-delay: 4s;
+      background: #ff6b6b;
+    }
+
+    @keyframes float-drift {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-15px); }
+    }
+
+    /* 主要内容 */
+    .content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    /* 顶部标识栏 */
+    .header {
+      padding: 1.5% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.2));
+      backdrop-filter: blur(15px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      flex-shrink: 0;
+    }
+
+    .day-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .day-badge {
+      width: 35px;
+      height: 35px;
+      background: linear-gradient(135deg, #00a2ff, #0078d4);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+      box-shadow: 0 5px 15px rgba(0, 162, 255, 0.3);
+    }
+
+    .day-text {
+      font-size: clamp(15px, 1.8vw, 18px);
+      font-weight: 600;
+      color: #00a2ff;
+    }
+
+    .section-indicator {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 8px 20px;
+      border-radius: 25px;
+      font-size: clamp(12px, 1.3vw, 14px);
+      font-weight: 500;
+      backdrop-filter: blur(10px);
+    }
+
+    /* 主体内容区域 */
+    .main-content {
+      flex: 1;
+      padding: 2% 4%;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    /* 页面标题 */
+    .page-title {
+      text-align: center;
+      margin-bottom: 2.5%;
+      flex-shrink: 0;
+    }
+
+    .title-main {
+      font-size: clamp(28px, 4vw, 36px);
+      font-weight: 800;
+      background: linear-gradient(135deg, #ffffff 0%, #00a2ff 50%, #4834d4 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 1%;
+      text-shadow: 0 0 30px rgba(0, 162, 255, 0.3);
+    }
+
+    .title-sub {
+      font-size: clamp(13px, 1.5vw, 16px);
+      color: rgba(255, 255, 255, 0.75);
+      font-weight: 300;
+    }
+
+    /* 硬件分类展示 */
+    .hardware-categories {
+      flex: 1;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5%;
+      max-height: 100%;
+    }
+
+    .category-card {
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      padding: 3%;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.4s ease;
+      cursor: pointer;
+      min-height: 0;
+      height: 100%;
+    }
+
+    .category-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(0, 162, 255, 0.08), transparent);
+      transition: left 0.8s ease;
+    }
+
+    .category-card:hover::before {
+      left: 100%;
+    }
+
+    .category-card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(0, 162, 255, 0.4);
+      background: rgba(255, 255, 255, 0.1);
+      box-shadow: 0 20px 40px rgba(0, 162, 255, 0.15);
+    }
+
+    .category-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 4%;
+      flex-shrink: 0;
+    }
+
+    .category-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(16px, 2vw, 20px);
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .category-card:nth-child(1) .category-icon {
+      background: linear-gradient(135deg, #00a2ff, #0078d4);
+      box-shadow: 0 8px 25px rgba(0, 162, 255, 0.3);
+    }
+
+    .category-card:nth-child(2) .category-icon {
+      background: linear-gradient(135deg, #4834d4, #686de0);
+      box-shadow: 0 8px 25px rgba(72, 52, 212, 0.3);
+    }
+
+    .category-card:nth-child(3) .category-icon {
+      background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+      box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+    }
+
+    .category-card:nth-child(4) .category-icon {
+      background: linear-gradient(135deg, #76b900, #3e703e);
+      box-shadow: 0 8px 25px rgba(118, 185, 0, 0.3);
+    }
+
+    .category-title {
+      font-size: clamp(14px, 1.6vw, 16px);
+      font-weight: 700;
+      color: #ffffff;
+      flex: 1;
+    }
+
+    .category-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .category-desc {
+      font-size: clamp(10px, 1.2vw, 12px);
+      color: rgba(255, 255, 255, 0.8);
+      line-height: 1.4;
+      margin-bottom: 4%;
+      flex-shrink: 0;
+    }
+
+    .device-list {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2%;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .device-item {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 3%;
+      transition: all 0.3s ease;
+      flex-shrink: 0;
+    }
+
+    .device-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(0, 162, 255, 0.3);
+      transform: translateX(5px);
+    }
+
+    .device-name {
+      font-size: clamp(11px, 1.3vw, 13px);
+      font-weight: 600;
+      color: #87ceeb;
+      margin-bottom: 2%;
+    }
+
+    .device-specs {
+      font-size: clamp(9px, 1.1vw, 11px);
+      color: rgba(255, 255, 255, 0.7);
+      line-height: 1.3;
+    }
+
+    .spec-highlight {
+      color: #00a2ff;
+      font-weight: 500;
+    }
+
+    /* 技术特性标签 */
+    .tech-features {
+      margin-top: 3%;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5%;
+      flex-shrink: 0;
+    }
+
+    .feature-tag {
+      background: rgba(0, 162, 255, 0.15);
+      border: 1px solid rgba(0, 162, 255, 0.3);
+      padding: 1.5% 2.5%;
+      border-radius: 6px;
+      font-size: clamp(7px, 0.8vw, 8px);
+      color: #87ceeb;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* 底部技术总结 */
+    .tech-summary {
+      margin-top: 2%;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 1.5% 3%;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .summary-text {
+      font-size: clamp(11px, 1.2vw, 12px);
+      color: rgba(255, 255, 255, 0.8);
+      line-height: 1.3;
+    }
+
+    .summary-highlight {
+      color: #00a2ff;
+      font-weight: 600;
+    }
+
+    /* 底部信息栏 */
+    .footer {
+      padding: 1.5% 4%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.2));
+      backdrop-filter: blur(15px);
+      flex-shrink: 0;
+      min-height: 50px;
+    }
+
+    .footer-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: clamp(12px, 1.3vw, 13px);
+      color: rgba(255, 255, 255, 0.9);
+      font-weight: 500;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: #00a2ff;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(0, 162, 255, 0.7); }
+      70% { box-shadow: 0 0 0 8px rgba(0, 162, 255, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(0, 162, 255, 0); }
+    }
+
+    .footer-badges {
+      display: flex;
+      gap: 10px;
+    }
+
+    .footer-badge {
+      padding: 5px 12px;
+      border-radius: 15px;
+      font-size: clamp(9px, 1vw, 10px);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: white;
+    }
+
+    .badge-hardware {
+      background: linear-gradient(90deg, #00a2ff, #0078d4);
+      box-shadow: 0 0 15px rgba(0, 162, 255, 0.3);
+    }
+
+    .badge-components {
+      background: linear-gradient(90deg, #4834d4, #686de0);
+      box-shadow: 0 0 15px rgba(72, 52, 212, 0.3);
+    }
+
+    /* 响应式调整 */
+    @media (max-height: 600px) {
+      .main-content {
+        padding: 1.5% 4%;
+      }
+      
+      .page-title {
+        margin-bottom: 2%;
+      }
+      
+      .category-card {
+        padding: 3%;
+      }
+      
+      .device-item {
+        padding: 3%;
+      }
+      
+      .tech-summary {
+        margin-top: 1.5%;
+        padding: 1.5% 3%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <!-- 背景元素 -->
+    <div class="bg-elements">
+      <div class="circuit-pattern"></div>
+      <div class="floating-hardware">
+        <div class="hw-element"></div>
+        <div class="hw-element"></div>
+        <div class="hw-element"></div>
+      </div>
+    </div>
+
+    <!-- 主要内容 -->
+    <div class="content">
+      <!-- 顶部标识 -->
+      <div class="header">
+        <div class="day-info">
+          <div class="day-badge">1</div>
+          <div class="day-text">智算网络组网设计与部署</div>
+        </div>
+        <div class="section-indicator">1.2 硬件设备介绍</div>
+      </div>
+
+      <!-- 主体内容 -->
+      <div class="main-content">
+        <!-- 页面标题 -->
+        <div class="page-title">
+          <div class="title-main">IB网络设备硬件介绍</div>
+	  <div class="title-sub"><a href="https://nvlink.vip/ppt/gb200/index7.html" target="_blank" style="text-decoration: none; color:white;">核心组件：交换机、光纤与模块详解</a></div>
+        </div>
+
+        <!-- 硬件分类展示 -->
+        <div class="hardware-categories">
+          <!-- IB交换机 -->
+          <div class="category-card">
+            <div class="category-header">
+              <div class="category-icon">⚡</div>
+              <div class="category-title">IB交换机</div>
+            </div>
+            <div class="category-content">
+              <div class="category-desc">
+                智算网络的核心设备，提供高速数据交换和路由功能
+              </div>
+              <div class="device-list">
+                <div class="device-item">
+                  <div class="device-name">X800 Q3400</div>
+                  <div class="device-specs">
+                    <span class="spec-highlight">144端口</span> 800Gb/s<br>
+                    背板带宽: <span class="spec-highlight">115.2Tbps</span>
+                  </div>
+                </div>
+                <div class="device-item">
+                  <div class="device-name">NVIDIA QM9700</div>
+                  <div class="device-specs">
+                    <span class="spec-highlight">64端口</span> 400Gb/s<br>
+                    背板带宽: <span class="spec-highlight">25.6Tbps</span>
+                  </div>
+                </div>
+                <div class="device-item">
+                  <div class="device-name">NVIDIA QM8700</div>
+                  <div class="device-specs">
+                    <span class="spec-highlight">40端口</span> 200Gb/s<br>
+                    背板带宽: <span class="spec-highlight">8Tbps</span>
+                  </div>
+                </div>
+                <div class="device-item">
+                  <div class="device-name">NVIDIA QM7800</div>
+                  <div class="device-specs">
+                    <span class="spec-highlight">36端口</span> 100Gb/s<br>
+                    背板带宽: <span class="spec-highlight">3.6Tbps</span>
+                  </div>
+                </div>
+              </div>
+              <div class="tech-features">
+                <div class="feature-tag">高密度端口</div>
+                <div class="feature-tag">低延迟</div>
+                <div class="feature-tag">热插拔</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 线缆连接器 -->
+          <div class="category-card">
+            <div class="category-header">
+              <div class="category-icon">🔗</div>
+              <div class="category-title">线缆连接器</div>
+            </div>
+            <div class="category-content">
+              <div class="category-desc">
+                高速数据传输的物理载体，支持长距离无损连接
+              </div>
+              <div class="device-list">
+                <div class="device-item">
+                  <div class="device-name">QSFP56 DAC/ACC/AOC</div>
+                  <div class="device-specs">
+                    <span class="spec-highlight">200Gb/s</span> 直连/有源光缆<br>
+                    距离: <span class="spec-highlight">1-100米</span>
+                  </div>
+                </div>
+                <div class="device-item">
+                  <div class="device-name">OSFP DAC/ACC/AOC</div>
+                  <div class="device-specs">
+                    <span class="spec-highlight">400-800Gb/s</span> 高速连接<br>
+                    支持: <span class="spec-highlight">铜缆/光缆</span>
+                  </div>
+                </div>
+                <div class="device-item">
+                  <div class="device-name">MPO-UPC 光纤</div>
+                  <div class="device-specs">
+                    多模标准<br>
+                    距离: <span class="spec-highlight">100米</span>
+                  </div>
+                </div>
+                <div class="device-item">
+                  <div class="device-name">MPO-APC 光纤</div>
+                  <div class="device-specs">
+                    多模/单模标准<br>
+                    距离: <span class="spec-highlight">50米,100米,500米</span>
+                  </div>
+                </div>
+              </div>
+              <div class="tech-features">
+                <div class="feature-tag">低功耗</div>
+                <div class="feature-tag">抗干扰</div>
+                <div class="feature-tag">长距离</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 网卡 -->
+          <div class="category-card">
+            <div class="category-header">
+              <div class="category-icon">🔌</div>
+              <div class="category-title">网卡</div>
+            </div>
+            <div class="category-content">
+              <div class="category-desc">
+                高性能网络接口卡，提供RDMA和GPU直连能力
+              </div>
+              <div class="device-list">
+                <div class="device-item">
+                  <div class="device-name">ConnectX-8网卡</div>
+                  <div class="device-specs">
+                    单端口<span class="spec-highlight">XDR 800G</span><br>
+                    双端口<span class="spec-highlight">NDR400 400G</span>
+                  </div>
+                </div>
+                <div class="device-item">
+                  <div class="device-name">ConnectX-7网卡</div>
+                  <div class="device-specs">
+                    单端口<span class="spec-highlight">NDR 400G</span><br>
+                    双端口<span class="spec-highlight">NDR200 200G</span>
+                  </div>
+                </div>
+                <div class="device-item">
+                  <div class="device-name">ConnectX-6网卡</div>
+                  <div class="device-specs">
+                    单端口<span class="spec-highlight">HDR 200G</span><br>
+                    双端口<span class="spec-highlight">HDR 200G, HDR100 100G</span>
+                  </div>
+                </div>
+                <div class="device-item">
+                  <div class="device-name">ConnectX-5网卡</div>
+                  <div class="device-specs">
+                    单端口<span class="spec-highlight">EDR 100G</span><br>
+                    双端口<span class="spec-highlight">EDR 100G</span>
+                  </div>
+                </div>
+              </div>
+              <div class="tech-features">
+                <div class="feature-tag">硬件卸载</div>
+                <div class="feature-tag">RDMA</div>
+                <div class="feature-tag">GPU直连</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 模块收发器 -->
+          <div class="category-card">
+            <div class="category-header">
+              <div class="category-icon">📡</div>
+              <div class="category-title">模块收发器</div>
+            </div>
+            <div class="category-content">
+              <div class="category-desc">
+                光电转换模块，实现高速信号传输和接口适配
+              </div>
+              <div class="device-list">
+                <div class="device-item">
+                  <div class="device-name">QSFP56/QSFP112</div>
+                  <div class="device-specs">
+                    <span class="spec-highlight">200G/400G</span> 多模<br>
+                    适用于短距离连接
+                  </div>
+                </div>
+                <div class="device-item">
+                  <div class="device-name">OSFP 1600G</div>
+                  <div class="device-specs">
+                    双端口<span class="spec-highlight">800G</span> 单模<br>
+                    用于交换机侧
+                  </div>
+                </div>
+                <div class="device-item">
+                  <div class="device-name">OSFP 800G</div>
+                  <div class="device-specs">
+                    网卡侧<span class="spec-highlight">800G</span> 单模<br>
+                    交换机侧双端口<span class="spec-highlight">400G</span>
+                  </div>
+                </div>
+                <div class="device-item">
+                  <div class="device-name">OSFP 400G</div>
+                  <div class="device-specs">
+                    网卡侧<span class="spec-highlight">400G</span><br>
+                    单模/多模支持
+                  </div>
+                </div>
+              </div>
+              <div class="tech-features">
+                <div class="feature-tag">热插拔</div>
+                <div class="feature-tag">多模式</div>
+                <div class="feature-tag">高密度</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 技术总结 -->
+        <div class="tech-summary">
+          <div class="summary-text">
+            IB网络硬件全栈方案：<span class="summary-highlight">交换机</span> + <span class="summary-highlight">线缆</span> + <span class="summary-highlight">网卡</span> + <span class="summary-highlight">收发器</span> = 完整智算网络生态
+          </div>
+        </div>
+      </div>
+
+      <!-- 底部信息 -->
+      <div class="footer">
+        <div class="footer-left">
+          <div class="status-dot"></div>
+          <span>硬件设备概览</span>
+        </div>
+        <div class="footer-badges">
+          <div class="footer-badge badge-hardware">Hardware</div>
+          <div class="footer-badge badge-components">Components</div>
+        </div>
+      </div>
+    </div>
+  </div>
+      <!-- 导航按钮 - 独立于主内容区 -->
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+    <a href="index3.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+    <a href="index5.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+  </div>
+</body>
+</html>

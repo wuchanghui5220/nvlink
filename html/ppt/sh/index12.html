@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IB网络链路连通性与准确性检查</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    /* 优化样式 */
+    .main-content {
+      padding: 1% 2%;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+      max-width: 1500px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .page-title {
+      text-align: center;
+      margin-bottom: 1.2%;
+      flex-shrink: 0;
+    }
+
+    .title-main {
+      font-size: clamp(24px, 2.8vw, 30px);
+      font-weight: 800;
+      background: linear-gradient(135deg, #00a2ff 0%, #4834d4 50%, #ff6b6b 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 0.6%;
+    }
+
+    .title-sub {
+      font-size: clamp(14px, 1.6vw, 18px);
+      color: rgba(255, 255, 255, 0.8);
+      font-weight: 400;
+      margin-bottom: 0.6%;
+    }
+
+    .content-grid {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2%;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .content-section {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5%;
+      min-height: 0;
+      overflow-y: auto;
+    }
+
+    .section-title {
+      font-size: clamp(16px, 1.8vw, 20px);
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 1%;
+      padding: 1.5%;
+      background: linear-gradient(135deg, rgba(0, 162, 255, 0.25), rgba(0, 162, 255, 0.15));
+      border: 2px solid rgba(0, 162, 255, 0.4);
+      border-radius: 8px;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0, 162, 255, 0.2);
+    }
+
+    .content-item {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04));
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      padding: 2%;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: visible;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .content-item:hover {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06));
+      border-color: rgba(255, 255, 255, 0.35);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    .item-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 1%;
+    }
+
+    .item-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(14px, 1.4vw, 16px);
+      color: white;
+      flex-shrink: 0;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .topology .item-icon { background: linear-gradient(135deg, #00a2ff, #0078d4); }
+    .status .item-icon { background: linear-gradient(135deg, #4834d4, #686de0); }
+    .quality .item-icon { background: linear-gradient(135deg, #ff6b6b, #ee5a24); }
+    .tools .item-icon { background: linear-gradient(135deg, #76b900, #3e703e); }
+
+    .item-title {
+      font-size: clamp(15px, 1.7vw, 18px);
+      font-weight: 700;
+      color: #ffffff;
+      flex: 1;
+      line-height: 1.3;
+    }
+
+    .item-content {
+      font-size: clamp(12px, 1.4vw, 15px);
+      color: rgba(255, 255, 255, 0.87);
+      line-height: 1.5;
+      margin-bottom: 1%;
+      font-weight: 400;
+    }
+
+    .cmd-example {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-left: 3px solid #00a2ff;
+      padding: 1.5%;
+      border-radius: 0 6px 6px 0;
+      font-family: 'Courier New', monospace;
+      font-size: clamp(11px, 1.2vw, 13px);
+      color: #e8f4fd;
+      line-height: 1.4;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+      margin-bottom: 0.5%;
+      box-shadow: inset 2px 0 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .cmd-example::before {
+      content: '$ ';
+      color: #00a2ff;
+      font-weight: bold;
+    }
+
+    .key-points {
+      background: linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(76, 175, 80, 0.1));
+      border: 2px solid rgba(76, 175, 80, 0.4);
+      border-radius: 8px;
+      padding: 2%;
+      margin-top: 1.5%;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
+    }
+
+    .key-points-text {
+      font-size: clamp(14px, 1.6vw, 17px);
+      color: rgba(255, 255, 255, 0.9);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .highlight {
+      color: #4caf50;
+      font-weight: 600;
+    }
+
+    /* 响应式设计 */
+    @media (max-width: 1200px) {
+      .content-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5%;
+      }
+    }
+
+    @media (max-height: 700px) {
+      .main-content {
+        padding: 0.8% 1.5%;
+      }
+      
+      .content-item {
+        padding: 1.8%;
+      }
+      
+      .content-section {
+        gap: 1.2%;
+      }
+      
+      .key-points {
+        padding: 1.8%;
+        margin-top: 1.2%;
+      }
+    }
+
+    @media (max-height: 600px) {
+      .main-content {
+        padding: 0.6% 1.2%;
+      }
+      
+      .page-title {
+        margin-bottom: 1%;
+      }
+      
+      .content-item {
+        padding: 1.5%;
+      }
+      
+      .item-header {
+        margin-bottom: 0.8%;
+        gap: 10px;
+      }
+      
+      .item-icon {
+        width: 22px;
+        height: 22px;
+        font-size: clamp(13px, 1.3vw, 15px);
+      }
+      
+      .item-title {
+        font-size: clamp(14px, 1.6vw, 17px);
+      }
+      
+      .item-content {
+        font-size: clamp(11px, 1.3vw, 14px);
+      }
+      
+      .cmd-example {
+        font-size: clamp(10px, 1.1vw, 12px);
+        padding: 1.2%;
+      }
+      
+      .content-section {
+        gap: 1%;
+      }
+      
+      .key-points {
+        padding: 1.5%;
+        margin-top: 1%;
+      }
+      
+      .key-points-text {
+        font-size: clamp(13px, 1.5vw, 16px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <!-- 背景元素 -->
+    <div class="bg-elements">
+      <div class="brain-pattern"></div>
+      <div class="network-signals">
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+      </div>
+    </div>
+
+    <!-- 主要内容 -->
+    <div class="content">
+      <!-- 顶部标识 -->
+      <div class="header" style="padding: 0.6% 2%;">
+        <div class="day-info">
+          <div class="day-badge">2</div>
+          <div class="day-text">IB网络测试与优化</div>
+        </div>
+        <div class="section-indicator">链路连通性检查</div>
+      </div>
+
+      <!-- 主体内容 -->
+      <div class="main-content">
+        <!-- 页面标题 -->
+        <div class="page-title">
+          <div class="title-main">IB网络链路连通性与准确性检查</div>
+          <div class="title-sub">网络拓扑发现与链路状态验证技术</div>
+        </div>
+
+        <!-- 内容网格 -->
+        <div class="content-grid">
+          <!-- 左侧：拓扑发现与状态检查 -->
+          <div class="content-section">
+            <div class="section-title">拓扑发现与状态检查</div>
+            
+            <div class="content-item topology">
+              <div class="item-header">
+                <div class="item-icon">🔍</div>
+                <div class="item-title">网络拓扑发现</div>
+              </div>
+              <div class="item-content">
+                全面扫描IB子网内的所有设备，自动发现网络拓扑结构并生成详细的连接图谱。<br>
+              </div>
+              <div class="cmd-example">ibnetdiscover</div>
+            </div>
+
+            <div class="content-item status">
+              <div class="item-header">
+                <div class="item-icon">📊</div>
+                <div class="item-title">查看所有交换机</div>
+              </div>
+              <div class="item-content">
+                快速获取子网内所有交换机的关键标识信息，包括LID、GUID和设备名称。<br>
+              </div>
+              <div class="cmd-example">ibswitches</div>
+            </div>
+
+            <div class="content-item status">
+              <div class="item-header">
+                <div class="item-icon">🖥️</div>
+                <div class="item-title">查看所有主机节点</div>
+              </div>
+              <div class="item-content">
+                枚举并显示所有计算节点的HCA设备信息，包括节点名称和网络地址。<br>
+              </div>
+              <div class="cmd-example">ibhosts</div>
+            </div>
+
+            <div class="content-item quality">
+              <div class="item-header">
+                <div class="item-icon">🔗</div>
+                <div class="item-title">端口状态检查</div>
+              </div>
+              <div class="item-content">
+                深入检查特定设备端口的详细状态信息，包括链路状态、速率和连接质量。<br>
+              </div>
+              <div class="cmd-example">ibstat, ibportstate -D &lt;device&gt; &lt;port&gt;</div>
+            </div>
+          </div>
+
+          <!-- 右侧：连接质量与诊断工具 -->
+          <div class="content-section">
+            <div class="section-title">连接质量与诊断工具</div>
+            
+            <div class="content-item quality">
+              <div class="item-header">
+                <div class="item-icon">⚡</div>
+                <div class="item-title">链路质量检查</div>
+              </div>
+              <div class="item-content">
+                系统性地扫描所有物理链路的连接状态，实时监控链路质量和稳定性。<br>
+              </div>
+              <div class="cmd-example">iblinkinfo</div>
+            </div>
+
+            <div class="content-item tools">
+              <div class="item-header">
+                <div class="item-icon">🛠️</div>
+                <div class="item-title">网络诊断工具</div>
+              </div>
+              <div class="item-content">
+                功能强大的网络综合诊断工具，能够自动检测和报告各种网络问题。<br>
+              </div>
+              <div class="cmd-example">ibdiagnet</div>
+            </div>
+
+            <div class="content-item tools">
+              <div class="item-header">
+                <div class="item-icon">🎯</div>
+                <div class="item-title">路径查询</div>
+              </div>
+              <div class="item-content">
+                精确查询任意两个网络节点之间的完整路由路径，包括所有中间交换机。<br>
+              </div>
+              <div class="cmd-example">ibtracert &lt;src_lid&gt; &lt;dst_lid&gt;</div>
+            </div>
+
+            <div class="content-item topology">
+              <div class="item-header">
+                <div class="item-icon">📈</div>
+                <div class="item-title">性能计数器</div>
+              </div>
+              <div class="item-content">
+                获取详细的端口级性能指标和错误统计信息，检查端口光模块信息和误码率。<br>
+              </div>
+              <div class="cmd-example">perfquery -a, mlxlink -d &lt;device&gt; -m -c</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 关键要点 -->
+        <div class="key-points">
+          <div class="key-points-text">
+            <div>💡</div>
+            <span><span class="highlight">关键要点：</span>系统性检查网络拓扑、链路状态和连接质量是确保IB网络正常运行的基础</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 底部信息 -->
+      <div class="footer" style="padding: 0.6% 2%;">
+        <div class="footer-left">
+          <div class="status-dot"></div>
+          <span>链路连通性检查</span>
+        </div>
+        <div class="footer-badges">
+          <div class="footer-badge badge-install">CONNECTIVITY</div>
+          <div class="footer-badge badge-config">TOPOLOGY</div>
+          <div class="footer-badge badge-command">DIAGNOSIS</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 导航按钮 -->
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+    <a href="index11.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+    <a href="index13.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+  </div>
+</body>
+</html>

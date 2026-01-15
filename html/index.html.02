@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vincent's Learning Vault</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        nvgreen: '#76B900',
+                        slate: {
+                            50: '#F8FAFC',
+                            100: '#F1F5F9',
+                            800: '#1E293B',
+                            900: '#0F172A',
+                            950: '#020617', // 更深的黑色用于CUDA卡片
+                        }
+                    },
+                    boxShadow: {
+                        'card': '0 2px 10px rgba(0, 0, 0, 0.03)',
+                        'card-hover': '0 10px 30px rgba(0, 0, 0, 0.06)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #F1F5F9; }
+        .grid-bg {
+            background-image: radial-gradient(#E2E8F0 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="text-slate-600 antialiased min-h-screen grid-bg flex flex-col justify-between">
+
+    <!-- 顶部导航 -->
+    <header class="bg-white/80 backdrop-blur border-b border-gray-200 sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2 cursor-pointer" onclick="window.scrollTo(0,0)">
+                <div class="w-2 h-8 bg-nvgreen rounded-full"></div>
+                <span class="text-xl font-bold text-slate-800 tracking-tight">Vincent's Vault</span>
+            </div>
+            <div class="flex items-center gap-4 text-sm font-medium">
+                <a href="mailto:vincentwu@zhengytech.com" class="text-gray-500 hover:text-nvgreen transition hidden sm:block">
+                    vincentwu@zhengytech.com
+                </a>
+                <a href="mailto:vincentwu@zhengytech.com" class="text-gray-500 hover:text-nvgreen transition sm:hidden">
+                    <i class="fas fa-envelope text-lg"></i>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Bento Grid 主体 -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+        
+        <div class="mb-8">
+            <h1 class="text-3xl sm:text-4xl font-bold text-slate-900 mb-2">
+                Hello, Engineer.
+            </h1>
+            <p class="text-gray-500">
+                Data Center Network Resources & Tools.
+            </p>
+        </div>
+
+        <!-- 
+           核心网格布局 (4列布局)
+           Row 1: Solutions(2) | Topo(1) | Calc(1)
+           Row 2: Docs(2) | NPN(1) | CUDA(1) 
+        -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            
+            <!-- 1. Solutions (占据 2列) -->
+            <a href="./solutions/" class="col-span-1 md:col-span-2 bg-white rounded-3xl p-8 shadow-card hover:shadow-card-hover transition group relative overflow-hidden border border-gray-100 flex flex-col justify-between min-h-[240px]">
+                <div class="relative z-10">
+                    <div class="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 mb-4 group-hover:scale-110 transition">
+                        <i class="fas fa-layer-group text-xl"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-slate-900 mb-2">Solutions Hub</h2>
+                    <p class="text-gray-500 text-sm max-w-sm">
+                        针对 AI、HPC、自动驾驶等场景的完整网络架构设计与解决方案归档。
+                    </p>
+                </div>
+                <div class="flex items-center text-blue-600 font-semibold mt-4">
+                    浏览方案 <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition"></i>
+                </div>
+                <div class="absolute right-0 bottom-0 opacity-5">
+                    <i class="fas fa-network-wired text-9xl"></i>
+                </div>
+            </a>
+
+            <!-- 2. IB Topo (占据 1列) -->
+            <a href="./topo/" target="_blank" class="bg-slate-800 rounded-3xl p-6 shadow-card hover:shadow-card-hover transition group relative overflow-hidden text-white flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center backdrop-blur">
+                            <i class="fas fa-project-diagram text-nvgreen"></i>
+                        </div>
+                        <i class="fas fa-external-link-alt text-white/30 text-xs"></i>
+                    </div>
+                    <h3 class="text-lg font-bold mb-1">IB 拓扑设计</h3>
+                    <p class="text-gray-400 text-xs">生成组网方案与连线图</p>
+                </div>
+                <div class="w-full h-1 bg-gray-700 rounded-full mt-4 overflow-hidden">
+                    <div class="w-1/3 h-full bg-nvgreen group-hover:w-2/3 transition-all duration-500"></div>
+                </div>
+            </a>
+
+            <!-- 3. Calculator (占据 1列) -->
+            <a href="cb/" target="_blank" class="bg-white rounded-3xl p-6 shadow-card hover:shadow-card-hover transition group border border-gray-100 flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center text-nvgreen">
+                            <i class="fas fa-calculator"></i>
+                        </div>
+                        <i class="fas fa-external-link-alt text-gray-300 text-xs"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900 mb-1">配置计算器</h3>
+                    <p class="text-gray-500 text-xs">Configuration Builder</p>
+                </div>
+                <div class="text-xs font-semibold text-slate-400 group-hover:text-nvgreen transition">立即计算</div>
+            </a>
+
+            <!-- 4. Networking Docs (占据 2列) -->
+            <a href="https://docs.nvidia.com/networking/index.html" target="_blank" class="col-span-1 md:col-span-2 bg-white rounded-3xl p-6 shadow-card hover:shadow-card-hover transition border border-gray-100 flex items-center gap-6">
+                <div class="w-16 h-16 bg-purple-50 rounded-2xl flex-shrink-0 flex items-center justify-center text-purple-600">
+                    <i class="fas fa-book-reader text-2xl"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-slate-900">Networking Docs</h3>
+                    <p class="text-sm text-gray-500 mt-1">NVIDIA 官方产品信息、白皮书与技术手册索引。</p>
+                </div>
+                <div class="ml-auto text-gray-300 group-hover:text-purple-500 transition">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            </a>
+
+            <!-- 5. NPN Exam (占据 1列 - 绿色主题) -->
+            <a href="./pnp/" class="bg-gradient-to-br from-nvgreen to-green-600 rounded-3xl p-6 shadow-card hover:shadow-card-hover transition text-white flex flex-col justify-between relative overflow-hidden group">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-white opacity-10 rounded-full blur-2xl -mr-8 -mt-8"></div>
+                <div>
+                    <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center mb-4 backdrop-blur">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <h3 class="text-lg font-bold mb-1">NPN Exam</h3>
+                    <p class="text-green-100 text-xs">认证备考题库</p>
+                </div>
+                <div class="mt-4 flex items-center text-xs font-bold bg-white/10 w-fit px-3 py-1 rounded-full group-hover:bg-white/20 transition">
+                    进入学习 <i class="fas fa-arrow-right ml-1 text-[10px]"></i>
+                </div>
+            </a>
+
+            <!-- 6. CUDA Toolkit (占据 1列 - 黑色主题 - NEW!) -->
+            <!-- 这里就是您要求的新增板块 -->
+            <a href="https://developer.nvidia.com/cuda-toolkit-archive" target="_blank" class="bg-slate-950 rounded-3xl p-6 shadow-card hover:shadow-card-hover transition text-white flex flex-col justify-between group relative overflow-hidden border border-slate-800">
+                <!-- 装饰性代码背景 -->
+                <div class="absolute inset-0 opacity-5 pointer-events-none text-[8px] leading-3 font-mono p-2 overflow-hidden select-none">
+                    #include &lt;stdio.h&gt;<br>__global__ void cuda_kernel() {<br> int idx = blockIdx.x;<br>}<br>int main() { ... }
+                </div>
+                
+                <div class="relative z-10">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="w-10 h-10 bg-slate-800 rounded-xl flex items-center justify-center border border-slate-700">
+                            <i class="fas fa-terminal text-nvgreen"></i>
+                        </div>
+                        <i class="fas fa-download text-gray-500 text-xs group-hover:text-nvgreen transition"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-1">CUDA Toolkit</h3>
+                    <p class="text-gray-400 text-xs">Archive & Downloads</p>
+                </div>
+                <div class="relative z-10 w-full h-px bg-slate-800 mt-4">
+                    <div class="w-10 h-full bg-nvgreen group-hover:w-full transition-all duration-700"></div>
+                </div>
+            </a>
+
+        </div>
+
+        <!-- 底部快捷操作栏 (Dock) -->
+        <div class="mt-4">
+            <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4 px-2">Quick Downloads</h3>
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-3 overflow-x-auto no-scrollbar">
+                <div class="flex gap-3 min-w-max">
+                    <a href="https://enterprise-support.nvidia.com/s/rma-serial-check" target="_blank" class="flex items-center gap-2 px-3 py-2 bg-slate-50 hover:bg-slate-100 rounded-xl border border-gray-100 transition group">
+                        <i class="fas fa-barcode text-gray-400 group-hover:text-nvgreen text-sm"></i>
+                        <span class="text-xs font-bold text-slate-600">SSC</span>
+                    </a>
+
+                    <a href="https://developer.nvidia.com/networking/infiniband-software" target="_blank" class="flex items-center gap-2 px-3 py-2 bg-slate-50 hover:bg-slate-100 rounded-xl border border-gray-100 transition group">
+                        <i class="fas fa-hdd text-gray-400 group-hover:text-blue-500 text-sm"></i>
+                        <span class="text-xs font-bold text-slate-600">Driver</span>
+                    </a>
+
+                    <a href="https://network.nvidia.com/support/firmware/firmware-downloads/" target="_blank" class="flex items-center gap-2 px-3 py-2 bg-slate-50 hover:bg-slate-100 rounded-xl border border-gray-100 transition group">
+                        <i class="fas fa-microchip text-gray-400 group-hover:text-purple-500 text-sm"></i>
+                        <span class="text-xs font-bold text-slate-600">Firmware</span>
+                    </a>
+
+                    <a href="https://docs.nvidia.com/networking/display/mftv4250/using+mlxconfig" target="_blank" class="flex items-center gap-2 px-3 py-2 bg-slate-50 hover:bg-slate-100 rounded-xl border border-gray-100 transition group">
+                        <i class="fas fa-toolbox text-gray-400 group-hover:text-yellow-500 text-sm"></i>
+                        <span class="text-xs font-bold text-slate-600">MFT</span>
+                    </a>
+
+                    <a href="https://www.nvidia.com/en-us/networking/products/lts-releases/" target="_blank" class="flex items-center gap-2 px-3 py-2 bg-slate-50 hover:bg-slate-100 rounded-xl border border-gray-100 transition group">
+                        <i class="fas fa-history text-gray-400 group-hover:text-red-500 text-sm"></i>
+                        <span class="text-xs font-bold text-slate-600">LTS</span>
+                    </a>
+
+                    <a href="https://docs.nvidia.com/networking/display/nvidia-ufm-enterprise-user-manual-v6-17-1.1.pdf" target="_blank" class="flex items-center gap-2 px-3 py-2 bg-slate-50 hover:bg-slate-100 rounded-xl border border-gray-100 transition group">
+                        <i class="fas fa-server text-gray-400 group-hover:text-green-500 text-sm"></i>
+                        <span class="text-xs font-bold text-slate-600">UFM</span>
+                    </a>
+                    
+                    <a href="https://docs.nvidia.com/networking-ethernet-software/cumulus-linux-510/Quick-Start-Guide/" target="_blank" class="flex items-center gap-2 px-3 py-2 bg-slate-50 hover:bg-slate-100 rounded-xl border border-gray-100 transition group">
+                        <i class="fab fa-linux text-gray-400 group-hover:text-black text-sm"></i>
+                        <span class="text-xs font-bold text-slate-600">Cumulus</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="mt-auto py-6 text-center border-t border-gray-200 bg-white">
+        <div class="flex justify-center items-center gap-4 text-xs text-gray-400">
+            <span>© Vincent's Learning Vault</span>
+            <span class="text-gray-200">|</span>
+            <a href="https://nvid.nvidia.com/dashboard" target="_blank" class="hover:text-nvgreen transition">Partner Portal</a>
+        </div>
+    </footer>
+
+</body>
+</html>

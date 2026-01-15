@@ -1,0 +1,535 @@
+/* 导入字体 */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700;800&display=swap');
+
+/* 基础样式 */
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+  font-family: 'Noto Sans SC', sans-serif;
+  overflow: hidden;
+}
+
+/* 幻灯片容器 */
+.slide-container {
+  width: 100vw;
+  height: 56.25vw; /* 16:9 aspect ratio */
+  max-height: 100vh;
+  max-width: 177.78vh; /* 16:9 aspect ratio (reversed) */
+  position: relative;
+  background: #111827;
+  color: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+}
+
+/* 动态背景元素 */
+.bg-elements {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.brain-pattern, .bg-grid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image:
+    radial-gradient(circle at 25% 25%, rgba(0, 162, 255, 0.06) 2px, transparent 2px),
+    radial-gradient(circle at 75% 75%, rgba(72, 52, 212, 0.05) 2px, transparent 2px),
+    linear-gradient(90deg, rgba(0, 162, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(rgba(0, 162, 255, 0.03) 1px, transparent 1px);
+  background-size: 60px 60px, 80px 80px, 40px 40px, 40px 40px;
+  animation: brain-flow 20s linear infinite;
+}
+
+@keyframes brain-flow {
+  0% { background-position: 0 0, 0 0, 0 0, 0 0; }
+  100% { background-position: 60px 60px, -80px -80px, 40px 40px, -40px -40px; }
+}
+
+.network-signals {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+}
+
+.signal-dot {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: #00a2ff;
+  border-radius: 50%;
+  animation: signal-pulse 3s ease-in-out infinite;
+  opacity: 0.4;
+}
+
+.signal-dot:nth-child(1) { top: 20%; left: 15%; animation-delay: 0s; }
+.signal-dot:nth-child(2) { top: 30%; right: 20%; animation-delay: 1s; background: #4834d4; }
+.signal-dot:nth-child(3) { bottom: 25%; left: 25%; animation-delay: 2s; background: #ff6b6b; }
+.signal-dot:nth-child(4) { bottom: 35%; right: 15%; animation-delay: 1.5s; background: #76b900; }
+.signal-dot:nth-child(5) { top: 50%; left: 50%; animation-delay: 0.5s; background: #00a2ff; }
+
+@keyframes signal-pulse {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(2); }
+}
+
+/* 主要内容结构 */
+.content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  z-index: 10;
+}
+
+/* 顶部标识栏 */
+.header {
+  padding: 0.8% 2.5%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.2));
+  backdrop-filter: blur(15px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
+  height: 7%;
+}
+
+.day-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.day-badge {
+  width: 30px;
+  height: 30px;
+  background: linear-gradient(135deg, #00a2ff, #0078d4);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: clamp(12px, 1.2vw, 13px);
+  box-shadow: 0 5px 15px rgba(0, 162, 255, 0.3);
+}
+
+.day-text {
+  font-size: clamp(14px, 1.6vw, 16px);
+  font-weight: 600;
+  color: #00a2ff;
+}
+
+.section-indicator {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: clamp(11px, 1.2vw, 12px);
+  font-weight: 500;
+  backdrop-filter: blur(10px);
+}
+
+/* 主体内容区域 */
+.main-content {
+  flex: 1;
+  padding: 1% 2.5%;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* 页面标题 */
+.page-title {
+  text-align: center;
+  margin-bottom: 1.5%;
+  flex-shrink: 0;
+}
+
+.title-main {
+  font-size: clamp(28px, 3.8vw, 36px);
+  font-weight: 800;
+  background: linear-gradient(135deg, #ffffff 0%, #00a2ff 50%, #4834d4 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin-bottom: 0.8%;
+  text-shadow: 0 0 30px rgba(0, 162, 255, 0.3);
+}
+
+.title-sub {
+  font-size: clamp(14px, 1.6vw, 17px);
+  color: rgba(255, 255, 255, 0.75);
+  font-weight: 300;
+  margin-bottom: 0.8%;
+}
+
+/* 主要内容布局 */
+.content-layout {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2%;
+  min-height: 0;
+}
+
+/* 通用卡片样式 */
+.card-container {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 2.5%;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+}
+
+.card-container:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* 卡片标题 */
+.card-title {
+  font-size: clamp(16px, 1.8vw, 18px);
+  font-weight: 700;
+  margin-bottom: 3%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.card-title.blue {
+  color: #00a2ff;
+}
+
+.card-title.purple {
+  color: #4834d4;
+}
+
+.card-title.red {
+  color: #ff6b6b;
+}
+
+.card-title.green {
+  color: #76b900;
+}
+
+.card-title::before {
+  content: '';
+  width: 3px;
+  height: 16px;
+  border-radius: 2px;
+}
+
+.card-title.blue::before {
+  background: linear-gradient(180deg, #00a2ff, #0078d4);
+}
+
+.card-title.purple::before {
+  background: linear-gradient(180deg, #4834d4, #686de0);
+}
+
+.card-title.red::before {
+  background: linear-gradient(180deg, #ff6b6b, #ee5a24);
+}
+
+.card-title.green::before {
+  background: linear-gradient(180deg, #76b900, #3e703e);
+}
+
+/* 代码块样式 */
+.code-block {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 3%;
+  font-family: 'Courier New', monospace;
+  font-size: clamp(11px, 1.2vw, 13px);
+  color: #e2e8f0;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+  position: relative;
+}
+
+.code-block::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, #00a2ff, #4834d4);
+  border-radius: 2px 0 0 2px;
+}
+
+/* 命令行样式 */
+.command-line {
+  background: rgba(0, 0, 0, 0.6);
+  border-left: 3px solid #00a2ff;
+  padding: 2.5%;
+  font-family: 'Courier New', monospace;
+  font-size: clamp(12px, 1.3vw, 14px);
+  color: #87ceeb;
+  border-radius: 0 8px 8px 0;
+  margin: 2% 0;
+  position: relative;
+}
+
+.command-line::before {
+  content: '$ ';
+  color: #00a2ff;
+  font-weight: bold;
+}
+
+/* 配置项列表 */
+.config-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.config-item {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 2.5%;
+  margin-bottom: 2%;
+  transition: all 0.3s ease;
+}
+
+.config-item:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(0, 162, 255, 0.3);
+  transform: translateX(5px);
+}
+
+.config-label {
+  font-size: clamp(13px, 1.4vw, 15px);
+  font-weight: 600;
+  color: #87ceeb;
+  margin-bottom: 1%;
+}
+
+.config-value {
+  font-family: 'Courier New', monospace;
+  font-size: clamp(12px, 1.3vw, 14px);
+  color: #00a2ff;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 1% 2%;
+  border-radius: 4px;
+  margin: 1% 0;
+}
+
+.config-desc {
+  font-size: clamp(11px, 1.2vw, 13px);
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.4;
+  margin-top: 1%;
+}
+
+/* 步骤列表 */
+.step-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  position: relative;
+}
+
+.step-list::before {
+  content: '';
+  position: absolute;
+  left: 12px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(180deg, #00a2ff, #4834d4, #ff6b6b);
+  border-radius: 1px;
+}
+
+.step-item {
+  position: relative;
+  padding-left: 40px;
+  margin-bottom: 4%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  padding: 2%;
+  padding-left: 50px;
+  transition: all 0.3s ease;
+}
+
+.step-item::before {
+  content: '';
+  position: absolute;
+  left: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 10px;
+  height: 10px;
+  background: #00a2ff;
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px rgba(0, 162, 255, 0.2);
+}
+
+.step-item:nth-child(2n)::before {
+  background: #4834d4;
+  box-shadow: 0 0 0 3px rgba(72, 52, 212, 0.2);
+}
+
+.step-item:nth-child(3n)::before {
+  background: #ff6b6b;
+  box-shadow: 0 0 0 3px rgba(255, 107, 107, 0.2);
+}
+
+.step-item:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(0, 162, 255, 0.3);
+  transform: translateX(5px);
+}
+
+.step-text {
+  font-size: clamp(12px, 1.3vw, 14px);
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+/* 底部信息栏 */
+.footer {
+  padding: 0.8% 2.5%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.2));
+  backdrop-filter: blur(15px);
+  flex-shrink: 0;
+  height: 5%;
+}
+
+.footer-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: clamp(11px, 1.2vw, 12px);
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  background: #00a2ff;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(0, 162, 255, 0.7); }
+  70% { box-shadow: 0 0 0 6px rgba(0, 162, 255, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(0, 162, 255, 0); }
+}
+
+.footer-badges {
+  display: flex;
+  gap: 8px;
+}
+
+.footer-badge {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: clamp(8px, 0.9vw, 9px);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: white;
+}
+
+.badge-install {
+  background: linear-gradient(90deg, #00a2ff, #0078d4);
+  box-shadow: 0 0 10px rgba(0, 162, 255, 0.3);
+}
+
+.badge-config {
+  background: linear-gradient(90deg, #4834d4, #686de0);
+  box-shadow: 0 0 10px rgba(72, 52, 212, 0.3);
+}
+
+.badge-command {
+  background: linear-gradient(90deg, #ff6b6b, #ee5a24);
+  box-shadow: 0 0 10px rgba(255, 107, 107, 0.3);
+}
+
+/* 响应式调整 */
+@media (max-width: 1400px) {
+  .content-layout {
+    gap: 1.5%;
+  }
+}
+
+@media (max-height: 700px) {
+  .main-content {
+    padding: 1.2% 2.5%;
+  }
+  
+  .card-container {
+    padding: 2%;
+  }
+  
+  .content-layout {
+    gap: 1.5%;
+  }
+}
+
+@media (max-height: 600px) {
+  .header {
+    height: 8%;
+    padding: 0.5% 2.5%;
+  }
+  
+  .footer {
+    height: 6%;
+    padding: 0.5% 2.5%;
+  }
+  
+  .page-title {
+    margin-bottom: 1%;
+  }
+  
+  .card-container {
+    padding: 1.8%;
+  }
+}
+
+@media (max-height: 500px) {
+  .main-content {
+    padding: 1% 2.5%;
+  }
+  
+  .card-container {
+    padding: 1.5%;
+  }
+  
+  .content-layout {
+    gap: 1%;
+  }
+}

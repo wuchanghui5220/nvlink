@@ -4,361 +4,265 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vincent's Learning Vault</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        nvgreen: '#76B900',
+                        slate: {
+                            50: '#F8FAFC',
+                            100: '#F1F5F9',
+                            800: '#1E293B',
+                            900: '#0F172A',
+                            950: '#020617', 
+                        },
+                        darkbase: '#0B0E14', // 底部深色背景
+                    },
+                    boxShadow: {
+                        'card': '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)',
+                        'glow': '0 0 15px rgba(118, 185, 0, 0.15)',
+                    },
+                    backgroundImage: {
+                        'dot-pattern': 'radial-gradient(#CBD5E1 1px, transparent 1px)',
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        :root {
-            --primary-color: #4a90e2;
-            --secondary-color: #2c3e50;
-            --background-color: #f0f4f8;
-            --card-background: #ffffff;
-            --text-color: #333333;
-        }
-        body {
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-            line-height: 1.6;
-            margin: 0;
-            padding: 0;
-            background-color: var(--background-color);
-            color: var(--text-color);
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        header {
-            background: linear-gradient(45deg, #4a90e2, #2c3e50);
-            color: white;
-            padding: 20px 0;
-            position: relative;
-            overflow: hidden;
-        }
-        .banner {
-            position: relative;
-            height: 200px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .banner h1 {
-            font-size: 2.5em;
-            text-align: center;
-            z-index: 2;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-        }
-        .tech-circles {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-        }
-        .tech-circle {
-            position: absolute;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.1);
-            animation: float 10s infinite ease-in-out;
-        }
-        .tech-circle:nth-child(1) {
-            width: 100px;
-            height: 100px;
-            left: 10%;
-            top: 20%;
-        }
-        .tech-circle:nth-child(2) {
-            width: 150px;
-            height: 150px;
-            right: 20%;
-            bottom: 10%;
-            animation-delay: -5s;
-        }
-        .tech-circle:nth-child(3) {
-            width: 80px;
-            height: 80px;
-            left: 50%;
-            top: 50%;
-            animation-delay: -7s;
-        }
-        @keyframes float {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(180deg); }
-        }
-
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .fade-module {
-            opacity: 0;
-        }
-
-        .fade-module.show {
-            animation: fadeIn 1s ease-in forwards;
-        }
-        
-        header {
-            background: linear-gradient(45deg, #4a90e2, #2c3e50, #4a90e2, #2c3e50);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
-            color: white;
-            padding: 20px 0;
-            position: relative;
-            overflow: hidden;
-        }
-
-
-
-        .avatar {
-            position: absolute;
-            bottom: -30px;
-            left: 50px;
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            border: 4px solid white;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            z-index: 3;
-            transition: transform 0.3s ease;
-        }
-        .avatar:hover {
-            transform: scale(1.1);
-        }
-        .content {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            padding: 20px 0;
-        }
-        .card {
-            background-color: var(--card-background);
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            transition: transform 0.3s ease;
-        }
-        .card:hover {
-            transform: translateY(-5px);
-        }
-        .card-image {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-        }
-        .card-content {
-            padding: 20px;
-        }
-        h2 {
-            color: var(--primary-color);
-            margin-top: 0;
-        }
-        p {
-            margin-bottom: 0;
-        }
-        footer {
-            background-color: var(--secondary-color);
-            color: white;
-            padding: 40px 0;
-            margin-top: 40px;
-        }
-        .footer-content {
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-        }
-        .footer-section {
-            flex: 1;
-            margin: 10px;
-            min-width: 200px;
-        }
-        .footer-section h3 {
-            border-bottom: 2px solid var(--primary-color);
-            padding-bottom: 10px;
-            margin-bottom: 15px;
-        }
-        .footer-section ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        .footer-section ul li {
-            margin-bottom: 10px;
-        }
-        .footer-section ul li a {
-            color: #ddd;
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-        .footer-section ul li a:hover {
-            color: var(--primary-color);
-        }
-        .social-icons {
-            font-size: 1.5em;
-        }
-        .social-icons a {
-            color: white;
-            margin-right: 10px;
-            text-decoration: none;
-        }
-        @media (max-width: 768px) {
-            .content {
-                grid-template-columns: 1fr;
-            }
-            .footer-content {
-                flex-direction: column;
-            }
-            .avatar {
-                left: 20px;
-                width: 80px;
-                height: 80px;
-            }
+        body { background-color: #F8FAFC; }
+        .bg-dots { background-size: 24px 24px; }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
         }
     </style>
 </head>
-<body>
-    <header>
-        <div class="banner">
-            <div class="tech-circles">
-                <div class="tech-circle"></div>
-                <div class="tech-circle"></div>
-                <div class="tech-circle"></div>
+<body class="text-slate-600 antialiased min-h-screen flex flex-col bg-dot-pattern bg-dots">
+
+    <!-- 1. 顶部导航 (更紧凑) -->
+    <header class="bg-white/90 backdrop-blur border-b border-gray-200 sticky top-0 z-50 h-14">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center justify-between">
+            <div class="flex items-center gap-2 cursor-pointer" onclick="window.scrollTo(0,0)">
+                <div class="w-2 h-6 bg-nvgreen rounded-full"></div>
+                <span class="text-lg font-bold text-slate-800 tracking-tight">Vincent's Vault</span>
             </div>
-            <h1>Vincent's Learning Vault</h1>
-            <img src="images/avatar/avatar.jpg" alt="个人头像" class="avatar">
+            <div class="flex items-center gap-4 text-xs font-medium text-gray-500">
+                <span class="hidden sm:inline">Engineering Resources</span>
+                <span class="w-px h-3 bg-gray-300 hidden sm:inline"></span>
+                <a href="mailto:vincentwu@zhengytech.com" class="hover:text-nvgreen transition">Contact</a>
+            </div>
         </div>
     </header>
 
-    <main class="container">
-        <div class="content">
-            <div class="card fade-module">
-                <a href="https://docs.nvidia.com/networking/index.html" target="_blank" style="text-decoration: none; color: inherit;">
-                <div class="card">
-                    <img src="images/products.jpg" alt="经验分享" class="card-image">
-                    <div class="card-content">
-                        <h2>Networking Products</h2>
-                        <p>面向高性能、可扩展且安全的 AI 驱动数据中心的下一代网络</p>
-                    </div>
-                </div>
-                </a>
+    <!-- 2. 主内容区 (Bento Grid) -->
+    <!-- flex-grow 让它占据剩余空间，但底部会被 Footer 顶住 -->
+    <main class="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        
+        <!-- 欢迎语 (简化) -->
+        <div class="flex items-end justify-between mb-6">
+            <div>
+                <h1 class="text-2xl sm:text-3xl font-bold text-slate-900">Dashboard</h1>
+                <p class="text-sm text-gray-500 mt-1">Select a module to begin.</p>
             </div>
+            <!-- 可以放个小日期或者状态 -->
+            <div class="hidden sm:flex items-center gap-2 text-xs bg-white px-3 py-1 rounded-full border border-gray-200 shadow-sm text-green-600">
+                <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                System Online
+            </div>
+        </div>
 
-            <div class="card fade-module">
-                <a href="./solutions/" style="text-decoration: none; color: inherit;">
-                <div class="card">
-                    <img src="images/solutions.jpg" alt="产品归类" class="card-image">
-                    <div class="card-content">
-                        <h2>Solutions</h2>
-                        <p>人工智能,数据中心和云计算,设计与仿真,机器人和边缘计算,高性能计算,自动驾驶 </p>
+        <!-- 6个核心卡片 -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 sm:gap-6 h-auto">
+            
+            <!-- A. Solutions (大卡片) -->
+            <a href="./solutions/" class="md:col-span-2 glass-card rounded-2xl p-6 shadow-card hover:shadow-glow border border-gray-100 transition group relative overflow-hidden flex flex-col justify-between min-h-[220px]">
+                <div class="relative z-10">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600">
+                            <i class="fas fa-layer-group"></i>
+                        </div>
+                        <span class="text-xs font-bold text-blue-600 uppercase tracking-wider">Architecture</span>
                     </div>
+                    <h2 class="text-xl font-bold text-slate-900 mb-1">Solutions Hub</h2>
+                    <p class="text-sm text-gray-500 max-w-sm leading-relaxed">
+                        AI、HPC、自动驾驶与边缘计算场景的完整网络架构设计与方案归档。
+                    </p>
                 </div>
-                </a>
-            </div>
+                <div class="flex items-center text-blue-600 text-sm font-semibold mt-4">
+                    Explore <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition"></i>
+                </div>
+                <!-- 装饰 -->
+                <div class="absolute right-0 bottom-0 opacity-[0.03] transform translate-y-4 translate-x-4">
+                    <i class="fas fa-cubes text-9xl"></i>
+                </div>
+            </a>
 
-            <div class="card fade-module">
-                <a href="https://marketplace.nvidia.com/en-us/enterprise/networking/" target="_blank" style="text-decoration: none; color: inherit;">
-                <div class="card">
-                    <img src="images/sources.png" alt="考试测试考题分享" class="card-image">
-                    <div class="card-content">
-                        <h2>Networking Docs</h2>
-                        <p>在线产品信息</p>
+            <!-- B. IB Topo -->
+            <a href="./topo/" target="_blank" class="bg-slate-800 rounded-2xl p-5 shadow-card hover:shadow-lg transition group relative overflow-hidden text-white flex flex-col justify-between min-h-[160px]">
+                <div>
+                    <div class="flex justify-between items-start mb-3">
+                        <i class="fas fa-project-diagram text-nvgreen text-xl"></i>
+                        <i class="fas fa-external-link-alt text-white/20 text-xs"></i>
                     </div>
+                    <h3 class="text-base font-bold mb-1">IB 拓扑设计</h3>
+                    <p class="text-gray-400 text-xs">自动生成连线图</p>
                 </div>
-                </a>
-            </div>
+                <div class="w-full h-1 bg-gray-700 rounded-full mt-2 overflow-hidden">
+                    <div class="w-1/3 h-full bg-nvgreen group-hover:w-full transition-all duration-700"></div>
+                </div>
+            </a>
 
-            <div class="card fade-module">
-                <a href="./topo/" target="_blank" style="text-decoration: none; color: inherit;">
-                <div class="card">
-                    <img src="images/topology_white.png" alt="笔记" class="card-image">
-                    <div class="card-content">
-                        <h2>工具</h2>
-                        <p>Infiniband 组网拓扑设计和规划，整体组网方案</p>
+            <!-- C. Calculator -->
+            <a href="cb/" target="_blank" class="glass-card rounded-2xl p-5 shadow-card hover:shadow-glow border border-gray-100 transition group flex flex-col justify-between min-h-[160px]">
+                <div>
+                    <div class="flex justify-between items-start mb-3">
+                        <i class="fas fa-calculator text-nvgreen text-xl"></i>
+                        <i class="fas fa-arrow-right text-gray-300 text-xs group-hover:text-nvgreen transition"></i>
                     </div>
+                    <h3 class="text-base font-bold text-slate-900 mb-1">配置计算器</h3>
+                    <p class="text-gray-500 text-xs">Config Builder</p>
                 </div>
-                </a>
-            </div>
+            </a>
 
-            <div class="card fade-module">
-                <a href="cb/" target="_blank" style="text-decoration: none; color: inherit;">
-                <div class="card">
-                    <img src="images/cb.png" alt="配置计算" class="card-image">
-                    <div class="card-content">
-                        <h2>配置计算器</h2>
-                        <p>快速简易配置标准组网，生成配置清单。</p>
-                    </div>
+            <!-- D. Networking Docs (中卡片) -->
+            <a href="https://docs.nvidia.com/networking/index.html" target="_blank" class="md:col-span-2 glass-card rounded-2xl p-6 shadow-card hover:shadow-glow border border-gray-100 transition flex items-center gap-5 min-h-[140px]">
+                <div class="w-12 h-12 bg-purple-50 rounded-xl flex-shrink-0 flex items-center justify-center text-purple-600">
+                    <i class="fas fa-book-reader text-xl"></i>
                 </div>
-                </a>
-            </div>
+                <div class="flex-grow">
+                    <h3 class="text-lg font-bold text-slate-900">Networking Docs</h3>
+                    <p class="text-xs text-gray-500 mt-1 max-w-xs">NVIDIA 官方产品信息、白皮书与技术手册索引。</p>
+                </div>
+                <div class="text-gray-300 hover:text-purple-600 transition">
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            </a>
 
-            <div class="card fade-module">
-                <a href="./pnp/" style="text-decoration: none; color: inherit;">
-                <div class="card">
-                    <img src="images/test.png" alt="笔记" class="card-image">
-                    <div class="card-content">
-                        <h2>NPN考试</h2>
-                        <p>为备考的小伙伴们准备的资源区。这里有各种考试的真题、模拟题和解析。</p>
-                    </div>
+            <!-- E. NPN Exam (高亮卡片) -->
+            <a href="./pnp/" class="bg-gradient-to-br from-nvgreen to-green-600 rounded-2xl p-5 shadow-card hover:shadow-lg hover:-translate-y-1 transition text-white flex flex-col justify-between relative overflow-hidden group min-h-[160px]">
+                <div class="absolute top-0 right-0 w-20 h-20 bg-white opacity-10 rounded-full blur-xl -mr-6 -mt-6"></div>
+                <div>
+                    <i class="fas fa-graduation-cap text-2xl mb-3 text-white"></i>
+                    <h3 class="text-lg font-bold mb-0.5">NPN Exam</h3>
+                    <p class="text-green-100 text-xs">备考题库与解析</p>
                 </div>
-                </a>
-            </div>
+                <div class="mt-2 text-xs font-bold bg-black/10 w-fit px-3 py-1.5 rounded-lg group-hover:bg-black/20 transition">
+                    Start <i class="fas fa-arrow-right ml-1"></i>
+                </div>
+            </a>
+
+            <!-- F. CUDA Toolkit (黑卡片) -->
+            <a href="https://developer.nvidia.com/cuda-toolkit-archive" target="_blank" class="bg-slate-950 rounded-2xl p-5 shadow-card hover:shadow-lg hover:-translate-y-1 transition text-white flex flex-col justify-between border border-slate-800 group min-h-[160px]">
+                <div class="flex justify-between items-start">
+                    <i class="fas fa-terminal text-nvgreen text-xl"></i>
+                    <i class="fas fa-code text-gray-600 text-xs"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-white mb-0.5">CUDA</h3>
+                    <p class="text-gray-400 text-xs">Toolkit Archive</p>
+                </div>
+            </a>
 
         </div>
     </main>
 
-    <footer>
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h3>Learning and Legacy</h3>
-                    <p>Learning is life's grand adventure; sharing is wisdom's living legacy.</p>
-                </div>
-                <div class="footer-section">
-                    <h3>快速链接</h3>
-                    <ul>
-                        <li>	<a href="https://enterprise-support.nvidia.com/s/rma-serial-check" target="_blank">SSC&nbsp;&nbsp;</a> 
-				<a href="https://developer.nvidia.com/networking/infiniband-software" target="_blank">Driver&nbsp;&nbsp;</a> 
-                        	<a href="https://network.nvidia.com/support/firmware/firmware-downloads/" target="_blank">Firmware&nbsp;&nbsp;</a>
-                        	<a href="https://docs.nvidia.com/networking/display/nvidiamlnxosusermanualv3112300lts" target="_blank">UM&nbsp;&nbsp;</a>
-                        	<a href="https://docs.nvidia.com/networking/display/mftv4250/using+mlxconfig" target="_blank">MFT&nbsp;&nbsp;</a>
-                        	<a href="https://www.nvidia.com/en-us/networking/products/lts-releases/" target="_blank">LTS&nbsp;&nbsp;</a>
-                        	<a href="https://docs.nvidia.com/networking/display/nvidia-ufm-enterprise-user-manual-v6-17-1.1.pdf" target="_blank">UFM&nbsp;&nbsp;</a>
-				<a href="https://docs.nvidia.com/networking-ethernet-software/knowledge-base/Setup-and-Getting-Started/NVUE-Cheat-Sheet/" target="_blank">NVUE&nbsp;&nbsp;</a>
-				<a href="https://docs.nvidia.com/networking-ethernet-software/cumulus-linux-510/Quick-Start-Guide/" target="_blank">Cumulus&nbsp;&nbsp;</a>
-			</li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h3>联系我</h3>
-                    <ul>
-                        <li>	<a href="#">Email: vincentwu@zhengytech.com&nbsp;&nbsp;&nbsp;&nbsp;</a> 
-				<a href="https://nvid.nvidia.com/dashboard" target="_blank">Portal&nbsp;&nbsp;</a> 
-			</li>
-                    </ul>
+    <!-- 3. 底部全宽控制台 (The Console Footer) -->
+    <!-- 这个区域设计为深色，视觉上作为页面的"底座"，填补所有剩余空间 -->
+    <footer class="bg-darkbase text-gray-400 border-t border-gray-800 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-10">
+                
+                <!-- 第一列：品牌与简介 -->
+                <div class="lg:col-span-1">
+                    <div class="flex items-center gap-2 mb-4 text-white">
+                        <div class="w-2 h-6 bg-nvgreen rounded-sm"></div>
+                        <span class="text-lg font-bold tracking-tight">Vincent's Vault</span>
+                    </div>
+                    <p class="text-sm text-gray-500 leading-relaxed mb-4">
+                        Learning is life's grand adventure; sharing is wisdom's living legacy.
+                    </p>
+                    <div class="text-xs text-gray-600">
+                        © 2024 Powered by Zhengytech
                     </div>
                 </div>
+
+                <!-- 第二列：快速资源 (Grid 布局) -->
+                <div class="lg:col-span-2">
+                    <h4 class="text-xs font-bold text-gray-300 uppercase tracking-wider mb-4">Quick Resources</h4>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        
+                        <a href="https://enterprise-support.nvidia.com/s/rma-serial-check" target="_blank" class="flex items-center gap-2 p-2 rounded hover:bg-gray-800 transition group">
+                            <i class="fas fa-barcode text-gray-500 group-hover:text-nvgreen"></i>
+                            <span class="text-sm">SSC</span>
+                        </a>
+
+                        <a href="https://developer.nvidia.com/networking/infiniband-software" target="_blank" class="flex items-center gap-2 p-2 rounded hover:bg-gray-800 transition group">
+                            <i class="fas fa-hdd text-gray-500 group-hover:text-blue-400"></i>
+                            <span class="text-sm">Driver</span>
+                        </a>
+
+                        <a href="https://network.nvidia.com/support/firmware/firmware-downloads/" target="_blank" class="flex items-center gap-2 p-2 rounded hover:bg-gray-800 transition group">
+                            <i class="fas fa-microchip text-gray-500 group-hover:text-purple-400"></i>
+                            <span class="text-sm">Firmware</span>
+                        </a>
+
+                        <a href="https://docs.nvidia.com/networking/display/mftv4250/using+mlxconfig" target="_blank" class="flex items-center gap-2 p-2 rounded hover:bg-gray-800 transition group">
+                            <i class="fas fa-toolbox text-gray-500 group-hover:text-yellow-400"></i>
+                            <span class="text-sm">MFT</span>
+                        </a>
+
+                        <a href="https://www.nvidia.com/en-us/networking/products/lts-releases/" target="_blank" class="flex items-center gap-2 p-2 rounded hover:bg-gray-800 transition group">
+                            <i class="fas fa-history text-gray-500 group-hover:text-red-400"></i>
+                            <span class="text-sm">LTS</span>
+                        </a>
+
+                        <a href="https://docs.nvidia.com/networking/display/nvidia-ufm-enterprise-user-manual-v6-17-1.1.pdf" target="_blank" class="flex items-center gap-2 p-2 rounded hover:bg-gray-800 transition group">
+                            <i class="fas fa-server text-gray-500 group-hover:text-green-400"></i>
+                            <span class="text-sm">UFM</span>
+                        </a>
+
+                        <a href="https://docs.nvidia.com/networking-ethernet-software/knowledge-base/Setup-and-Getting-Started/NVUE-Cheat-Sheet/" target="_blank" class="flex items-center gap-2 p-2 rounded hover:bg-gray-800 transition group">
+                            <i class="fas fa-terminal text-gray-500 group-hover:text-gray-300"></i>
+                            <span class="text-sm">NVUE</span>
+                        </a>
+
+                        <a href="https://docs.nvidia.com/networking-ethernet-software/cumulus-linux-510/Quick-Start-Guide/" target="_blank" class="flex items-center gap-2 p-2 rounded hover:bg-gray-800 transition group">
+                            <i class="fab fa-linux text-gray-500 group-hover:text-white"></i>
+                            <span class="text-sm">Cumulus</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 第三列：链接 -->
+                <div class="lg:col-span-1">
+                    <h4 class="text-xs font-bold text-gray-300 uppercase tracking-wider mb-4">Connect</h4>
+                    <ul class="space-y-3">
+                        <li>
+                            <a href="https://nvid.nvidia.com/dashboard" target="_blank" class="text-sm hover:text-white transition flex items-center gap-2">
+                                <i class="fas fa-external-link-alt text-xs"></i> Partner Portal
+                            </a>
+                        </li>
+                        <li>
+                            <a href="mailto:vincentwu@zhengytech.com" class="text-sm hover:text-nvgreen transition flex items-center gap-2">
+                                <i class="fas fa-envelope text-xs"></i> vincentwu@zhengytech.com
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
             </div>
         </div>
     </footer>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-              const modules = document.querySelectorAll('.fade-module');
-              
-              function showModules() {
-                modules.forEach((module, index) => {
-                  setTimeout(() => {
-                    module.classList.add('show');
-                  }, index * 300); // 每个模块之间延迟300毫秒
-                });
-              }
-
-              // 页面加载完成后开始动画
-              showModules();
-            });
-    </script>
 </body>
 </html>

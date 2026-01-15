@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>技术支持与服务</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700;800&display=swap');
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+      font-family: 'Noto Sans SC', sans-serif;
+      overflow: hidden;
+    }
+
+    .slide-container {
+      width: 100vw;
+      height: 56.25vw;
+      max-height: 100vh;
+      max-width: 177.78vh;
+      position: relative;
+      background: #111827;
+      color: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    .bg-pattern {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image:
+        linear-gradient(rgba(0, 162, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 162, 255, 0.02) 1px, transparent 1px);
+      background-size: 60px 60px;
+      z-index: 1;
+    }
+
+    .content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    /* 顶部客户信息 */
+    .client-section {
+      flex: 0 0 auto;
+      padding: 2.5% 5%;
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.15));
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .client-info {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .client-logo {
+      height: 60px;
+      width: auto;
+      object-fit: contain;
+      border-radius: 8px;
+    }
+
+    .client-name {
+      font-size: clamp(20px, 2.4vw, 28px);
+      font-weight: 700;
+      color: #00a2ff;
+    }
+
+    /* 主体内容 */
+    .main-section {
+      flex: 1;
+      padding: 2% 5%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 2%;
+    }
+
+    .thank-message {
+      text-align: center;
+      font-size: clamp(18px, 2vw, 22px);
+      color: rgba(255, 255, 255, 0.9);
+      font-weight: 500;
+      margin-bottom: 1%;
+    }
+
+    .divider-line {
+      width: 60%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(0, 162, 255, 0.5), transparent);
+      margin: 0 auto 1.5%;
+    }
+
+    /* 服务商信息 */
+    .provider-card {
+      background: linear-gradient(135deg, rgba(0, 162, 255, 0.12), rgba(0, 162, 255, 0.06));
+      border: 2px solid rgba(0, 162, 255, 0.3);
+      border-radius: 15px;
+      padding: 2% 3%;
+      max-width: 900px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .provider-header {
+      text-align: center;
+      margin-bottom: 1.5%;
+      padding-bottom: 1.5%;
+      border-bottom: 2px solid rgba(0, 162, 255, 0.3);
+    }
+
+    .provider-name {
+      font-size: clamp(24px, 3vw, 32px);
+      font-weight: 800;
+      color: #00a2ff;
+      margin-bottom: 10px;
+      letter-spacing: 1px;
+    }
+
+    .provider-tagline {
+      font-size: clamp(14px, 1.6vw, 18px);
+      color: rgba(255, 255, 255, 0.85);
+      font-weight: 500;
+      line-height: 1.5;
+    }
+
+    .nvidia-badge {
+      display: inline-block;
+      background: linear-gradient(90deg, #76b900, #5a9200);
+      color: white;
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: clamp(11px, 1.2vw, 13px);
+      font-weight: 700;
+      margin-top: 8px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2%;
+      margin-top: 1.5%;
+    }
+
+    .info-block {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 2.5% 3%;
+      border-radius: 10px;
+      border-left: 4px solid #00a2ff;
+    }
+
+    .info-title {
+      font-size: clamp(13px, 1.4vw, 15px);
+      color: rgba(255, 255, 255, 0.6);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .info-value {
+      font-size: clamp(16px, 1.8vw, 20px);
+      color: #00a2ff;
+      font-weight: 600;
+      word-break: break-all;
+    }
+
+    .service-items {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5%;
+      margin-top: 1.5%;
+    }
+
+    .service-item {
+      background: rgba(255, 255, 255, 0.04);
+      padding: 2% 2.5%;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .service-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(0, 162, 255, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .service-title {
+      font-size: clamp(13px, 1.4vw, 15px);
+      color: #ffffff;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .service-desc {
+      font-size: clamp(11px, 1.2vw, 13px);
+      color: rgba(255, 255, 255, 0.6);
+      line-height: 1.4;
+    }
+
+    /* 底部版权 */
+    .footer-section {
+      flex: 0 0 auto;
+      padding: 1% 5%;
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.2));
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .copyright {
+      font-size: clamp(11px, 1.2vw, 13px);
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .badge-group {
+      display: flex;
+      gap: 10px;
+    }
+
+    .badge {
+      padding: 5px 12px;
+      border-radius: 15px;
+      font-size: clamp(9px, 1vw, 11px);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .badge-training {
+      background: linear-gradient(90deg, #4caf50, #45a049);
+      color: white;
+    }
+
+    .badge-support {
+      background: linear-gradient(90deg, #00a2ff, #0078d4);
+      color: white;
+    }
+
+    /* 响应式 */
+    @media (max-width: 1200px) {
+      .info-grid {
+        grid-template-columns: 1fr;
+        gap: 2%;
+      }
+
+      .service-items {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-height: 650px) {
+      .client-section {
+        padding: 2% 5%;
+      }
+
+      .main-section {
+        padding: 2% 5%;
+        gap: 2%;
+      }
+
+      .provider-card {
+        padding: 2% 3%;
+      }
+
+      .client-logo {
+        height: 45px;
+      }
+
+      .thank-message {
+        margin-bottom: 1%;
+      }
+
+      .divider-line {
+        margin-bottom: 2%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <div class="bg-pattern"></div>
+
+    <div class="content">
+      <!-- 主体内容 -->
+      <div class="main-section" style="padding-top: 4%">
+        <div class="thank-message">
+          感谢您参与本次IB网络技术培训
+        </div>
+
+        <div class="divider-line"></div>
+
+        <!-- 服务商信息卡片 -->
+        <div class="provider-card">
+          <div class="provider-header">
+            <div class="provider-name">北京正阳恒卓科技有限公司</div>
+            <div class="provider-tagline">
+              高性能计算与人工智能技术解决方案提供商
+            </div>
+            <div class="nvidia-badge">🏆 NVIDIA网络产品精英级合作伙伴</div>
+          </div>
+
+          <!-- 联系信息 -->
+          <div class="info-grid">
+            <div class="info-block">
+              <div class="info-title">
+                <span>👨‍🏫</span>
+                <span>讲师</span>
+              </div>
+              <div class="info-value">吴昌辉</div>
+            </div>
+
+            <div class="info-block">
+              <div class="info-title">
+                <span>✉️</span>
+                <span>邮箱</span>
+              </div>
+              <div class="info-value">vincentwu@zhengytech.com</div>
+            </div>
+
+            <div class="info-block">
+              <div class="info-title">
+                <span>🌐</span>
+                <span>官网</span>
+              </div>
+              <div class="info-value">www.zhengytech.com</div>
+            </div>
+
+            <div class="info-block">
+              <div class="info-title">
+                <span>📍</span>
+                <span>地址</span>
+              </div>
+              <div class="info-value" style="font-size: clamp(14px, 1.5vw, 17px);">北京市</div>
+            </div>
+          </div>
+
+          <!-- 技术支持服务 -->
+          <div class="service-items">
+            <div class="service-item">
+              <div class="service-title">⏰ 7×24小时技术支持</div>
+            </div>
+
+            <div class="service-item">
+              <div class="service-title">🔧 远程技术协助</div>
+            </div>
+
+            <div class="service-item">
+              <div class="service-title">👨‍💻 现场技术服务</div>
+            </div>
+
+            <div class="service-item">
+              <div class="service-title">📚 持续技术培训</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 底部版权 -->
+      <div class="footer-section">
+        <div class="copyright">
+          © 2026 北京正阳恒卓科技有限公司 · 培训服务提供商
+        </div>
+        <div class="badge-group">
+          <div class="badge badge-training">Training Provider</div>
+          <div class="badge badge-support">Technical Support</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 导航按钮 -->
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+    <a href="index33.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+    <a href="index.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">⟳</a>
+  </div>
+</body>
+</html>

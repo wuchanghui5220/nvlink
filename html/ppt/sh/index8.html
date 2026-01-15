@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IB交换机固件管理</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    /* 页面特定样式 - 极度紧凑版本 */
+    .main-content {
+      padding: 0.8% 2%;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .page-title {
+      text-align: center;
+      margin-bottom: 1%;
+      flex-shrink: 0;
+    }
+
+    .title-main {
+      font-size: clamp(24px, 3.2vw, 30px);
+      font-weight: 800;
+      background: linear-gradient(135deg, #ffffff 0%, #00a2ff 50%, #4834d4 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 0.5%;
+    }
+
+    .title-sub {
+      font-size: clamp(13px, 1.4vw, 15px);
+      color: rgba(255, 255, 255, 0.75);
+      font-weight: 300;
+      margin-bottom: 0.5%;
+    }
+
+    .content-sections {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2%;
+      min-height: 0;
+    }
+
+    .query-section {
+      background: linear-gradient(135deg, rgba(118, 185, 0, 0.15), rgba(118, 185, 0, 0.05));
+      border: 1px solid rgba(118, 185, 0, 0.4);
+      border-radius: 8px;
+      padding: 2%;
+      overflow-y: auto;
+    }
+
+    .upgrade-section {
+      background: linear-gradient(135deg, rgba(255, 107, 107, 0.15), rgba(255, 107, 107, 0.05));
+      border: 1px solid rgba(255, 107, 107, 0.4);
+      border-radius: 8px;
+      padding: 2%;
+      overflow-y: auto;
+    }
+
+    .section-header {
+      font-size: clamp(16px, 1.8vw, 18px);
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 3%;
+      padding-bottom: 1%;
+      border-bottom: 2px solid currentColor;
+    }
+
+    .query-section .section-header {
+      color: #76b900;
+    }
+
+    .upgrade-section .section-header {
+      color: #ff6b6b;
+    }
+
+    .query-type, .upgrade-type {
+      margin-bottom: 3%;
+    }
+
+    .type-title {
+      font-size: clamp(14px, 1.5vw, 16px);
+      font-weight: 600;
+      margin-bottom: 2%;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .type-title.switch {
+      color: #87ceeb;
+    }
+
+    .type-title.switch::before {
+      content: '🔄';
+      font-size: 1em;
+    }
+
+    .type-title.adapter {
+      color: #ffb3b3;
+    }
+
+    .type-title.adapter::before {
+      content: '💳';
+      font-size: 1em;
+    }
+
+    .type-title.download::before {
+      content: '⬇️';
+      font-size: 1em;
+    }
+
+    .command-group {
+      margin-bottom: 2.5%;
+    }
+
+    .cmd {
+      background: rgba(0, 0, 0, 0.4);
+      border-left: 3px solid #76b900;
+      padding: 1.5%;
+      margin: 1% 0;
+      font-family: 'Courier New', monospace;
+      font-size: clamp(11px, 1.2vw, 12px);
+      color: #e2e8f0;
+      line-height: 1.3;
+      border-radius: 0 4px 4px 0;
+    }
+
+    .upgrade-section .cmd {
+      border-left-color: #ff6b6b;
+    }
+
+    .cmd::before {
+      content: '# ';
+      color: #76b900;
+      font-weight: bold;
+    }
+
+    .upgrade-section .cmd::before {
+      color: #ff6b6b;
+    }
+
+    .cmd-desc {
+      font-size: clamp(10px, 1.1vw, 11px);
+      color: rgba(255, 255, 255, 0.8);
+      margin: 0.5% 0;
+      font-style: italic;
+    }
+
+    .step-flow {
+      display: flex;
+      flex-direction: column;
+      gap: 2%;
+    }
+
+    .step {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 107, 107, 0.3);
+      border-radius: 6px;
+      padding: 2%;
+    }
+
+    .step-title {
+      font-size: clamp(12px, 1.3vw, 13px);
+      font-weight: 600;
+      color: #ffb3b3;
+      margin-bottom: 1%;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .step-num {
+      width: 18px;
+      height: 18px;
+      background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(9px, 1vw, 10px);
+      font-weight: 700;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .lts-footer {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      padding: 1%;
+      margin-top: 1%;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .lts-text {
+      font-size: clamp(11px, 1.2vw, 12px);
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 0.5%;
+    }
+
+    .lts-link {
+      color: #87ceeb;
+      text-decoration: none;
+      font-family: 'Courier New', monospace;
+      font-size: clamp(9px, 1vw, 10px);
+      background: rgba(0, 162, 255, 0.1);
+      padding: 0.3% 1%;
+      border-radius: 3px;
+      border: 1px solid rgba(0, 162, 255, 0.2);
+      transition: all 0.3s ease;
+    }
+
+    .lts-link:hover {
+      background: rgba(0, 162, 255, 0.2);
+      border-color: rgba(0, 162, 255, 0.4);
+    }
+
+    .download-links {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 107, 107, 0.3);
+      border-radius: 6px;
+      padding: 2%;
+      margin-bottom: 2%;
+    }
+
+    .download-link {
+      color: #87ceeb;
+      text-decoration: none;
+      font-family: 'Courier New', monospace;
+      font-size: clamp(10px, 1.1vw, 11px);
+      background: rgba(0, 162, 255, 0.1);
+      padding: 0.5% 1%;
+      border-radius: 3px;
+      border: 1px solid rgba(0, 162, 255, 0.2);
+      transition: all 0.3s ease;
+      word-break: break-all;
+      display: inline-block;
+      margin: 0.5% 0;
+    }
+
+    .download-link:hover {
+      background: rgba(0, 162, 255, 0.2);
+    }
+
+    /* 极度紧凑的响应式 */
+    @media (max-width: 1200px) {
+      .content-sections {
+        grid-template-columns: 1fr;
+        gap: 1.5%;
+      }
+    }
+
+    @media (max-height: 600px) {
+      .main-content {
+        padding: 0.5% 1.5%;
+      }
+      
+      .query-section, .upgrade-section {
+        padding: 1.5%;
+      }
+      
+      .step {
+        padding: 1.5%;
+      }
+      
+      .cmd {
+        padding: 1%;
+        margin: 0.5% 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <!-- 背景元素 -->
+    <div class="bg-elements">
+      <div class="brain-pattern"></div>
+      <div class="network-signals">
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+      </div>
+    </div>
+
+    <!-- 主要内容 -->
+    <div class="content">
+      <!-- 顶部标识 -->
+      <div class="header">
+        <div class="day-info">
+          <div class="day-badge">1</div>
+          <div class="day-text">智算网络组网设计与部署</div>
+        </div>
+        <div class="section-indicator">1.5 IB交换机固件管理</div>
+      </div>
+
+      <!-- 主体内容 -->
+      <div class="main-content">
+        <!-- 页面标题 -->
+        <div class="page-title">
+          <div class="title-main">IB交换机固件管理</div>
+          <div class="title-sub">交换机/网卡固件版本查询与升级操作</div>
+        </div>
+
+        <!-- 主要内容区域 -->
+        <div class="content-sections">
+          <!-- 固件查询区域 -->
+          <div class="query-section">
+            <div class="section-header">🔍 固件查询</div>
+            
+            <!-- 交换机查询 -->
+            <div class="query-type">
+              <div class="type-title switch">交换机固件查询</div>
+              <div class="command-group">
+                <div class="cmd">ibswitches</div>
+                <div class="cmd-desc">查看所有交换机列表和LID信息</div>
+                <div class="cmd">Switch : 0xfc6a1c0300cdd480 ports 65 "Compute-SU4-Leaf32-D09-26U" base port 0 lid 496 lmc 0</div>
+                <div class="cmd">flint -d lid-496 query</div>
+                <div class="cmd-desc">使用LID查询交换机固件版本</div>
+              </div>
+            </div>
+
+            <!-- 网卡查询 -->
+            <div class="query-type">
+              <div class="type-title switch">网卡固件查询</div>
+              <div class="command-group">
+                <div class="cmd">ibdev2netdev</div>
+                <div class="cmd-desc">查看IB设备和网络接口对应关系</div>
+                <div class="cmd">mlx5_0 port 1 ==> ib0 (Up)<br>mlx5_1 port 1 ==> ib1 (Up)</div>
+                <div class="cmd">flint -d mlx5_0 query</div>
+                <div class="cmd-desc">查询指定网卡的固件版本</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 固件升级区域 -->
+          <div class="upgrade-section">
+            <div class="section-header">⬆️ 固件升级</div>
+            
+            <!-- 下载链接 -->
+            <div class="download-links">
+              <div class="type-title adapter">固件下载链接</div>
+              <a href="https://network.nvidia.com/support/firmware/firmware-downloads/" 
+                 target="_blank" 
+                 class="download-link">
+                https://network.nvidia.com/support/firmware/firmware-downloads/
+              </a>
+            </div>
+
+            <!-- 升级步骤 -->
+            <div class="step-flow">
+              <div class="step">
+                <div class="step-title">
+                  <div class="step-num">1</div>
+                  上传固件到服务器
+                </div>
+                <div class="cmd">scp fw-Quantum-2-rel-31_2014_2170-MQM9790-NS2X_Ax.signed.bin.zip server@&lt;ip&gt;:/path</div>
+              </div>
+
+              <div class="step">
+                <div class="step-title">
+                  <div class="step-num">2</div>
+                  解压获取bin文件
+                </div>
+                <div class="cmd">unzip fw-Quantum-2-rel-31_2014_2170-MQM9790-NS2X_Ax.signed.bin.zip</div>
+              </div>
+
+              <div class="step">
+                <div class="step-title">
+                  <div class="step-num">3</div>
+                  交换机固件升级
+                </div>
+                <div class="cmd">flint -d lid-496 -i fw-Quantum-2-rel-31_2014_2170-MQM9790-NS2X_Ax.signed.bin burn</div>
+                <div class="cmd-desc">使用LID方式升级交换机固件</div>
+              </div>
+
+              <div class="step">
+                <div class="step-title">
+                  <div class="step-num">4</div>
+                  网卡固件升级
+                </div>
+                <div class="cmd">flint -d mlx5_0 -i fw-ConnectX7-rel-28_43_2566-MCX75310AAS-NEA_Ax-UEFI-14.37.13-FlexBoot-3.7.500.signed.bin burn</div>
+                <div class="cmd-desc">网卡升级操作方法类似交换机</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- LTS参考 -->
+        <div class="lts-footer">
+          <div class="lts-text">参考：NVIDIA官方LTS版本支持</div>
+          <a href="https://www.nvidia.com/en-us/networking/products/lts-releases/" 
+             target="_blank" 
+             class="lts-link">
+            LTS支持页面
+          </a>
+        </div>
+      </div>
+
+      <!-- 底部信息 -->
+      <div class="footer">
+        <div class="footer-left">
+          <div class="status-dot"></div>
+          <span>IB交换机固件管理</span>
+        </div>
+        <div class="footer-badges">
+          <div class="footer-badge badge-install">QUERY</div>
+          <div class="footer-badge badge-config">FIRMWARE</div>
+          <div class="footer-badge badge-command">UPGRADE</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 导航按钮 - 独立于主内容区 -->
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+    <a href="index7.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+    <a href="index9.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+  </div>
+</body>
+</html>

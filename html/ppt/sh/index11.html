@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IB网络测试与优化</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    /* 极度紧凑样式 */
+    .main-content {
+      padding: 1% 2%;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .page-title {
+      text-align: center;
+      margin-bottom: 1.5%;
+      flex-shrink: 0;
+    }
+
+    .title-main {
+      font-size: clamp(24px, 2.8vw, 30px);
+      font-weight: 800;
+      background: linear-gradient(135deg, #00a2ff 0%, #4834d4 50%, #ff6b6b 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 0.8%;
+    }
+
+    .title-sub {
+      font-size: clamp(14px, 1.6vw, 18px);
+      color: rgba(255, 255, 255, 0.8);
+      font-weight: 400;
+      margin-bottom: 0.8%;
+    }
+
+    .menu-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2%;
+      min-height: 0;
+      overflow-y: auto;
+      max-width: 1100px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .menu-item {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04));
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 12px;
+      padding: 2.2%;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: visible;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      min-height: auto;
+    }
+
+    .menu-item::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 6px;
+      height: 100%;
+      border-radius: 3px 0 0 3px;
+    }
+
+    .menu-item:nth-child(1)::before { background: linear-gradient(180deg, #00a2ff, #0078d4); }
+    .menu-item:nth-child(2)::before { background: linear-gradient(180deg, #4834d4, #686de0); }
+    .menu-item:nth-child(3)::before { background: linear-gradient(180deg, #ff6b6b, #ee5a24); }
+    .menu-item:nth-child(4)::before { background: linear-gradient(180deg, #76b900, #3e703e); }
+
+    .menu-item:hover {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06));
+      border-color: rgba(255, 255, 255, 0.35);
+      transform: translateX(4px) translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    .menu-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 1.5%;
+    }
+
+    .menu-number {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(14px, 1.6vw, 16px);
+      font-weight: 700;
+      color: white;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .menu-item:nth-child(1) .menu-number { background: linear-gradient(135deg, #00a2ff, #0078d4); }
+    .menu-item:nth-child(2) .menu-number { background: linear-gradient(135deg, #4834d4, #686de0); }
+    .menu-item:nth-child(3) .menu-number { background: linear-gradient(135deg, #ff6b6b, #ee5a24); }
+    .menu-item:nth-child(4) .menu-number { background: linear-gradient(135deg, #76b900, #3e703e); }
+
+    .menu-title {
+      font-size: clamp(16px, 1.8vw, 20px);
+      font-weight: 700;
+      color: #ffffff;
+      flex: 1;
+      line-height: 1.3;
+    }
+
+    .menu-desc {
+      margin-left: 40px;
+      font-size: clamp(12px, 1.4vw, 15px);
+      color: rgba(255, 255, 255, 0.85);
+      line-height: 1.6;
+      font-weight: 400;
+      margin-top: 0.5%;
+    }
+
+    .training-note {
+      background: linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(76, 175, 80, 0.1));
+      border: 2px solid rgba(76, 175, 80, 0.4);
+      border-radius: 8px;
+      padding: 2%;
+      margin-top: 2%;
+      flex-shrink: 0;
+      text-align: center;
+      max-width: 1100px;
+      margin-left: auto;
+      margin-right: auto;
+      box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
+    }
+
+    .training-text {
+      font-size: clamp(14px, 1.6vw, 17px);
+      color: rgba(255, 255, 255, 0.9);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .training-icon {
+      font-size: 1.3em;
+    }
+
+    .highlight-training {
+      color: #4caf50;
+      font-weight: 600;
+    }
+
+    /* 响应式设计 */
+    @media (max-height: 700px) {
+      .main-content {
+        padding: 0.8% 1.5%;
+      }
+      
+      .menu-item {
+        padding: 2%;
+      }
+      
+      .menu-container {
+        gap: 1.5%;
+      }
+      
+      .menu-header {
+        margin-bottom: 1.2%;
+        gap: 10px;
+      }
+      
+      .training-note {
+        padding: 1.5%;
+        margin-top: 1.5%;
+      }
+    }
+
+    @media (max-height: 600px) {
+      .main-content {
+        padding: 0.5% 1%;
+      }
+      
+      .page-title {
+        margin-bottom: 1%;
+      }
+      
+      .menu-item {
+        padding: 1.8%;
+      }
+      
+      .menu-number {
+        width: 26px;
+        height: 26px;
+        font-size: clamp(13px, 1.5vw, 15px);
+      }
+      
+      .menu-title {
+        font-size: clamp(15px, 1.7vw, 18px);
+      }
+      
+      .menu-desc {
+        font-size: clamp(11px, 1.3vw, 14px);
+        margin-left: 36px;
+      }
+      
+      .menu-container {
+        gap: 1.2%;
+      }
+      
+      .training-text {
+        font-size: clamp(13px, 1.5vw, 16px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <!-- 背景元素 -->
+    <div class="bg-elements">
+      <div class="brain-pattern"></div>
+      <div class="network-signals">
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+      </div>
+    </div>
+
+    <!-- 主要内容 -->
+    <div class="content">
+      <!-- 顶部标识 -->
+      <div class="header" style="padding: 0.6% 2%;">
+        <div class="day-info">
+          <div class="day-badge">2</div>
+          <div class="day-text">IB网络测试与优化</div>
+        </div>
+        <div class="section-indicator">培训内容目录</div>
+      </div>
+
+      <!-- 主体内容 -->
+      <div class="main-content">
+        <!-- 页面标题 -->
+        <div class="page-title">
+          <div class="title-main">IB网络测试与优化</div>
+          <div class="title-sub">智算集群网络优化关键技术培训</div>
+        </div>
+
+        <!-- 目录容器 -->
+        <div class="menu-container">
+          <!-- 目录1: IB网络链路连通性与准确性检查 -->
+          <a href="index12.html" class="menu-item">
+            <div class="menu-header">
+              <div class="menu-number">1</div>
+              <div class="menu-title">IB网络链路连通性与准确性检查</div>
+            </div>
+            <div class="menu-desc">
+              深入学习IB网络拓扑发现技术，掌握网络连接图谱生成方法<br>
+              系统性检查链路状态和连接质量，确保网络基础设施可靠性<br>
+              熟练使用ibnetdiscover、iblinkinfo等专业诊断工具进行全面检测
+            </div>
+          </a>
+
+          <!-- 目录2: IB网络带宽与延迟检查 -->
+          <a href="index13.html" class="menu-item">
+            <div class="menu-header">
+              <div class="menu-number">2</div>
+              <div class="menu-title">IB网络带宽与延迟检查</div>
+            </div>
+            <div class="menu-desc">
+              全面掌握RDMA性能测试工具的使用方法和测试技巧<br>
+              学习带宽吞吐量和延迟响应时间的专业评估技术<br>
+              建立网络性能基线，为后续优化工作提供科学依据
+            </div>
+          </a>
+
+          <!-- 目录3: IB网络调优 -->
+          <a href="index14.html" class="menu-item">
+            <div class="menu-header">
+              <div class="menu-number">3</div>
+              <div class="menu-title">IB网络调优</div>
+            </div>
+            <div class="menu-desc">
+              掌握InfiniBand网络多层级调优策略：物理层、网络层和应用层优化<br>
+              深入学习OpenSM路由算法选择、拥塞控制和NUMA亲和性调优技术<br>
+              运用perftest、OSU和NCCL-Tests等工具建立科学的性能基准测试体系
+            </div>
+          </a>
+
+          <!-- 目录4: 课下作业 -->
+          <a href="index15.html" class="menu-item">
+            <div class="menu-header">
+              <div class="menu-number">4</div>
+              <div class="menu-title">课下作业</div>
+            </div>
+            <div class="menu-desc">
+              综合运用所学知识完成IB网络测试与优化实践任务<br>
+              独立完成网络诊断、性能测试和参数调优全流程操作<br>
+              提交详细的测试报告和优化方案，巩固学习成果
+            </div>
+          </a>
+        </div>
+
+        <!-- 培训提示 -->
+        <div class="training-note">
+          <div class="training-text">
+            <div class="training-icon">📚</div>
+            <span><span class="highlight-training">培训目标：</span>掌握IB网络性能测试和调优关键技能</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 底部信息 -->
+      <div class="footer" style="padding: 0.6% 2%;">
+        <div class="footer-left">
+          <div class="status-dot"></div>
+          <span>培训内容目录</span>
+        </div>
+        <div class="footer-badges">
+          <div class="footer-badge badge-install">TEST</div>
+          <div class="footer-badge badge-config">OPTIMIZATION</div>
+          <div class="footer-badge badge-command">TRAINING</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 导航按钮 -->
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+    <a href="index10.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+    <a href="index12.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+  </div>
+</body>
+</html>

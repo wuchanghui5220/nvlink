@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>网卡驱动安装和opensm.conf关键配置</title>
+  <link rel="stylesheet" href="common.css">
+  <style>
+    /* 页面特定样式 */
+    .installation-steps {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 2.5%;
+      margin-bottom: 2%;
+    }
+
+    .installation-title {
+      font-size: clamp(18px, 2vw, 20px);
+      font-weight: 700;
+      color: #00a2ff;
+      margin-bottom: 3%;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .installation-title::before {
+      content: '🔧';
+      font-size: 1.2em;
+    }
+
+    .step-sequence {
+      display: flex;
+      flex-direction: column;
+      gap: 2%;
+    }
+
+    .step-command {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(0, 162, 255, 0.3);
+      border-radius: 8px;
+      padding: 3%;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .step-command:hover {
+      border-color: rgba(0, 162, 255, 0.5);
+      background: rgba(0, 0, 0, 0.5);
+    }
+
+    .step-number {
+      position: absolute;
+      top: -8px;
+      left: 15px;
+      background: linear-gradient(135deg, #00a2ff, #0078d4);
+      color: white;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(11px, 1.1vw, 12px);
+      font-weight: 700;
+      box-shadow: 0 4px 12px rgba(0, 162, 255, 0.3);
+    }
+
+    .step-command-text {
+      font-family: 'Courier New', monospace;
+      font-size: clamp(12px, 1.3vw, 14px);
+      color: #e2e8f0;
+      line-height: 1.5;
+      margin-top: 5px;
+    }
+
+    .step-desc {
+      font-size: clamp(11px, 1.2vw, 13px);
+      color: rgba(255, 255, 255, 0.7);
+      margin-top: 8px;
+      font-style: italic;
+    }
+
+    .config-section {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 2.5%;
+    }
+
+    .config-title {
+      font-size: clamp(18px, 2vw, 20px);
+      font-weight: 700;
+      color: #4834d4;
+      margin-bottom: 3%;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .config-title::before {
+      content: '⚙️';
+      font-size: 1.2em;
+    }
+
+    .config-file-path {
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(72, 52, 212, 0.3);
+      border-radius: 8px;
+      padding: 2%;
+      margin-bottom: 3%;
+      text-align: center;
+    }
+
+    .config-file-name {
+      font-family: 'Courier New', monospace;
+      font-size: clamp(14px, 1.5vw, 16px);
+      color: #b39ddb;
+      font-weight: 600;
+    }
+
+    .config-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2.5%;
+    }
+
+    .config-option {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 10px;
+      padding: 3%;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .config-option::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(72, 52, 212, 0.1), transparent);
+      transition: left 0.6s ease;
+    }
+
+    .config-option:hover::before {
+      left: 100%;
+    }
+
+    .config-option:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(72, 52, 212, 0.4);
+      transform: translateX(3px);
+    }
+
+    .config-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 2%;
+    }
+
+    .config-priority {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #4834d4, #686de0);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(10px, 1vw, 11px);
+      font-weight: 700;
+      color: white;
+      flex-shrink: 0;
+      box-shadow: 0 2px 6px rgba(72, 52, 212, 0.3);
+    }
+
+    .config-name {
+      font-size: clamp(14px, 1.5vw, 16px);
+      font-weight: 600;
+      color: #b39ddb;
+    }
+
+    .config-syntax {
+      background: rgba(0, 0, 0, 0.4);
+      border-left: 3px solid #4834d4;
+      padding: 2.5%;
+      border-radius: 0 6px 6px 0;
+      margin: 2% 0;
+    }
+
+    .config-syntax-text {
+      font-family: 'Courier New', monospace;
+      font-size: clamp(12px, 1.3vw, 14px);
+      color: #e2e8f0;
+      line-height: 1.4;
+    }
+
+    .config-explanation {
+      font-size: clamp(11px, 1.2vw, 13px);
+      color: rgba(255, 255, 255, 0.85);
+      line-height: 1.5;
+      margin-top: 2%;
+    }
+
+    .highlight-value {
+      color: #87ceeb;
+      font-weight: 600;
+      background: rgba(135, 206, 235, 0.1);
+      padding: 0 4px;
+      border-radius: 3px;
+    }
+
+    /* 两列布局在较大屏幕上 */
+    @media (min-width: 1200px) and (min-height: 700px) {
+      .content-layout {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 3%;
+      }
+    }
+
+    @media (max-width: 1200px) {
+      .config-grid {
+        gap: 2%;
+      }
+      
+      .config-option {
+        padding: 2.5%;
+      }
+    }
+
+    @media (max-height: 600px) {
+      .installation-steps, .config-section {
+        padding: 2%;
+      }
+      
+      .step-command {
+        padding: 2.5%;
+      }
+      
+      .config-option {
+        padding: 2.5%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="slide-container">
+    <!-- 背景元素 -->
+    <div class="bg-elements">
+      <div class="brain-pattern"></div>
+      <div class="network-signals">
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+        <div class="signal-dot"></div>
+      </div>
+    </div>
+
+    <!-- 主要内容 -->
+    <div class="content">
+      <!-- 顶部标识 -->
+      <div class="header">
+        <div class="day-info">
+          <div class="day-badge">1</div>
+          <div class="day-text">智算网络组网设计与部署</div>
+        </div>
+        <div class="section-indicator">1.4.2 驱动安装与SM配置</div>
+      </div>
+
+      <!-- 主体内容 -->
+      <div class="main-content">
+        <!-- 页面标题 -->
+        <div class="page-title">
+          <div class="title-main">网卡驱动安装与opensm.conf配置</div>
+          <div class="title-sub">MLNX_OFED驱动部署和子网管理器关键参数设置</div>
+        </div>
+
+        <!-- 主要内容布局 -->
+        <div class="content-layout">
+          <!-- 驱动安装步骤 -->
+          <div class="installation-steps">
+            <div class="installation-title">MLNX_OFED驱动安装步骤</div>
+            <div class="step-sequence">
+              <div class="step-command">
+                <div class="step-number">1</div>
+		<div ><a href='https://developer.nvidia.com/networking/infiniband-software' target="_blank" class="step-desc">https://developer.nvidia.com/networking/infiniband-software</a></div>
+                <div class="step-desc">从NVIDIA官网下载对应版本的OFED驱动包</div>
+              </div>
+
+              <div class="step-command">
+                <div class="step-number">2</div>
+                <div class="step-command-text">tar xf MLNX_OFED_LINUX-&lt;version&gt;-&lt;os&gt;-x86_64.tar.gz</div>
+                <div class="step-desc">解压驱动包到当前目录</div>
+              </div>
+
+              <div class="step-command">
+                <div class="step-number">3</div>
+                <div class="step-command-text">cd MLNX_OFED_LINUX-&lt;version&gt;-&lt;os&gt;</div>
+                <div class="step-desc">进入解压后的驱动目录</div>
+              </div>
+
+              <div class="step-command">
+                <div class="step-number">4</div>
+                <div class="step-command-text">./mlnxofedinstall --all --force </div>
+                <div class="step-desc">执行安装脚本，自动安装所有必要组件</div>
+              </div>
+
+              <div class="step-command">
+                <div class="step-number">5</div>
+                <div class="step-command-text">/etc/init.d/openibd restart</div>
+                <div class="step-desc">重启IB服务使驱动生效</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- opensm.conf配置 -->
+          <div class="config-section">
+            <div class="config-title">opensm.conf关键配置项</div>
+            
+
+            <div class="config-grid">
+              <div class="config-option">
+                <div class="config-header">
+                  <div class="config-priority">1</div>
+                  <div class="config-name">设置优先级(生成默认配置: opensm -c /etc/opensm/opensm.conf)</div>
+                </div>
+                <div class="config-syntax">
+                  <div class="config-syntax-text">sm_priority 15</div>
+                </div>
+                <div class="config-explanation">
+                  数值越高优先级越高(范围：0-15），当多个SM同时运行时，优先级最高的SM成为<span class="highlight-value">Master SM</span>，其他成为Standby。
+                </div>
+              </div>
+
+              <div class="config-option">
+                <div class="config-header">
+                  <div class="config-priority">2</div>
+                  <div class="config-name">设置路由算法</div>
+                </div>
+                <div class="config-syntax">
+                  <div class="config-syntax-text">routing_engine ar_updn</div>
+                </div>
+                <div class="config-explanation">
+                  指定路由算法为<span class="highlight-value">AR_UPDN</span>（Adaptive Routing Up/Down）。这是一种先进的自适应路由算法，能够根据网络流量动态调整路径，提高网络性能。
+                </div>
+              </div>
+
+              <div class="config-option">
+                <div class="config-header">
+                  <div class="config-priority">3</div>
+                  <div class="config-name">设置root_guid_file</div>
+                </div>
+                <div class="config-syntax">
+                  <div class="config-syntax-text">root_guid_file /etc/opensm/root_guid.conf</div>
+                </div>
+                <div class="config-explanation">
+                  指定根节点GUID配置文件路径。该文件定义了网络拓扑的<span class="highlight-value">根交换机</span>，用于构建最优的路由树，确保数据传输的高效性。
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 底部信息 -->
+      <div class="footer">
+        <div class="footer-left">
+          <div class="status-dot"></div>
+          <span>驱动安装与SM配置</span>
+        </div>
+        <div class="footer-badges">
+          <div class="footer-badge badge-install">INSTALL</div>
+          <div class="footer-badge badge-config">CONFIG</div>
+          <div class="footer-badge badge-command">COMMAND</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 导航按钮 - 独立于主内容区 -->
+  <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; z-index: 1000;">
+    <a href="index6.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&lt;</a>
+    <a href="index8.html" class="nav-button" style="display: inline-block; width: 30px; height: 30px; line-height: 30px; text-align: center; background-color: #111827; color: white; text-decoration: none; border-radius: 50%; font-size: 20px; font-weight: bold; margin: 0 10px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); transition: background-color 0.3s, transform 0.2s;">&gt;</a>
+  </div>
+</body>
+</html>
