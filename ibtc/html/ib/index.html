@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>IB组网设计</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <meta charset="utf-8">
+    <style>
+.green { color: green; font-size: 30px; }
+.blue { color: blue; font-size: 30px; }
+.lightblue { color: lightblue; font-size: 30px; }
+.red { color: red; font-size: 30px; }
+</style></head>
+<body>
+    <div id="product-image">
+        <img id="myImg" src="figure-20240209-115729.png">
+    </div>
+
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+        <span class="close">&times;</span>
+        <img class="modal-content" id="img01">
+    </div>
+
+    <div id="product-list">
+        <table>
+                <colgroup>
+                        <col style="width: 12%">
+                        <col style="width: 6%">
+                        <col style="width: 18%">
+                        <col style="width: 18%">
+                        <col style="width: 46%">
+                </colgroup>
+            <tr>
+                <th>名称</th>
+                <th style="text-align: center">图示</th>
+                <th>产品名称</th>
+                <th>产品型号</th>
+                <th>备注说明</th>
+            </tr>
+            <!-- 添加更多的产品行 -->
+            <tr>
+                <td>蓝色圆点</td>
+                <td class="blue" style="text-align: center">●</td>
+                <td>
+200G IB 交换机
+                </td>
+                <td>
+MQM8790-HS2F
+                </td>
+                <td>
+40
+                        端口
+HDR
+                        IB交换机</td>
+            </tr>
+            <tr>
+                <td>蓝色直线</td>
+                <td class="lightblue" style="text-align: center">-</td>
+                <td>
+200G IB AOC 线缆
+                </td>
+                <td>
+MFS1S00-H030V
+                </td>
+                <td>每条直线代表
+1
+                        根光纤，一共有
+20
+                        组分别连接到
+20
+                        台Spine交换机</td>
+            </tr>
+            <tr>
+                <td>绿色圆点</td>
+                <td class="green" style="text-align: center">●</td>
+                <td>GPU服务器</td>
+                <td>
+A100
+                GPU服务器</td>
+                <td>每台GPU服务器配置
+8
+                张
+HDR
+                网卡
+                </td>
+            </tr>
+            <tr>
+                <td>绿色直线</td>
+                <td class="green" style="text-align: center">-</td>
+                <td>
+200G IB AOC 线缆
+                </td>
+                <td>
+MFS1S00-H030V
+                </td>
+                <td>每条直线代表 1 根光纤，
+8
+                        条分别连接到
+8
+                        台Leaf交换机</td>
+            </tr>
+        </table>
+    </div>
+
+
+    <div id="product-list">
+        <table>
+                <colgroup>
+                        <col style="width: 12%">
+                        <col style="width: 12%">
+                        <col style="width: 50%">
+                        <col style="width: 6%">
+                        <col style="width: 20%">
+                </colgroup>
+            <tr>
+                <th>产品名称</th>
+                <th>产品型号</th>
+                <th>产品描述</th>
+                <th>数量</th>
+                <th>备注</th>
+            </tr>
+
+<tr>
+<td>200G IB交换机</td>
+<td>MQM8790-HS2F</td>
+<td>Mellanox Quantum HDR InfiniBand Switch, 40 QSFP56 ports, 2 Power Supplies (AC), unmanaged, standard depth, P2C airflow, Rail Kit</td>
+<td>20</td>
+<td>Spine 交换机</td>
+</tr>
+<tr>
+<td>200G IB交换机</td>
+<td>MQM8790-HS2F</td>
+<td>Mellanox Quantum HDR InfiniBand Switch, 40 QSFP56 ports, 2 Power Supplies (AC), unmanaged, standard depth, P2C airflow, Rail Kit</td>
+<td>40</td>
+<td>Leaf 交换机</td>
+</tr>
+<tr>
+<td>200G IB AOC线缆</td>
+<td>MFS1S00-H030V</td>
+<td>Mellanox active optical cable, up to 200Gb/s IB HDR, QSFP56, 30m</td>
+<td>800</td>
+<td>Spine 到 Leaf 之间互连的线缆</td>
+</tr>
+<tr>
+<td>200G IB AOC线缆</td>
+<td>MFS1S00-H030V</td>
+<td>Mellanox active optical cable, up to 200Gb/s IB HDR, QSFP56, 30m</td>
+<td>792</td>
+<td>Leaf 到 Server 之间互连的线缆</td>
+</tr>
+        </table>
+    </div>
+    <script src="script.js"></script>
+    <footer><p>Copyright &copy; 2024 Vincent&commat;nvlink.vip </p></footer> 
+    </body>
+</html>
