@@ -110,21 +110,25 @@
         .quick-btn:hover { border-color: var(--primary-color); color: var(--primary-color); }
 
         .compute-power-card {
-            display: flex;
-            align-items: center;
-            gap: 16px;
             background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
             border: 1px solid #fbbf24;
             border-radius: 12px;
-            padding: 16px 20px;
+            padding: 16px;
             margin-top: 16px;
         }
 
+        .compute-power-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
         .compute-power-icon {
-            width: 48px;
-            height: 48px;
+            width: 40px;
+            height: 40px;
             background: linear-gradient(135deg, #f59e0b, #d97706);
-            border-radius: 12px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -148,10 +152,45 @@
             line-height: 1.2;
         }
 
-        .compute-power-label {
+        .compute-power-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #92400e;
+        }
+
+        .compute-power-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .power-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 10px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 6px;
+        }
+
+        .power-item.highlight {
+            background: rgba(245, 158, 11, 0.2);
+            border: 1px solid rgba(245, 158, 11, 0.4);
+        }
+
+        .power-label {
             font-size: 0.75rem;
-            color: #a16207;
-            margin-top: 2px;
+            color: #92400e;
+        }
+
+        .power-value {
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: #b45309;
+        }
+
+        .power-value.large {
+            font-size: 1rem;
         }
 
         .download-section { margin-top: 8px; }
@@ -377,14 +416,16 @@
                     </div>
 
                     <div class="compute-power-card" id="computePowerCard">
-                        <div class="compute-power-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
-                            </svg>
+                        <div class="compute-power-header">
+                            <div class="compute-power-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                                </svg>
+                            </div>
+                            <div class="compute-power-title">集群总算力</div>
                         </div>
-                        <div class="compute-power-info">
-                            <div class="compute-power-value" id="computePowerValue">0</div>
-                            <div class="compute-power-label">PFLOPS (FP16 稠密算力)</div>
+                        <div class="compute-power-grid" id="computePowerGrid">
+                            <!-- 动态生成 -->
                         </div>
                     </div>
                 </div>
@@ -567,12 +608,32 @@
     let currentTab = 'gpu_to_leaf';
     let debounceTimer = null;
 
-    // GPU 算力配置 (PFLOPS FP16 稠密)
-    const GPU_COMPUTE_POWER = {
-        'B200': 4.5,
-        'B300': 4.5,
-        'H200': 1.0,
-        'H100': 1.0
+    // GPU 算力配置 (单卡 PFLOPS)
+    const GPU_SPECS = {
+        'B300': {
+            name: 'NVIDIA B300',
+            fp4Sparse: 144,   // FP4 稀疏
+            fp4Dense: 108,    // FP4 稠密
+            fp8: 72,          // FP8/FP6
+            fp16: 4.5         // FP16 稠密
+        },
+        'B200': {
+            name: 'NVIDIA B200',
+            fp4Sparse: 144,   // FP4 稀疏
+            fp4Dense: 72,     // FP4 稠密
+            fp8: 72,          // FP8/FP6
+            fp16: 4.5         // FP16 稠密
+        },
+        'H200': {
+            name: 'NVIDIA H200',
+            fp8: 3.96,        // FP8
+            fp16: 1.0         // FP16 稠密
+        },
+        'H100': {
+            name: 'NVIDIA H100',
+            fp8: 3.96,        // FP8
+            fp16: 1.0         // FP16 稠密
+        }
     };
     const GPUS_PER_SERVER = 8;
 
@@ -915,19 +976,56 @@
         updateComputePower();
     }
 
-    function updateComputePower() {
-        const power = GPU_COMPUTE_POWER[currentGpuModel] || 0;
-        const totalPower = currentServers * GPUS_PER_SERVER * power;
-
-        // 格式化显示
-        let displayValue;
-        if (totalPower >= 1000) {
-            displayValue = (totalPower / 1000).toFixed(1) + ' EFLOPS';
+    function formatPower(pflops) {
+        if (pflops >= 1000) {
+            return (pflops / 1000).toFixed(1) + ' EFLOPS';
+        } else if (pflops >= 1) {
+            return pflops.toLocaleString() + ' PFLOPS';
         } else {
-            displayValue = totalPower.toLocaleString() + ' PFLOPS';
+            return (pflops * 1000).toFixed(0) + ' TFLOPS';
+        }
+    }
+
+    function updateComputePower() {
+        const spec = GPU_SPECS[currentGpuModel];
+        if (!spec) return;
+
+        const totalGpus = currentServers * GPUS_PER_SERVER;
+        const grid = document.getElementById('computePowerGrid');
+
+        let html = '';
+
+        // Blackwell 系列显示 FP4/FP8
+        if (spec.fp4Sparse !== undefined) {
+            html += `
+                <div class="power-item highlight">
+                    <span class="power-label">FP4 稀疏</span>
+                    <span class="power-value large">${formatPower(totalGpus * spec.fp4Sparse)}</span>
+                </div>
+                <div class="power-item">
+                    <span class="power-label">FP4 稠密</span>
+                    <span class="power-value">${formatPower(totalGpus * spec.fp4Dense)}</span>
+                </div>
+            `;
         }
 
-        document.getElementById('computePowerValue').textContent = displayValue;
+        if (spec.fp8 !== undefined) {
+            html += `
+                <div class="power-item ${spec.fp4Sparse === undefined ? 'highlight' : ''}">
+                    <span class="power-label">FP8</span>
+                    <span class="power-value ${spec.fp4Sparse === undefined ? 'large' : ''}">${formatPower(totalGpus * spec.fp8)}</span>
+                </div>
+            `;
+        }
+
+        html += `
+            <div class="power-item">
+                <span class="power-label">FP16 稠密</span>
+                <span class="power-value">${formatPower(totalGpus * spec.fp16)}</span>
+            </div>
+        `;
+
+        grid.innerHTML = html;
     }
 
     function updatePreview() {
