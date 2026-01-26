@@ -376,91 +376,6 @@
             transform: scale(1.05);
         }
 
-        /* GPU & Compute Power Section */
-        .gpu-power-section {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 24px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-
-        .gpu-select-group {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .gpu-select-group label {
-            font-size: 1em;
-            color: var(--text-secondary);
-            font-weight: 500;
-            letter-spacing: 1px;
-        }
-
-        .gpu-select-group select {
-            padding: 12px 16px;
-            font-size: 1em;
-            font-family: 'Rajdhani', sans-serif;
-            border: 1px solid var(--border-glow);
-            border-radius: 12px;
-            background: rgba(0, 0, 0, 0.4);
-            color: var(--text-primary);
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .gpu-select-group select:focus {
-            outline: none;
-            border-color: var(--accent-cyan);
-            box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
-        }
-
-        .compute-power-display {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            background: linear-gradient(135deg, rgba(255, 165, 0, 0.15), rgba(255, 140, 0, 0.1));
-            border: 1px solid rgba(255, 165, 0, 0.4);
-            border-radius: 12px;
-            padding: 12px 20px;
-        }
-
-        .compute-power-icon {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #ffa500, #ff6600);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .compute-power-icon svg {
-            width: 24px;
-            height: 24px;
-            color: white;
-        }
-
-        .compute-power-info {
-            text-align: left;
-        }
-
-        .compute-power-value {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.3em;
-            font-weight: 700;
-            color: #ffa500;
-            text-shadow: 0 0 10px rgba(255, 165, 0, 0.5);
-        }
-
-        .compute-power-label {
-            font-size: 0.75em;
-            color: rgba(255, 165, 0, 0.8);
-            letter-spacing: 1px;
-        }
-
         /* Summary Cards */
         .summary-grid {
             display: grid;
@@ -1880,35 +1795,12 @@
             <div class="input-row">
                 <div class="input-group">
                     <label for="serverCount">服务器数量:</label>
-                    <input type="number" id="serverCount" value="2592" min="1" max="93312" oninput="updateComputePower()">
+                    <input type="number" id="serverCount" value="2592" min="1" max="93312">
                 </div>
                 <button class="btn btn-primary" onclick="updateTopology()">生成拓扑</button>
             </div>
             <div class="quick-select" id="quickSelect">
                 <!-- Dynamically generated -->
-            </div>
-
-            <div class="gpu-power-section">
-                <div class="gpu-select-group">
-                    <label for="gpuModel">GPU 型号:</label>
-                    <select id="gpuModel" onchange="updateComputePower()">
-                        <option value="B200">NVIDIA B200 (4.5P FP16)</option>
-                        <option value="B300">NVIDIA B300 (4.5P FP16)</option>
-                        <option value="H200">NVIDIA H200 (1.0P FP16)</option>
-                        <option value="H100">NVIDIA H100 (1.0P FP16)</option>
-                    </select>
-                </div>
-                <div class="compute-power-display">
-                    <div class="compute-power-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
-                        </svg>
-                    </div>
-                    <div class="compute-power-info">
-                        <div class="compute-power-value" id="computePowerValue">0 PFLOPS</div>
-                        <div class="compute-power-label">FP16 稠密算力</div>
-                    </div>
-                </div>
             </div>
 
             <!-- Price Input Section (only visible in compare mode) -->
@@ -1965,15 +1857,6 @@
     <script>
         // Current switch type
         let currentSwitch = 'Q3400';
-
-        // GPU 算力配置 (PFLOPS FP16 稠密)
-        const GPU_COMPUTE_POWER = {
-            'B200': 4.5,
-            'B300': 4.5,
-            'H200': 1.0,
-            'H100': 1.0
-        };
-        const GPUS_PER_SERVER = 8;
 
         // Switch configurations
         const SWITCH_CONFIG = {
@@ -2126,25 +2009,7 @@
             updateTopology();
         }
 
-        function updateComputePower() {
-            const numServers = parseInt(document.getElementById('serverCount').value) || 0;
-            const gpuModel = document.getElementById('gpuModel').value;
-            const power = GPU_COMPUTE_POWER[gpuModel] || 0;
-            const totalPower = numServers * GPUS_PER_SERVER * power;
-
-            let displayValue;
-            if (totalPower >= 1000) {
-                displayValue = (totalPower / 1000).toFixed(1) + ' EFLOPS';
-            } else {
-                displayValue = totalPower.toLocaleString() + ' PFLOPS';
-            }
-
-            document.getElementById('computePowerValue').textContent = displayValue;
-        }
-
         function updateTopology() {
-            updateComputePower();
-
             const config = SWITCH_CONFIG[currentSwitch];
             const numServers = parseInt(document.getElementById('serverCount').value);
 

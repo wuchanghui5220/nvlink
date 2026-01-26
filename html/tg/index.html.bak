@@ -4,9 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GPU 集群拓扑生成器 (纯前端版)</title>
-    <!-- 本地化库文件 (支持离线运行) -->
+    <!-- SheetJS for Excel generation -->
     <script src="xlsx.full.min.js"></script>
-    <script src="jszip.min.js"></script>
     <style>
         :root {
             --primary-color: #2563eb;
@@ -108,51 +107,6 @@
             transition: all 0.2s;
         }
         .quick-btn:hover { border-color: var(--primary-color); color: var(--primary-color); }
-
-        .compute-power-card {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-            border: 1px solid #fbbf24;
-            border-radius: 12px;
-            padding: 16px 20px;
-            margin-top: 16px;
-        }
-
-        .compute-power-icon {
-            width: 48px;
-            height: 48px;
-            background: linear-gradient(135deg, #f59e0b, #d97706);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-
-        .compute-power-icon svg {
-            width: 28px;
-            height: 28px;
-            color: white;
-        }
-
-        .compute-power-info {
-            flex: 1;
-        }
-
-        .compute-power-value {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #92400e;
-            line-height: 1.2;
-        }
-
-        .compute-power-label {
-            font-size: 0.75rem;
-            color: #a16207;
-            margin-top: 2px;
-        }
 
         .download-section { margin-top: 8px; }
 
@@ -365,28 +319,6 @@
                     </div>
 
                     <div class="quick-select" id="quickSelect"></div>
-
-                    <div class="form-group" style="margin-top: 16px;">
-                        <label for="gpuModel">GPU 型号</label>
-                        <select id="gpuModel" onchange="onGpuModelChange()">
-                            <option value="B200">NVIDIA B200 (4.5 PFLOPS FP16)</option>
-                            <option value="B300">NVIDIA B300 (4.5 PFLOPS FP16)</option>
-                            <option value="H200">NVIDIA H200 (1.0 PFLOPS FP16)</option>
-                            <option value="H100">NVIDIA H100 (1.0 PFLOPS FP16)</option>
-                        </select>
-                    </div>
-
-                    <div class="compute-power-card" id="computePowerCard">
-                        <div class="compute-power-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
-                            </svg>
-                        </div>
-                        <div class="compute-power-info">
-                            <div class="compute-power-value" id="computePowerValue">0</div>
-                            <div class="compute-power-label">PFLOPS (FP16 稠密算力)</div>
-                        </div>
-                    </div>
                 </div>
 
                 <div class="card download-section">
@@ -562,19 +494,9 @@
     // ============================================================
     let currentScheme = 'x800';
     let currentServers = 648;
-    let currentGpuModel = 'B200';
     let cachedTopology = null;
     let currentTab = 'gpu_to_leaf';
     let debounceTimer = null;
-
-    // GPU 算力配置 (PFLOPS FP16 稠密)
-    const GPU_COMPUTE_POWER = {
-        'B200': 4.5,
-        'B300': 4.5,
-        'H200': 1.0,
-        'H100': 1.0
-    };
-    const GPUS_PER_SERVER = 8;
 
     // ============================================================
     // 拓扑生成器
@@ -901,33 +823,11 @@
         const percentage = Math.min(100, (currentServers / s.maxThreeTier) * 100);
         document.getElementById('capacityBar').style.width = `${percentage}%`;
 
-        updateComputePower();
-
         clearTimeout(debounceTimer);
         debounceTimer = setTimeout(() => {
             cachedTopology = null;
             updatePreview();
         }, 300);
-    }
-
-    function onGpuModelChange() {
-        currentGpuModel = document.getElementById('gpuModel').value;
-        updateComputePower();
-    }
-
-    function updateComputePower() {
-        const power = GPU_COMPUTE_POWER[currentGpuModel] || 0;
-        const totalPower = currentServers * GPUS_PER_SERVER * power;
-
-        // 格式化显示
-        let displayValue;
-        if (totalPower >= 1000) {
-            displayValue = (totalPower / 1000).toFixed(1) + ' EFLOPS';
-        } else {
-            displayValue = totalPower.toLocaleString() + ' PFLOPS';
-        }
-
-        document.getElementById('computePowerValue').textContent = displayValue;
     }
 
     function updatePreview() {
@@ -1197,6 +1097,11 @@
         btn.innerHTML = '<div class="spinner" style="width:18px;height:18px;margin:0"></div> 生成中...';
 
         try {
+            // 动态加载 JSZip
+            if (typeof JSZip === 'undefined') {
+                await loadScript('jszip.min.js');
+            }
+
             const topology = ensureTopology();
             const zip = new JSZip();
 
@@ -1235,6 +1140,16 @@
         }
     }
 
+    function loadScript(src) {
+        return new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = src;
+            script.onload = resolve;
+            script.onerror = reject;
+            document.head.appendChild(script);
+        });
+    }
+
     function showDownloadError(message) {
         const el = document.getElementById('downloadError');
         el.textContent = message;
@@ -1250,7 +1165,6 @@
     // ============================================================
     document.addEventListener('DOMContentLoaded', () => {
         onSchemeChange();
-        updateComputePower();
     });
     </script>
 </body>
