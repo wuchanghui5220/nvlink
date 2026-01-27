@@ -3,1347 +3,794 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>网络配置计算器</title>
-    <link rel="stylesheet" href="styles.css">
-    <!-- 添加拓扑图相关样式 -->
+    <title>IB 网络配置计算器</title>
     <style>
-    /* Topology Tab Styles */
-    .topology-container {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-        max-width: 1200px;
-        margin: 0 auto;
-    }
-    
-    .left-panel, .right-panel {
-        width: 100%;
-    }
-    
-    .input-group {
-        margin-bottom: 15px;
-    }
-    
-    .input-row {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
-    
-    .input-col {
-        width: 100%;
-    }
-    
-    #topo-results, #mini-results {
-        background-color: #f8f9fa;
-        padding: 15px;
-        border-radius: 4px;
-        font-size: 0.9em;
-    }
-    
-    #topo-diagram, #mini-diagram {
-        margin-top: 20px;
-        width: 100%;
-        overflow-x: auto;
-    }
-    
-    svg {
-        width: 100%;
-        height: auto;
-        min-width: 300px;
-    }
-    
-    .diagram-container {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-    }
-    
-    @media (min-width: 768px) {
-        .topology-container, .mini-topology-container {
-            flex-direction: row;
-        }
-        .left-panel, .right-panel {
-            width: 48%;
-        }
-        .input-row {
-            flex-direction: row;
-        }
-        .input-col {
-            width: 48%;
-        }
-    }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    /* 微型拓扑样式 */
-    .mini-topology-container {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-        max-width: 1200px;
-        margin: 0 auto;
-    }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            font-size: 14px;
+        }
+
+        .header {
+            background: rgba(0,0,0,0.3);
+            padding: 12px 20px;
+            border-bottom: 1px solid rgba(0,212,255,0.2);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header h1 {
+            font-size: 18px;
+            color: #00d4ff;
+            font-weight: 500;
+        }
+
+        .header .subtitle {
+            color: #888;
+            font-size: 12px;
+        }
+
+        .main-container {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 20px;
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .input-panel {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .section-title {
+            font-size: 13px;
+            color: #00d4ff;
+            margin-bottom: 12px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid rgba(0,212,255,0.2);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        label {
+            font-size: 11px;
+            color: #888;
+            text-transform: uppercase;
+        }
+
+        input, select {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 4px;
+            padding: 8px 10px;
+            color: #fff;
+            font-size: 13px;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #00d4ff;
+        }
+
+        select { cursor: pointer; }
+
+        .server-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 12px;
+            font-size: 12px;
+        }
+
+        .server-table th {
+            text-align: left;
+            padding: 6px 8px;
+            background: rgba(0,212,255,0.1);
+            color: #00d4ff;
+            font-weight: 500;
+            font-size: 10px;
+            text-transform: uppercase;
+        }
+
+        .server-table td {
+            padding: 4px 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .server-table input, .server-table select {
+            width: 100%;
+            padding: 6px;
+            font-size: 12px;
+        }
+
+        .btn-calculate {
+            width: 100%;
+            background: linear-gradient(135deg, #00d4ff, #0099cc);
+            color: #000;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 8px;
+        }
+
+        .btn-calculate:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 20px rgba(0,212,255,0.3);
+        }
+
+        .result-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .result-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .result-card h3 {
+            font-size: 13px;
+            color: #00d4ff;
+            margin-bottom: 12px;
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 10px;
+        }
+
+        .stat-item {
+            background: rgba(0,0,0,0.2);
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 22px;
+            font-weight: 600;
+            color: #00d4ff;
+        }
+
+        .stat-label {
+            font-size: 10px;
+            color: #888;
+            text-transform: uppercase;
+            margin-top: 2px;
+        }
+
+        .result-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        .result-table th {
+            text-align: left;
+            padding: 8px;
+            background: rgba(0,212,255,0.1);
+            color: #00d4ff;
+            font-weight: 500;
+        }
+
+        .result-table td {
+            padding: 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .result-table tr:hover {
+            background: rgba(0,212,255,0.05);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #888;
+            padding: 8px 14px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .tab-btn:hover { color: #fff; }
+
+        .tab-btn.active {
+            background: rgba(0,212,255,0.2);
+            border-color: #00d4ff;
+            color: #00d4ff;
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .info-row:last-child { border-bottom: none; }
+
+        .btn-download {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            margin-top: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .btn-download:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(46,204,113,0.3);
+        }
+
+        .btn-download:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        @media (max-width: 900px) {
+            .main-container { grid-template-columns: 1fr; }
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+        ::-webkit-scrollbar-thumb { background: rgba(0,212,255,0.3); border-radius: 3px; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>网络配置计算器</h1>
-        
-        <div class="tab">
-            <button class="tablinks active" id="inputTabBtn">参数输入</button>
-            <button class="tablinks" id="resultsTabBtn">计算结果</button>
-            <button class="tablinks" id="productTabBtn">配置清单</button>
-            <button class="tablinks" id="topologyTabBtn">拓扑连接</button>
-            <!-- 添加微型拓扑选项卡 -->
-            <button class="tablinks" id="miniTopologyTabBtn">微型拓扑</button>
-        </div>
-        
-        <div id="inputTab" class="tabcontent" style="display: block;">
-            <div class="card">
-                <h2>基本参数</h2>
-                <div class="form-row">
-                    <div class="form-col">
-                        <div class="form-group">
-                            <label for="ratio">比例 (默认为 1:1)</label>
-                            <input type="number" id="ratio" value="1" min="1" max="10">
-                        </div>
-                    </div>
-                    <div class="form-col">
-                        <div class="form-group">
-                            <label for="speed">速度选择</label>
-                            <select id="speed">
-                                <option value="1">HDR</option>
-                                <option value="2" selected>NDR</option>
-                                <option value="3">SN5600 (NDR 400G)</option>
-                                <option value="4">Q3400 (XDR)</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="divider"></div>
-                
-                <h2>服务器配置</h2>
-                
-                <div class="server-section">
-                    <h3>GPU 服务器</h3>
-                    <div class="form-row">
-                        <div class="form-col">
-                            <div class="form-group">
-                                <label for="gpuServerNum">GPU 服务器数量</label>
-                                <input type="number" id="gpuServerNum" value="0" min="0">
-                            </div>
-                        </div>
-                        <div class="form-col">
-                            <div class="form-group">
-                                <label for="gpuType">GPU 型号 (默认为 H800)</label>
-                                <input type="text" id="gpuType" value="H800">
-                            </div>
-                        </div>
-                        <div class="form-col">
-                            <div class="form-group">
-                                <label for="gpuCardNum">GPU 服务器 NIC 数量</label>
-                                <select id="gpuCardNum">
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
-                                    <option value="4">4</option>
-                                    <option value="8" selected>8</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="server-section">
-                    <h3>存储服务器</h3>
-                    <div class="form-row">
-                        <div class="form-col">
-                            <div class="form-group">
-                                <label for="storageServerNum">存储服务器数量</label>
-                                <input type="number" id="storageServerNum" value="0" min="0">
-                            </div>
-                        </div>
-                        <div class="form-col">
-                            <div class="form-group">
-                                <label for="storageCardNum">存储服务器 NIC 数量</label>
-                                <select id="storageCardNum">
-                                    <option value="1" selected>1</option>
-                                    <option value="2">2</option>
-                                    <option value="4">4</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="server-section">
-                    <h3>CPU 服务器</h3>
-                    <div class="form-row">
-                        <div class="form-col">
-                            <div class="form-group">
-                                <label for="cpuServerNum">CPU 服务器数量</label>
-                                <input type="number" id="cpuServerNum" value="0" min="0">
-                            </div>
-                        </div>
-                        <div class="form-col">
-                            <div class="form-group">
-                                <label for="cpuCardNum">CPU 服务器 NIC 数量</label>
-                                <select id="cpuCardNum">
-                                    <option value="1" selected>1</option>
-                                    <option value="2">2</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="server-section">
-                    <h3>其他服务器</h3>
-                    <div class="form-row">
-                        <div class="form-col">
-                            <div class="form-group">
-                                <label for="otherServerNum">其他服务器数量</label>
-                                <input type="number" id="otherServerNum" value="0" min="0">
-                            </div>
-                        </div>
-                        <div class="form-col">
-                            <div class="form-group">
-                                <label for="otherCardNum">其他服务器 NIC 数量</label>
-                                <select id="otherCardNum">
-                                    <option value="1" selected>1</option>
-                                    <option value="2">2</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
+    <div class="header">
+        <h1>IB 网络配置计算器</h1>
+        <span class="subtitle">InfiniBand Fabric Topology Calculator</span>
+    </div>
+
+    <div class="main-container">
+        <!-- 左侧输入面板 -->
+        <div class="input-panel">
+            <div class="section-title">基本参数</div>
+            <div class="form-row">
                 <div class="form-group">
-                    <label for="dacCableNumber">DAC 线缆数量</label>
+                    <label>网络速度</label>
+                    <select id="speed">
+                        <option value="1">HDR (200G)</option>
+                        <option value="2" selected>NDR (400G)</option>
+                        <option value="3">SN5600 (400G)</option>
+                        <option value="4">Q3400 (800G)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>收敛比</label>
+                    <select id="ratio">
+                        <option value="1" selected>1:1</option>
+                        <option value="2">1:2</option>
+                        <option value="3">1:3</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="section-title">服务器配置</div>
+            <table class="server-table">
+                <thead>
+                    <tr><th>类型</th><th>数量</th><th>NIC</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>GPU</td>
+                        <td><input type="number" id="gpuServerNum" value="0" min="0"></td>
+                        <td><select id="gpuCardNum">
+                            <option value="1">1</option><option value="2">2</option>
+                            <option value="4">4</option><option value="8" selected>8</option>
+                        </select></td>
+                    </tr>
+                    <tr>
+                        <td>存储</td>
+                        <td><input type="number" id="storageServerNum" value="0" min="0"></td>
+                        <td><select id="storageCardNum">
+                            <option value="1" selected>1</option><option value="2">2</option><option value="4">4</option>
+                        </select></td>
+                    </tr>
+                    <tr>
+                        <td>CPU</td>
+                        <td><input type="number" id="cpuServerNum" value="0" min="0"></td>
+                        <td><select id="cpuCardNum">
+                            <option value="1" selected>1</option><option value="2">2</option>
+                        </select></td>
+                    </tr>
+                    <tr>
+                        <td>其他</td>
+                        <td><input type="number" id="otherServerNum" value="0" min="0"></td>
+                        <td><select id="otherCardNum">
+                            <option value="1" selected>1</option><option value="2">2</option>
+                        </select></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>GPU 型号</label>
+                    <input type="text" id="gpuType" value="H800">
+                </div>
+                <div class="form-group">
+                    <label>DAC 线缆</label>
                     <input type="number" id="dacCableNumber" value="0" min="0">
                 </div>
-                
-                <button id="calculateButton">计算拓扑</button>
             </div>
+
+            <button class="btn-calculate" id="calculateButton">计算拓扑</button>
         </div>
-        
-        <div id="resultsTab" class="tabcontent">
-            <div class="card">
-                <h2>计算结果</h2>
-                <div class="info-box">
-                    <p><strong>Fabric 速度：</strong> <span id="resultFabricSpeed"></span></p>
-                    <p><strong>比例：</strong> <span id="resultRatio"></span></p>
+
+        <!-- 右侧结果面板 -->
+        <div class="result-panel">
+            <div class="result-card">
+                <h3>拓扑概览</h3>
+                <div class="result-grid">
+                    <div class="stat-item">
+                        <div class="stat-value" id="statServers">0</div>
+                        <div class="stat-label">服务器</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="statNodes">0</div>
+                        <div class="stat-label">节点</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="statSpines">0</div>
+                        <div class="stat-label">Spine</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="statLeafs">0</div>
+                        <div class="stat-label">Leaf</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="statCables">0</div>
+                        <div class="stat-label">线缆</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="statSpeed">-</div>
+                        <div class="stat-label">速度</div>
+                    </div>
                 </div>
-                
-                <h3>服务器信息</h3>
-                <table>
-                    <tr>
-                        <th>服务器类型</th>
-                        <th>服务器数量</th>
-                        <th>节点数量</th>
-                        <th>叶子交换机数量</th>
-                    </tr>
-                    <tr>
-                        <td>GPU 服务器</td>
-                        <td id="gpuServerNumResult">0</td>
-                        <td id="gpuNodesResult">0</td>
-                        <td id="gpuLeafsResult">0</td>
-                    </tr>
-                    <tr>
-                        <td>存储服务器</td>
-                        <td id="storageServerNumResult">0</td>
-                        <td id="storageNodesResult">0</td>
-                        <td id="storageLeafsResult">0</td>
-                    </tr>
-                    <tr>
-                        <td>CPU 服务器</td>
-                        <td id="cpuServerNumResult">0</td>
-                        <td id="cpuNodesResult">0</td>
-                        <td id="cpuLeafsResult">0</td>
-                    </tr>
-                    <tr>
-                        <td>其他服务器</td>
-                        <td id="otherServerNumResult">0</td>
-                        <td id="otherNodesResult">0</td>
-                        <td id="otherLeafsResult">0</td>
-                    </tr>
-                    <tr>
-                        <td><strong>总计</strong></td>
-                        <td id="totalServerNumResult">0</td>
-                        <td id="totalNodesResult">0</td>
-                        <td id="totalLeafsResult">0</td>
-                    </tr>
-                </table>
-                
-                <h3>交换机拓扑</h3>
-                <table>
-                    <tr>
-                        <th>参数</th>
-                        <th>值</th>
-                    </tr>
-                    <tr>
-                        <td>Spine 交换机数量</td>
-                        <td id="spinesResult">0</td>
-                    </tr>
-                    <tr>
-                        <td>Leaf 交换机数量</td>
-                        <td id="leafsResult">0</td>
-                    </tr>
-                    <tr>
-                        <td>Spine 到 Leaf 线缆数量</td>
-                        <td id="spineToLeafCablesResult">0</td>
-                    </tr>
-                    <tr>
-                        <td>Leaf 到服务器线缆数量</td>
-                        <td id="leafToServerCablesResult">0</td>
-                    </tr>
-                    <tr>
-                        <td>最大 Leaf 到服务器线缆数量</td>
-                        <td id="maxLeafToServerCablesResult">0</td>
-                    </tr>
-                    <tr>
-                        <td>总线缆数量</td>
-                        <td id="totalCablesResult">0</td>
-                    </tr>
-                </table>
-                
-                <div id="opticalTransceiverSection">
-                    <h3>光模块信息</h3>
-                    <table id="otTable">
-                        <!-- Content will be dynamically generated -->
+            </div>
+
+            <div class="result-card">
+                <div class="tabs">
+                    <button class="tab-btn" data-tab="detail">详细结果</button>
+                    <button class="tab-btn active" data-tab="product">配置清单</button>
+                </div>
+
+                <!-- 详细结果 -->
+                <div class="tab-content" id="tab-detail">
+                    <div class="section-title">服务器统计</div>
+                    <table class="result-table">
+                        <thead><tr><th>类型</th><th>服务器</th><th>节点</th><th>Leaf</th></tr></thead>
+                        <tbody>
+                            <tr><td>GPU</td><td id="gpuServerResult">0</td><td id="gpuNodesResult">0</td><td id="gpuLeafsResult">0</td></tr>
+                            <tr><td>存储</td><td id="storageServerResult">0</td><td id="storageNodesResult">0</td><td id="storageLeafsResult">0</td></tr>
+                            <tr><td>CPU</td><td id="cpuServerResult">0</td><td id="cpuNodesResult">0</td><td id="cpuLeafsResult">0</td></tr>
+                            <tr><td>其他</td><td id="otherServerResult">0</td><td id="otherNodesResult">0</td><td id="otherLeafsResult">0</td></tr>
+                            <tr style="font-weight:bold;background:rgba(0,212,255,0.1)"><td>总计</td><td id="totalServerResult">0</td><td id="totalNodesResult">0</td><td id="totalLeafsResult">0</td></tr>
+                        </tbody>
                     </table>
+
+                    <div class="section-title" style="margin-top:16px">线缆统计</div>
+                    <div class="info-row"><span>Spine-Leaf 线缆</span><span id="spineLeafCables">0</span></div>
+                    <div class="info-row"><span>Leaf-Server 线缆</span><span id="leafServerCables">0</span></div>
+                    <div class="info-row"><span>最大 Leaf-Server</span><span id="maxLeafServerCables">0</span></div>
+                    <div class="info-row"><span>总线缆数</span><span id="totalCables">0</span></div>
+
+                    <div class="section-title" style="margin-top:16px">光模块统计</div>
+                    <div id="otInfo"></div>
                 </div>
-            </div>
-        </div>
-        
-        <div id="productTab" class="tabcontent">
-            <div class="card">
-                <h2>配置清单</h2>
-                <div class="info-box" id="productSummary">
-                    <!-- 总结描述将在这里动态生成 -->
-                </div>
-                <table id="productTable">
-                    <tr>
-                        <th>产品名称</th>
-                        <th>产品型号</th>
-                        <th>产品描述</th>
-                        <th>数量</th>
-                        <th>备注</th>
-                    </tr>
-                    <!-- Content will be dynamically generated -->
-                </table>
-            </div>
-        </div>
-        
-        <!-- 拓扑连接选项卡内容 -->
-        <div id="topologyTab" class="tabcontent">
-            <div class="card">
-                <h2>Advanced Infiniband Fabric Spine-Leaf Network</h2>
-                
-                <div class="topology-container">
-                    <div class="left-panel">
-                        <h3>Results</h3>
-                        <div id="topo-results">
-                            <!-- Results will be populated here -->
-                        </div>
-                    </div>
-                    
-                    <div class="right-panel">
-                        <h3>Configuration</h3>
-                        <div class="input-row">
-                            <div class="input-col">
-                                <label for="topoSwitchType">Switch Type:</label>
-                                <select id="topoSwitchType">
-                                    <option value="QM8700">QM8700 (40-port)</option>
-                                    <option value="QM9700" selected>QM9700 (64-port)</option>
-                                    <option value="Q3400">Q3400 (144-port)</option>
-                                    <option value="SN5600">SN5600 (128-port)</option>
-                                </select>
-                            </div>
-                            <div class="input-col">
-                                <label for="topoNetworkCardType">Network Card Type:</label>
-                                <select id="topoNetworkCardType">
-                                    <option value="200G">200G</option>
-                                    <option value="400G" selected>400G</option>
-                                    <option value="800G">800G</option>
-                                </select>
-                            </div>
-                        </div>
-                        
-                        <div class="input-row">
-                            <div class="input-col">
-                                <label for="topoNumServers">Number of Servers:</label>
-                                <input type="number" id="topoNumServers" min="1" value="63">
-                            </div>
-                            <div class="input-col">
-                                <label for="topoNumNetworkCardsPerServer">Network Cards per Server:</label>
-                                <input type="number" id="topoNumNetworkCardsPerServer" min="1" max="8" value="8">
-                            </div>
-                        </div>
-                        
-                        <div class="input-row">
-                            <div class="input-col">
-                                <label for="topoSpineLeafDistance">Spine-Leaf Distance (px):</label>
-                                <input type="number" id="topoSpineLeafDistance" min="100" max="500" value="200">
-                            </div>
-                            <div class="input-col">
-                                <label for="topoLeafNodeDistance">Leaf-Node Distance (px):</label>
-                                <input type="number" id="topoLeafNodeDistance" min="100" max="500" value="100">
-                            </div>
-                        </div>
-                        
-                        <div class="input-row">
-                            <div class="input-col">
-                                <label for="topoServersPerRow">Servers per Row:</label>
-                                <select id="topoServersPerRow">
-                                    <option value="4">4</option>
-                                    <option value="8" selected>8</option>
-                                    <option value="10">10</option>
-                                    <option value="12">12</option>
-                                    <option value="16">16</option>
-                                    <option value="18">18</option>
-                                </select>
-                            </div>
-                            <div class="input-col">
-                                <label for="topoDiagramHeight">Diagram Height (px):</label>
-                                <input type="number" id="topoDiagramHeight" min="600" max="2000" value="1000">
-                            </div>
-                        </div>
-                        
-                        <div class="input-row">
-                            <div class="input-col">
-                                <label for="topoNodeRowSpacing">Node Row Spacing (px):</label>
-                                <input type="number" id="topoNodeRowSpacing" min="20" max="200" value="60">
-                            </div>
-                        </div>
-                        
-                        <button id="topoCalculateButton">Calculate and Generate Diagram</button>
-                    </div>
-                </div>
-                
-                <div class="diagram-container">
-                    <div id="topo-diagram"></div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- 微型拓扑选项卡内容 -->
-        <div id="miniTopologyTab" class="tabcontent">
-            <div class="card">
-                <h2>Small-Scale InfiniBand Network Topology Visualizer</h2>
-                
-                <div class="mini-topology-container">
-                    <div class="left-panel">
-                        <h3>Results</h3>
-                        <div id="mini-results">
-                            <!-- Results will be populated here -->
-                        </div>
-                    </div>
-                    
-                    <div class="right-panel">
-                        <h3>Configuration</h3>
-                        <div class="input-row">
-                            <div class="input-col">
-                                <label for="numMiniServers">Number of Servers:</label>
-                                <select id="numMiniServers">
-                                    <option value="2">2</option>
-                                    <option value="3">3</option>
-                                    <option value="4" selected>4</option>
-                                    <option value="5">5</option>
-                                    <option value="6">6</option>
-                                    <option value="7">7</option>
-                                    <option value="8">8</option>
-                                    <option value="9">9</option>
-                                    <option value="10">10</option>
-                                    <option value="11">11</option>
-                                    <option value="12">12</option>
-                                    <option value="13">13</option>
-                                    <option value="14">14</option>
-                                    <option value="15">15</option>
-                                    <option value="16">16</option>
-                                    <option value="17">17</option>
-                                    <option value="18">18</option>
-                                    <option value="19">19</option>
-                                    <option value="20">20</option>
-                                    <option value="21">21</option>
-                                </select>
-                            </div>
-                            <div class="input-col">
-                                <label for="numMiniNetworkCardsPerServer">Network Cards per Server:</label>
-                                <select id="numMiniNetworkCardsPerServer">
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
-                                    <option value="4" selected>4</option>
-                                    <option value="8">8</option>
-                                </select>
-                            </div>
-                        </div>
-                        
-                        <div class="input-row">
-                            <div class="input-col">
-                                <label for="numMiniSwitches">Number of Switches:</label>
-                                <select id="numMiniSwitches">
-                                    <option value="1" selected>1</option>
-                                    <option value="2">2</option>
-                                </select>
-                            </div>
-                            <div class="input-col" id="interSwitchLinksContainer">
-                                <label for="interSwitchLinks">Inter-Switch Links:</label>
-                                <select id="interSwitchLinks" disabled>
-                                    <option value="2">2</option>
-                                    <option value="4">4</option>
-                                    <option value="8" selected>8</option>
-                                    <option value="16">16</option>
-                                </select>
-                            </div>
-                        </div>
-                        
-                        <div class="input-row">
-                            <div class="input-col">
-                                <label for="switchServerDistance">Switch-Server Distance (px):</label>
-                                <input type="number" id="switchServerDistance" min="100" max="500" value="150">
-                            </div>
-                            <div class="input-col">
-                                <label for="miniDiagramHeight">Diagram Height (px):</label>
-                                <input type="number" id="miniDiagramHeight" min="400" max="1200" value="600">
-                            </div>
-                        </div>
-                        
-                        <div class="input-row">
-                            <div class="input-col">
-                                <label for="serverSpacing">Server Spacing (px):</label>
-                                <input type="number" id="serverSpacing" min="50" max="200" value="120">
-                            </div>
-                            <div class="input-col">
-                                <label for="switchSpacing">Switch Spacing (px):</label>
-                                <input type="number" id="switchSpacing" min="100" max="600" value="300">
-                            </div>
-                        </div>
-                        
-                        <button id="miniCalculateButton">Calculate and Generate Diagram</button>
-                    </div>
-                </div>
-                
-                <div class="diagram-container">
-                    <div id="mini-diagram"></div>
+
+                <!-- 配置清单 -->
+                <div class="tab-content active" id="tab-product">
+                    <div id="productSummary" style="color:#00d4ff;margin-bottom:12px;font-weight:500;"></div>
+                    <table class="result-table" id="productTable">
+                        <thead><tr><th>产品</th><th>型号</th><th>描述</th><th>数量</th><th>备注</th></tr></thead>
+                        <tbody></tbody>
+                    </table>
+                    <button class="btn-download" id="downloadExcel" disabled>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                            <polyline points="7 10 12 15 17 10"/>
+                            <line x1="12" y1="15" x2="12" y2="3"/>
+                        </svg>
+                        下载 Excel
+                    </button>
                 </div>
             </div>
         </div>
     </div>
-    
-    <!-- 引入需要的JS库和脚本 -->
-    <script src="d3.v7.min.js"></script>
-    <script src="script.js"></script>
-    
-    <!-- 自定义的适配脚本，添加微型拓扑和拓扑连接功能 -->
+
+    <!-- SheetJS for Excel export -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // 为拓扑选项卡和微型拓扑选项卡添加点击事件
-        document.getElementById('topologyTabBtn').addEventListener('click', function() {
-            openTab('topologyTab');
-            // 延迟调用以确保选项卡显示后再计算绘制
-            setTimeout(function() {
-                topoCalculateAndDraw();
-            }, 100);
-        });
-        
-        document.getElementById('miniTopologyTabBtn').addEventListener('click', function() {
-            openTab('miniTopologyTab');
-            // 延迟调用以确保选项卡显示后再计算绘制
-            setTimeout(function() {
-                miniTopologyInit();
-            }, 100);
-        });
-        
-        // 绑定拓扑计算按钮事件
-        document.getElementById('topoCalculateButton').addEventListener('click', function() {
-            topoCalculateAndDraw();
-        });
-        
-        // 绑定交换机类型变更事件
-        document.getElementById('topoSwitchType').addEventListener('change', function() {
-            updateTopoNetworkCardOptions();
-        });
-        
-        // 绑定微型拓扑计算按钮事件
-        document.getElementById('miniCalculateButton').addEventListener('click', function() {
-            miniTopologyCalculateAndDraw();
-        });
-        
-        // 绑定微型拓扑交换机数量变更事件
-        document.getElementById('numMiniSwitches').addEventListener('change', function() {
-            updateMiniInterSwitchLinks();
+    // 产品数据
+    const ndrProducts = [
+        {name: '400G IB交换机', model: 'MQM9790-NS2R', desc: 'NVIDIA Quantum-2 based NDR InfiniBand Switch, 64 NDR ports, 32 OSFP ports, 2 Power Supplies (AC), Standard depth, Unmanaged, C2P airflow, RailKit'},
+        {name: '400G IB交换机', model: 'MQM9700-NS2R', desc: 'NVIDIA Quantum-2 based NDR InfiniBand Switch, 64 NDR ports, 32 OSFP ports, 2 Power Supplies (AC), Standard depth, Managed, C2P airflow, Rail Kit'},
+        {name: '400G IB交换机', model: 'SN5600', desc: 'NVIDIA Spectrum-4 based 800GbE 2U Open Ethernet switch with Cumulus Linux authentication, 64 OSFP ports and 1 SFP28 port, 2 power supplies (AC), x86 CPU, Secure Boot, standard depth, C2P airflow, tool-less rail kit'},
+        {name: '800G IB交换机', model: 'Q3400', desc: '920-9B36F-00RX-8S0 NVIDIA AIR COOLED SYSTEM 72 PORTS OSFP XDR MNG SWITCH W/ 8 PS STANDARD DEPTH C2P AIRFLOW'},
+        {name: '800G 光模块NDR', model: 'MMA4Z00-NS', desc: 'NVIDIA twin port transceiver, 800Gbps, 2xNDR, OSFP, 2xMPO12 APC, 850nm MMF, up to 50m, finned'},
+        {name: '400G 光模块', model: 'MMA4Z00-NS400', desc: 'NVIDIA single port transceiver, 400Gbps, NDR, OSFP, MPO12 APC, 850nm MMF, up to 50m, flat top'},
+        {name: '1.6T 光模块', model: 'NVIDIA 1.6T transceiver', desc: 'NVIDIA twin port transceiver, 1.6Tbps, Q3, OSFP, MPO12 APC, 1310nm MMF, up to 500m'},
+        {name: '800G 光模块XDR', model: 'MMS8X00-NS800', desc: 'NVIDIA single port transceiver, 800Gbps, XDR, OSFP, MPO12 APC, 1310nm SMF, up to 500m, flat top'},
+        {name: 'MPO12-APC光纤', model: 'MFP7E10-N030', desc: 'NVIDIA passive fiber cable, MMF, MPO12 APC to MPO12 APC, 30m'},
+        {name: 'MPO12-APC光纤(SMF)', model: 'MFP7E30-N030', desc: 'NVIDIA passive fiber cable, SMF, MPO12 APC to MPO12 APC, 30m'},
+        {name: 'MPO12-APC 1分2光纤', model: 'MFP7E20-N030', desc: 'NVIDIA passive fiber cable, MMF, MPO12 APC to 2xMPO12 APC, 30m'}
+    ];
+
+    const hdrProducts = [
+        {name: '200G IB交换机', model: 'MQM8790-HS2F', desc: 'Mellanox Quantum HDR InfiniBand Switch, 40 QSFP56 ports, 2 Power Supplies (AC), unmanaged, standard depth, C2P airflow, Rail Kit'},
+        {name: '200G IB交换机', model: 'MQM8700-HS2F', desc: 'Mellanox Quantum HDR InfiniBand Switch, 40 QSFP56 ports, 2 Power Supplies (AC), x86 dual core, standard depth, C2P airflow, Rail Kit'},
+        {name: '200G IB AOC线缆', model: 'MFS1S00-H030V', desc: 'Mellanox active optical cable, up to 200Gb/s IB HDR, QSFP56, 30m'},
+        {name: '200G IB AOC 1分2线缆', model: 'MFS1S50-H030V', desc: 'Mellanox active optical cable, 200Gb/s to 2x100Gb/s IB HDR, QSFP56 to 2x QSFP56, 30m'}
+    ];
+
+    const PORTS = { HDR: 40, NDR: 64, SN5600_NDR: 128, Q3: 144 };
+    let calcResults = {};
+    let productData = [];
+
+    // 标签页切换
+    document.querySelectorAll('.tab-btn[data-tab]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.tab-btn[data-tab]').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
         });
     });
-    
-    /************************* 拓扑连接相关函数 *************************/
-    
-    function updateTopoNetworkCardOptions() {
-      const switchType = document.getElementById('topoSwitchType').value;
-      const networkCardSelect = document.getElementById('topoNetworkCardType');
-      
-      switch(switchType) {
-        case 'QM8700':
-          networkCardSelect.value = '200G';
-          break;
-        case 'QM9700':
-        case 'SN5600':
-          networkCardSelect.value = '400G';
-          break;
-        case 'Q3400':
-          networkCardSelect.value = '800G';
-          break;
-      }
-      
-      topoCalculateAndDraw();
+
+    // 事件绑定
+    document.getElementById('calculateButton').addEventListener('click', calculate);
+    document.getElementById('downloadExcel').addEventListener('click', downloadExcel);
+
+    function transform(x, n) { return n * Math.ceil(x/n); }
+
+    // 主计算函数
+    function calculate() {
+        const ratio = parseInt(document.getElementById('ratio').value) || 1;
+        const RA = ratio + 1;
+        const inputSpeed = parseInt(document.getElementById('speed').value);
+
+        const gpuServerNum = parseInt(document.getElementById('gpuServerNum').value) || 0;
+        const gpuCardNum = parseInt(document.getElementById('gpuCardNum').value);
+        const storageServerNum = parseInt(document.getElementById('storageServerNum').value) || 0;
+        const storageCardNum = parseInt(document.getElementById('storageCardNum').value);
+        const cpuServerNum = parseInt(document.getElementById('cpuServerNum').value) || 0;
+        const cpuCardNum = parseInt(document.getElementById('cpuCardNum').value);
+        const otherServerNum = parseInt(document.getElementById('otherServerNum').value) || 0;
+        const otherCardNum = parseInt(document.getElementById('otherCardNum').value);
+        const dacCableNumber = parseInt(document.getElementById('dacCableNumber').value) || 0;
+
+        let ports, speed, switchType, cableType, ot800, ot400, ot1600;
+
+        switch(inputSpeed) {
+            case 1:
+                ports = PORTS.HDR; speed = "HDR"; switchType = "MQM8790-HS2F";
+                cableType = "MFS1S00-H030V";
+                break;
+            case 2:
+                ports = PORTS.NDR; speed = "NDR"; switchType = "MQM9790-NS2R";
+                cableType = "MFP7E10-N030"; ot800 = "MMA4Z00-NS"; ot400 = "MMA4Z00-NS400";
+                break;
+            case 3:
+                ports = PORTS.SN5600_NDR; speed = "SN5600-NDR"; switchType = "SN5600";
+                cableType = "MFP7E10-N030"; ot800 = "MMA4Z00-NS"; ot400 = "MMA4Z00-NS400";
+                break;
+            case 4:
+                ports = PORTS.Q3; speed = "XDR"; switchType = "Q3400";
+                cableType = "MFP7E30-N030"; ot1600 = "NVIDIA 1.6T transceiver"; ot800 = "MMS8X00-NS800";
+                break;
+        }
+
+        // 计算 bisection
+        let bisection, ratioText;
+        if (RA === 2 && ports === PORTS.HDR) { bisection = 20; ratioText = "1:1"; }
+        else if (RA === 2 && ports === PORTS.NDR) { bisection = 32; ratioText = "1:1"; }
+        else if (RA === 3 && ports === PORTS.HDR) { bisection = 16; ratioText = "3:5"; }
+        else if (RA === 3 && ports === PORTS.NDR) { bisection = 20; ratioText = "1:2"; }
+        else if (ports === PORTS.SN5600_NDR) { bisection = Math.ceil(ports / RA); ratioText = "1:1"; }
+        else if (ports === PORTS.Q3) { bisection = Math.ceil(ports / RA); ratioText = "1:1"; }
+        else { bisection = 32; ratioText = "1:1"; }
+
+        const factors = [];
+        for (let i = 1; i <= bisection; i++) if (bisection % i === 0) factors.push(i);
+
+        // GPU
+        let gpuLeafs = 0, gpuNodes = 0, restGpuPorts = 0;
+        if (gpuServerNum > 0) {
+            const suNodes = gpuCardNum * bisection;
+            const su = Math.ceil((gpuServerNum * gpuCardNum) / suNodes);
+            gpuLeafs = gpuCardNum * su;
+            gpuNodes = gpuServerNum * gpuCardNum;
+            restGpuPorts = su * suNodes - gpuNodes;
+        }
+
+        // Storage
+        let storageLeafs = 0, storageNodes = 0, restStoragePorts = 0;
+        if (storageServerNum > 0) {
+            storageNodes = storageServerNum * storageCardNum;
+            storageLeafs = (storageNodes - restGpuPorts) / bisection;
+            if (storageLeafs > 0) storageLeafs = transform(storageLeafs, storageCardNum);
+            else storageLeafs = 0;
+            restStoragePorts = (gpuLeafs + storageLeafs) * bisection - (gpuNodes + storageNodes);
+        } else {
+            restStoragePorts = gpuLeafs * bisection - gpuNodes;
+        }
+
+        // CPU
+        let cpuLeafs = 0, cpuNodes = 0, restCpuPorts = 0;
+        if (cpuServerNum > 0) {
+            cpuNodes = cpuServerNum * cpuCardNum;
+            cpuLeafs = (cpuNodes - restStoragePorts) / bisection;
+            if (cpuLeafs > 0) cpuLeafs = transform(cpuLeafs, cpuCardNum);
+            else cpuLeafs = 0;
+            restCpuPorts = (gpuLeafs + storageLeafs + cpuLeafs) * bisection - (gpuNodes + storageNodes + cpuNodes);
+        } else {
+            restCpuPorts = (gpuLeafs + storageLeafs) * bisection - (gpuNodes + storageNodes);
+        }
+
+        // Other
+        let otherLeafs = 0, otherNodes = 0;
+        if (otherServerNum > 0) {
+            otherNodes = otherServerNum * otherCardNum;
+            otherLeafs = (otherNodes - restCpuPorts) / bisection;
+            if (otherLeafs > 0) otherLeafs = transform(otherLeafs, otherCardNum);
+            else otherLeafs = 0;
+        }
+
+        const serverNum = gpuServerNum + storageServerNum + cpuServerNum + otherServerNum;
+        const nodes = gpuNodes + storageNodes + cpuNodes + otherNodes;
+        const leafs = gpuLeafs + storageLeafs + cpuLeafs + otherLeafs;
+
+        let spines = Math.ceil(leafs * bisection / ports);
+        if (!factors.includes(spines)) {
+            for (const f of factors) if (f > spines) { spines = f; break; }
+        }
+
+        const spineToLeafCables = Math.floor(leafs * bisection);
+        let leafToServerCables = Math.floor(nodes);
+        const maxLeafToServerCables = leafs * (ports - bisection);
+
+        // 光模块
+        let spine2LeafOT = 0, leaf2ServerOT = 0, switchOT = 0, hcaOT = nodes;
+        let q3SpineToLeafOT = 0, q3LeafToServerOT = 0, q3OT = 0;
+
+        if (speed === "NDR" || speed === "SN5600-NDR") {
+            spine2LeafOT = Math.ceil(leafs * bisection * 2 / 2);
+            leaf2ServerOT = Math.ceil(nodes / 2);
+            switchOT = spine2LeafOT + leaf2ServerOT;
+        } else if (speed === "XDR") {
+            q3SpineToLeafOT = Math.ceil(leafs * bisection * 2 / 2);
+            q3LeafToServerOT = Math.ceil(nodes / 2);
+            q3OT = q3SpineToLeafOT + q3LeafToServerOT;
+        }
+
+        if (dacCableNumber > 0) {
+            leafToServerCables -= dacCableNumber * 2;
+            hcaOT -= dacCableNumber * 2;
+            if (speed === "NDR" || speed === "SN5600-NDR") {
+                leaf2ServerOT -= dacCableNumber;
+                switchOT = spine2LeafOT + leaf2ServerOT;
+            } else if (speed === "XDR") {
+                q3LeafToServerOT -= dacCableNumber;
+                q3OT = q3SpineToLeafOT + q3LeafToServerOT;
+            }
+        }
+
+        calcResults = {
+            speed, ratioText, switchType, cableType, ot800, ot400, ot1600,
+            serverNum, nodes, spines, leafs,
+            gpuServerNum, gpuNodes, gpuLeafs,
+            storageServerNum, storageNodes, storageLeafs,
+            cpuServerNum, cpuNodes, cpuLeafs,
+            otherServerNum, otherNodes, otherLeafs,
+            spineToLeafCables, leafToServerCables, maxLeafToServerCables,
+            allCables: spineToLeafCables + leafToServerCables,
+            spine2LeafOT, leaf2ServerOT, switchOT, hcaOT,
+            q3SpineToLeafOT, q3LeafToServerOT, q3OT
+        };
+
+        updateUI();
     }
 
-    function topoCalculateAndDraw() {
-      const switchType = document.getElementById('topoSwitchType').value;
-      const networkCardType = document.getElementById('topoNetworkCardType').value;
-      const numServers = parseInt(document.getElementById('topoNumServers').value);
-      const numNetworkCardsPerServer = parseInt(document.getElementById('topoNumNetworkCardsPerServer').value);
-      const spineLeafDistance = parseInt(document.getElementById('topoSpineLeafDistance').value);
-      const leafNodeDistance = parseInt(document.getElementById('topoLeafNodeDistance').value);
-      const serversPerRow = parseInt(document.getElementById('topoServersPerRow').value);
-      const diagramHeight = parseInt(document.getElementById('topoDiagramHeight').value);
-      const nodeRowSpacing = parseInt(document.getElementById('topoNodeRowSpacing').value);
+    function updateUI() {
+        const r = calcResults;
 
-      let switchPorts, leafUplinks, serversPerSU, possibleSpineCounts;
+        // 概览
+        document.getElementById('statServers').textContent = r.serverNum;
+        document.getElementById('statNodes').textContent = r.nodes;
+        document.getElementById('statSpines').textContent = r.spines;
+        document.getElementById('statLeafs').textContent = r.leafs;
+        document.getElementById('statCables').textContent = r.allCables;
+        document.getElementById('statSpeed').textContent = r.speed;
 
-      switch(switchType) {
-        case 'QM8700':
-          switchPorts = 40;
-          leafUplinks = 20;
-          serversPerSU = 20;
-          possibleSpineCounts = [1, 2, 4, 5, 10, 20];
-          break;
-        case 'QM9700':
-          switchPorts = 64;
-          leafUplinks = 32;
-          serversPerSU = 32;
-          possibleSpineCounts = [1, 2, 4, 8, 16, 32];
-          break;
-        case 'Q3400':
-          switchPorts = 144;
-          leafUplinks = 72;
-          serversPerSU = 72;
-          possibleSpineCounts = [1, 2, 3, 4, 6, 8, 9, 12, 18, 24, 36, 72];
-          break;
-        case 'SN5600':
-          switchPorts = 128;
-          leafUplinks = 64;
-          serversPerSU = 64;
-          possibleSpineCounts = [1, 2, 4, 8, 16, 32, 64];
-          break;
-      }
+        // 详细
+        document.getElementById('gpuServerResult').textContent = r.gpuServerNum;
+        document.getElementById('gpuNodesResult').textContent = r.gpuNodes;
+        document.getElementById('gpuLeafsResult').textContent = r.gpuLeafs;
+        document.getElementById('storageServerResult').textContent = r.storageServerNum;
+        document.getElementById('storageNodesResult').textContent = r.storageNodes;
+        document.getElementById('storageLeafsResult').textContent = r.storageLeafs;
+        document.getElementById('cpuServerResult').textContent = r.cpuServerNum;
+        document.getElementById('cpuNodesResult').textContent = r.cpuNodes;
+        document.getElementById('cpuLeafsResult').textContent = r.cpuLeafs;
+        document.getElementById('otherServerResult').textContent = r.otherServerNum;
+        document.getElementById('otherNodesResult').textContent = r.otherNodes;
+        document.getElementById('otherLeafsResult').textContent = r.otherLeafs;
+        document.getElementById('totalServerResult').textContent = r.serverNum;
+        document.getElementById('totalNodesResult').textContent = r.nodes;
+        document.getElementById('totalLeafsResult').textContent = r.leafs;
 
-      const numSU = Math.ceil(numServers / serversPerSU);
-      const numLeafSwitchesPerSU = numNetworkCardsPerServer;
-      const numLeafSwitches = numSU * numLeafSwitchesPerSU;
-      const numSpineSwitches = possibleSpineCounts.find(count => count >= numLeafSwitches * leafUplinks / switchPorts);
-      const totalPorts = numLeafSwitches * switchPorts + numSpineSwitches * switchPorts;
-      const totalCables = numServers * numNetworkCardsPerServer + numLeafSwitches * numSpineSwitches;
-      const cablesPerLineLeafToSpine = Math.floor(leafUplinks / numSpineSwitches);
-      const cablesPerLineLeafToNode = 1;
+        document.getElementById('spineLeafCables').textContent = r.spineToLeafCables;
+        document.getElementById('leafServerCables').textContent = r.leafToServerCables;
+        document.getElementById('maxLeafServerCables').textContent = r.maxLeafToServerCables;
+        document.getElementById('totalCables').textContent = r.allCables;
 
-      const results = `
-        <p><strong>Switch Type:</strong> ${switchType}</p>
-        <p><strong>Network Card Type:</strong> ${networkCardType}</p>
-        <p><strong>Number of Scalable Units (SUs):</strong> ${numSU}</p>
-        <p><strong>Number of Spine Switches:</strong> ${numSpineSwitches}</p>
-        <p><strong>Number of Leaf Switches:</strong> ${numLeafSwitches}</p>
-        <p><strong>Total number of servers:</strong> ${numServers}</p>
-        <p><strong>Total number of switch ports:</strong> ${totalPorts}</p>
-        <p><strong>Total number of cables:</strong> ${totalCables}</p>
-        <p><strong>Cables per line in diagram:</strong></p>
-        <ul>
-          <li>Leaf to Spine: ${cablesPerLineLeafToSpine}</li>
-          <li>Leaf to Node: ${cablesPerLineLeafToNode}</li>
-        </ul>
-      `;
-      
-      document.getElementById('topo-results').innerHTML = results;
-      
-      drawTopology(numSU, numSpineSwitches, numLeafSwitches, numServers, numNetworkCardsPerServer, serversPerSU, spineLeafDistance, leafNodeDistance, serversPerRow, diagramHeight, nodeRowSpacing);
-    }
-
-    function drawTopology(numSU, numSpine, numLeaf, numServers, numNetworkCardsPerServer, serversPerSU, spineLeafDistance, leafNodeDistance, serversPerRow, diagramHeight, nodeRowSpacing) {
-      // Adjust width based on whether we're showing all elements or just some
-      let displayWidth;
-      if (numSU <= 2) {
-        // Full width for all elements
-        displayWidth = Math.max(Math.min(window.innerWidth - 40, 1200), numLeaf * 80);
-      } else {
-        // Reduced width for simplified view - no need for full width
-        displayWidth = Math.max(Math.min(window.innerWidth - 40, 1200), 800);
-      }
-      
-      const width = displayWidth;
-      const height = diagramHeight;
-      const spineY = 50;
-      const leafY = spineY + spineLeafDistance;
-      const serverY = leafY + leafNodeDistance;
-      
-      d3.select("#topo-diagram").selectAll("*").remove();
-      const svg = d3.select("#topo-diagram")
-        .append("svg")
-        .attr("viewBox", `0 0 ${width} ${height}`)
-        .attr("width", width)
-        .attr("height", height);
-
-      const connectionsGroup = svg.append("g").attr("class", "connections");
-      const nodesGroup = svg.append("g").attr("class", "nodes");
-      
-      // Determine which Spine switches to display based on the total number
-      let spinesToDisplay = [];
-      if (numSpine <= 8) {
-        // If 8 or fewer spines, display all of them
-        spinesToDisplay = Array.from({ length: numSpine }, (_, i) => i);
-      } else {
-        // If more than 8 spines, display first 4 and last 4
-        for (let i = 0; i < 4; i++) {
-          spinesToDisplay.push(i);              // First 4
+        // 光模块
+        let otHtml = '';
+        if (r.speed === "NDR" || r.speed === "SN5600-NDR") {
+            otHtml = `
+                <div class="info-row"><span>Spine-Leaf 800G 双端口</span><span>${r.spine2LeafOT}</span></div>
+                <div class="info-row"><span>Leaf-Server 800G 双端口</span><span>${r.leaf2ServerOT}</span></div>
+                <div class="info-row"><span>交换机侧总数</span><span>${r.switchOT}</span></div>
+                <div class="info-row"><span>HCA 400G 单端口</span><span>${r.hcaOT}</span></div>`;
+        } else if (r.speed === "XDR") {
+            otHtml = `
+                <div class="info-row"><span>Spine-Leaf 1.6T 双端口</span><span>${r.q3SpineToLeafOT}</span></div>
+                <div class="info-row"><span>Leaf-Server 1.6T 双端口</span><span>${r.q3LeafToServerOT}</span></div>
+                <div class="info-row"><span>交换机侧总数</span><span>${r.q3OT}</span></div>
+                <div class="info-row"><span>HCA 800G 单端口</span><span>${r.hcaOT}</span></div>`;
+        } else if (r.speed === "HDR") {
+            otHtml = `<div class="info-row"><span>HDR AOC 线缆</span><span>${r.allCables}</span></div>`;
         }
-        for (let i = numSpine - 4; i < numSpine; i++) {
-          spinesToDisplay.push(i);              // Last 4
-        }
-      }
-      
-      // Function to calculate X position of spine switches
-      const spineX = d => {
-        if (numSpine <= 8) {
-          // Original calculation for 8 or fewer spines
-          return (width / (numSpine + 1)) * (d + 1);
-        } else {
-          // Modified calculation for displayed spines when more than 8
-          if (d < 4) {
-            // First 4 spines use left 45% of width
-            return width * (0.1 + 0.35 * (d / 4));
-          } else {
-            // Last 4 spines use right 45% of width
-            return width * (0.6 + 0.35 * ((d - (numSpine - 4)) / 4));
-          }
-        }
-      };
-      
-      // Create spine switch rectangles for displayed spines only
-      spinesToDisplay.forEach(spineIndex => {
-        nodesGroup.append("rect")
-          .attr("class", "spine")
-          .attr("x", spineX(spineIndex) - 30)
-          .attr("y", spineY)
-          .attr("width", 60)
-          .attr("height", 30)
-          .attr("fill", "#3498db");
-          
-        nodesGroup.append("text")
-          .attr("class", "spine-label")
-          .attr("x", spineX(spineIndex))
-          .attr("y", spineY + 15)
-          .attr("text-anchor", "middle")
-          .attr("dominant-baseline", "middle")
-          .attr("font-size", "10px")
-          .attr("fill", "white")
-          .text(`Spine ${spineIndex + 1}`);
-      });
-      
-      // Add ellipsis for spine switches if we're not showing all
-      if (numSpine > 8) {
-        nodesGroup.append("text")
-          .attr("x", width / 2)
-          .attr("y", spineY + 15)
-          .attr("text-anchor", "middle")
-          .attr("font-size", "14px")
-          .attr("font-weight", "bold")
-          .attr("fill", "#3498db")
-          .text("...");
-      }
-      
-      // Determine which Leaf switches to display based on the total number and SUs
-      let leavesToDisplay = [];
-      if (numSU <= 2 || numLeaf <= 8) {
-        // If 2 or fewer SUs or 8 or fewer leaves, display all leaves
-        leavesToDisplay = Array.from({ length: numLeaf }, (_, i) => i);
-      } else {
-        // If 3+ SUs and 9+ leaves, display only some leaves
-        const leavesPerSU = numNetworkCardsPerServer;
-        
-        // Show leaves for first SU
-        for (let i = 0; i < leavesPerSU; i++) {
-          leavesToDisplay.push(i);
-        }
-        
-        // Show leaves for last SU
-        const lastSUStartIndex = numLeaf - leavesPerSU;
-        for (let i = lastSUStartIndex; i < numLeaf; i++) {
-          // Only add if not already added (avoid duplicates in case of few SUs)
-          if (!leavesToDisplay.includes(i)) {
-            leavesToDisplay.push(i);
-          }
-        }
-        
-        // Sort to maintain order
-        leavesToDisplay.sort((a, b) => a - b);
-      }
-      
-      // Function to calculate X position of leaf switches - FIXED to prevent overlap
-      const leafX = d => {
-        if (numSU <= 2 || numLeaf <= 8) {
-          // Calculate position for all leaves when few SUs
-          return (width / (numLeaf + 1)) * (d + 1);
-        } else {
-          // We need to fix the spacing for leaves
-          const leavesPerSide = leavesToDisplay.length / 2;
-          
-          // Figure out if this is a first half or second half leaf
-          if (d < numNetworkCardsPerServer) {
-            // First SU leaves
-            const index = d;
-            // Position in left 40% of screen with proper spacing
-            return width * (0.01 + 0.5 * (index + 1) / (leavesPerSide + 1));
-          } else {
-            // Last SU leaves
-            const index = d - (numLeaf - numNetworkCardsPerServer);
-            // Position in right 40% of screen with proper spacing
-            return width * (0.5 + 0.5 * (index + 1) / (leavesPerSide + 1));
-          }
-        }
-      };
-      
-      // Create leaf switch rectangles for displayed leaves only
-      leavesToDisplay.forEach(leafIndex => {
-        nodesGroup.append("rect")
-          .attr("class", "leaf")
-          .attr("x", leafX(leafIndex) - 30)
-          .attr("y", leafY)
-          .attr("width", 60)
-          .attr("height", 30)
-          .attr("fill", "#3498db");
-          
-        nodesGroup.append("text")
-          .attr("class", "leaf-label")
-          .attr("x", leafX(leafIndex))
-          .attr("y", leafY + 15)
-          .attr("text-anchor", "middle")
-          .attr("dominant-baseline", "middle")
-          .attr("font-size", "10px")
-          .attr("fill", "white")
-          .text(`Leaf ${leafIndex + 1}`);
-      });
-      
-      // Add ellipsis for leaf switches if we're not showing all
-      if (numSU > 2 && numLeaf > 8) {
-        nodesGroup.append("text")
-          .attr("x", width / 2)
-          .attr("y", leafY + 15)
-          .attr("text-anchor", "middle")
-          .attr("font-size", "14px")
-          .attr("font-weight", "bold")
-          .attr("fill", "#3498db")
-          .text("...");
-      }
-      
-      // Create curved connections between displayed spine and leaf switches
-      leavesToDisplay.forEach(l => {
-        spinesToDisplay.forEach(s => {
-          const startX = spineX(s);
-          const startY = spineY + 30;
-          const endX = leafX(l);
-          const endY = leafY;
-          const midY = (startY + endY) / 2;
+        document.getElementById('otInfo').innerHTML = otHtml;
 
-          connectionsGroup.append("path")
-            .attr("d", `M ${startX} ${startY} C ${startX} ${midY}, ${endX} ${midY}, ${endX} ${endY}`)
-            .attr("fill", "none")
-            .attr("stroke", "#34495e")
-            .attr("stroke-width", 0.5);
+        // 产品清单
+        const gpuType = document.getElementById('gpuType').value || 'H800';
+        let summary = [];
+        if (r.gpuServerNum > 0) summary.push(`${r.gpuServerNum}台 ${gpuType} GPU`);
+        if (r.storageServerNum > 0) summary.push(`${r.storageServerNum}台存储`);
+        if (r.cpuServerNum > 0) summary.push(`${r.cpuServerNum}台CPU`);
+        if (r.otherServerNum > 0) summary.push(`${r.otherServerNum}台其他`);
+        const summaryText = (summary.join('、') || '服务器') + ` ${r.speed}网络配置清单`;
+        document.getElementById('productSummary').textContent = summaryText;
+
+        const tbody = document.querySelector('#productTable tbody');
+        tbody.innerHTML = '';
+        const products = r.speed === "HDR" ? hdrProducts : ndrProducts;
+
+        const items = [
+            { model: r.switchType, num: r.spines, note: 'Spine 交换机' },
+            { model: r.switchType, num: r.leafs, note: 'Leaf 交换机' },
+            { model: r.cableType, num: r.spineToLeafCables, note: 'Spine-Leaf 线缆' },
+            { model: r.cableType, num: r.leafToServerCables, note: 'Leaf-Server 线缆' }
+        ];
+
+        if (r.speed === "NDR" || r.speed === "SN5600-NDR") {
+            items.push({ model: r.ot800, num: r.spine2LeafOT, note: 'Spine-Leaf 800G' });
+            items.push({ model: r.ot800, num: r.leaf2ServerOT, note: 'Leaf-Server 800G' });
+            items.push({ model: r.ot400, num: r.hcaOT, note: 'HCA 400G' });
+        } else if (r.speed === "XDR") {
+            items.push({ model: r.ot1600, num: r.q3SpineToLeafOT, note: 'Spine-Leaf 1.6T' });
+            items.push({ model: r.ot1600, num: r.q3LeafToServerOT, note: 'Leaf-Server 1.6T' });
+            items.push({ model: r.ot800, num: r.hcaOT, note: 'HCA 800G' });
+        }
+
+        // 保存产品数据用于导出
+        productData = [];
+
+        items.forEach(item => {
+            if (item.num > 0) {
+                const prod = products.find(p => p.model === item.model);
+                if (prod) {
+                    const row = tbody.insertRow();
+                    row.innerHTML = `<td>${prod.name}</td><td>${prod.model}</td><td>${prod.desc}</td><td>${item.num}</td><td>${item.note}</td>`;
+                    productData.push({
+                        '产品名称': prod.name,
+                        '型号': prod.model,
+                        '描述': prod.desc,
+                        '数量': item.num,
+                        '备注': item.note
+                    });
+                }
+            }
         });
-      });
-      
-      // Constants for server nodes
-      const serverWidth = 50;
-      const serverHeight = 20;
-      
-      // Adjust server spacing based on the number of servers in a row and available width
-      let serverSpacing;
-      if (numSU <= 2) {
-        // For normal view with all SUs
-        serverSpacing = Math.min(60, (width / numSU) / (serversPerRow + 1));
-      } else {
-        // For simplified view with just first and last SU
-        // Use more space since we're only showing 2 SUs instead of all
-        serverSpacing = Math.min(60, (width / 2) / (serversPerRow + 1));
-      }
-      
-      const totalRows = Math.ceil(Math.max(...Array.from({ length: numSU }, (_, i) => 
-        Math.min(serversPerSU, numServers - i * serversPerSU)
-      )) / serversPerRow);
-      
-      const totalServerHeight = (totalRows - 1) * nodeRowSpacing;
-      const availableHeight = height - serverY - 60;
-      const verticalScale = Math.min(1, availableHeight / totalServerHeight);
-      
-      // Determine which SUs to display based on the total number
-      let susToDisplay = [];
-      if (numSU <= 2) {
-        // If 2 or fewer SUs, display all of them
-        susToDisplay = Array.from({ length: numSU }, (_, i) => i);
-      } else {
-        // If 3 or more SUs, display only the first and last SU
-        susToDisplay = [0, numSU - 1];
-      }
-      
-      let lastNodeY = 0;
-      
-      // Only render the servers for the SUs we want to display
-      susToDisplay.forEach(su => {
-        const serversInThisSU = Math.min(serversPerSU, numServers - su * serversPerSU);
-        
-        for (let s = 0; s < serversInThisSU; s++) {
-          const row = Math.floor(s / serversPerRow);
-          const col = s % serversPerRow;
-          
-          // Adjust x-coordinate calculation for when only showing first and last SU
-          let x;
-          if (numSU <= 2) {
-            // For 2 or fewer SUs - evenly distributed
-            x = width * ((su + 0.5) / numSU) + (col - serversPerRow / 2 + 0.5) * serverSpacing;
-          } else {
-            // For first and last SU when 3 or more SUs
-            // Place at 1/4 and 3/4 of width with proper spacing
-            const suPosition = su === 0 ? 0.25 : 0.75;
-            x = width * suPosition + (col - serversPerRow / 2 + 0.5) * serverSpacing;
-          }
-          
-          const y = serverY + row * nodeRowSpacing * verticalScale;
-          lastNodeY = Math.max(lastNodeY, y);
-          
-          // Calculate a unique ID for the node
-          const nodeId = su * serversPerSU + s + 1;
-          
-          nodesGroup.append("rect")
-            .attr("class", "server")
-            .attr("x", x - serverWidth / 2)
-            .attr("y", y - serverHeight / 2)
-            .attr("width", serverWidth)
-            .attr("height", serverHeight)
-            .attr("rx", 5)
-            .attr("ry", 5)
-            .attr("fill", "#2ecc71");
-          
-          nodesGroup.append("text")
-            .attr("class", "server-label")
-            .attr("x", x)
-            .attr("y", y)
-            .attr("text-anchor", "middle")
-            .attr("dominant-baseline", "middle")
-            .attr("font-size", "8px")
-            .attr("fill", "white")
-            .text(`Node ${nodeId}`);
-          
-          // Create curved connections between leaf switches and servers
-          // Only create connections to visible leaf switches
-          if (leavesToDisplay.length > 0) {
-            // Determine which leaf switches connect to this server
-            let connectedLeaves = [];
-            
-            if (numSU <= 2 || numLeaf <= 8) {
-              // When showing all leaves, connect to the correct ones for this SU
-              for (let nc = 0; nc < numNetworkCardsPerServer; nc++) {
-                const leafIndex = su * numNetworkCardsPerServer + nc;
-                if (leafIndex < numLeaf) {
-                  connectedLeaves.push(leafIndex);
-                }
-              }
-            } else {
-              // When showing only some leaves, make logical connections:
-              if (su === 0) {
-                // First SU servers connect to first SU leaves (first half of leavesToDisplay)
-                connectedLeaves = leavesToDisplay.filter(l => l < numNetworkCardsPerServer);
-              } else if (su === numSU - 1) {
-                // Last SU servers connect to last SU leaves (second half of leavesToDisplay)
-                connectedLeaves = leavesToDisplay.filter(l => l >= numLeaf - numNetworkCardsPerServer);
-              }
-            }
-            
-            // Create connections
-            connectedLeaves.forEach(leafIndex => {
-              if (leavesToDisplay.includes(leafIndex)) {
-                const startX = leafX(leafIndex);
-                const startY = leafY + 30;
-                const endX = x;
-                const endY = y - serverHeight / 2;
-                const midY = (startY + endY) / 2;
 
-                connectionsGroup.append("path")
-                  .attr("d", `M ${startX} ${startY} C ${startX} ${midY}, ${endX} ${midY}, ${endX} ${endY}`)
-                  .attr("fill", "none")
-                  .attr("stroke", "#bdc3c7")
-                  .attr("stroke-width", 0.5);
-              }
-            });
-          }
-        }
-      });
-      
-      // Add title labels
-      nodesGroup.append("text")
-        .attr("x", width / 2)
-        .attr("y", 30)
-        .attr("text-anchor", "middle")
-        .attr("font-size", "14px")
-        .attr("font-weight", "bold")
-        .text("Spine Switches");
-      
-      nodesGroup.append("text")
-        .attr("x", width / 2)
-        .attr("y", leafY - 20)
-        .attr("text-anchor", "middle")
-        .attr("font-size", "14px")
-        .attr("font-weight", "bold")
-        .text("Leaf Switches");
-      
-      nodesGroup.append("text")
-        .attr("x", width / 2)
-        .attr("y", serverY - 20)
-        .attr("text-anchor", "middle")
-        .attr("font-size", "14px")
-        .attr("font-weight", "bold")
-        .text("Servers");
-      
-      // Draw SU boundary boxes
-      susToDisplay.forEach(su => {
-        // Calculate x position based on whether we're showing all SUs or just first/last
-        let xPosition, boxWidth;
-        
-        if (numSU <= 2) {
-          // Original calculation for 2 or fewer SUs
-          xPosition = (width / numSU) * su;
-          boxWidth = width / numSU;
-        } else {
-          // Modified calculation for first and last SU when 3 or more SUs
-          if (su === 0) {
-            xPosition = 0;
-            boxWidth = width / 2;
-          } else {
-            xPosition = width / 2;
-            boxWidth = width / 2;
-          }
-        }
-        
-        connectionsGroup.append("rect")
-          .attr("x", xPosition)
-          .attr("y", 10)
-          .attr("width", boxWidth)
-          .attr("height", lastNodeY + 60)
-          .attr("fill", "none")
-          .attr("stroke", "#95a5a6")
-          .attr("stroke-width", 2)
-          .attr("stroke-dasharray", "5,5");
-        
-        // Only add ellipsis text if this is the first SU and we have 3+ SUs
-        // and it hasn't been added elsewhere already
-        if (numSU > 2 && su === 0 && !(numLeaf > 8)) { 
-          // Only add ellipsis here if we don't already have one in the leaves
-          nodesGroup.append("text")
-            .attr("x", width / 2)
-            .attr("y", lastNodeY + 40)
-            .attr("text-anchor", "middle")
-            .attr("font-size", "16px")
-            .attr("font-weight", "bold")
-            .text("...");
-        }
-        
-        let suLabel = `SU${su + 1}`;
-        if (numSU > 2 && su === numSU - 1) {
-          suLabel = `SU${numSU}`;  // Make sure to show the correct SU number for the last SU
-        }
-        
-        let labelX;
-        if (numSU <= 2) {
-          labelX = xPosition + boxWidth / 2;
-        } else {
-          labelX = su === 0 ? width / 4 : width * 3/4;
-        }
-        
-        nodesGroup.append("text")
-          .attr("x", labelX)
-          .attr("y", lastNodeY + 40)
-          .attr("text-anchor", "middle")
-          .attr("font-size", "14px")
-          .attr("font-weight", "bold")
-          .text(suLabel);
-      });
+        // 启用下载按钮
+        document.getElementById('downloadExcel').disabled = productData.length === 0;
     }
-    
-    /************************* 微型拓扑相关函数 *************************/
-    
-    // 初始化微型拓扑功能
-    function miniTopologyInit() {
-        // 初始化微型拓扑选项卡
-        updateMiniInterSwitchLinks();
-        miniTopologyCalculateAndDraw();
-    }
-    
-    // 更新微型拓扑的交换机间连接下拉框状态
-    function updateMiniInterSwitchLinks() {
-        const numSwitches = parseInt(document.getElementById('numMiniSwitches').value);
-        const interSwitchLinksSelect = document.getElementById('interSwitchLinks');
-        
-        if (numSwitches === 1) {
-            interSwitchLinksSelect.disabled = true;
-        } else {
-            interSwitchLinksSelect.disabled = false;
-        }
-        
-        miniTopologyCalculateAndDraw();
-    }
-    
-    // 计算并绘制微型拓扑图
-    function miniTopologyCalculateAndDraw() {
-        const numServers = parseInt(document.getElementById('numMiniServers').value);
-        const numNetworkCardsPerServer = parseInt(document.getElementById('numMiniNetworkCardsPerServer').value);
-        const numSwitches = parseInt(document.getElementById('numMiniSwitches').value);
-        const interSwitchLinks = parseInt(document.getElementById('interSwitchLinks').value);
-        const switchServerDistance = parseInt(document.getElementById('switchServerDistance').value);
-        const diagramHeight = parseInt(document.getElementById('miniDiagramHeight').value);
-        const serverSpacing = parseInt(document.getElementById('serverSpacing').value);
-        const switchSpacing = parseInt(document.getElementById('switchSpacing').value);
 
-        // 计算网络统计信息
-        const totalNetworkCards = numServers * numNetworkCardsPerServer;
-        const totalSwitchPorts = numSwitches * 64; // 假设每个交换机有64个端口
-        const interSwitchPortsUsed = numSwitches === 2 ? interSwitchLinks * 2 : 0; // 每个链接在两个交换机上各使用一个端口
-        const availableSwitchPorts = totalSwitchPorts - interSwitchPortsUsed;
-        
-        // 检查配置是否有效
-        const isValid = totalNetworkCards <= availableSwitchPorts;
-        
-        // 更新结果面板
-        const results = `
-            <p><strong>Network Configuration:</strong></p>
-            <p><strong>Servers:</strong> ${numServers}</p>
-            <p><strong>Network Cards per Server:</strong> ${numNetworkCardsPerServer}</p>
-            <p><strong>Switches:</strong> ${numSwitches} x 64-port</p>
-            ${numSwitches === 2 ? `<p><strong>Inter-Switch Links:</strong> ${interSwitchLinks}</p>` : ''}
-            <p><strong>Total Network Cards:</strong> ${totalNetworkCards}</p>
-            <p><strong>Total Switch Ports:</strong> ${totalSwitchPorts}</p>
-            ${numSwitches === 2 ? `<p><strong>Inter-Switch Ports Used:</strong> ${interSwitchPortsUsed}</p>` : ''}
-            <p><strong>Available Switch Ports:</strong> ${availableSwitchPorts}</p>
-            <p><strong>Configuration Status:</strong> ${isValid ? '<span style="color: green;">Valid</span>' : '<span style="color: red;">Invalid - Too many network cards for available switch ports</span>'}</p>
-        `;
-        
-        document.getElementById('mini-results').innerHTML = results;
-        
-        if (isValid) {
-            drawMiniTopology(numServers, numNetworkCardsPerServer, numSwitches, interSwitchLinks, switchServerDistance, diagramHeight, serverSpacing, switchSpacing);
+    function downloadExcel() {
+        if (productData.length === 0) {
+            alert('请先计算拓扑');
+            return;
         }
-    }
-    
-    // 绘制微型拓扑图
-    function drawMiniTopology(numServers, numNetworkCardsPerServer, numSwitches, interSwitchLinks, switchServerDistance, diagramHeight, serverSpacing, switchSpacing) {
-        // 清除之前的图表
-        d3.select("#mini-diagram").selectAll("*").remove();
-        
-        // 确定图表尺寸
-        const displayWidth = Math.max(Math.min(window.innerWidth - 40, 1200), numServers * serverSpacing);
-        const width = displayWidth;
-        const height = diagramHeight;
-        
-        // 创建SVG
-        const svg = d3.select("#mini-diagram")
-            .append("svg")
-            .attr("viewBox", `0 0 ${width} ${height}`)
-            .attr("width", width)
-            .attr("height", height);
-        
-        // 创建连接和节点的图层
-        const connectionsGroup = svg.append("g").attr("class", "connections");
-        const nodesGroup = svg.append("g").attr("class", "nodes");
-        
-        // 样式常量
-        const switchWidth = 80;
-        const switchHeight = 40;
-        const serverWidth = 60;
-        const serverHeight = 30;
-        
-        // Y位置
-        const switchY = 80;
-        const serverY = switchY + switchServerDistance;
-        
-        // 绘制交换机
-        const switchPositions = [];
-        
-        for (let i = 0; i < numSwitches; i++) {
-            // 根据交换机数量计算X位置
-            let switchX;
-            if (numSwitches === 1) {
-                switchX = width / 2;
-            } else {
-                // 两个交换机，使用交换机间距确定位置
-                switchX = (width / 2) + (i === 0 ? -switchSpacing/2 : switchSpacing/2);
-            }
-            
-            switchPositions.push(switchX);
-            
-            // 绘制交换机
-            nodesGroup.append("rect")
-                .attr("class", "switch")
-                .attr("x", switchX - switchWidth / 2)
-                .attr("y", switchY - switchHeight / 2)
-                .attr("width", switchWidth)
-                .attr("height", switchHeight)
-                .attr("rx", 5)
-                .attr("ry", 5)
-                .attr("fill", "#3498db");
-                
-            nodesGroup.append("text")
-                .attr("class", "switch-label")
-                .attr("x", switchX)
-                .attr("y", switchY)
-                .attr("text-anchor", "middle")
-                .attr("dominant-baseline", "middle")
-                .attr("font-size", "12px")
-                .attr("fill", "white")
-                .text(`Switch ${i + 1}`);
-        }
-        
-        // 如果有两个交换机，绘制交换机间的连接
-        if (numSwitches === 2) {
-            const switch1X = switchPositions[0];
-            const switch2X = switchPositions[1];
-            
-            for (let i = 0; i < interSwitchLinks; i++) {
-                // 计算多条链接的偏移量
-                const offset = interSwitchLinks > 1 
-                    ? (i - (interSwitchLinks - 1) / 2) * 4 
-                    : 0;
-                
-                connectionsGroup.append("path")
-                    .attr("d", `M ${switch1X + switchWidth/4} ${switchY + offset} L ${switch2X - switchWidth/4} ${switchY + offset}`)
-                    .attr("stroke", "#2c3e50")
-                    .attr("stroke-width", 1.5)
-                    .attr("fill", "none");
-            }
-            
-            // 添加交换机连接标签
-            nodesGroup.append("text")
-                .attr("x", (switch1X + switch2X) / 2)
-                .attr("y", switchY - 20)
-                .attr("text-anchor", "middle")
-                .attr("font-size", "10px")
-                .attr("fill", "#2c3e50")
-                .text(`${interSwitchLinks} Links`);
-        }
-        
-        // 绘制服务器
-        const serverPositions = [];
-        
-        for (let i = 0; i < numServers; i++) {
-            // 计算服务器位置
-            // 如果服务器数量为奇数，居中排列，否则均匀分布
-            let serverX;
-            if (numServers % 2 === 1) {
-                // 奇数数量的服务器
-                const middleIndex = Math.floor(numServers / 2);
-                const offset = i - middleIndex;
-                serverX = width / 2 + offset * serverSpacing;
-            } else {
-                // 偶数数量的服务器
-                const offset = i - (numServers / 2) + 0.5;
-                serverX = width / 2 + offset * serverSpacing;
-            }
-            
-            serverPositions.push(serverX);
-            
-            // 绘制服务器
-            nodesGroup.append("rect")
-                .attr("class", "server")
-                .attr("x", serverX - serverWidth / 2)
-                .attr("y", serverY - serverHeight / 2)
-                .attr("width", serverWidth)
-                .attr("height", serverHeight)
-                .attr("rx", 5)
-                .attr("ry", 5)
-                .attr("fill", "#2ecc71");
-                
-            nodesGroup.append("text")
-                .attr("class", "server-label")
-                .attr("x", serverX)
-                .attr("y", serverY)
-                .attr("text-anchor", "middle")
-                .attr("dominant-baseline", "middle")
-                .attr("font-size", "10px")
-                .attr("fill", "white")
-                .text(`Server ${i + 1}`);
-            
-            // 添加网卡指示器
-            for (let nc = 0; nc < numNetworkCardsPerServer; nc++) {
-                // 将网卡指示器放在每个服务器的顶部
-                const ncX = serverX - serverWidth/2 + serverWidth * (nc + 1) / (numNetworkCardsPerServer + 1);
-                const ncY = serverY - serverHeight/2;
-                
-                nodesGroup.append("circle")
-                    .attr("cx", ncX)
-                    .attr("cy", ncY)
-                    .attr("r", 3)
-                    .attr("fill", "white");
-            }
-        }
-        
-        // 绘制服务器与交换机之间的连接
-        for (let s = 0; s < numServers; s++) {
-            const serverX = serverPositions[s];
-            
-            for (let nc = 0; nc < numNetworkCardsPerServer; nc++) {
-                // 计算连接到哪个交换机
-                let switchIndex = 0;
-                
-                if (numSwitches === 2) {
-                    // 在交换机之间交替连接
-                    switchIndex = nc % 2;
-                }
-                
-                const switchX = switchPositions[switchIndex];
-                
-                // 计算连接点
-                const ncX = serverX - serverWidth/2 + serverWidth * (nc + 1) / (numNetworkCardsPerServer + 1);
-                const ncY = serverY - serverHeight/2;
-                
-                // 创建曲线连接
-                const midY = (switchY + ncY) / 2;
-                
-                connectionsGroup.append("path")
-                    .attr("d", `M ${switchX} ${switchY + switchHeight/2} C ${switchX} ${midY}, ${ncX} ${midY}, ${ncX} ${ncY}`)
-                    .attr("fill", "none")
-                    .attr("stroke", "#95a5a6")
-                    .attr("stroke-width", 1);
-            }
-        }
-        
-        // 添加标题标签
-        nodesGroup.append("text")
-            .attr("x", width / 2)
-            .attr("y", 30)
-            .attr("text-anchor", "middle")
-            .attr("font-size", "16px")
-            .attr("font-weight", "bold")
-            .text("Small-Scale InfiniBand Network Topology");
-            
-        nodesGroup.append("text")
-            .attr("x", width / 2)
-            .attr("y", switchY - 30)
-            .attr("text-anchor", "middle")
-            .attr("font-size", "14px")
-            .attr("font-weight", "bold")
-            .text("Switches");
-            
-        nodesGroup.append("text")
-            .attr("x", width / 2)
-            .attr("y", serverY + 40)
-            .attr("text-anchor", "middle")
-            .attr("font-size", "14px")
-            .attr("font-weight", "bold")
-            .text("Servers");
+
+        const r = calcResults;
+        const gpuType = document.getElementById('gpuType').value || 'H800';
+
+        // 创建工作簿
+        const wb = XLSX.utils.book_new();
+
+        // 配置清单表
+        const wsData = [
+            ['产品名称', '型号', '描述', '数量', '备注']
+        ];
+
+        // 添加产品数据
+        productData.forEach(item => {
+            wsData.push([item['产品名称'], item['型号'], item['描述'], item['数量'], item['备注']]);
+        });
+
+        const ws = XLSX.utils.aoa_to_sheet(wsData);
+
+        // 设置列宽
+        ws['!cols'] = [
+            { wch: 18 },
+            { wch: 25 },
+            { wch: 45 },
+            { wch: 8 },
+            { wch: 18 }
+        ];
+
+        XLSX.utils.book_append_sheet(wb, ws, '配置清单');
+
+        // 生成文件名
+        let filename = `IB网络配置清单_${r.speed}`;
+        if (r.gpuServerNum > 0) filename += `_${r.gpuServerNum}台${gpuType}`;
+        filename += `_${new Date().toISOString().slice(0,10)}.xlsx`;
+
+        // 下载文件
+        XLSX.writeFile(wb, filename);
     }
     </script>
 </body>
