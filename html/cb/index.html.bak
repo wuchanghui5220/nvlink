@@ -301,9 +301,8 @@
                     <select id="speed">
                         <option value="1">HDR (200G)</option>
                         <option value="2" selected>NDR (400G)</option>
-                        <option value="3">SN5610 (800G)</option>
+                        <option value="3">SN5600 (400G)</option>
                         <option value="4">Q3400 (800G)</option>
-                        <option value="5">Q3400 降速 (400G↓800G↑)</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -312,23 +311,6 @@
                         <option value="1" selected>1:1</option>
                         <option value="2">1:2</option>
                         <option value="3">1:3</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="form-row" id="planeRow" style="display:none">
-                <div class="form-group">
-                    <label>平面数</label>
-                    <select id="planeCount">
-                        <option value="1" selected>单平面</option>
-                        <option value="2">双平面</option>
-                    </select>
-                </div>
-                <div class="form-group" id="nicTypeGroup" style="display:none">
-                    <label>网卡类型</label>
-                    <select id="nicType">
-                        <option value="800g" selected>单口800G</option>
-                        <option value="400g">双口400G</option>
                     </select>
                 </div>
             </div>
@@ -374,7 +356,7 @@
             <div class="form-row">
                 <div class="form-group">
                     <label>GPU 型号</label>
-                    <input type="text" id="gpuType" value="B200">
+                    <input type="text" id="gpuType" value="H800">
                 </div>
                 <div class="form-group">
                     <label>DAC 线缆</label>
@@ -451,7 +433,7 @@
                 <div class="tab-content active" id="tab-product">
                     <div id="productSummary" style="color:#00d4ff;margin-bottom:12px;font-weight:500;"></div>
                     <table class="result-table" id="productTable">
-                        <thead><tr><th>产品</th><th>型号</th><th>Product Code</th><th>描述</th><th>数量</th><th>备注</th></tr></thead>
+                        <thead><tr><th>产品</th><th>型号</th><th>描述</th><th>数量</th><th>备注</th></tr></thead>
                         <tbody></tbody>
                     </table>
                     <button class="btn-download" id="downloadExcel" disabled>
@@ -472,31 +454,27 @@
     <script>
     // 产品数据
     const ndrProducts = [
-        {name: '400G IB交换机', model: 'MQM9790-NS2R', code: '920-9B210-00RN-0D0', desc: 'NVIDIA Quantum 2 based NDR InfiniBand Switch, 64 NDR ports, 32 OSFP ports, 2 Power Supplies (AC), Standard depth, Unmanaged, C2P airflow, Rail Kit'},
-        {name: '400G IB交换机', model: 'MQM9700-NS2R', code: '', desc: 'NVIDIA Quantum-2 based NDR InfiniBand Switch, 64 NDR ports, 32 OSFP ports, 2 Power Supplies (AC), Standard depth, Managed, C2P airflow, Rail Kit'},
-        {name: '800G以太网交换机', model: 'SN5610', code: '920-9N42F-00RI-3C1', desc: 'NVIDIA Spectrum-4 based 800GbE 2U Open Ethernet switch with Cumulus Linux Authentication, 64 OSFP ports and 2 SFP28 ports, 4 AC PSUs, Secure-boot, standard depth, Connector-to-Power Airflow, Tool-less Rail Kit'},
-        {name: '800G IB交换机', model: 'Q3400-RA', code: '920-9B36F-00RX-8S0', desc: 'NVIDIA Quantum-3 based XDR InfiniBand Switch, Q3400-RA, 4U, 144 XDR Ports over 72 OSFP Cages, 8 Power Supplies (Power Cords Not Included), Standard Depth, Managed, C2P Airflow, Rail Kit'},
-        {name: '800G 光模块NDR', model: 'MMA4Z00-NS', code: '980-9I510-00NS00', desc: 'NVIDIA twin port transceiver, 800(2x400)Gbps, OSFP, 2xMPO12 APC, 850nm MMF, up to 50m, finned'},
-        {name: '400G 光模块', model: 'MMA4Z00-NS400', code: '980-9I51S-00NS00', desc: 'NVIDIA single port transceiver, 400Gbps, OSFP, MPO12 APC, 850nm MMF, up to 50m, flat top'},
-        {name: '1.6T 光模块', model: 'MMS4A00-XM', code: '980-9IAH1-00XM00', desc: 'NVIDIA twin port transceiver, 1600Gbps, OSFP, 2xMPO, 1310nm SMF, EML, up to 500m, IHS'},
-        {name: '800G 光模块XDR', model: 'MMS4A20-XM800', code: '980-9IAT0-00XM00', desc: 'NVIDIA single port transceiver, 800Gbps, OSFP DR4, MPO, APC 1310nm SMF, up to 500m, RHS'},
-        {name: 'MPO12-APC光纤', model: 'MFP7E10-N030', code: '980-9I570-00N030', desc: 'NVIDIA passive fiber cable, MMF, MPO12 APC to MPO12 APC, 30m'},
-        {name: 'MPO12-APC光纤(50m)', model: 'MFP7E10-N050', code: '980-9I57Y-00N050', desc: 'NVIDIA passive fiber cable, MMF, MPO12 APC to MPO12 APC, 50m'},
-        {name: 'MPO12-APC光纤(SMF)', model: 'MFP7E30-N030', code: '980-9I58G-00N030', desc: 'NVIDIA passive fiber cable, SMF, MPO12 APC to MPO12 APC, 30m'},
-        {name: 'MPO12-APC光纤(SMF 50m)', model: 'MFP7E30-N050', code: '980-9I58H-00N050', desc: 'NVIDIA passive fiber cable, SMF, MPO12 APC to MPO12 APC, 50m'},
-        {name: 'MPO12-APC 1分2光纤', model: 'MFP7E20-N030', code: '', desc: 'NVIDIA passive fiber cable, MMF, MPO12 APC to 2xMPO12 APC, 30m'},
-        {name: '800G双端口400G光模块', model: 'MMA4Z00-NS-FLT', code: '980-9I51A-00NS00', desc: 'NVIDIA twin port transceiver, 800(2x400)Gbps, OSFP, 2xMPO12 APC, 850nm MMF, up to 50m, flat top'},
-        {name: '400G单端口光模块', model: 'MMA1Z00-NS400-T', code: '980-9I693-F4NS00', desc: 'SINGLE PORT TRANSCEIVER, 400GBPS, 400GbE, QSFP112, MPO12 APC, 850NM MMF, UP TO 50M, FLAT TOP'}
+        {name: '400G IB交换机', model: 'MQM9790-NS2R', desc: 'NVIDIA Quantum-2 based NDR InfiniBand Switch, 64 NDR ports, 32 OSFP ports, 2 Power Supplies (AC), Standard depth, Unmanaged, C2P airflow, RailKit'},
+        {name: '400G IB交换机', model: 'MQM9700-NS2R', desc: 'NVIDIA Quantum-2 based NDR InfiniBand Switch, 64 NDR ports, 32 OSFP ports, 2 Power Supplies (AC), Standard depth, Managed, C2P airflow, Rail Kit'},
+        {name: '400G IB交换机', model: 'SN5600', desc: 'NVIDIA Spectrum-4 based 800GbE 2U Open Ethernet switch with Cumulus Linux authentication, 64 OSFP ports and 1 SFP28 port, 2 power supplies (AC), x86 CPU, Secure Boot, standard depth, C2P airflow, tool-less rail kit'},
+        {name: '800G IB交换机', model: 'Q3400', desc: '920-9B36F-00RX-8S0 NVIDIA AIR COOLED SYSTEM 72 PORTS OSFP XDR MNG SWITCH W/ 8 PS STANDARD DEPTH C2P AIRFLOW'},
+        {name: '800G 光模块NDR', model: 'MMA4Z00-NS', desc: 'NVIDIA twin port transceiver, 800Gbps, 2xNDR, OSFP, 2xMPO12 APC, 850nm MMF, up to 50m, finned'},
+        {name: '400G 光模块', model: 'MMA4Z00-NS400', desc: 'NVIDIA single port transceiver, 400Gbps, NDR, OSFP, MPO12 APC, 850nm MMF, up to 50m, flat top'},
+        {name: '1.6T 光模块', model: 'NVIDIA 1.6T transceiver', desc: 'NVIDIA twin port transceiver, 1.6Tbps, Q3, OSFP, MPO12 APC, 1310nm MMF, up to 500m'},
+        {name: '800G 光模块XDR', model: 'MMS8X00-NS800', desc: 'NVIDIA single port transceiver, 800Gbps, XDR, OSFP, MPO12 APC, 1310nm SMF, up to 500m, flat top'},
+        {name: 'MPO12-APC光纤', model: 'MFP7E10-N030', desc: 'NVIDIA passive fiber cable, MMF, MPO12 APC to MPO12 APC, 30m'},
+        {name: 'MPO12-APC光纤(SMF)', model: 'MFP7E30-N030', desc: 'NVIDIA passive fiber cable, SMF, MPO12 APC to MPO12 APC, 30m'},
+        {name: 'MPO12-APC 1分2光纤', model: 'MFP7E20-N030', desc: 'NVIDIA passive fiber cable, MMF, MPO12 APC to 2xMPO12 APC, 30m'}
     ];
 
     const hdrProducts = [
-        {name: '200G IB交换机', model: 'MQM8790-HS2F', code: '920-9B110-00FH-0D0', desc: 'Mellanox Quantum HDR InfiniBand Switch, 40 QSFP56 ports, 2 Power Supplies (AC), unmanaged, standard depth, C2P airflow, Rail Kit'},
-        {name: '200G IB交换机', model: 'MQM8700-HS2F', code: '', desc: 'Mellanox Quantum HDR InfiniBand Switch, 40 QSFP56 ports, 2 Power Supplies (AC), x86 dual core, standard depth, C2P airflow, Rail Kit'},
-        {name: '200G IB AOC线缆', model: 'MFS1S00-H030V', code: '980-9I440-00H030', desc: 'Mellanox active optical cable, up to 200Gb/s IB HDR, QSFP56, 30m'},
-        {name: '200G IB AOC 1分2线缆', model: 'MFS1S50-H030V', code: '', desc: 'Mellanox active optical cable, 200Gb/s to 2x100Gb/s IB HDR, QSFP56 to 2x QSFP56, 30m'}
+        {name: '200G IB交换机', model: 'MQM8790-HS2F', desc: 'Mellanox Quantum HDR InfiniBand Switch, 40 QSFP56 ports, 2 Power Supplies (AC), unmanaged, standard depth, C2P airflow, Rail Kit'},
+        {name: '200G IB交换机', model: 'MQM8700-HS2F', desc: 'Mellanox Quantum HDR InfiniBand Switch, 40 QSFP56 ports, 2 Power Supplies (AC), x86 dual core, standard depth, C2P airflow, Rail Kit'},
+        {name: '200G IB AOC线缆', model: 'MFS1S00-H030V', desc: 'Mellanox active optical cable, up to 200Gb/s IB HDR, QSFP56, 30m'},
+        {name: '200G IB AOC 1分2线缆', model: 'MFS1S50-H030V', desc: 'Mellanox active optical cable, 200Gb/s to 2x100Gb/s IB HDR, QSFP56 to 2x QSFP56, 30m'}
     ];
 
-    const PORTS = { HDR: 40, NDR: 64, SN5610_400G: 128, Q3: 144 };
+    const PORTS = { HDR: 40, NDR: 64, SN5600_NDR: 128, Q3: 144 };
     let calcResults = {};
     let productData = [];
 
@@ -513,20 +491,6 @@
     // 事件绑定
     document.getElementById('calculateButton').addEventListener('click', calculate);
     document.getElementById('downloadExcel').addEventListener('click', downloadExcel);
-
-    // SN5610 平面/网卡类型联动
-    document.getElementById('speed').addEventListener('change', function() {
-        const isSN5610 = this.value === '3';
-        document.getElementById('planeRow').style.display = isSN5610 ? '' : 'none';
-        if (!isSN5610) {
-            document.getElementById('planeCount').value = '1';
-            document.getElementById('nicTypeGroup').style.display = 'none';
-        }
-    });
-    document.getElementById('planeCount').addEventListener('change', function() {
-        const isDual = this.value === '2';
-        document.getElementById('nicTypeGroup').style.display = isDual ? '' : 'none';
-    });
 
     function transform(x, n) { return n * Math.ceil(x/n); }
 
@@ -546,9 +510,7 @@
         const otherCardNum = parseInt(document.getElementById('otherCardNum').value);
         const dacCableNumber = parseInt(document.getElementById('dacCableNumber').value) || 0;
 
-        let ports, speed, switchType, cableType, cableTypeUplink, ot800, ot400, ot1600, downlinkPorts;
-
-        const useLongCable = gpuServerNum > 256;
+        let ports, speed, switchType, cableType, ot800, ot400, ot1600;
 
         switch(inputSpeed) {
             case 1:
@@ -557,37 +519,27 @@
                 break;
             case 2:
                 ports = PORTS.NDR; speed = "NDR"; switchType = "MQM9790-NS2R";
-                cableType = useLongCable ? "MFP7E10-N050" : "MFP7E10-N030"; ot800 = "MMA4Z00-NS"; ot400 = "MMA4Z00-NS400";
+                cableType = "MFP7E10-N030"; ot800 = "MMA4Z00-NS"; ot400 = "MMA4Z00-NS400";
                 break;
             case 3:
-                ports = PORTS.SN5610_400G; speed = "SN5610-400G"; switchType = "SN5610";
-                cableType = useLongCable ? "MFP7E10-N050" : "MFP7E10-N030"; ot800 = "MMA4Z00-NS"; ot400 = "MMA4Z00-NS400";
+                ports = PORTS.SN5600_NDR; speed = "SN5600-NDR"; switchType = "SN5600";
+                cableType = "MFP7E10-N030"; ot800 = "MMA4Z00-NS"; ot400 = "MMA4Z00-NS400";
                 break;
             case 4:
-                ports = PORTS.Q3; speed = "XDR"; switchType = "Q3400-RA";
-                cableType = useLongCable ? "MFP7E30-N050" : "MFP7E30-N030"; ot1600 = "MMS4A00-XM"; ot800 = "MMS4A20-XM800";
-                break;
-            case 5:
-                ports = 144; speed = "Q3400-400G"; switchType = "Q3400-RA";
-                downlinkPorts = 96; // 96×400G 下行, 48×800G 上行 (非对称)
-                cableType = useLongCable ? "MFP7E10-N050" : "MFP7E10-N030"; // Leaf-Server MMF
-                cableTypeUplink = useLongCable ? "MFP7E30-N050" : "MFP7E30-N030"; // Spine-Leaf SMF
-                ot800 = "MMA4Z00-NS"; ot400 = "MMA4Z00-NS400"; ot1600 = "MMS4A00-XM";
+                ports = PORTS.Q3; speed = "XDR"; switchType = "Q3400";
+                cableType = "MFP7E30-N030"; ot1600 = "NVIDIA 1.6T transceiver"; ot800 = "MMS8X00-NS800";
                 break;
         }
 
-        // 计算 bisection (上行端口数)
+        // 计算 bisection
         let bisection, ratioText;
-        if (speed === "Q3400-400G") { bisection = 48; ratioText = "1:1"; }
-        else if (RA === 2 && ports === PORTS.HDR) { bisection = 20; ratioText = "1:1"; }
+        if (RA === 2 && ports === PORTS.HDR) { bisection = 20; ratioText = "1:1"; }
         else if (RA === 2 && ports === PORTS.NDR) { bisection = 32; ratioText = "1:1"; }
         else if (RA === 3 && ports === PORTS.HDR) { bisection = 16; ratioText = "3:5"; }
         else if (RA === 3 && ports === PORTS.NDR) { bisection = 20; ratioText = "1:2"; }
-        else if (ports === PORTS.SN5610_400G) { bisection = Math.ceil(ports / RA); ratioText = "1:1"; }
+        else if (ports === PORTS.SN5600_NDR) { bisection = Math.ceil(ports / RA); ratioText = "1:1"; }
         else if (ports === PORTS.Q3) { bisection = Math.ceil(ports / RA); ratioText = "1:1"; }
         else { bisection = 32; ratioText = "1:1"; }
-
-        const dlPorts = downlinkPorts || bisection; // 下行端口容量 (非对称时 ≠ bisection)
 
         const factors = [];
         for (let i = 1; i <= bisection; i++) if (bisection % i === 0) factors.push(i);
@@ -595,7 +547,7 @@
         // GPU
         let gpuLeafs = 0, gpuNodes = 0, restGpuPorts = 0;
         if (gpuServerNum > 0) {
-            const suNodes = gpuCardNum * dlPorts;
+            const suNodes = gpuCardNum * bisection;
             const su = Math.ceil((gpuServerNum * gpuCardNum) / suNodes);
             gpuLeafs = gpuCardNum * su;
             gpuNodes = gpuServerNum * gpuCardNum;
@@ -606,31 +558,31 @@
         let storageLeafs = 0, storageNodes = 0, restStoragePorts = 0;
         if (storageServerNum > 0) {
             storageNodes = storageServerNum * storageCardNum;
-            storageLeafs = (storageNodes - restGpuPorts) / dlPorts;
+            storageLeafs = (storageNodes - restGpuPorts) / bisection;
             if (storageLeafs > 0) storageLeafs = transform(storageLeafs, storageCardNum);
             else storageLeafs = 0;
-            restStoragePorts = (gpuLeafs + storageLeafs) * dlPorts - (gpuNodes + storageNodes);
+            restStoragePorts = (gpuLeafs + storageLeafs) * bisection - (gpuNodes + storageNodes);
         } else {
-            restStoragePorts = gpuLeafs * dlPorts - gpuNodes;
+            restStoragePorts = gpuLeafs * bisection - gpuNodes;
         }
 
         // CPU
         let cpuLeafs = 0, cpuNodes = 0, restCpuPorts = 0;
         if (cpuServerNum > 0) {
             cpuNodes = cpuServerNum * cpuCardNum;
-            cpuLeafs = (cpuNodes - restStoragePorts) / dlPorts;
+            cpuLeafs = (cpuNodes - restStoragePorts) / bisection;
             if (cpuLeafs > 0) cpuLeafs = transform(cpuLeafs, cpuCardNum);
             else cpuLeafs = 0;
-            restCpuPorts = (gpuLeafs + storageLeafs + cpuLeafs) * dlPorts - (gpuNodes + storageNodes + cpuNodes);
+            restCpuPorts = (gpuLeafs + storageLeafs + cpuLeafs) * bisection - (gpuNodes + storageNodes + cpuNodes);
         } else {
-            restCpuPorts = (gpuLeafs + storageLeafs) * dlPorts - (gpuNodes + storageNodes);
+            restCpuPorts = (gpuLeafs + storageLeafs) * bisection - (gpuNodes + storageNodes);
         }
 
         // Other
         let otherLeafs = 0, otherNodes = 0;
         if (otherServerNum > 0) {
             otherNodes = otherServerNum * otherCardNum;
-            otherLeafs = (otherNodes - restCpuPorts) / dlPorts;
+            otherLeafs = (otherNodes - restCpuPorts) / bisection;
             if (otherLeafs > 0) otherLeafs = transform(otherLeafs, otherCardNum);
             else otherLeafs = 0;
         }
@@ -652,7 +604,7 @@
         let spine2LeafOT = 0, leaf2ServerOT = 0, switchOT = 0, hcaOT = nodes;
         let q3SpineToLeafOT = 0, q3LeafToServerOT = 0, q3OT = 0;
 
-        if (speed === "NDR" || speed === "SN5610-400G") {
+        if (speed === "NDR" || speed === "SN5600-NDR") {
             spine2LeafOT = Math.ceil(leafs * bisection * 2 / 2);
             leaf2ServerOT = Math.ceil(nodes / 2);
             switchOT = spine2LeafOT + leaf2ServerOT;
@@ -660,17 +612,12 @@
             q3SpineToLeafOT = Math.ceil(leafs * bisection * 2 / 2);
             q3LeafToServerOT = Math.ceil(nodes / 2);
             q3OT = q3SpineToLeafOT + q3LeafToServerOT;
-        } else if (speed === "Q3400-400G") {
-            // Spine-Leaf: MMS4A00-XM (1.6T双端口800G) 两端各需
-            q3SpineToLeafOT = Math.ceil(leafs * bisection * 2 / 2);
-            // Leaf-Server: MMA4Z00-NS (800G双端口400G) 仅Leaf侧
-            leaf2ServerOT = Math.ceil(nodes / 2);
         }
 
         if (dacCableNumber > 0) {
             leafToServerCables -= dacCableNumber * 2;
             hcaOT -= dacCableNumber * 2;
-            if (speed === "NDR" || speed === "SN5610-400G") {
+            if (speed === "NDR" || speed === "SN5600-NDR") {
                 leaf2ServerOT -= dacCableNumber;
                 switchOT = spine2LeafOT + leaf2ServerOT;
             } else if (speed === "XDR") {
@@ -679,11 +626,8 @@
             }
         }
 
-        const numPlanes = (inputSpeed === 3) ? parseInt(document.getElementById('planeCount').value) : 1;
-        const nicType = (numPlanes === 2) ? document.getElementById('nicType').value : '';
-
         calcResults = {
-            speed, ratioText, switchType, cableType, cableTypeUplink, ot800, ot400, ot1600,
+            speed, ratioText, switchType, cableType, ot800, ot400, ot1600,
             serverNum, nodes, spines, leafs,
             gpuServerNum, gpuNodes, gpuLeafs,
             storageServerNum, storageNodes, storageLeafs,
@@ -692,8 +636,7 @@
             spineToLeafCables, leafToServerCables, maxLeafToServerCables,
             allCables: spineToLeafCables + leafToServerCables,
             spine2LeafOT, leaf2ServerOT, switchOT, hcaOT,
-            q3SpineToLeafOT, q3LeafToServerOT, q3OT,
-            numPlanes, nicType
+            q3SpineToLeafOT, q3LeafToServerOT, q3OT
         };
 
         updateUI();
@@ -701,64 +644,51 @@
 
     function updateUI() {
         const r = calcResults;
-        const np = r.numPlanes || 1;
 
         // 概览
         document.getElementById('statServers').textContent = r.serverNum;
-        document.getElementById('statNodes').textContent = r.nodes * np;
-        document.getElementById('statSpines').textContent = r.spines * np;
-        document.getElementById('statLeafs').textContent = r.leafs * np;
-        document.getElementById('statCables').textContent = r.allCables * np;
-        document.getElementById('statSpeed').textContent = r.speed + (np > 1 ? ' (双平面)' : '');
+        document.getElementById('statNodes').textContent = r.nodes;
+        document.getElementById('statSpines').textContent = r.spines;
+        document.getElementById('statLeafs').textContent = r.leafs;
+        document.getElementById('statCables').textContent = r.allCables;
+        document.getElementById('statSpeed').textContent = r.speed;
 
         // 详细
         document.getElementById('gpuServerResult').textContent = r.gpuServerNum;
-        document.getElementById('gpuNodesResult').textContent = r.gpuNodes * np;
-        document.getElementById('gpuLeafsResult').textContent = r.gpuLeafs * np;
+        document.getElementById('gpuNodesResult').textContent = r.gpuNodes;
+        document.getElementById('gpuLeafsResult').textContent = r.gpuLeafs;
         document.getElementById('storageServerResult').textContent = r.storageServerNum;
-        document.getElementById('storageNodesResult').textContent = r.storageNodes * np;
-        document.getElementById('storageLeafsResult').textContent = r.storageLeafs * np;
+        document.getElementById('storageNodesResult').textContent = r.storageNodes;
+        document.getElementById('storageLeafsResult').textContent = r.storageLeafs;
         document.getElementById('cpuServerResult').textContent = r.cpuServerNum;
-        document.getElementById('cpuNodesResult').textContent = r.cpuNodes * np;
-        document.getElementById('cpuLeafsResult').textContent = r.cpuLeafs * np;
+        document.getElementById('cpuNodesResult').textContent = r.cpuNodes;
+        document.getElementById('cpuLeafsResult').textContent = r.cpuLeafs;
         document.getElementById('otherServerResult').textContent = r.otherServerNum;
-        document.getElementById('otherNodesResult').textContent = r.otherNodes * np;
-        document.getElementById('otherLeafsResult').textContent = r.otherLeafs * np;
+        document.getElementById('otherNodesResult').textContent = r.otherNodes;
+        document.getElementById('otherLeafsResult').textContent = r.otherLeafs;
         document.getElementById('totalServerResult').textContent = r.serverNum;
-        document.getElementById('totalNodesResult').textContent = r.nodes * np;
-        document.getElementById('totalLeafsResult').textContent = r.leafs * np;
+        document.getElementById('totalNodesResult').textContent = r.nodes;
+        document.getElementById('totalLeafsResult').textContent = r.leafs;
 
-        document.getElementById('spineLeafCables').textContent = r.spineToLeafCables * np;
-        document.getElementById('leafServerCables').textContent = r.leafToServerCables * np;
-        document.getElementById('maxLeafServerCables').textContent = r.maxLeafToServerCables * np;
-        document.getElementById('totalCables').textContent = r.allCables * np;
+        document.getElementById('spineLeafCables').textContent = r.spineToLeafCables;
+        document.getElementById('leafServerCables').textContent = r.leafToServerCables;
+        document.getElementById('maxLeafServerCables').textContent = r.maxLeafToServerCables;
+        document.getElementById('totalCables').textContent = r.allCables;
 
         // 光模块
         let otHtml = '';
-        if (r.speed === "NDR" || r.speed === "SN5610-400G") {
+        if (r.speed === "NDR" || r.speed === "SN5600-NDR") {
             otHtml = `
-                <div class="info-row"><span>Spine-Leaf 800G 双端口</span><span>${r.spine2LeafOT * np}</span></div>
-                <div class="info-row"><span>Leaf-Server 800G 双端口</span><span>${r.leaf2ServerOT * np}</span></div>
-                <div class="info-row"><span>交换机侧总数</span><span>${r.switchOT * np}</span></div>`;
-            if (np > 1 && r.nicType === '800g') {
-                otHtml += `<div class="info-row"><span>网卡侧 单口800G双端口光模块</span><span>${r.hcaOT}</span></div>`;
-            } else if (np > 1 && r.nicType === '400g') {
-                otHtml += `<div class="info-row"><span>网卡侧 双口400G单端口光模块</span><span>${r.hcaOT * 2}</span></div>`;
-            } else {
-                otHtml += `<div class="info-row"><span>HCA 400G 单端口</span><span>${r.hcaOT}</span></div>`;
-            }
+                <div class="info-row"><span>Spine-Leaf 800G 双端口</span><span>${r.spine2LeafOT}</span></div>
+                <div class="info-row"><span>Leaf-Server 800G 双端口</span><span>${r.leaf2ServerOT}</span></div>
+                <div class="info-row"><span>交换机侧总数</span><span>${r.switchOT}</span></div>
+                <div class="info-row"><span>HCA 400G 单端口</span><span>${r.hcaOT}</span></div>`;
         } else if (r.speed === "XDR") {
             otHtml = `
                 <div class="info-row"><span>Spine-Leaf 1.6T 双端口</span><span>${r.q3SpineToLeafOT}</span></div>
                 <div class="info-row"><span>Leaf-Server 1.6T 双端口</span><span>${r.q3LeafToServerOT}</span></div>
                 <div class="info-row"><span>交换机侧总数</span><span>${r.q3OT}</span></div>
                 <div class="info-row"><span>HCA 800G 单端口</span><span>${r.hcaOT}</span></div>`;
-        } else if (r.speed === "Q3400-400G") {
-            otHtml = `
-                <div class="info-row"><span>Spine-Leaf MMS4A00-XM (1.6T)</span><span>${r.q3SpineToLeafOT}</span></div>
-                <div class="info-row"><span>Leaf-Server MMA4Z00-NS (800G)</span><span>${r.leaf2ServerOT}</span></div>
-                <div class="info-row"><span>交换机侧总数</span><span>${r.q3SpineToLeafOT + r.leaf2ServerOT}</span></div>
-                <div class="info-row"><span>HCA MMA4Z00-NS400 (400G)</span><span>${r.hcaOT}</span></div>`;
         } else if (r.speed === "HDR") {
             otHtml = `<div class="info-row"><span>HDR AOC 线缆</span><span>${r.allCables}</span></div>`;
         }
@@ -771,51 +701,28 @@
         if (r.storageServerNum > 0) summary.push(`${r.storageServerNum}台存储`);
         if (r.cpuServerNum > 0) summary.push(`${r.cpuServerNum}台CPU`);
         if (r.otherServerNum > 0) summary.push(`${r.otherServerNum}台其他`);
-        const planeLabel = np > 1 ? ' (双平面)' : '';
-        const summaryText = (summary.join('、') || '服务器') + ` ${r.speed}网络配置清单` + planeLabel;
+        const summaryText = (summary.join('、') || '服务器') + ` ${r.speed}网络配置清单`;
         document.getElementById('productSummary').textContent = summaryText;
 
         const tbody = document.querySelector('#productTable tbody');
         tbody.innerHTML = '';
         const products = r.speed === "HDR" ? hdrProducts : ndrProducts;
-        const pn = np > 1 ? ` (×${np}平面)` : '';
 
-        let items;
+        const items = [
+            { model: r.switchType, num: r.spines, note: 'Spine 交换机' },
+            { model: r.switchType, num: r.leafs, note: 'Leaf 交换机' },
+            { model: r.cableType, num: r.spineToLeafCables, note: 'Spine-Leaf 线缆' },
+            { model: r.cableType, num: r.leafToServerCables, note: 'Leaf-Server 线缆' }
+        ];
 
-        if (r.speed === "Q3400-400G") {
-            // Q3400 降速: 非对称端口 (96×400G↓ + 48×800G↑), 不同层使用不同线缆和光模块
-            items = [
-                { model: r.switchType, num: r.spines, note: 'Spine 交换机' },
-                { model: r.switchType, num: r.leafs, note: 'Leaf 交换机' },
-                { model: r.cableTypeUplink, num: r.spineToLeafCables, note: 'Spine-Leaf 线缆 (SMF 800G)' },
-                { model: r.cableType, num: r.leafToServerCables, note: 'Leaf-Server 线缆 (MMF 400G)' },
-                { model: r.ot1600, num: r.q3SpineToLeafOT, note: 'Spine-Leaf MMS4A00-XM' },
-                { model: r.ot800, num: r.leaf2ServerOT, note: 'Leaf-Server MMA4Z00-NS' },
-                { model: r.ot400, num: r.hcaOT, note: 'HCA 400G' }
-            ];
-        } else {
-            items = [
-                { model: r.switchType, num: r.spines * np, note: 'Spine 交换机' + pn },
-                { model: r.switchType, num: r.leafs * np, note: 'Leaf 交换机' + pn },
-                { model: r.cableType, num: r.spineToLeafCables * np, note: 'Spine-Leaf 线缆' + pn },
-                { model: r.cableType, num: r.leafToServerCables * np, note: 'Leaf-Server 线缆' + pn }
-            ];
-
-            if (r.speed === "NDR" || r.speed === "SN5610-400G") {
-                items.push({ model: r.ot800, num: r.spine2LeafOT * np, note: 'Spine-Leaf 800G' + pn });
-                items.push({ model: r.ot800, num: r.leaf2ServerOT * np, note: 'Leaf-Server 800G' + pn });
-                if (np > 1 && r.nicType === '800g') {
-                    items.push({ model: 'MMA4Z00-NS-FLT', num: r.hcaOT, note: '网卡侧 单口800G光模块' });
-                } else if (np > 1 && r.nicType === '400g') {
-                    items.push({ model: 'MMA1Z00-NS400-T', num: r.hcaOT * 2, note: '网卡侧 双口400G光模块' });
-                } else {
-                    items.push({ model: r.ot400, num: r.hcaOT, note: 'HCA 400G' });
-                }
-            } else if (r.speed === "XDR") {
-                items.push({ model: r.ot1600, num: r.q3SpineToLeafOT, note: 'Spine-Leaf 1.6T' });
-                items.push({ model: r.ot1600, num: r.q3LeafToServerOT, note: 'Leaf-Server 1.6T' });
-                items.push({ model: r.ot800, num: r.hcaOT, note: 'HCA 800G' });
-            }
+        if (r.speed === "NDR" || r.speed === "SN5600-NDR") {
+            items.push({ model: r.ot800, num: r.spine2LeafOT, note: 'Spine-Leaf 800G' });
+            items.push({ model: r.ot800, num: r.leaf2ServerOT, note: 'Leaf-Server 800G' });
+            items.push({ model: r.ot400, num: r.hcaOT, note: 'HCA 400G' });
+        } else if (r.speed === "XDR") {
+            items.push({ model: r.ot1600, num: r.q3SpineToLeafOT, note: 'Spine-Leaf 1.6T' });
+            items.push({ model: r.ot1600, num: r.q3LeafToServerOT, note: 'Leaf-Server 1.6T' });
+            items.push({ model: r.ot800, num: r.hcaOT, note: 'HCA 800G' });
         }
 
         // 保存产品数据用于导出
@@ -826,11 +733,10 @@
                 const prod = products.find(p => p.model === item.model);
                 if (prod) {
                     const row = tbody.insertRow();
-                    row.innerHTML = `<td>${prod.name}</td><td>${prod.model}</td><td>${prod.code || ''}</td><td>${prod.desc}</td><td>${item.num}</td><td>${item.note}</td>`;
+                    row.innerHTML = `<td>${prod.name}</td><td>${prod.model}</td><td>${prod.desc}</td><td>${item.num}</td><td>${item.note}</td>`;
                     productData.push({
                         '产品名称': prod.name,
                         '型号': prod.model,
-                        'Product Code': prod.code || '',
                         '描述': prod.desc,
                         '数量': item.num,
                         '备注': item.note
@@ -857,12 +763,12 @@
 
         // 配置清单表
         const wsData = [
-            ['产品名称', '型号', 'Product Code', '描述', '数量', '备注']
+            ['产品名称', '型号', '描述', '数量', '备注']
         ];
 
         // 添加产品数据
         productData.forEach(item => {
-            wsData.push([item['产品名称'], item['型号'], item['Product Code'], item['描述'], item['数量'], item['备注']]);
+            wsData.push([item['产品名称'], item['型号'], item['描述'], item['数量'], item['备注']]);
         });
 
         const ws = XLSX.utils.aoa_to_sheet(wsData);
@@ -871,7 +777,6 @@
         ws['!cols'] = [
             { wch: 18 },
             { wch: 25 },
-            { wch: 22 },
             { wch: 45 },
             { wch: 8 },
             { wch: 18 }

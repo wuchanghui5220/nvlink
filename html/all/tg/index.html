@@ -1,0 +1,1355 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPU 集群拓扑生成器 (纯前端版)</title>
+    <!-- 本地化库文件 (支持离线运行) -->
+    <script src="xlsx.full.min.js"></script>
+    <script src="jszip.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --success-color: #059669;
+            --warning-color: #d97706;
+            --danger-color: #dc2626;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .container { max-width: 1400px; margin: 0 auto; padding: 24px; }
+
+        header { text-align: center; margin-bottom: 32px; }
+        header h1 { font-size: 2rem; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; }
+        header p { color: var(--text-secondary); font-size: 1rem; }
+        .badge-standalone {
+            display: inline-block;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .main-grid { display: grid; grid-template-columns: 380px 1fr; gap: 24px; }
+        @media (max-width: 1024px) { .main-grid { grid-template-columns: 1fr; } }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            padding: 24px;
+        }
+
+        .card-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-title svg { width: 20px; height: 20px; color: var(--primary-color); }
+
+        .config-panel { display: flex; flex-direction: column; gap: 24px; }
+
+        .form-group { display: flex; flex-direction: column; gap: 8px; }
+        .form-group label { font-size: 0.875rem; font-weight: 500; color: var(--text-secondary); }
+
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            font-size: 1rem;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            background: var(--card-bg);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-group select:focus,
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-hint { font-size: 0.75rem; color: var(--text-secondary); margin-top: 4px; }
+
+        .quick-select { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+
+        .quick-btn {
+            padding: 6px 12px;
+            font-size: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: var(--bg-color);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .quick-btn:hover { border-color: var(--primary-color); color: var(--primary-color); }
+
+        .compute-power-card {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border: 1px solid #fbbf24;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+
+        .compute-power-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .compute-power-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .compute-power-icon svg {
+            width: 28px;
+            height: 28px;
+            color: white;
+        }
+
+        .compute-power-info {
+            flex: 1;
+        }
+
+        .compute-power-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #92400e;
+            line-height: 1.2;
+        }
+
+        .compute-power-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #92400e;
+        }
+
+        .compute-power-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .power-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 10px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 6px;
+        }
+
+        .power-item.highlight {
+            background: rgba(245, 158, 11, 0.2);
+            border: 1px solid rgba(245, 158, 11, 0.4);
+        }
+
+        .power-label {
+            font-size: 0.75rem;
+            color: #92400e;
+        }
+
+        .power-value {
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: #b45309;
+        }
+
+        .power-value.large {
+            font-size: 1rem;
+        }
+
+        .download-section { margin-top: 8px; }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+        }
+        .btn svg { width: 18px; height: 18px; }
+        .btn-primary { background: var(--primary-color); color: white; }
+        .btn-primary:hover { background: var(--primary-hover); }
+        .btn-primary:disabled { background: #94a3b8; cursor: not-allowed; }
+
+        .btn-group { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-top: 12px; }
+        .btn-secondary { background: var(--bg-color); color: var(--text-primary); border: 1px solid var(--border-color); }
+        .btn-secondary:hover { background: var(--border-color); }
+        .btn-success { background: var(--success-color); color: white; }
+        .btn-success:hover { background: #047857; }
+
+        .result-panel { display: flex; flex-direction: column; gap: 24px; }
+
+        .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 16px; }
+
+        .stat-card { background: var(--bg-color); border-radius: 8px; padding: 16px; text-align: center; }
+        .stat-value { font-size: 1.75rem; font-weight: 700; color: var(--primary-color); }
+        .stat-label { font-size: 0.75rem; color: var(--text-secondary); margin-top: 4px; }
+
+        .topology-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 16px;
+        }
+        .badge-two-tier { background: #dbeafe; color: #1d4ed8; }
+        .badge-three-tier { background: #fef3c7; color: #b45309; }
+
+        .detail-section { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-color); }
+        .detail-title { font-size: 0.875rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 12px; }
+        .detail-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 12px;
+            background: var(--bg-color);
+            border-radius: 6px;
+        }
+        .detail-item .label { color: var(--text-secondary); font-size: 0.875rem; }
+        .detail-item .value { font-weight: 600; font-size: 0.875rem; }
+
+        .connection-preview { margin-top: 24px; }
+
+        .tabs { display: flex; gap: 4px; border-bottom: 2px solid var(--border-color); margin-bottom: 16px; }
+
+        .tab {
+            padding: 10px 16px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            background: none;
+            border: none;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s;
+        }
+        .tab:hover { color: var(--text-primary); }
+        .tab.active { color: var(--primary-color); border-bottom-color: var(--primary-color); }
+
+        .tab-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 20px;
+            height: 20px;
+            padding: 0 6px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            background: var(--bg-color);
+            border-radius: 10px;
+            margin-left: 6px;
+        }
+        .tab.active .tab-badge { background: rgba(37, 99, 235, 0.1); color: var(--primary-color); }
+
+        .connection-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+        .connection-table th {
+            text-align: left;
+            padding: 10px 12px;
+            background: var(--bg-color);
+            font-weight: 600;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border-color);
+        }
+        .connection-table td {
+            padding: 8px 12px;
+            border-bottom: 1px solid var(--border-color);
+            font-family: 'SF Mono', Monaco, 'Courier New', monospace;
+        }
+        .connection-table tr:hover td { background: var(--bg-color); }
+
+        .table-container {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+        }
+
+        .loading { display: flex; align-items: center; justify-content: center; padding: 40px; color: var(--text-secondary); }
+
+        .spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 12px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .empty-state { text-align: center; padding: 60px 20px; color: var(--text-secondary); }
+        .empty-state svg { width: 64px; height: 64px; margin-bottom: 16px; opacity: 0.5; }
+
+        .error-message {
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            color: var(--danger-color);
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            margin-top: 12px;
+        }
+
+        .scheme-info {
+            background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 100%);
+            border: 1px solid #bfdbfe;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        .scheme-info h4 { font-size: 0.875rem; font-weight: 600; color: var(--primary-color); margin-bottom: 8px; }
+        .scheme-info p { font-size: 0.75rem; color: var(--text-secondary); margin: 4px 0; }
+
+        .progress-bar { height: 4px; background: var(--border-color); border-radius: 2px; overflow: hidden; margin-top: 8px; }
+        .progress-fill { height: 100%; background: var(--primary-color); transition: width 0.3s; }
+
+        footer { text-align: center; padding: 24px; color: var(--text-secondary); font-size: 0.875rem; }
+
+        @media (max-width: 768px) {
+            .container { padding: 16px; }
+            header h1 { font-size: 1.5rem; }
+            .summary-grid { grid-template-columns: repeat(2, 1fr); }
+            .detail-grid { grid-template-columns: 1fr; }
+            .btn-group { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>GPU 集群网络拓扑生成器</h1>
+            <p>基于 Fat-Tree 架构的计算网络拓扑表格生成工具</p>
+            <span class="badge-standalone">纯前端版 - 无需服务器</span>
+        </header>
+
+        <div class="main-grid">
+            <!-- 配置面板 -->
+            <div class="config-panel">
+                <div class="card">
+                    <h3 class="card-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 15a3 3 0 100-6 3 3 0 000 6z"/>
+                            <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/>
+                        </svg>
+                        拓扑配置
+                    </h3>
+
+                    <div class="form-group">
+                        <label for="scheme">交换机方案</label>
+                        <select id="scheme" onchange="onSchemeChange()">
+                            <option value="x800">Q3400 (144×800G) - X800 全速</option>
+                            <option value="x800_400g">Q3400 降速 (96×400G+48×800G)</option>
+                            <option value="qm9790">QM9790 (64×400G) - X400</option>
+                        </select>
+                    </div>
+
+                    <div id="schemeInfo" class="scheme-info"></div>
+
+                    <div class="form-group">
+                        <label for="servers">服务器数量</label>
+                        <input type="number" id="servers" min="1" value="648"
+                               oninput="onServersChange()" placeholder="输入服务器数量">
+                        <div class="form-hint" id="serversHint"></div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="capacityBar" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <div class="quick-select" id="quickSelect"></div>
+
+                    <div class="form-group" style="margin-top: 16px;">
+                        <label for="gpuModel">GPU 型号</label>
+                        <select id="gpuModel" onchange="onGpuModelChange()">
+                            <option value="B200">NVIDIA B200 (4.5 PFLOPS FP16)</option>
+                            <option value="B300">NVIDIA B300 (4.5 PFLOPS FP16)</option>
+                            <option value="H200">NVIDIA H200 (1.0 PFLOPS FP16)</option>
+                            <option value="H100">NVIDIA H100 (1.0 PFLOPS FP16)</option>
+                        </select>
+                    </div>
+
+                    <div class="compute-power-card" id="computePowerCard">
+                        <div class="compute-power-header">
+                            <div class="compute-power-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                                </svg>
+                            </div>
+                            <div class="compute-power-title">集群总算力</div>
+                        </div>
+                        <div class="compute-power-grid" id="computePowerGrid">
+                            <!-- 动态生成 -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card download-section">
+                    <h3 class="card-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                            <polyline points="7,10 12,15 17,10"/>
+                            <line x1="12" y1="15" x2="12" y2="3"/>
+                        </svg>
+                        下载文件
+                    </h3>
+
+                    <button class="btn btn-success" onclick="downloadAll()" id="downloadAllBtn">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                            <polyline points="7,10 12,15 17,10"/>
+                            <line x1="12" y1="15" x2="12" y2="3"/>
+                        </svg>
+                        下载全部文件 (ZIP)
+                    </button>
+
+                    <div class="btn-group">
+                        <button class="btn btn-secondary" onclick="downloadTopology()">
+                            拓扑连接表
+                        </button>
+                        <button class="btn btn-secondary" onclick="downloadDeviceNames()">
+                            设备名称表
+                        </button>
+                    </div>
+
+                    <div id="downloadError" class="error-message" style="display: none;"></div>
+                </div>
+            </div>
+
+            <!-- 结果面板 -->
+            <div class="result-panel">
+                <div class="card">
+                    <h3 class="card-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2"/>
+                            <path d="M3 9h18"/>
+                            <path d="M9 21V9"/>
+                        </svg>
+                        拓扑摘要
+                    </h3>
+                    <div id="summaryContent">
+                        <div class="empty-state"><p>请输入服务器数量以预览拓扑</p></div>
+                    </div>
+                </div>
+
+                <div class="card connection-preview">
+                    <h3 class="card-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/>
+                        </svg>
+                        连接预览
+                    </h3>
+
+                    <div class="tabs">
+                        <button class="tab active" onclick="switchTab('gpu_to_leaf')" data-tab="gpu_to_leaf">
+                            GPU → Leaf <span class="tab-badge" id="badge_gpu_to_leaf">0</span>
+                        </button>
+                        <button class="tab" onclick="switchTab('leaf_to_spine')" data-tab="leaf_to_spine">
+                            Leaf → Spine <span class="tab-badge" id="badge_leaf_to_spine">0</span>
+                        </button>
+                        <button class="tab" onclick="switchTab('spine_to_core')" data-tab="spine_to_core">
+                            Spine → Core <span class="tab-badge" id="badge_spine_to_core">0</span>
+                        </button>
+                    </div>
+
+                    <div id="connectionContent">
+                        <div class="empty-state"><p>生成拓扑后显示连接预览</p></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            GPU 集群网络拓扑生成器 | 纯前端版 - 可部署到任意静态服务器
+        </footer>
+    </div>
+
+    <script>
+    // ============================================================
+    // 方案配置
+    // ============================================================
+    const SCHEMES = {
+        'x800': {
+            name: 'Q3400 (144×800G)',
+            switchModel: 'Q3400',
+            portSpec: '144 × 800G',
+            portsPerSwitch: 144,
+            uplinkPorts: 72,
+            downlinkPorts: 72,
+            downlinkPortStart: 73,
+            serversPerSu: 72,
+            leavesPerLg: 8,
+            hcasPerGpu: 8,
+            // SuperPOD
+            serversPerSuperpod: 648,
+            leafsPerSuperpod: 72,
+            spinesPerSuperpod: 72,
+            susPerSuperpod: 9,
+            numCgs: 72,
+            // 范围
+            maxTwoTier: 1296,
+            maxThreeTier: 93312,
+            // Spine factors
+            spineFactors: [1, 2, 3, 4, 6, 8, 9, 12, 18, 24, 36, 72],
+            coreFactors: [1, 2, 3, 4, 6, 8, 9, 12, 18, 24, 36, 72],
+            minSpineDivisor: 2,
+            quickValues: [72, 648, 1296, 2592, 5184, 11664, 23328, 46656, 93312],
+            filePrefix: 'topology_compute_x800'
+        },
+        'x800_400g': {
+            name: 'Q3400 降速 (96×400G+48×800G)',
+            switchModel: 'Q3400',
+            portSpec: '96×400G 下行 + 48×800G 上行',
+            portsPerSwitch: 144,
+            uplinkPorts: 48,
+            downlinkPorts: 96,
+            downlinkPortStart: 49,
+            serversPerSu: 96,
+            leavesPerLg: 8,
+            hcasPerGpu: 8,
+            // SuperPOD
+            serversPerSuperpod: 864,
+            leafsPerSuperpod: 72,
+            spinesPerSuperpod: 48,
+            susPerSuperpod: 9,
+            numCgs: 48,
+            spineUplinkPorts: 72,
+            spineDownlinkStart: 73,
+            // 范围
+            maxTwoTier: 1728,
+            maxThreeTier: 124416,
+            spineFactors: [1, 2, 3, 4, 6, 8, 12, 16, 24, 48],
+            coreFactors: [1, 2, 3, 4, 6, 8, 9, 12, 18, 24, 36, 72],
+            minSpineDivisor: 3,
+            quickValues: [96, 864, 1728, 3456, 6912, 15552, 31104, 62208, 124416],
+            filePrefix: 'topology_compute_x800_400g'
+        },
+        'qm9790': {
+            name: 'QM9790 (64×400G)',
+            switchModel: 'QM9790',
+            portSpec: '64 × 400G',
+            portsPerSwitch: 64,
+            uplinkPorts: 32,
+            downlinkPorts: 32,
+            downlinkPortStart: 33,
+            serversPerSu: 32,
+            leavesPerLg: 8,
+            hcasPerGpu: 8,
+            // SuperPOD
+            serversPerSuperpod: 128,
+            leafsPerSuperpod: 32,
+            spinesPerSuperpod: 32,
+            susPerSuperpod: 4,
+            numCgs: 32,
+            // 范围
+            maxTwoTier: 256,
+            maxThreeTier: 8192,
+            spineFactors: [1, 2, 4, 8, 16, 32],
+            coreFactors: [1, 2, 4, 8, 16, 32],
+            minSpineDivisor: 2,
+            quickValues: [32, 128, 256, 512, 1024, 2048, 4096, 8192],
+            filePrefix: 'topology_compute'
+        }
+    };
+
+    // ============================================================
+    // 全局状态
+    // ============================================================
+    let currentScheme = 'x800';
+    let currentServers = 648;
+    let currentGpuModel = 'B200';
+    let cachedTopology = null;
+    let currentTab = 'gpu_to_leaf';
+    let debounceTimer = null;
+
+    // GPU 算力配置 (单卡 PFLOPS)
+    const GPU_SPECS = {
+        'B300': {
+            name: 'NVIDIA B300',
+            fp4Sparse: 144,   // FP4 稀疏
+            fp4Dense: 108,    // FP4 稠密
+            fp8: 72,          // FP8/FP6
+            fp16: 4.5         // FP16 稠密
+        },
+        'B200': {
+            name: 'NVIDIA B200',
+            fp4Sparse: 144,   // FP4 稀疏
+            fp4Dense: 72,     // FP4 稠密
+            fp8: 72,          // FP8/FP6
+            fp16: 4.5         // FP16 稠密
+        },
+        'H200': {
+            name: 'NVIDIA H200',
+            fp8: 3.96,        // FP8
+            fp16: 1.0         // FP16 稠密
+        },
+        'H100': {
+            name: 'NVIDIA H100',
+            fp8: 3.96,        // FP8
+            fp16: 1.0         // FP16 稠密
+        }
+    };
+    const GPUS_PER_SERVER = 8;
+
+    // ============================================================
+    // 拓扑生成器
+    // ============================================================
+    class TopologyGenerator {
+        constructor(schemeId) {
+            this.scheme = SCHEMES[schemeId];
+            this.schemeId = schemeId;
+        }
+
+        generate(numServers) {
+            if (numServers <= this.scheme.maxTwoTier) {
+                return this.generateTwoTier(numServers);
+            } else {
+                return this.generateThreeTier(numServers);
+            }
+        }
+
+        generateTwoTier(numServers) {
+            const s = this.scheme;
+            const connections = { gpuToLeaf: [], leafToSpine: [], spineToCore: [] };
+            const deviceNames = { GPU: new Set(), Leaf: new Set(), Spine: new Set(), Core: new Set() };
+
+            const numSus = Math.ceil(numServers / s.serversPerSu);
+            const numLeafs = numSus * s.leavesPerLg;
+
+            // 计算 Spine 数量
+            const minSpines = Math.ceil(numLeafs / s.minSpineDivisor);
+            const numSpines = s.spineFactors.find(f => f >= minSpines) || s.spineFactors[s.spineFactors.length - 1];
+            const connectionsPerSpine = s.uplinkPorts / numSpines;
+
+            // GPU → Leaf
+            for (let serverIdx = 0; serverIdx < numServers; serverIdx++) {
+                const suIdx = Math.floor(serverIdx / s.serversPerSu);
+                const localServerIdx = serverIdx % s.serversPerSu;
+                const serverName = `SU${suIdx + 1}-GPU${localServerIdx + 1}`;
+                deviceNames.GPU.add(serverName);
+
+                for (let hcaIdx = 0; hcaIdx < s.hcasPerGpu; hcaIdx++) {
+                    const leafName = `LG${suIdx + 1}-Leaf${hcaIdx + 1}`;
+                    const leafPort = s.downlinkPortStart + localServerIdx;
+                    connections.gpuToLeaf.push({
+                        source: serverName,
+                        sourcePort: `mlx5_${hcaIdx}`,
+                        dest: leafName,
+                        destPort: String(leafPort)
+                    });
+                }
+            }
+
+            // Leaf → Spine
+            for (let leafIdx = 0; leafIdx < numLeafs; leafIdx++) {
+                const suIdx = Math.floor(leafIdx / s.leavesPerLg);
+                const localLeafIdx = leafIdx % s.leavesPerLg;
+                const leafName = `LG${suIdx + 1}-Leaf${localLeafIdx + 1}`;
+                deviceNames.Leaf.add(leafName);
+
+                for (let spineIdx = 0; spineIdx < numSpines; spineIdx++) {
+                    const spineName = `Spine${spineIdx + 1}`;
+                    for (let portOffset = 0; portOffset < connectionsPerSpine; portOffset++) {
+                        const leafPort = spineIdx * connectionsPerSpine + portOffset + 1;
+                        const spinePort = leafIdx * connectionsPerSpine + portOffset + 1;
+                        connections.leafToSpine.push({
+                            source: leafName,
+                            sourcePort: String(leafPort),
+                            dest: spineName,
+                            destPort: String(spinePort)
+                        });
+                    }
+                }
+            }
+
+            for (let i = 0; i < numSpines; i++) {
+                deviceNames.Spine.add(`Spine${i + 1}`);
+            }
+
+            return { connections, deviceNames, numSpines, numLeafs, numCores: 0 };
+        }
+
+        generateThreeTier(numServers) {
+            const s = this.scheme;
+            const connections = { gpuToLeaf: [], leafToSpine: [], spineToCore: [] };
+            const deviceNames = { GPU: new Set(), Leaf: new Set(), Spine: new Set(), Core: new Set() };
+
+            const numSuperpods = Math.ceil(numServers / s.serversPerSuperpod);
+            const numLeafs = numSuperpods * s.leafsPerSuperpod;
+            const numSpines = numSuperpods * s.spinesPerSuperpod;
+
+            // Core 计算
+            const uplinkForCore = s.spineUplinkPorts || s.uplinkPorts;
+            let coresPerCg = Math.max(1, Math.floor(numSuperpods / 2));
+            if (uplinkForCore % coresPerCg !== 0) {
+                coresPerCg = s.coreFactors.find(c => c >= Math.floor(numSuperpods / 2) && uplinkForCore % c === 0) || 1;
+            }
+            const numCores = s.numCgs * coresPerCg;
+            const cablesPerCore = uplinkForCore / coresPerCg;
+
+            // GPU → Leaf
+            for (let serverIdx = 0; serverIdx < numServers; serverIdx++) {
+                const superpodIdx = Math.floor(serverIdx / s.serversPerSuperpod);
+                const localServerInSuperpod = serverIdx % s.serversPerSuperpod;
+                const suInSuperpod = Math.floor(localServerInSuperpod / s.serversPerSu);
+                const localServerInSu = localServerInSuperpod % s.serversPerSu;
+
+                const globalSuIdx = superpodIdx * s.susPerSuperpod + suInSuperpod;
+                const serverName = `SU${globalSuIdx + 1}-GPU${localServerInSu + 1}`;
+                deviceNames.GPU.add(serverName);
+
+                for (let hcaIdx = 0; hcaIdx < s.hcasPerGpu; hcaIdx++) {
+                    const leafInSuperpod = suInSuperpod * s.leavesPerLg + hcaIdx + 1;
+                    const leafName = `LG${superpodIdx + 1}-Leaf${leafInSuperpod}`;
+                    const leafPort = s.downlinkPortStart + localServerInSu;
+                    connections.gpuToLeaf.push({
+                        source: serverName,
+                        sourcePort: `mlx5_${hcaIdx}`,
+                        dest: leafName,
+                        destPort: String(leafPort)
+                    });
+                }
+            }
+
+            // 添加所有 Leaf 名称
+            for (let sp = 0; sp < numSuperpods; sp++) {
+                for (let l = 0; l < s.leafsPerSuperpod; l++) {
+                    deviceNames.Leaf.add(`LG${sp + 1}-Leaf${l + 1}`);
+                }
+            }
+
+            // Leaf → Spine (SuperPOD 内全连接)
+            const spineDownlinkStart = s.spineDownlinkStart || s.downlinkPortStart;
+            for (let sp = 0; sp < numSuperpods; sp++) {
+                for (let leafIdx = 0; leafIdx < s.leafsPerSuperpod; leafIdx++) {
+                    const leafName = `LG${sp + 1}-Leaf${leafIdx + 1}`;
+
+                    for (let spineIdx = 0; spineIdx < s.spinesPerSuperpod; spineIdx++) {
+                        const spineName = `SG${sp + 1}-Spine${spineIdx + 1}`;
+                        const leafPort = spineIdx + 1;
+                        const spinePort = spineDownlinkStart + leafIdx;
+                        connections.leafToSpine.push({
+                            source: leafName,
+                            sourcePort: String(leafPort),
+                            dest: spineName,
+                            destPort: String(spinePort)
+                        });
+                    }
+                }
+            }
+
+            // 添加所有 Spine 名称
+            for (let sp = 0; sp < numSuperpods; sp++) {
+                for (let i = 0; i < s.spinesPerSuperpod; i++) {
+                    deviceNames.Spine.add(`SG${sp + 1}-Spine${i + 1}`);
+                }
+            }
+
+            // Spine → Core
+            for (let sp = 0; sp < numSuperpods; sp++) {
+                for (let spineIdx = 0; spineIdx < s.spinesPerSuperpod; spineIdx++) {
+                    const spineName = `SG${sp + 1}-Spine${spineIdx + 1}`;
+                    const cgIdx = spineIdx;
+
+                    for (let coreIdx = 0; coreIdx < coresPerCg; coreIdx++) {
+                        const coreName = `CG${cgIdx + 1}-Core${coreIdx + 1}`;
+
+                        for (let cableOffset = 0; cableOffset < cablesPerCore; cableOffset++) {
+                            const spinePort = 1 + coreIdx * cablesPerCore + cableOffset;
+                            const corePort = sp * cablesPerCore + cableOffset + 1;
+
+                            if (spinePort <= uplinkForCore && corePort <= s.portsPerSwitch) {
+                                connections.spineToCore.push({
+                                    source: spineName,
+                                    sourcePort: String(spinePort),
+                                    dest: coreName,
+                                    destPort: String(corePort)
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+
+            // 添加所有 Core 名称
+            for (let cg = 0; cg < s.numCgs; cg++) {
+                for (let c = 0; c < coresPerCg; c++) {
+                    deviceNames.Core.add(`CG${cg + 1}-Core${c + 1}`);
+                }
+            }
+
+            return {
+                connections,
+                deviceNames,
+                numSpines,
+                numLeafs,
+                numCores,
+                numSuperpods,
+                coresPerCg,
+                cablesPerCore
+            };
+        }
+    }
+
+    // ============================================================
+    // Excel 生成
+    // ============================================================
+    function portToInterface(port) {
+        if (port.startsWith('mlx5_')) return '1';
+        const portNum = parseInt(port);
+        return `${Math.floor((portNum - 1) / 2) + 1}/${((portNum - 1) % 2) + 1}`;
+    }
+
+    function createTopologyWorkbook(topology) {
+        const wb = XLSX.utils.book_new();
+        const headers = ['Source Device', 'Source Port', 'Source Interface',
+                        'Destination Device', 'Destination Port', 'Destination Interface'];
+
+        // GPU to Leaf / Leaf to GPU
+        const gpuToLeafData = [headers];
+        const leafToGpuData = [headers];
+        topology.connections.gpuToLeaf.forEach(c => {
+            gpuToLeafData.push([c.source, c.sourcePort, portToInterface(c.sourcePort),
+                               c.dest, c.destPort, portToInterface(c.destPort)]);
+            leafToGpuData.push([c.dest, c.destPort, portToInterface(c.destPort),
+                               c.source, c.sourcePort, portToInterface(c.sourcePort)]);
+        });
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(gpuToLeafData), 'GPU to Leaf');
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(leafToGpuData), 'Leaf to GPU');
+
+        // Leaf to Spine / Spine to Leaf
+        const leafToSpineData = [headers];
+        const spineToLeafData = [headers];
+        topology.connections.leafToSpine.forEach(c => {
+            leafToSpineData.push([c.source, c.sourcePort, portToInterface(c.sourcePort),
+                                 c.dest, c.destPort, portToInterface(c.destPort)]);
+            spineToLeafData.push([c.dest, c.destPort, portToInterface(c.destPort),
+                                 c.source, c.sourcePort, portToInterface(c.sourcePort)]);
+        });
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(leafToSpineData), 'Leaf to Spine');
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(spineToLeafData), 'Spine to Leaf');
+
+        // Spine to Core / Core to Spine
+        const spineToCoreData = [headers];
+        const coreToSpineData = [headers];
+        topology.connections.spineToCore.forEach(c => {
+            spineToCoreData.push([c.source, c.sourcePort, portToInterface(c.sourcePort),
+                                 c.dest, c.destPort, portToInterface(c.destPort)]);
+            coreToSpineData.push([c.dest, c.destPort, portToInterface(c.destPort),
+                                 c.source, c.sourcePort, portToInterface(c.sourcePort)]);
+        });
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(spineToCoreData), 'Spine to Core');
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(coreToSpineData), 'Core to Spine');
+
+        return wb;
+    }
+
+    function createDeviceNamesWorkbook(topology) {
+        const wb = XLSX.utils.book_new();
+        const headers = ['hostname', 'new hostname', 'locations'];
+
+        const sortKey = (a, b) => {
+            const numsA = a.match(/\d+/g)?.map(Number) || [];
+            const numsB = b.match(/\d+/g)?.map(Number) || [];
+            for (let i = 0; i < Math.max(numsA.length, numsB.length); i++) {
+                if ((numsA[i] || 0) !== (numsB[i] || 0)) return (numsA[i] || 0) - (numsB[i] || 0);
+            }
+            return 0;
+        };
+
+        ['GPU', 'Leaf', 'Spine', 'Core'].forEach(type => {
+            const data = [headers];
+            const names = Array.from(topology.deviceNames[type]).sort(sortKey);
+            names.forEach(name => data.push([name, '', '']));
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(data), type);
+        });
+
+        return wb;
+    }
+
+    // ============================================================
+    // UI 交互
+    // ============================================================
+    function onSchemeChange() {
+        currentScheme = document.getElementById('scheme').value;
+        const s = SCHEMES[currentScheme];
+
+        document.getElementById('schemeInfo').innerHTML = `
+            <h4>${s.name}</h4>
+            <p>每 SU: ${s.serversPerSu} 台服务器</p>
+            <p>两层拓扑: 1 - ${s.maxTwoTier.toLocaleString()} 台</p>
+            <p>三层拓扑: ${(s.maxTwoTier + 1).toLocaleString()} - ${s.maxThreeTier.toLocaleString()} 台</p>
+        `;
+
+        document.getElementById('serversHint').textContent =
+            `有效范围: 1 - ${s.maxThreeTier.toLocaleString()} 台`;
+
+        updateQuickButtons();
+
+        if (currentServers > s.maxThreeTier) {
+            currentServers = s.quickValues[Math.floor(s.quickValues.length / 2)];
+            document.getElementById('servers').value = currentServers;
+        }
+
+        cachedTopology = null;
+        updatePreview();
+    }
+
+    function updateQuickButtons() {
+        const s = SCHEMES[currentScheme];
+        document.getElementById('quickSelect').innerHTML = s.quickValues.map(v =>
+            `<button class="quick-btn" onclick="setServers(${v})">${v.toLocaleString()}</button>`
+        ).join('');
+    }
+
+    function setServers(value) {
+        document.getElementById('servers').value = value;
+        currentServers = value;
+        cachedTopology = null;
+        updatePreview();
+    }
+
+    function onServersChange() {
+        currentServers = parseInt(document.getElementById('servers').value) || 0;
+
+        const s = SCHEMES[currentScheme];
+        const percentage = Math.min(100, (currentServers / s.maxThreeTier) * 100);
+        document.getElementById('capacityBar').style.width = `${percentage}%`;
+
+        updateComputePower();
+
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+            cachedTopology = null;
+            updatePreview();
+        }, 300);
+    }
+
+    function onGpuModelChange() {
+        currentGpuModel = document.getElementById('gpuModel').value;
+        updateComputePower();
+    }
+
+    function formatPower(pflops) {
+        if (pflops >= 1000) {
+            return (pflops / 1000).toFixed(1) + ' EFLOPS';
+        } else if (pflops >= 1) {
+            return pflops.toLocaleString() + ' PFLOPS';
+        } else {
+            return (pflops * 1000).toFixed(0) + ' TFLOPS';
+        }
+    }
+
+    function updateComputePower() {
+        const spec = GPU_SPECS[currentGpuModel];
+        if (!spec) return;
+
+        const totalGpus = currentServers * GPUS_PER_SERVER;
+        const grid = document.getElementById('computePowerGrid');
+
+        let html = '';
+
+        // Blackwell 系列显示 FP4/FP8
+        if (spec.fp4Sparse !== undefined) {
+            html += `
+                <div class="power-item highlight">
+                    <span class="power-label">FP4 稀疏</span>
+                    <span class="power-value large">${formatPower(totalGpus * spec.fp4Sparse)}</span>
+                </div>
+                <div class="power-item">
+                    <span class="power-label">FP4 稠密</span>
+                    <span class="power-value">${formatPower(totalGpus * spec.fp4Dense)}</span>
+                </div>
+            `;
+        }
+
+        if (spec.fp8 !== undefined) {
+            html += `
+                <div class="power-item ${spec.fp4Sparse === undefined ? 'highlight' : ''}">
+                    <span class="power-label">FP8</span>
+                    <span class="power-value ${spec.fp4Sparse === undefined ? 'large' : ''}">${formatPower(totalGpus * spec.fp8)}</span>
+                </div>
+            `;
+        }
+
+        html += `
+            <div class="power-item">
+                <span class="power-label">FP16 稠密</span>
+                <span class="power-value">${formatPower(totalGpus * spec.fp16)}</span>
+            </div>
+        `;
+
+        grid.innerHTML = html;
+    }
+
+    function updatePreview() {
+        const s = SCHEMES[currentScheme];
+
+        if (currentServers <= 0 || currentServers > s.maxThreeTier) {
+            document.getElementById('summaryContent').innerHTML = `
+                <div class="error-message">
+                    服务器数量必须在 1 - ${s.maxThreeTier.toLocaleString()} 之间
+                </div>
+            `;
+            return;
+        }
+
+        document.getElementById('summaryContent').innerHTML = `
+            <div class="loading"><div class="spinner"></div> 计算拓扑参数...</div>
+        `;
+
+        setTimeout(() => {
+            try {
+                const generator = new TopologyGenerator(currentScheme);
+                cachedTopology = generator.generate(currentServers);
+                renderSummary();
+                updateConnectionPreview();
+            } catch (error) {
+                document.getElementById('summaryContent').innerHTML = `
+                    <div class="error-message">${error.message}</div>
+                `;
+            }
+        }, 10);
+    }
+
+    function renderSummary() {
+        if (!cachedTopology) return;
+
+        const s = SCHEMES[currentScheme];
+        const t = cachedTopology;
+        const isThreeTier = t.numCores > 0;
+        const numSus = Math.ceil(currentServers / s.serversPerSu);
+        const totalSwitches = t.numLeafs + t.numSpines + t.numCores;
+
+        const badgeClass = isThreeTier ? 'badge-three-tier' : 'badge-two-tier';
+        const topologyType = isThreeTier ? '三层 Fat-Tree (Leaf-Spine-Core)' : '两层 (Leaf-Spine)';
+
+        let html = `
+            <div class="topology-badge ${badgeClass}">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="2" y="3" width="20" height="14" rx="2"/>
+                    <line x1="8" y1="21" x2="16" y2="21"/>
+                    <line x1="12" y1="17" x2="12" y2="21"/>
+                </svg>
+                ${topologyType}
+            </div>
+
+            <div class="summary-grid">
+                <div class="stat-card">
+                    <div class="stat-value">${currentServers.toLocaleString()}</div>
+                    <div class="stat-label">GPU 服务器</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${numSus.toLocaleString()}</div>
+                    <div class="stat-label">SU 单元</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${t.numLeafs.toLocaleString()}</div>
+                    <div class="stat-label">Leaf 交换机</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">${t.numSpines.toLocaleString()}</div>
+                    <div class="stat-label">Spine 交换机</div>
+                </div>
+                ${isThreeTier ? `
+                <div class="stat-card">
+                    <div class="stat-value">${t.numCores.toLocaleString()}</div>
+                    <div class="stat-label">Core 交换机</div>
+                </div>
+                ` : ''}
+                <div class="stat-card">
+                    <div class="stat-value">${totalSwitches.toLocaleString()}</div>
+                    <div class="stat-label">交换机总数</div>
+                </div>
+            </div>
+
+            <div class="detail-section">
+                <div class="detail-title">配置详情</div>
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <span class="label">交换机型号</span>
+                        <span class="value">${s.switchModel}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">端口规格</span>
+                        <span class="value">${s.portSpec}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">每 SU 服务器</span>
+                        <span class="value">${s.serversPerSu} 台</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">每服务器 HCA</span>
+                        <span class="value">8 个</span>
+                    </div>
+        `;
+
+        if (isThreeTier) {
+            html += `
+                    <div class="detail-item">
+                        <span class="label">SuperPOD 数量</span>
+                        <span class="value">${t.numSuperpods}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">每 SuperPOD 服务器</span>
+                        <span class="value">${s.serversPerSuperpod.toLocaleString()} 台</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">Core 结构</span>
+                        <span class="value">${s.numCgs} CG × ${t.coresPerCg}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">每 Spine-Core 线缆</span>
+                        <span class="value">${t.cablesPerCore} 根</span>
+                    </div>
+            `;
+        }
+
+        html += `</div></div>`;
+        document.getElementById('summaryContent').innerHTML = html;
+    }
+
+    function updateConnectionPreview() {
+        if (!cachedTopology) return;
+
+        const t = cachedTopology;
+        document.getElementById('badge_gpu_to_leaf').textContent = formatNumber(t.connections.gpuToLeaf.length);
+        document.getElementById('badge_leaf_to_spine').textContent = formatNumber(t.connections.leafToSpine.length);
+        document.getElementById('badge_spine_to_core').textContent = formatNumber(t.connections.spineToCore.length);
+
+        renderConnectionTable();
+    }
+
+    function formatNumber(num) {
+        if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+        if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+        return num.toString();
+    }
+
+    function switchTab(tab) {
+        currentTab = tab;
+        document.querySelectorAll('.tab').forEach(t => {
+            t.classList.toggle('active', t.dataset.tab === tab);
+        });
+        renderConnectionTable();
+    }
+
+    function renderConnectionTable() {
+        if (!cachedTopology) {
+            document.getElementById('connectionContent').innerHTML = `
+                <div class="empty-state"><p>生成拓扑后显示连接预览</p></div>
+            `;
+            return;
+        }
+
+        const dataMap = {
+            'gpu_to_leaf': cachedTopology.connections.gpuToLeaf,
+            'leaf_to_spine': cachedTopology.connections.leafToSpine,
+            'spine_to_core': cachedTopology.connections.spineToCore
+        };
+
+        const data = dataMap[currentTab];
+        if (!data || data.length === 0) {
+            document.getElementById('connectionContent').innerHTML = `
+                <div class="empty-state"><p>此层级无连接数据</p></div>
+            `;
+            return;
+        }
+
+        const sample = data.slice(0, 50);
+        let html = `
+            <div class="table-container">
+                <table class="connection-table">
+                    <thead>
+                        <tr>
+                            <th>源设备</th>
+                            <th>源端口</th>
+                            <th>→</th>
+                            <th>目标设备</th>
+                            <th>目标端口</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+
+        sample.forEach(c => {
+            html += `
+                <tr>
+                    <td>${c.source}</td>
+                    <td>${c.sourcePort}</td>
+                    <td>→</td>
+                    <td>${c.dest}</td>
+                    <td>${c.destPort}</td>
+                </tr>
+            `;
+        });
+
+        html += `
+                    </tbody>
+                </table>
+            </div>
+            <p style="text-align: center; margin-top: 12px; color: var(--text-secondary); font-size: 0.75rem;">
+                显示前 ${sample.length} 条，共 ${data.length.toLocaleString()} 条连接
+            </p>
+        `;
+
+        document.getElementById('connectionContent').innerHTML = html;
+    }
+
+    // ============================================================
+    // 下载功能
+    // ============================================================
+    function ensureTopology() {
+        if (!cachedTopology) {
+            const generator = new TopologyGenerator(currentScheme);
+            cachedTopology = generator.generate(currentServers);
+        }
+        return cachedTopology;
+    }
+
+    function downloadTopology() {
+        const s = SCHEMES[currentScheme];
+        if (currentServers <= 0 || currentServers > s.maxThreeTier) {
+            showDownloadError('请输入有效的服务器数量');
+            return;
+        }
+
+        hideDownloadError();
+        const topology = ensureTopology();
+        const wb = createTopologyWorkbook(topology);
+        const filename = `${s.filePrefix}_${currentServers}_servers.xlsx`;
+        XLSX.writeFile(wb, filename);
+    }
+
+    function downloadDeviceNames() {
+        const s = SCHEMES[currentScheme];
+        if (currentServers <= 0 || currentServers > s.maxThreeTier) {
+            showDownloadError('请输入有效的服务器数量');
+            return;
+        }
+
+        hideDownloadError();
+        const topology = ensureTopology();
+        const wb = createDeviceNamesWorkbook(topology);
+        const prefix = s.filePrefix.replace('topology_', '');
+        const filename = `device_names_${prefix}_${currentServers}_servers.xlsx`;
+        XLSX.writeFile(wb, filename);
+    }
+
+    async function downloadAll() {
+        const s = SCHEMES[currentScheme];
+        if (currentServers <= 0 || currentServers > s.maxThreeTier) {
+            showDownloadError('请输入有效的服务器数量');
+            return;
+        }
+
+        hideDownloadError();
+        const btn = document.getElementById('downloadAllBtn');
+        btn.disabled = true;
+        btn.innerHTML = '<div class="spinner" style="width:18px;height:18px;margin:0"></div> 生成中...';
+
+        try {
+            const topology = ensureTopology();
+            const zip = new JSZip();
+
+            // 拓扑连接表
+            const topologyWb = createTopologyWorkbook(topology);
+            const topologyData = XLSX.write(topologyWb, { bookType: 'xlsx', type: 'array' });
+            zip.file(`${s.filePrefix}_${currentServers}_servers.xlsx`, topologyData);
+
+            // 设备名称表
+            const deviceWb = createDeviceNamesWorkbook(topology);
+            const deviceData = XLSX.write(deviceWb, { bookType: 'xlsx', type: 'array' });
+            const prefix = s.filePrefix.replace('topology_', '');
+            zip.file(`device_names_${prefix}_${currentServers}_servers.xlsx`, deviceData);
+
+            // 生成 ZIP
+            const content = await zip.generateAsync({ type: 'blob' });
+            const url = URL.createObjectURL(content);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `topology_package_${currentScheme}_${currentServers}_servers.zip`;
+            a.click();
+            URL.revokeObjectURL(url);
+
+        } catch (error) {
+            showDownloadError(error.message);
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = `
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                    <polyline points="7,10 12,15 17,10"/>
+                    <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                下载全部文件 (ZIP)
+            `;
+        }
+    }
+
+    function showDownloadError(message) {
+        const el = document.getElementById('downloadError');
+        el.textContent = message;
+        el.style.display = 'block';
+    }
+
+    function hideDownloadError() {
+        document.getElementById('downloadError').style.display = 'none';
+    }
+
+    // ============================================================
+    // 初始化
+    // ============================================================
+    document.addEventListener('DOMContentLoaded', () => {
+        onSchemeChange();
+        updateComputePower();
+    });
+    </script>
+</body>
+</html>

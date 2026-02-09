@@ -1,0 +1,1285 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>北京正阳恒卓科技有限公司 - 产品报价系统</title>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <style>
+        :root {
+            --nvidia-green: #76b900;
+            --nvidia-dark: #1a1a1a;
+            --nvidia-gray: #333333;
+            --primary: #10b981;
+            --primary-dark: #059669;
+            --secondary: #6366f1;
+            --accent: #f59e0b;
+            --danger: #ef4444;
+            --bg-main: #f9fafb;
+            --bg-card: #ffffff;
+            --text-primary: #111827;
+            --text-secondary: #6b7280;
+            --border: #e5e7eb;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', 'Roboto', sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        /* 顶部导航栏 */
+        .navbar {
+            background: linear-gradient(135deg, var(--nvidia-dark) 0%, var(--nvidia-gray) 100%);
+            color: white;
+            padding: 0;
+            box-shadow: var(--shadow-lg);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar-content {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 16px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            height: 45px;
+        }
+
+        .brand-logo svg {
+            height: 45px;
+            width: auto;
+        }
+
+        .brand-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: white;
+            border-left: 2px solid var(--nvidia-green);
+            padding-left: 12px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            font-size: 13px;
+            backdrop-filter: blur(10px);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--nvidia-green);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* 搜索区域 */
+        .search-section {
+            background: white;
+            border-bottom: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 66px;
+            z-index: 99;
+        }
+
+        .search-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 24px 32px;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 12px;
+            max-width: 900px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 16px 24px;
+            font-size: 16px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            background: var(--bg-main);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--nvidia-green);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(118, 185, 0, 0.1);
+        }
+
+        .search-input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .search-btn {
+            padding: 16px 32px;
+            font-size: 16px;
+            font-weight: 600;
+            color: white;
+            background: linear-gradient(135deg, var(--nvidia-green) 0%, #84cc16 100%);
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+        }
+
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .search-btn:active {
+            transform: translateY(0);
+        }
+
+        /* 主内容区 */
+        .main-content {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 32px;
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 32px;
+            align-items: start;
+        }
+
+        /* 产品列表区域 */
+        .products-area {
+            min-height: 500px;
+        }
+
+        .products-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .products-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .results-count {
+            font-size: 14px;
+            color: var(--text-secondary);
+            background: var(--bg-main);
+            padding: 8px 16px;
+            border-radius: 20px;
+        }
+
+        .products-grid {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .products-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .products-table thead {
+            background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+        }
+
+        .products-table th {
+            padding: 16px;
+            text-align: left;
+            font-size: 15px;
+            font-weight: 700;
+            color: #1f2937;
+            border-bottom: 2px solid var(--border);
+            white-space: nowrap;
+        }
+
+        .products-table th:first-child {
+            text-align: center;
+            width: 60px;
+        }
+
+        .products-table th:last-child {
+            text-align: center;
+            width: 120px;
+        }
+
+        .products-table tbody tr {
+            border-bottom: 1px solid var(--border);
+            transition: all 0.2s ease;
+        }
+
+        .products-table tbody tr:hover {
+            background: #f9fafb;
+        }
+
+        .products-table td {
+            padding: 16px;
+            font-size: 15px;
+            color: #1f2937;
+            vertical-align: top;
+        }
+
+        .products-table td:first-child {
+            text-align: center;
+            color: #4b5563;
+            font-weight: 600;
+        }
+
+        .product-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 4px;
+        }
+
+        .product-model {
+            font-size: 14px;
+            color: #374151;
+            font-family: 'Courier New', monospace;
+        }
+
+        .product-code {
+            font-size: 13px;
+            color: #16a34a;
+            font-weight: 700;
+            background: rgba(118, 185, 0, 0.15);
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            display: inline-block;
+        }
+
+        .product-description {
+            font-size: 14px;
+            color: #374151;
+            line-height: 1.6;
+        }
+
+        .add-btn {
+            padding: 8px 20px;
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+            background: linear-gradient(135deg, var(--nvidia-green) 0%, #84cc16 100%);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .add-btn:hover {
+            transform: scale(1.05);
+            box-shadow: var(--shadow);
+        }
+
+        /* 侧边栏购物车 */
+        .cart-sidebar {
+            position: sticky;
+            top: 150px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            max-height: calc(100vh - 180px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cart-header {
+            padding: 24px;
+            border-bottom: 1px solid var(--border);
+            background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+            border-radius: 16px 16px 0 0;
+        }
+
+        .cart-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .cart-badge {
+            background: var(--nvidia-green);
+            color: white;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 12px;
+            min-width: 24px;
+            text-align: center;
+        }
+
+        .cart-items {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+        }
+
+        .cart-items::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .cart-items::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        .cart-items::-webkit-scrollbar-thumb {
+            background: var(--nvidia-green);
+            border-radius: 3px;
+        }
+
+        .cart-item {
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+            margin-bottom: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .cart-item:hover {
+            border-color: var(--nvidia-green);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .cart-item-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+        }
+
+        .cart-item-model {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .cart-item-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 12px;
+        }
+
+        .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .quantity-input {
+            width: 60px;
+            padding: 6px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .remove-btn {
+            padding: 6px 12px;
+            font-size: 12px;
+            color: var(--danger);
+            background: white;
+            border: 1px solid var(--danger);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .remove-btn:hover {
+            background: var(--danger);
+            color: white;
+        }
+
+        .cart-footer {
+            padding: 24px;
+            border-top: 1px solid var(--border);
+            background: var(--bg-main);
+            border-radius: 0 0 16px 16px;
+        }
+
+        .cart-settings {
+            margin-bottom: 16px;
+        }
+
+        .setting-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .setting-label {
+            font-size: 13px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .setting-input {
+            width: 120px;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .generate-btn {
+            width: 100%;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 700;
+            color: white;
+            background: linear-gradient(135deg, var(--nvidia-green) 0%, #84cc16 100%);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow);
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .generate-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 60px 40px;
+            color: var(--text-secondary);
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.3;
+        }
+
+        .empty-text {
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .empty-subtext {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* 加载器 */
+        .loader {
+            border: 3px solid #f3f4f6;
+            border-top: 3px solid var(--nvidia-green);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 0.8s linear infinite;
+            margin: 40px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 通知提示 */
+        .toast {
+            position: fixed;
+            top: 100px;
+            right: 32px;
+            padding: 16px 24px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--shadow-xl);
+            border-left: 4px solid var(--nvidia-green);
+            z-index: 1000;
+            animation: slideInRight 0.3s ease;
+            max-width: 400px;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .toast.success { border-left-color: var(--nvidia-green); }
+        .toast.error { border-left-color: var(--danger); }
+        .toast.warning { border-left-color: var(--accent); }
+
+        .toast-content {
+            font-size: 14px;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        /* 响应式 */
+        @media (max-width: 1200px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .cart-sidebar {
+                position: relative;
+                top: 0;
+                max-height: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navbar-content {
+                padding: 12px 16px;
+            }
+
+            .brand-title {
+                display: none;
+            }
+
+            .search-container {
+                padding: 16px;
+            }
+
+            .search-box {
+                flex-direction: column;
+            }
+
+            .main-content {
+                padding: 16px;
+                gap: 16px;
+            }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <nav class="navbar">
+        <div class="navbar-content">
+            <div class="brand">
+                <div class="brand-logo">
+                    <svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="45" height="45">
+                        <style>
+                            .s0 { fill: url(#zyhz-gradient); }
+                        </style>
+                        <defs>
+                            <linearGradient id="zyhz-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1"></stop>
+                                <stop offset="50%" style="stop-color:#06b6d4;stop-opacity:1"></stop>
+                                <stop offset="100%" style="stop-color:#22c55e;stop-opacity:1"></stop>
+                            </linearGradient>
+                        </defs>
+                        <g id="图层 1">
+                            <g id="&lt;Group&gt;">
+                                <g id="&lt;Group&gt;">
+                                    <path id="&lt;Path&gt;" class="s0" d="m79.44 359.96c3.59-4.48 7.23-8.93 10.76-13.45q21.17-27.13 42.3-54.29c0.43-0.56 0.82-1.15 1.54-2.14-18.24 0-36.08 0-54.57 0 1.3-1.68 2.19-2.85 3.09-4 6.39-8.19 12.82-16.36 19.15-24.59 1.01-1.30 2.09-1.68 3.66-1.68q46.43 0.02 92.86-0.12c2.61-0.01 4.45 0.5 6.34 2.64 4.87 5.51 10.19 10.61 15.31 15.89 4.73 4.87 9.43 9.77 14.34 14.86-5.86 6.92-11.61 13.71-17.57 20.74-1.88-1.97-3.55-3.76-5.26-5.51-5.5-5.69-10.99-11.40-16.56-17.02-0.64-0.65-1.75-1.16-2.65-1.18q-9.47-0.19-18.95-0.1c-0.82 0.01-1.91 0.49-2.4 1.12-10.03 12.75-19.98 25.56-29.95 38.36-0.08 0.11-0.05 0.29-0.13 0.70 17.9 0 35.74 0 54.23 0-1.28 1.68-2.22 2.89-3.15 4.11-6.25 8.20-12.48 16.42-18.81 24.56-0.61 0.79-1.90 1.51-2.88 1.51-30.23 0.08-60.47 0.07-90.70 0.07q0-0.24 0-0.48z"></path>
+                                </g>
+                                <g id="&lt;Group&gt;">
+                                    <path id="&lt;Path&gt;" class="s0" d="m520.56 331.16c-2.71 3.33-5.47 6.62-8.10 10.01-4.51 5.81-8.87 11.73-13.44 17.49-0.71 0.90-2.18 1.70-3.30 1.70-29.43 0.10-58.86 0.08-88.29 0.08-0.54 0-1.07-0.05-2.02-0.11 3.15-4.09 6.08-7.93 9.05-11.73q15.17-19.49 30.35-38.96 18.79-24.10 37.54-48.24c0.93-1.20 1.94-1.62 3.44-1.61 10.56 0.07 21.12 0.04 31.67 0.03 1.04 0 2.07-0.12 3.10-0.18q0 0.48 0 0.96c-4.27 5.37-8.57 10.71-12.79 16.11q-16.83 21.52-33.61 43.08c-2.58 3.31-5.11 6.66-7.77 10.14 0.51 0.15 0.72 0.26 0.93 0.26q26.62 0.02 53.24 0.01 0 0.48 0 0.96z"></path>
+                                </g>
+                                <g id="&lt;Group&gt;">
+                                    <path id="&lt;Path&gt;" class="s0" d="m311.29 360.27c-10.08 0-19.89 0-30.06 0q0-1.31 0-2.57c0-20.32-0.02-40.63 0.05-60.95 0-1.23 0.43-2.73 1.21-3.66 8.82-10.66 17.76-21.22 26.64-31.83 0.45-0.53 0.64-1.29 0.95-1.95q0.53 0.34 1.06 0.67c0.05 0.81 0.15 1.62 0.15 2.43 0.01 10.08 0.06 20.16-0.04 30.23-0.02 2.03 0.6 2.54 2.56 2.53q28.2-0.10 56.39 0.01c2.06 0.01 2.52-0.66 2.50-2.60-0.09-9.91-0.04-19.83-0.04-29.75 0-0.87 0-1.74 0-2.84 34.93 0 69.66 0 104.90 0-2.45 3.23-4.66 6.18-6.92 9.10-4.89 6.31-9.85 12.58-14.68 18.94-1.08 1.42-2.18 1.98-3.98 1.97-15.75-0.07-31.51-0.04-47.26-0.03-0.63 0-1.25 0.07-2.14 0.13 0 23.41 0 46.71 0 70.17-10.07 0-19.85 0-29.92 0 0-0.99 0-1.84 0-2.70 0-9.99-0.04-19.99 0.03-29.99 0.02-1.83-0.45-2.52-2.40-2.51q-28.32 0.09-56.63 0c-1.94-0.01-2.42 0.66-2.40 2.50 0.07 10 0.03 20 0.03 29.99 0 0.86 0 1.72 0 2.71z"></path>
+                                </g>
+                                <g id="&lt;Group&gt;">
+                                    <path id="&lt;Path&gt;" class="s0" d="m305.56 260.06c-4.48 5.29-8.64 10.23-12.83 15.14-13.83 16.24-27.69 32.46-41.48 48.75-0.63 0.75-0.94 1.99-0.95 3.01-0.08 10.16-0.05 20.31-0.06 30.47 0 0.86 0 1.73 0 2.76-0.77 0.09-1.37 0.23-1.98 0.23-8.63 0.01-17.27-0.04-25.90 0.04-1.77 0.02-2.32-0.45-2.31-2.28 0.07-13.35 0.02-26.70 0.07-40.06 0.01-0.86 0.34-1.91 0.89-2.55q23.08-27.25 46.30-54.39c0.58-0.69 1.71-1.30 2.58-1.31 11.44-0.08 22.87-0.06 34.31-0.05 0.29 0 0.58 0.10 1.36 0.24z"></path>
+                                </g>
+                                <g id="&lt;Group&gt;">
+                                    <path id="&lt;Path&gt;" class="s0" d="m351.93 288.09c-2.78 0-5.03 0.17-7.24-0.08-0.93-0.11-1.96-0.93-2.62-1.71-15.30-18.09-31.45-35.39-48.95-51.39-14.90-13.62-30.38-26.52-48.10-36.40-6.45-3.60-13.10-6.84-20.55-7.65-2.55-0.28-5.34-0.08-7.77 0.68-4.52 1.42-6.20 5.27-6.70 9.65-0.76 6.67 0.76 13.05 2.77 19.33 5.39 16.81 13.97 32.06 23.12 47.03 1.59 2.59 3.24 5.14 4.84 7.72 0.08 0.12 0.06 0.30 0.16 1.06-0.86-0.56-1.58-0.78-1.91-1.26-16.16-23.40-31.65-47.20-41.16-74.25-2.10-5.96-3.54-12.36-4.02-18.66-0.93-12.37 5.59-17.60 17.76-14.95 9.77 2.13 18.36 6.96 26.70 12.22 18.98 11.94 35.89 26.47 52.16 41.79 21.40 20.16 41.20 41.81 59.79 64.57 0.49 0.60 0.93 1.23 1.72 2.30z"></path>
+                                </g>
+                                <g id="&lt;Group&gt;">
+                                    <path id="&lt;Path&gt;" class="s0" d="m397.62 366.68c2.80 0 5.26-0.06 7.71 0.05 0.49 0.02 1.14 0.55 1.39 1.03 7.50 14.06 14.72 28.26 17.52 44.16 0.62 3.56 0.69 7.35 0.27 10.95-0.79 6.65-5.10 10.50-11.79 10.02-4.70-0.33-9.50-1.48-13.91-3.17-12.73-4.87-23.84-12.63-34.67-20.74-5.43-4.07-10.69-8.37-16.03-12.56q0.19-0.27 0.38-0.54c0.65 0.47 1.32 0.92 1.95 1.41 9.53 7.44 19.29 14.59 30.27 19.75 4.95 2.32 10.31 3.79 15.54 5.46 1.48 0.47 3.18 0.38 4.76 0.30 5.43-0.26 8.99-3.20 10.17-8.51 1.48-6.63 0.34-13.16-1.87-19.34-3.07-8.56-6.79-16.89-10.25-25.30-0.38-0.94-0.88-1.82-1.44-2.97z"></path>
+                                </g>
+                                <g id="&lt;Group&gt;">
+                                    <path id="&lt;Path&gt;" class="s0" d="m314.89 365.1c10.27-0.87 15.30-7.25 17.77-16.59 2.52 9.55 7.69 15.98 18.29 16.61-10.64 0.61-15.85 7.10-18.31 16.78-2.35-9.51-7.47-15.88-17.75-16.80z"></path>
+                                </g>
+                            </g>
+                        </g>
+                    </svg>
+                </div>
+                <div class="brand-title">产品报价系统</div>
+            </div>
+            <div class="status-indicator" id="statusIndicator">
+                <span class="status-dot"></span>
+                <span id="statusText">正在加载产品数据...</span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 搜索区域 -->
+    <div class="search-section">
+        <div class="search-container">
+            <div class="search-box">
+                <input type="text" id="searchInput" class="search-input" placeholder="💡 搜索技巧：使用空格可以多级搜索和筛选 (例如: BlueField 400G)">
+                <button id="searchBtn" class="search-btn">搜索</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主内容区 -->
+    <div class="main-content">
+        <!-- 产品列表区域 -->
+        <div class="products-area">
+            <div class="products-header" id="productsHeader" style="display: none;">
+                <h2 class="products-title">搜索结果</h2>
+                <span class="results-count" id="resultsCount">0 个产品</span>
+            </div>
+
+            <div id="productsGrid" class="products-grid"></div>
+
+            <!-- 空状态 -->
+            <div id="emptyState" class="empty-state">
+                <div class="empty-icon">🔍</div>
+                <div class="empty-text">在上方搜索框中输入关键词</div>
+                <div class="empty-subtext">支持搜索产品名称、型号、Product Code 或描述</div>
+            </div>
+
+            <!-- 加载中 -->
+            <div id="searchLoader" class="loader hidden"></div>
+
+            <!-- 无结果 -->
+            <div id="noResults" class="empty-state hidden">
+                <div class="empty-icon">😕</div>
+                <div class="empty-text">未找到匹配的产品</div>
+                <div class="empty-subtext">请尝试使用其他关键词</div>
+            </div>
+        </div>
+
+        <!-- 侧边栏购物车 -->
+        <aside class="cart-sidebar">
+            <div class="cart-header">
+                <div class="cart-title">
+                    已选产品
+                    <span class="cart-badge" id="cartBadge">0</span>
+                </div>
+            </div>
+
+            <div class="cart-items" id="cartItems">
+                <div class="empty-state">
+                    <div class="empty-icon">🛒</div>
+                    <div class="empty-text">清单为空</div>
+                    <div class="empty-subtext">搜索并添加产品</div>
+                </div>
+            </div>
+
+            <div class="cart-footer">
+                <div class="cart-settings">
+                    <div class="setting-row">
+                        <span class="setting-label">实时汇率 (USD→CNY)</span>
+                        <input type="text" id="exchangeRate" class="setting-input" value="获取中..." readonly style="background: #f3f4f6; cursor: not-allowed;">
+                    </div>
+                    <div class="setting-row">
+                        <span class="setting-label">货期</span>
+                        <input type="text" id="deliveryPeriod" class="setting-input" value="2-3周">
+                    </div>
+                </div>
+                <button id="generateBtn" class="generate-btn" disabled>生成清单</button>
+            </div>
+        </aside>
+    </div>
+
+    <!-- 通知容器 -->
+    <div id="toastContainer"></div>
+
+    <script>
+        // 全局变量
+        let productData = [];
+        let selectedItems = [];
+        const jsonDataPath = 'output/products-latest.json?v=' + new Date().getTime();
+
+        // DOM元素
+        const statusText = document.getElementById('statusText');
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const productsGrid = document.getElementById('productsGrid');
+        const productsHeader = document.getElementById('productsHeader');
+        const resultsCount = document.getElementById('resultsCount');
+        const emptyState = document.getElementById('emptyState');
+        const searchLoader = document.getElementById('searchLoader');
+        const noResults = document.getElementById('noResults');
+        const cartItems = document.getElementById('cartItems');
+        const cartBadge = document.getElementById('cartBadge');
+        const generateBtn = document.getElementById('generateBtn');
+        const exchangeRateInput = document.getElementById('exchangeRate');
+        const deliveryPeriodInput = document.getElementById('deliveryPeriod');
+
+        // 获取实时汇率
+        function fetchExchangeRate() {
+            // 使用免费的汇率API
+            fetch('https://api.exchangerate-api.com/v4/latest/USD')
+                .then(response => response.json())
+                .then(data => {
+                    const rate = data.rates.CNY;
+                    if (rate) {
+                        exchangeRateInput.value = rate.toFixed(4);
+                        console.log(`实时汇率更新: 1 USD = ${rate.toFixed(4)} CNY`);
+                    } else {
+                        exchangeRateInput.value = '7.35 (默认)';
+                    }
+                })
+                .catch(error => {
+                    console.error('获取汇率失败:', error);
+                    exchangeRateInput.value = '7.35 (默认)';
+                });
+        }
+
+        // 页面加载时获取汇率
+        fetchExchangeRate();
+
+        // 加载产品数据
+        function loadProductData() {
+            fetch(jsonDataPath)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`无法加载产品数据 (${response.status})`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.products && Array.isArray(data.products)) {
+                        productData = data.products;
+                        statusText.textContent = `已加载 ${productData.length} 个产品`;
+                        showToast(`成功加载 ${productData.length} 个产品`, 'success');
+                    } else {
+                        throw new Error('JSON数据结构不正确');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading product data:', error);
+                    statusText.textContent = '加载失败';
+                    showToast(`加载失败: ${error.message}`, 'error');
+                });
+        }
+
+        // 搜索产品
+        function performSearch() {
+            const searchTerm = searchInput.value.trim();
+            if (!searchTerm) {
+                showToast('请输入搜索关键词', 'warning');
+                return;
+            }
+
+            if (productData.length === 0) {
+                showToast('产品数据尚未加载完成', 'warning');
+                return;
+            }
+
+            // 显示加载状态
+            searchLoader.classList.remove('hidden');
+            emptyState.classList.add('hidden');
+            noResults.classList.add('hidden');
+            productsGrid.innerHTML = '';
+            productsHeader.style.display = 'none';
+
+            setTimeout(() => {
+                const keywords = searchTerm.split(/\s+/).filter(kw => kw.length > 0);
+                let results = [...productData];
+
+                for (const keyword of keywords) {
+                    const upperKeyword = keyword.toUpperCase();
+                    results = results.filter(item =>
+                        (item.product_name && item.product_name.toString().toUpperCase().includes(upperKeyword)) ||
+                        (item.price_book_organizer && item.price_book_organizer.toString().toUpperCase().includes(upperKeyword)) ||
+                        (item.product_code && item.product_code.toString().toUpperCase().includes(upperKeyword)) ||
+                        (item.product_description && item.product_description.toString().toUpperCase().includes(upperKeyword))
+                    );
+
+                    if (results.length === 0) break;
+                }
+
+                searchLoader.classList.add('hidden');
+
+                if (results.length === 0) {
+                    noResults.classList.remove('hidden');
+                } else {
+                    displaySearchResults(results);
+                }
+            }, 300);
+        }
+
+        // 显示搜索结果
+        function displaySearchResults(results) {
+            productsHeader.style.display = 'flex';
+            resultsCount.textContent = `${results.length} 个产品`;
+
+            let tableHTML = `
+                <table class="products-table">
+                    <thead>
+                        <tr>
+                            <th>序号</th>
+                            <th>商品名称/规格型号</th>
+                            <th>Product Code</th>
+                            <th>产品描述</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            results.forEach((product, index) => {
+                tableHTML += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>
+                            <div class="product-title">${product.price_book_organizer || ''}</div>
+                            <div class="product-model">${product.product_name || ''}</div>
+                        </td>
+                        <td>
+                            <span class="product-code">${product.product_code || ''}</span>
+                        </td>
+                        <td>
+                            <div class="product-description">${product.product_description || ''}</div>
+                        </td>
+                        <td style="text-align: center;">
+                            <button class="add-btn" onclick="addToCart('${product.id}')">添加到清单</button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tableHTML += `
+                    </tbody>
+                </table>
+            `;
+
+            productsGrid.innerHTML = tableHTML;
+        }
+
+        // 添加到购物车
+        function addToCart(productId) {
+            const product = productData.find(p => p.id === productId);
+            if (!product) return;
+
+            const quantity = prompt(`请输入 ${product.product_name} 的购买数量:`, '1');
+            if (quantity === null) return;
+
+            const qty = parseInt(quantity);
+            if (isNaN(qty) || qty <= 0) {
+                showToast('请输入有效的数量', 'warning');
+                return;
+            }
+
+            const existingIndex = selectedItems.findIndex(i => i.id === product.id);
+            if (existingIndex >= 0) {
+                selectedItems[existingIndex].Quantity += qty;
+                showToast(`已更新 ${product.product_name} 的数量`, 'success');
+            } else {
+                selectedItems.push({ ...product, Quantity: qty });
+                showToast(`已添加 ${product.product_name}`, 'success');
+            }
+
+            updateCart();
+        }
+
+        // 更新购物车
+        function updateCart() {
+            cartBadge.textContent = selectedItems.length;
+
+            if (selectedItems.length === 0) {
+                cartItems.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">🛒</div>
+                        <div class="empty-text">购物车为空</div>
+                        <div class="empty-subtext">搜索并添加产品</div>
+                    </div>
+                `;
+                generateBtn.disabled = true;
+            } else {
+                cartItems.innerHTML = '';
+                selectedItems.forEach((item, index) => {
+                    const cartItem = document.createElement('div');
+                    cartItem.className = 'cart-item';
+                    cartItem.innerHTML = `
+                        <div class="cart-item-name">${item.price_book_organizer || ''}</div>
+                        <div class="cart-item-model">${item.product_name || ''}</div>
+                        <div class="cart-item-controls">
+                            <div class="quantity-control">
+                                <span style="font-size: 12px; color: var(--text-secondary);">数量:</span>
+                                <input type="number" class="quantity-input" value="${item.Quantity}" min="1"
+                                    onchange="updateQuantity(${index}, this.value)">
+                            </div>
+                            <button class="remove-btn" onclick="removeFromCart(${index})">删除</button>
+                        </div>
+                    `;
+                    cartItems.appendChild(cartItem);
+                });
+                generateBtn.disabled = false;
+            }
+        }
+
+        // 更新数量
+        function updateQuantity(index, value) {
+            const qty = parseInt(value);
+            if (!isNaN(qty) && qty > 0) {
+                selectedItems[index].Quantity = qty;
+            } else {
+                updateCart();
+            }
+        }
+
+        // 从购物车移除
+        function removeFromCart(index) {
+            const item = selectedItems[index];
+            selectedItems.splice(index, 1);
+            showToast(`已移除 ${item.product_name}`, 'success');
+            updateCart();
+        }
+
+        // 生成报价单
+        function generateQuote() {
+            if (selectedItems.length === 0) return;
+
+            const workbook = XLSX.utils.book_new();
+            const worksheet = XLSX.utils.aoa_to_sheet([]);
+
+            // 设置列宽（现在是10列）
+            worksheet['!cols'] = [
+                { wch: 6 },   // 序号
+                { wch: 24 },  // 商品名称
+                { wch: 28 },  // 规格型号
+                { wch: 24 },  // Product Code
+                { wch: 38 },  // 产品描述
+                { wch: 10 },  // 品牌
+                { wch: 6 },   // 数量
+                { wch: 14 },  // 单价(含税)
+                { wch: 14 },  // 总价(含税)
+                { wch: 12 }   // 货期
+            ];
+
+            const deliveryPeriod = deliveryPeriodInput.value || '2-3周';
+            const today = new Date();
+            const dateStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+
+            // 第1行：公司标题
+            XLSX.utils.sheet_add_aoa(worksheet, [["北京正阳恒卓科技有限公司 产品报价单"]], { origin: "A1" });
+            const titleCell = XLSX.utils.encode_cell({ r: 0, c: 0 });
+            worksheet[titleCell].s = {
+                font: {
+                    bold: true,
+                    sz: 20,
+                    color: { rgb: "3B82F6" }  // 蓝色
+                },
+                alignment: {
+                    horizontal: "center",
+                    vertical: "center"
+                },
+                fill: { fgColor: { rgb: "EFF6FF" } }  // 浅蓝背景
+            };
+            // 合并标题单元格 A1:J1
+            worksheet['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 9 } }];
+
+            // 第2行：公司信息和报价日期
+            XLSX.utils.sheet_add_aoa(worksheet, [["电话：010-63085531"]], { origin: "A2" });
+            XLSX.utils.sheet_add_aoa(worksheet, [["报价日期：" + dateStr]], { origin: "H2" });
+
+            const phoneCell = XLSX.utils.encode_cell({ r: 1, c: 0 });
+            worksheet[phoneCell].s = {
+                font: { sz: 10, color: { rgb: "4B5563" } },
+                alignment: { horizontal: "left", vertical: "center" },
+                fill: { fgColor: { rgb: "F9FAFB" } }
+            };
+            worksheet['!merges'].push({ s: { r: 1, c: 0 }, e: { r: 1, c: 6 } });
+
+            const dateCell2 = XLSX.utils.encode_cell({ r: 1, c: 7 });
+            worksheet[dateCell2].s = {
+                font: { sz: 10, color: { rgb: "4B5563" } },
+                alignment: { horizontal: "right", vertical: "center" },
+                fill: { fgColor: { rgb: "F9FAFB" } }
+            };
+            worksheet['!merges'].push({ s: { r: 1, c: 7 }, e: { r: 1, c: 9 } });
+
+            // 第3行：地址
+            XLSX.utils.sheet_add_aoa(worksheet, [["地址：北京市西城区长安兴融中心2号楼5A"]], { origin: "A3" });
+            const addressCell = XLSX.utils.encode_cell({ r: 2, c: 0 });
+            addressCell.s = {
+                font: { sz: 10, color: { rgb: "4B5563" } },
+                alignment: { horizontal: "left", vertical: "center" },
+                fill: { fgColor: { rgb: "F9FAFB" } }
+            };
+            worksheet['!merges'].push({ s: { r: 2, c: 0 }, e: { r: 2, c: 9 } });
+
+            // 第4行：报价有效期
+            XLSX.utils.sheet_add_aoa(worksheet, [["报价有效期：30天"]], { origin: "A4" });
+            const validityCell = XLSX.utils.encode_cell({ r: 3, c: 0 });
+            worksheet[validityCell].s = {
+                font: { sz: 10, color: { rgb: "4B5563" } },
+                alignment: { horizontal: "left", vertical: "center" },
+                fill: { fgColor: { rgb: "F9FAFB" } }
+            };
+            worksheet['!merges'].push({ s: { r: 3, c: 0 }, e: { r: 3, c: 9 } });
+
+            // 第5行：表头
+            XLSX.utils.sheet_add_aoa(worksheet, [
+                ["序号", "商品名称", "规格型号", "Product Code", "产品描述", "品牌", "数量", "单价(含税)", "总价(含税)", "货期"]
+            ], { origin: "A5" });
+
+            // 美化表头样式（NVIDIA绿色背景）
+            for (let col = 0; col < 10; col++) {
+                const cellRef = XLSX.utils.encode_cell({ r: 4, c: col });
+                if (!worksheet[cellRef]) worksheet[cellRef] = { t: 's', v: '' };
+
+                worksheet[cellRef].s = {
+                    fill: { fgColor: { rgb: "76B900" } },  // NVIDIA绿色背景
+                    font: {
+                        bold: true,
+                        sz: 11,
+                        color: { rgb: "FFFFFF" }  // 白色文字
+                    },
+                    alignment: {
+                        horizontal: "center",
+                        vertical: "center",
+                        wrapText: true
+                    },
+                    border: {
+                        top: { style: "medium", color: { rgb: "5A8C00" } },
+                        bottom: { style: "medium", color: { rgb: "5A8C00" } },
+                        left: { style: "thin", color: { rgb: "5A8C00" } },
+                        right: { style: "thin", color: { rgb: "5A8C00" } }
+                    }
+                };
+            }
+
+            // 设置行高
+            worksheet['!rows'] = [
+                { hpx: 40 },  // 标题行
+                { hpx: 22 },  // 公司信息行1
+                { hpx: 22 },  // 地址行
+                { hpx: 22 },  // 有效期行
+                { hpx: 32 }   // 表头行
+            ];
+
+            // 添加数据行（从第6行开始）
+            selectedItems.forEach((item, index) => {
+                const excelRow = index + 6;  // Excel中的实际行号（1-based）
+
+                XLSX.utils.sheet_add_aoa(worksheet, [[
+                    index + 1,
+                    item.price_book_organizer || "",
+                    item.product_name || "",
+                    item.product_code || "",
+                    item.product_description || "",
+                    "NVIDIA",
+                    item.Quantity,
+                    "",  // 单价(含税) - 留空供手动填写
+                    "",  // 总价(含税) - 将设置为公式
+                    deliveryPeriod
+                ]], { origin: `A${excelRow}` });
+
+                // 为总价列添加公式：总价 = 单价(H列) × 数量(G列)
+                const totalPriceCell = XLSX.utils.encode_cell({ r: index + 5, c: 8 });  // I列（总价）
+                worksheet[totalPriceCell] = {
+                    t: 'n',  // 数字类型
+                    f: `H${excelRow}*G${excelRow}`,  // Excel公式
+                    z: '¥#,##0.00'  // 数字格式：人民币符号 + 千分位 + 两位小数
+                };
+
+                const row = index + 5;  // 实际行号（从0开始，标题+公司信息4行+表头1行=5，所以+5）
+                const isEvenRow = index % 2 === 0;
+
+                // 美化数据行样式
+                for (let col = 0; col < 10; col++) {
+                    const cellRef = XLSX.utils.encode_cell({ r: row, c: col });
+
+                    // 设置对齐方式
+                    let alignment = { vertical: "center", wrapText: true };
+                    if ([0, 5, 6, 9].includes(col)) {  // 序号、品牌、数量、货期居中
+                        alignment.horizontal = "center";
+                    } else if ([7, 8].includes(col)) {  // 单价、总价右对齐
+                        alignment.horizontal = "right";
+                    } else {
+                        alignment.horizontal = "left";
+                    }
+
+                    const cellStyle = {
+                        alignment: alignment,
+                        // 斑马线效果：交替行背景色
+                        fill: { fgColor: { rgb: isEvenRow ? "FFFFFF" : "F9FAFB" } },
+                        font: {
+                            sz: 10,
+                            color: { rgb: "111827" }  // 更深的文字颜色
+                        },
+                        border: {
+                            top: { style: "thin", color: { rgb: "E5E7EB" } },
+                            bottom: { style: "thin", color: { rgb: "E5E7EB" } },
+                            left: { style: "thin", color: { rgb: "E5E7EB" } },
+                            right: { style: "thin", color: { rgb: "E5E7EB" } }
+                        }
+                    };
+
+                    // 如果单元格不存在，创建空单元格
+                    if (!worksheet[cellRef]) {
+                        worksheet[cellRef] = { t: 's', v: '' };
+                    }
+
+                    // 应用样式（保留已有的公式或值）
+                    worksheet[cellRef].s = cellStyle;
+
+                    // 为单价列（H列，col=7）设置货币格式
+                    if (col === 7) {
+                        worksheet[cellRef].z = '¥#,##0.00';
+                    }
+                    // 总价列的格式已在公式中设置
+                }
+
+                // 设置数据行高度
+                if (!worksheet['!rows']) worksheet['!rows'] = [];
+                worksheet['!rows'][row] = { hpx: 26 };
+            });
+
+            // 添加总计行
+            const totalRow = selectedItems.length + 5;  // 数据最后一行的下一行
+            const firstDataRow = 6;  // 第一行数据的Excel行号
+            const lastDataRow = selectedItems.length + 5;  // 最后一行数据的Excel行号
+
+            XLSX.utils.sheet_add_aoa(worksheet, [["", "", "", "", "", "", "", "合计:", "", ""]], { origin: `A${totalRow + 1}` });
+
+            // 为合计单元格添加SUM公式
+            const totalSumCell = XLSX.utils.encode_cell({ r: totalRow, c: 8 });  // I列（总价合计）
+            worksheet[totalSumCell] = {
+                t: 'n',  // 数字类型
+                f: `SUM(I${firstDataRow}:I${lastDataRow})`,  // Excel求和公式
+                z: '¥#,##0.00'  // 数字格式：人民币符号 + 千分位 + 两位小数
+            };
+
+            // 设置总计行样式
+            for (let col = 0; col < 10; col++) {
+                const cellRef = XLSX.utils.encode_cell({ r: totalRow, c: col });
+
+                const totalStyle = {
+                    alignment: {
+                        horizontal: col === 7 ? "right" : (col === 8 ? "right" : "center"),
+                        vertical: "center"
+                    },
+                    fill: { fgColor: { rgb: "F3F4F6" } },
+                    font: {
+                        bold: true,
+                        sz: 11,
+                        color: { rgb: "111827" }
+                    },
+                    border: {
+                        top: { style: "medium", color: { rgb: "374151" } },
+                        bottom: { style: "medium", color: { rgb: "374151" } },
+                        left: { style: "thin", color: { rgb: "E5E7EB" } },
+                        right: { style: "thin", color: { rgb: "E5E7EB" } }
+                    }
+                };
+
+                // 如果单元格不存在，创建空单元格
+                if (!worksheet[cellRef]) {
+                    worksheet[cellRef] = { t: 's', v: '' };
+                }
+
+                // 应用样式（保留已有的公式）
+                worksheet[cellRef].s = totalStyle;
+            }
+
+            if (!worksheet['!rows']) worksheet['!rows'] = [];
+            worksheet['!rows'][totalRow] = { hpx: 32 };
+
+            XLSX.utils.book_append_sheet(workbook, worksheet, "报价单");
+
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hour = String(now.getHours()).padStart(2, '0');
+            const minute = String(now.getMinutes()).padStart(2, '0');
+            const second = String(now.getSeconds()).padStart(2, '0');
+            const timestamp = `${year}-${month}-${day}-${hour}-${minute}-${second}`;
+            const fileName = `北京正阳恒卓科技有限公司产品报价单-${timestamp}.xlsx`;
+
+            try {
+                XLSX.writeFile(workbook, fileName);
+                showToast(`报价单已生成: ${fileName}`, 'success');
+            } catch (error) {
+                console.error('Error:', error);
+                showToast(`生成失败: ${error.message}`, 'error');
+            }
+        }
+
+        // 显示通知
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<div class="toast-content">${message}</div>`;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // 事件监听
+        document.addEventListener('DOMContentLoaded', loadProductData);
+        searchBtn.addEventListener('click', performSearch);
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') performSearch();
+        });
+        generateBtn.addEventListener('click', generateQuote);
+    </script>
+</body>
+</html>

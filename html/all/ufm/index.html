@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UFM Docker 镜像下载</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f8fafb;
+            color: #2c3e50;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* PPT 样式背景 */
+        .ppt-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #ffffff 0%, #f1f8ff 50%, #f0f9f4 100%);
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .ppt-background::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 60%;
+            height: 100%;
+            background: linear-gradient(45deg, #3b82f6 0%, #1e40af 30%, #76b900 70%, #22c55e 100%);
+            clip-path: polygon(30% 0%, 100% 0%, 100% 100%, 0% 100%);
+            opacity: 0.12;
+        }
+
+        /* 装饰线条 */
+        .decoration-lines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .decoration-lines::before {
+            content: '';
+            position: absolute;
+            top: 50px;
+            left: 50px;
+            width: 200px;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #1e40af);
+            border-radius: 2px;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+        }
+
+        .decoration-lines::after {
+            content: '';
+            position: absolute;
+            bottom: 50px;
+            right: 50px;
+            width: 150px;
+            height: 4px;
+            background: linear-gradient(90deg, #22c55e, #76b900);
+            border-radius: 2px;
+            box-shadow: 0 2px 8px rgba(34, 197, 94, 0.3);
+        }
+
+        /* 主容器 */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 40px;
+            position: relative;
+        }
+
+        /* 页面标题 */
+        .page-header {
+            text-align: center;
+            margin-bottom: 60px;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        .page-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #1e40af 0%, #3b82f6 30%, #22c55e 70%, #76b900 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 15px;
+        }
+
+        .page-subtitle {
+            font-size: 1.2rem;
+            color: #64748b;
+            font-weight: 300;
+        }
+
+        /* 下载卡片区域 */
+        .download-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+
+        .download-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.8s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .download-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #22c55e);
+        }
+
+        .download-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(59, 130, 246, 0.2);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .card-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #3b82f6, #22c55e);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .card-title {
+            flex: 1;
+        }
+
+        .card-title h2 {
+            font-size: 1.8rem;
+            color: #1e293b;
+            margin-bottom: 5px;
+        }
+
+        .card-title .version {
+            font-size: 0.9rem;
+            color: #64748b;
+            font-weight: 400;
+        }
+
+        .card-description {
+            color: #475569;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            font-size: 1rem;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .download-btn {
+            flex: 1;
+            min-width: 180px;
+            background: linear-gradient(45deg, #3b82f6, #22c55e);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+        }
+
+        .copy-btn {
+            background: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+            border: 2px solid #3b82f6;
+            min-width: 120px;
+            flex: initial;
+        }
+
+        .copy-btn:hover {
+            background: #3b82f6;
+            color: white;
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+        }
+
+        .file-info {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(100, 116, 139, 0.2);
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+
+        .info-label {
+            font-weight: 500;
+            color: #475569;
+        }
+
+        /* Toast 通知 */
+        .toast {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, #22c55e, #76b900);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(34, 197, 94, 0.4);
+            display: none;
+            z-index: 1000;
+            font-weight: 500;
+            animation: slideInRight 0.3s ease;
+        }
+
+        .toast.show {
+            display: block;
+        }
+
+        /* 使用说明区域 */
+        .usage-section {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            animation: fadeInUp 1s ease;
+            margin-bottom: 40px;
+        }
+
+        .usage-section h2 {
+            font-size: 2rem;
+            color: #1e293b;
+            margin-bottom: 30px;
+            border-bottom: 3px solid transparent;
+            border-image: linear-gradient(90deg, #3b82f6, #22c55e) 1;
+            padding-bottom: 15px;
+        }
+
+        .usage-tabs {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 12px 24px;
+            background: rgba(59, 130, 246, 0.1);
+            border: 2px solid transparent;
+            border-radius: 10px;
+            color: #3b82f6;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn:hover,
+        .tab-btn.active {
+            background: linear-gradient(45deg, #3b82f6, #22c55e);
+            color: white;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .code-block {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+            position: relative;
+            font-family: 'Courier New', monospace;
+        }
+
+        .code-block code {
+            color: #1e293b;
+            font-size: 0.95rem;
+            display: block;
+            word-wrap: break-word;
+            line-height: 1.6;
+        }
+
+        .copy-code-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: linear-gradient(135deg, #3b82f6, #22c55e);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .copy-code-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+
+        .usage-step {
+            margin-bottom: 25px;
+        }
+
+        .usage-step h3 {
+            color: #475569;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .note {
+            background: rgba(59, 130, 246, 0.05);
+            border-left: 4px solid #3b82f6;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+            color: #475569;
+            font-size: 0.95rem;
+        }
+
+        /* 动画效果 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* ZYHZ Logo 样式 */
+        .zyhz-logo {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        .zyhz-logo svg {
+            height: 120px;
+            width: 120px;
+            filter: drop-shadow(0 4px 12px rgba(59, 130, 246, 0.25));
+            transition: all 0.3s ease;
+        }
+
+        .zyhz-logo svg:hover {
+            filter: drop-shadow(0 6px 20px rgba(59, 130, 246, 0.4));
+            transform: scale(1.05);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1024px) {
+            .download-section {
+                grid-template-columns: 1fr;
+            }
+
+            .zyhz-logo {
+                top: 20px;
+                right: 20px;
+            }
+
+            .zyhz-logo svg {
+                height: 80px;
+                width: 80px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 40px 20px;
+            }
+
+            .page-title {
+                font-size: 2.5rem;
+            }
+
+            .download-card {
+                padding: 30px 20px;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .download-btn,
+            .copy-btn {
+                min-width: 100%;
+            }
+
+            .usage-section {
+                padding: 30px 20px;
+            }
+
+            .zyhz-logo {
+                top: 15px;
+                right: 15px;
+            }
+
+            .zyhz-logo svg {
+                height: 60px;
+                width: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="ppt-background"></div>
+    <div class="decoration-lines"></div>
+
+    <!-- ZYHZ Logo -->
+    <div class="zyhz-logo">
+        <svg version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="600" height="600">
+            <style>
+                .s0 { fill: url(#zyhz-gradient); }
+            </style>
+            <defs>
+                <linearGradient id="zyhz-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:1" />
+                    <stop offset="50%" style="stop-color:#06b6d4;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#22c55e;stop-opacity:1" />
+                </linearGradient>
+            </defs>
+            <g id="图层 1">
+                <g id="&lt;Group&gt;">
+                    <g id="&lt;Group&gt;">
+                        <path id="&lt;Path&gt;" class="s0" d="m79.44 359.96c3.59-4.48 7.23-8.93 10.76-13.45q21.17-27.13 42.3-54.29c0.43-0.56 0.82-1.15 1.54-2.14-18.24 0-36.08 0-54.57 0 1.3-1.68 2.19-2.85 3.09-4 6.39-8.19 12.82-16.36 19.15-24.59 1.01-1.3 2.09-1.68 3.66-1.68q46.43 0.02 92.86-0.12c2.61-0.01 4.45 0.5 6.34 2.64 4.87 5.51 10.19 10.61 15.31 15.89 4.73 4.87 9.43 9.77 14.34 14.86-5.86 6.92-11.61 13.71-17.57 20.74-1.88-1.97-3.55-3.76-5.26-5.51-5.5-5.69-10.99-11.4-16.56-17.02-0.64-0.65-1.75-1.16-2.65-1.18q-9.47-0.19-18.95-0.1c-0.82 0.01-1.91 0.49-2.4 1.12-10.03 12.75-19.98 25.56-29.95 38.36-0.08 0.11-0.05 0.29-0.13 0.7 17.9 0 35.74 0 54.23 0-1.28 1.68-2.22 2.89-3.15 4.11-6.25 8.2-12.48 16.42-18.81 24.56-0.61 0.79-1.9 1.51-2.88 1.51-30.23 0.08-60.47 0.07-90.7 0.07q0-0.24 0-0.48z"/>
+                    </g>
+                    <g id="&lt;Group&gt;">
+                        <path id="&lt;Path&gt;" class="s0" d="m520.56 331.16c-2.71 3.33-5.47 6.62-8.1 10.01-4.51 5.81-8.87 11.73-13.44 17.49-0.71 0.9-2.18 1.7-3.3 1.7-29.43 0.1-58.86 0.08-88.29 0.08-0.54 0-1.07-0.05-2.02-0.11 3.15-4.09 6.08-7.93 9.05-11.73q15.17-19.49 30.35-38.96 18.79-24.1 37.54-48.24c0.93-1.2 1.94-1.62 3.44-1.61 10.56 0.07 21.12 0.04 31.67 0.03 1.04 0 2.07-0.12 3.1-0.18q0 0.48 0 0.96c-4.27 5.37-8.57 10.71-12.79 16.11q-16.83 21.52-33.61 43.08c-2.58 3.31-5.11 6.66-7.77 10.14 0.51 0.15 0.72 0.26 0.93 0.26q26.62 0.02 53.24 0.01 0 0.48 0 0.96z"/>
+                    </g>
+                    <g id="&lt;Group&gt;">
+                        <path id="&lt;Path&gt;" class="s0" d="m311.29 360.27c-10.08 0-19.89 0-30.06 0q0-1.31 0-2.57c0-20.32-0.02-40.63 0.05-60.95 0-1.23 0.43-2.73 1.21-3.66 8.82-10.66 17.76-21.22 26.64-31.83 0.45-0.53 0.64-1.29 0.95-1.95q0.53 0.34 1.06 0.67c0.05 0.81 0.15 1.62 0.15 2.43 0.01 10.08 0.06 20.16-0.04 30.23-0.02 2.03 0.6 2.54 2.56 2.53q28.2-0.1 56.39 0.01c2.06 0.01 2.52-0.66 2.5-2.6-0.09-9.91-0.04-19.83-0.04-29.75 0-0.87 0-1.74 0-2.84 34.93 0 69.66 0 104.9 0-2.45 3.23-4.66 6.18-6.92 9.1-4.89 6.31-9.85 12.58-14.68 18.94-1.08 1.42-2.18 1.98-3.98 1.97-15.75-0.07-31.51-0.04-47.26-0.03-0.63 0-1.25 0.07-2.14 0.13 0 23.41 0 46.71 0 70.17-10.07 0-19.85 0-29.92 0 0-0.99 0-1.84 0-2.7 0-9.99-0.04-19.99 0.03-29.99 0.02-1.83-0.45-2.52-2.4-2.51q-28.32 0.09-56.63 0c-1.94-0.01-2.42 0.66-2.4 2.5 0.07 10 0.03 20 0.03 29.99 0 0.86 0 1.72 0 2.71z"/>
+                    </g>
+                    <g id="&lt;Group&gt;">
+                        <path id="&lt;Path&gt;" class="s0" d="m305.56 260.06c-4.48 5.29-8.64 10.23-12.83 15.14-13.83 16.24-27.69 32.46-41.48 48.75-0.63 0.75-0.94 1.99-0.95 3.01-0.08 10.16-0.05 20.31-0.06 30.47 0 0.86 0 1.73 0 2.76-0.77 0.09-1.37 0.23-1.98 0.23-8.63 0.01-17.27-0.04-25.9 0.04-1.77 0.02-2.32-0.45-2.31-2.28 0.07-13.35 0.02-26.7 0.07-40.06 0.01-0.86 0.34-1.91 0.89-2.55q23.08-27.25 46.3-54.39c0.58-0.69 1.71-1.3 2.58-1.31 11.44-0.08 22.87-0.06 34.31-0.05 0.29 0 0.58 0.1 1.36 0.24z"/>
+                    </g>
+                    <g id="&lt;Group&gt;">
+                        <path id="&lt;Path&gt;" class="s0" d="m351.93 288.09c-2.78 0-5.03 0.17-7.24-0.08-0.93-0.11-1.96-0.93-2.62-1.71-15.3-18.09-31.45-35.39-48.95-51.39-14.9-13.62-30.38-26.52-48.1-36.4-6.45-3.6-13.1-6.84-20.55-7.65-2.55-0.28-5.34-0.08-7.77 0.68-4.52 1.42-6.2 5.27-6.7 9.65-0.76 6.67 0.76 13.05 2.77 19.33 5.39 16.81 13.97 32.06 23.12 47.03 1.59 2.59 3.24 5.14 4.84 7.72 0.08 0.12 0.06 0.3 0.16 1.06-0.86-0.56-1.58-0.78-1.91-1.26-16.16-23.4-31.65-47.2-41.16-74.25-2.1-5.96-3.54-12.36-4.02-18.66-0.93-12.37 5.59-17.6 17.76-14.95 9.77 2.13 18.36 6.96 26.7 12.22 18.98 11.94 35.89 26.47 52.16 41.79 21.4 20.16 41.2 41.81 59.79 64.57 0.49 0.6 0.93 1.23 1.72 2.3z"/>
+                    </g>
+                    <g id="&lt;Group&gt;">
+                        <path id="&lt;Path&gt;" class="s0" d="m397.62 366.68c2.8 0 5.26-0.06 7.71 0.05 0.49 0.02 1.14 0.55 1.39 1.03 7.5 14.06 14.72 28.26 17.52 44.16 0.62 3.56 0.69 7.35 0.27 10.95-0.79 6.65-5.1 10.5-11.79 10.02-4.7-0.33-9.5-1.48-13.91-3.17-12.73-4.87-23.84-12.63-34.67-20.74-5.43-4.07-10.69-8.37-16.03-12.56q0.19-0.27 0.38-0.54c0.65 0.47 1.32 0.92 1.95 1.41 9.53 7.44 19.29 14.59 30.27 19.75 4.95 2.32 10.31 3.79 15.54 5.46 1.48 0.47 3.18 0.38 4.76 0.3 5.43-0.26 8.99-3.2 10.17-8.51 1.48-6.63 0.34-13.16-1.87-19.34-3.07-8.56-6.79-16.89-10.25-25.3-0.38-0.94-0.88-1.82-1.44-2.97z"/>
+                    </g>
+                    <g id="&lt;Group&gt;">
+                        <path id="&lt;Path&gt;" class="s0" d="m314.89 365.1c10.27-0.87 15.3-7.25 17.77-16.59 2.52 9.55 7.69 15.98 18.29 16.61-10.64 0.61-15.85 7.1-18.31 16.78-2.35-9.51-7.47-15.88-17.75-16.8z"/>
+                    </g>
+                    <g id="&lt;Group&gt;">
+                        <g id="&lt;Group&gt;">
+                            <path id="&lt;Compound Path&gt;" class="s0" d="m146.6 398.81h11.84v2.55h-28.06v-2.55h4.89v-12.9h2.54v12.9h6.24v-18.6h-12.19v-2.54h25.1v2.54h-10.36v7.73h8.43v2.54h-8.43z"/>
+                            <path id="&lt;Compound Path&gt;" fill-rule="evenodd" class="s0" d="m173.05 381.72l-2.25 5.09q0.29 0.48 0.69 1.3 0.4 0.82 0.74 2.03 0.34 1.21 0.58 2.8 0.24 1.59 0.24 3.59v1.25h-6.53v-2.54h3.99q-0.1-1.9-0.42-3.28-0.32-1.39-0.69-2.3-0.37-0.92-0.66-1.37-0.29-0.45-0.32-0.52l-0.55-0.61 0.32-0.71 2.35-5.27v-1.39h-4.73v21.79h-2.54v-24.33h9.78zm16.87 16.77q0 1.22-0.84 2.06-0.84 0.83-2.06 0.84h-12.29v-23.79h12.65v-0.48h2.54zm-12.65-18.35v6.99h10.11v-6.99zm0 18.7h9.72q0.38 0 0.38-0.35v-8.82h-10.1z"/>
+                            <path id="&lt;Compound Path&gt;" fill-rule="evenodd" class="s0" d="m194.36 393.89q0.39-1.13 0.63-2.09 0.24-0.97 0.43-2.30 0.2-1.34 0.2-2.95v-4.96h2.54v4.96q0 1.8-0.23 3.3-0.22 1.5-0.5 2.59-0.27 1.1-0.49 1.74-0.23 0.64-0.26 0.68zm7.21-16.87v6.47h2.51v2.54h-2.51v15.84h-2.55v-24.85zm2.03 0.42h19.28v2.54h-19.28zm0 21.63h19.28v2.54h-19.28zm17.51-5.12q0 1.22-0.85 2.06-0.86 0.84-2.05 0.84h-12.84v-14.32h13.2v-0.74h2.54zm-13.2-8.88v3.06h10.66v-3.06zm10.30 9.24q0.35 0 0.35-0.38v-3.26h-10.65v3.64z"/>
+                            <path id="&lt;Compound Path&gt;" fill-rule="evenodd" class="s0" d="m242.22 396.69h13.1v2.54h-13.1v2.64h-2.54v-2.64h-13.1v-2.54h13.1v-2.22h-9.98v-11.97h9.69v-5.6h2.54v1.48h11.75v2.54h-11.75v1.58h7.72v-0.58h2.55v9.65q0 1.23-0.86 2.06-0.85 0.84-2.04 0.84h-7.08zm-9.98-11.65v2.22h17.41v-2.22zm0 6.89h17.06q0.36 0 0.36-0.36v-1.77h-17.42z"/>
+                            <path id="&lt;Compound Path&gt;" fill-rule="evenodd" class="s0" d="m266.36 383.14h4.67v2.54h-4.67v16.26h-2.54v-16.26h-0.29q-0.07 1.03-0.23 2.80-0.16 1.77-0.45 3.96-0.29 2.19-0.69 4.62-0.4 2.43-0.98 4.81l-2.45-0.58q0.52-2.22 0.90-4.55 0.39-2.34 0.66-4.43 0.28-2.09 0.44-3.83 0.16-1.74 0.25-2.80h-1.86v-2.54h4.70v-2.96h-4.25v-2.54h5.89q0.51 0 1.19-0.08 0.67-0.08 1.37-0.2 0.69-0.12 1.28-0.25 0.6-0.12 0.92-0.18l0.58 2.44q-0.03 0-0.47 0.12-0.43 0.11-1.07 0.22-0.65 0.11-1.42 0.24-0.77 0.13-1.48 0.20zm2.90 4.08l1.73 14.20-2.51 0.32-1.73-14.19zm7.78 5.40l-5.89-4.28 1.52-2.06 5.86 4.28zm10.58 2.64l-4.15 0.71v5.83h-2.54v-5.38l-8.88 1.58-0.45-2.51 9.33-1.64v-16.77h2.54v16.35l3.74-0.68zm-8.86-8.66l-5.85-4.28 1.48-2.06 5.89 4.28z"/>
+                            <path id="&lt;Compound Path&gt;" class="s0" d="m297.9 376.9v3.28h3.35v2.54h-3.35v8.18l2.99-1.16 0.91 2.38-3.9 1.48v5.31q0 1.22-0.84 2.06-0.83 0.84-2.06 0.84h-3.41v-2.55h3.39q0.38 0 0.38-0.35l0.03-4.34-3.54 1.35-0.90-2.38 4.41-1.68v-9.14h-3.77v-2.54h3.77v-3.28zm3.06 22.56q2.25-0.94 4.10-1.93 1.85-1 3.40-2.03l-5.48-3.51 1.36-2.12 6.30 4.02q2.35-1.90 3.62-3.43 1.28-1.53 1.63-2.07v-0.23h-12.87v-2.51h6.40v-3.6h-7.34v-2.55h7.34v-2.60h2.54v2.60h7.34v2.55h-7.34v3.60h3.93v-0.52h2.54v3.96l-0.16 0.29q-0.03 0.07-0.35 0.57-0.32 0.50-0.97 1.28-0.64 0.79-1.66 1.85-1.01 1.07-2.39 2.23l6.92 4.41-1.36 2.12-7.69-4.86q-1.74 1.22-3.92 2.46-2.19 1.24-4.93 2.37z"/>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </svg>
+    </div>
+
+    <div class="container">
+        <!-- 页面标题 -->
+        <div class="page-header">
+            <h1 class="page-title">UFM Docker 镜像</h1>
+            <p class="page-subtitle">NVIDIA Unified Fabric Manager - 容器化部署方案</p>
+        </div>
+
+        <!-- 下载卡片区域 -->
+        <div class="download-section">
+            <!-- UFMFV 卡片 -->
+            <div class="download-card">
+                <div class="card-header">
+                    <div class="card-icon">🔍</div>
+                    <div class="card-title">
+                        <h2>UFMFV</h2>
+                        <span class="version">Fabric Validation</span>
+                    </div>
+                </div>
+                <p class="card-description">
+                    UFM Fabric Validation 插件是一个用于运行验证测试并可视化结果的工具。支持选择计算节点范围和执行测试列表，提供实时进度和节点状态信息。
+                </p>
+                <div class="button-group">
+                    <a href="https://github.com/wuchanghui5220/DockerTarBuilder/releases/download/DockerTarBuilder-AMD64/mellanox_ufmfv_latest-amd64.tar.gz"
+                       class="download-btn">
+                        <span>📥</span>
+                        <span>下载镜像</span>
+                    </a>
+                    <button class="download-btn copy-btn"
+                            onclick="copyLink('https://github.com/wuchanghui5220/DockerTarBuilder/releases/download/DockerTarBuilder-AMD64/mellanox_ufmfv_latest-amd64.tar.gz')">
+                        <span>📋</span>
+                        <span>复制链接</span>
+                    </button>
+                </div>
+                <div class="file-info">
+                    <div class="info-item">
+                        <span class="info-label">版本：</span>
+                        <span>Latest</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">架构：</span>
+                        <span>AMD64</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">端口：</span>
+                        <span>9000</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- UFM Enterprise 卡片 -->
+            <div class="download-card">
+                <div class="card-header">
+                    <div class="card-icon">🏢</div>
+                    <div class="card-title">
+                        <h2>UFM Enterprise</h2>
+                        <span class="version">Version 6.19.4-3</span>
+                    </div>
+                </div>
+                <p class="card-description">
+                    UFM Enterprise 提供完整的 InfiniBand 和以太网络管理功能。包括拓扑可视化、性能监控、故障诊断和配置管理等企业级特性。
+                </p>
+                <div class="button-group">
+                    <a href="https://github.com/wuchanghui5220/DockerTarBuilder/releases/download/DockerTarBuilder-AMD64/mellanox_ufm-enterprise_6.19.4-3-amd64.tar.gz"
+                       class="download-btn">
+                        <span>📥</span>
+                        <span>下载镜像</span>
+                    </a>
+                    <button class="download-btn copy-btn"
+                            onclick="copyLink('https://github.com/wuchanghui5220/DockerTarBuilder/releases/download/DockerTarBuilder-AMD64/mellanox_ufm-enterprise_6.19.4-3-amd64.tar.gz')">
+                        <span>📋</span>
+                        <span>复制链接</span>
+                    </button>
+                </div>
+                <div class="file-info">
+                    <div class="info-item">
+                        <span class="info-label">版本：</span>
+                        <span>6.19.4-3</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">架构：</span>
+                        <span>AMD64</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">类型：</span>
+                        <span>Enterprise</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 使用说明 -->
+        <div class="usage-section">
+            <h2>📚 使用说明</h2>
+
+            <div class="usage-tabs">
+                <button class="tab-btn active" onclick="switchTab('ufmfv')">UFMFV 部署</button>
+                <button class="tab-btn" onclick="switchTab('enterprise')">UFM Enterprise 部署</button>
+            </div>
+
+            <!-- UFMFV 使用说明 -->
+            <div id="ufmfv" class="tab-content active">
+                <div class="usage-step">
+                    <h3>1. 从 Docker Hub 拉取镜像</h3>
+                    <div class="code-block">
+                        <code>docker pull mellanox/ufmfv:latest</code>
+                        <button class="copy-code-btn" onclick="copyCode(this)">复制</button>
+                    </div>
+                </div>
+
+                <div class="usage-step">
+                    <h3>2. 离线加载镜像（可选）</h3>
+                    <div class="code-block">
+			    <code># 下载后加载镜像文件<br>
+				    docker load -i mellanox_ufmfv_latest-amd64.tar.gz<br></code>
+                        <button class="copy-code-btn" onclick="copyCode(this)">复制</button>
+                    </div>
+                </div>
+
+                <div class="usage-step">
+                    <h3>3. 启动容器</h3>
+                    <div class="code-block">
+                        <code>docker run -dit --name ufmfv -p 9000:9000 mellanox/ufmfv</code>
+                        <button class="copy-code-btn" onclick="copyCode(this)">复制</button>
+                    </div>
+                </div>
+
+                <div class="usage-step">
+                    <h3>4. 访问 Web 界面</h3>
+                    <div class="code-block">
+                        <code>http://[服务器IP]:9000</code>
+                        <button class="copy-code-btn" onclick="copyCode(this)">复制</button>
+                    </div>
+                    <div class="note">
+                        💡 <strong>提示：</strong>将 [服务器IP] 替换为实际的服务器 IP 地址
+                    </div>
+                </div>
+            </div>
+
+            <!-- UFM Enterprise 使用说明 -->
+            <div id="enterprise" class="tab-content">
+                <div class="usage-step">
+                    <h3>1. 加载 Docker 镜像</h3>
+                    <div class="code-block">
+                        <code>docker load -i mellanox_ufm-enterprise_6.19.4-3-amd64.tar.gz</code>
+                        <button class="copy-code-btn" onclick="copyCode(this)">复制</button>
+                    </div>
+                </div>
+
+                <div class="usage-step">
+                    <h3>2. 准备 License 文件</h3>
+                    <div class="code-block">
+			    <code># 创建主目录，并将 UFM license 文件复制到临时目录<br>
+				    mkdir -p /opt/ufm/files<br>
+				    mkdir -p /tmp/license_file<br>
+				    cp your_license.lic /tmp/license_file/<br></code>
+                        <button class="copy-code-btn" onclick="copyCode(this)">复制</button>
+                    </div>
+                    <div class="note">
+                        💡 <strong>提示：</strong>将 your_license.lic 替换为实际的 license 文件名
+                    </div>
+                </div>
+
+                <div class="usage-step">
+                    <h3>3. 运行 UFM 安装程序</h3>
+                    <div class="code-block">
+			    <code>docker run -it --name=ufm_installer --rm \<br>
+				    -v /var/run/docker.sock:/var/run/docker.sock \<br>
+				    -v /etc/systemd/system/:/etc/systemd_files/ \<br>
+				    -v /opt/ufm/files/:/installation/ufm_files/ \<br>
+				    -v /tmp/license_file/:/installation/ufm_licenses/ \<br>
+				    mellanox/ufm-enterprise:6.19.4-3 \<br>
+				    --install \<br>
+				    --fabric-interface ibs5<br></code>
+                        <button class="copy-code-btn" onclick="copyCode(this)">复制</button>
+                    </div>
+                    <div class="note">
+                        💡 <strong>提示：</strong>根据实际网络接口修改 --fabric-interface 参数（如 ib0, ib1 等）
+                    </div>
+                </div>
+
+                <div class="usage-step">
+                    <h3>4. 重新加载 systemd</h3>
+                    <div class="code-block">
+                        <code>systemctl daemon-reload</code>
+                        <button class="copy-code-btn" onclick="copyCode(this)">复制</button>
+                    </div>
+                </div>
+
+                <div class="usage-step">
+                    <h3>5. 启动 UFM Enterprise 服务</h3>
+                    <div class="code-block">
+                        <code>systemctl start ufm-enterprise</code>
+                        <button class="copy-code-btn" onclick="copyCode(this)">复制</button>
+                    </div>
+                </div>
+
+                <div class="usage-step">
+                    <h3>6. 检查服务状态</h3>
+                    <div class="code-block">
+                        <code>systemctl status ufm-enterprise</code>
+                        <button class="copy-code-btn" onclick="copyCode(this)">复制</button>
+                    </div>
+                </div>
+
+                <div class="usage-step">
+                    <h3>7. 访问管理界面</h3>
+                    <div class="code-block">
+                        <code>https://[服务器IP]</code>
+                        <button class="copy-code-btn" onclick="copyCode(this)">复制</button>
+                    </div>
+                    <div class="note">
+                        💡 <strong>提示：</strong>默认使用 HTTPS 协议访问。默认账号和密码：admin, 123456
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast 通知 -->
+    <div id="toast" class="toast">
+        ✓ 链接已复制到剪贴板！
+    </div>
+
+    <script>
+        // 复制下载链接
+        function copyLink(url) {
+            navigator.clipboard.writeText(url).then(function() {
+                showToast();
+            }).catch(function(err) {
+                // 兼容旧浏览器的复制方法
+                const textArea = document.createElement('textarea');
+                textArea.value = url;
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    showToast();
+                } catch (err) {
+                    alert('复制失败：' + url);
+                }
+                document.body.removeChild(textArea);
+            });
+        }
+
+        // 复制代码
+        function copyCode(button) {
+            const codeBlock = button.parentElement;
+            const code = codeBlock.querySelector('code').textContent;
+
+            navigator.clipboard.writeText(code).then(function() {
+                const originalText = button.textContent;
+                button.textContent = '已复制!';
+                setTimeout(function() {
+                    button.textContent = originalText;
+                }, 2000);
+            }).catch(function(err) {
+                // 兼容旧浏览器的复制方法
+                const textArea = document.createElement('textarea');
+                textArea.value = code;
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    const originalText = button.textContent;
+                    button.textContent = '已复制!';
+                    setTimeout(function() {
+                        button.textContent = originalText;
+                    }, 2000);
+                } catch (err) {
+                    alert('复制失败：' + code);
+                }
+                document.body.removeChild(textArea);
+            });
+        }
+
+        // 显示 Toast 通知
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.add('show');
+            setTimeout(function() {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // 切换标签页
+        function switchTab(tabName) {
+            // 隐藏所有内容
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => content.classList.remove('active'));
+
+            // 移除所有按钮的激活状态
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            // 显示选中的内容
+            document.getElementById(tabName).classList.add('active');
+
+            // 激活对应的按钮
+            event.target.classList.add('active');
+        }
+
+        // 页面加载动画
+        window.addEventListener('load', function() {
+            document.body.style.opacity = '1';
+        });
+    </script>
+</body>
+</html>

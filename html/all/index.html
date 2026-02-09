@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NVIDIA Networking Tools</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a1a2e 50%, #0a0a1a 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ===== 登录页 ===== */
+        .login-container {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 40px;
+            width: 360px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .login-container h1 {
+            font-size: 20px;
+            color: #76b900;
+            margin-bottom: 8px;
+        }
+
+        .login-container .subtitle {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 28px;
+        }
+
+        .login-input {
+            width: 100%;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 6px;
+            padding: 12px 14px;
+            color: #fff;
+            font-size: 14px;
+            margin-bottom: 16px;
+            transition: border-color 0.2s;
+        }
+
+        .login-input:focus {
+            outline: none;
+            border-color: #76b900;
+        }
+
+        .login-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #76b900, #5a8f00);
+            color: #fff;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 20px rgba(118,185,0,0.3);
+        }
+
+        .login-error {
+            color: #ef4444;
+            font-size: 12px;
+            margin-top: 12px;
+            display: none;
+        }
+
+        /* ===== 导航页 ===== */
+        .nav-container {
+            display: none;
+            width: 100%;
+            max-width: 900px;
+            padding: 20px;
+        }
+
+        .nav-header {
+            text-align: center;
+            margin-bottom: 36px;
+        }
+
+        .nav-header h1 {
+            font-size: 24px;
+            color: #76b900;
+            margin-bottom: 6px;
+        }
+
+        .nav-header .subtitle {
+            color: #666;
+            font-size: 13px;
+        }
+
+        .nav-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+        }
+
+        .nav-card {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 24px;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.25s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--card-color), transparent);
+            opacity: 0;
+            transition: opacity 0.25s;
+        }
+
+        .nav-card:hover {
+            border-color: var(--card-color);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+        }
+
+        .nav-card:hover::before { opacity: 1; }
+
+        .card-icon {
+            font-size: 28px;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #fff;
+        }
+
+        .card-desc {
+            font-size: 12px;
+            color: #888;
+            line-height: 1.6;
+        }
+
+        .card-tag {
+            display: inline-block;
+            margin-top: 12px;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: rgba(118,185,0,0.15);
+            color: #76b900;
+        }
+
+        .nav-footer {
+            text-align: center;
+            margin-top: 32px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .logout-btn {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #666;
+            padding: 6px 16px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .logout-btn:hover {
+            color: #ef4444;
+            border-color: rgba(239,68,68,0.3);
+        }
+    </style>
+</head>
+<body>
+    <!-- 登录 -->
+    <div class="login-container" id="loginPage">
+        <h1>NVIDIA Networking</h1>
+        <div class="subtitle">Internal Tools Portal</div>
+        <input type="password" class="login-input" id="passwordInput" placeholder="Enter password" autofocus>
+        <button class="login-btn" id="loginBtn">Login</button>
+        <div class="login-error" id="loginError">Password incorrect</div>
+    </div>
+
+    <!-- 导航 -->
+    <div class="nav-container" id="navPage">
+        <div class="nav-header">
+            <h1>NVIDIA Networking Tools</h1>
+            <div class="subtitle">Internal Tools Portal</div>
+        </div>
+
+        <div class="nav-grid">
+            <a class="nav-card" href="cb/" style="--card-color: #00d4ff;">
+                <span class="card-icon">&#9881;</span>
+                <div class="card-title">IB 网络配置计算器</div>
+                <div class="card-desc">Spine-Leaf 拓扑计算、交换机/光模块/线缆配置清单生成、Excel 导出</div>
+                <span class="card-tag">Calculator</span>
+            </a>
+
+            <a class="nav-card" href="tv/" style="--card-color: #76b900;">
+                <span class="card-icon">&#9733;</span>
+                <div class="card-title">拓扑可视化</div>
+                <div class="card-desc">交互式拓扑架构图、D3.js 网络渲染、多方案对比、GPU 算力计算</div>
+                <span class="card-tag">Visualizer</span>
+            </a>
+
+            <a class="nav-card" href="tg/" style="--card-color: #f59e0b;">
+                <span class="card-icon">&#9783;</span>
+                <div class="card-title">拓扑生成器</div>
+                <div class="card-desc">纯前端拓扑连接表生成、设备名称表导出、ZIP 打包下载</div>
+                <span class="card-tag">Generator</span>
+            </a>
+
+            <a class="nav-card" href="bj/" style="--card-color: #a855f7;">
+                <span class="card-icon">&#9830;</span>
+                <div class="card-title">产品报价系统</div>
+                <div class="card-desc">NVIDIA 网络产品库、报价单生成、Excel 导出</div>
+                <span class="card-tag">Pricing</span>
+            </a>
+
+            <a class="nav-card" href="ufm/" style="--card-color: #ef4444;">
+                <span class="card-icon">&#9729;</span>
+                <div class="card-title">UFM Docker 镜像下载</div>
+                <div class="card-desc">UFM Docker 镜像资源获取与下载</div>
+                <span class="card-tag">UFM</span>
+            </a>
+
+            <a class="nav-card" href="logo/" style="--card-color: #ec4899;">
+                <span class="card-icon">&#9998;</span>
+                <div class="card-title">SVG LOGO 编辑器</div>
+                <div class="card-desc">SVG LOGO 在线编辑、预览与导出</div>
+                <span class="card-tag">Design</span>
+            </a>
+        </div>
+
+        <div class="nav-footer">
+            <button class="logout-btn" id="logoutBtn">Logout</button>
+        </div>
+    </div>
+
+    <script>
+    const HASH = '524f544a8b79f41c7c60c2b1a797af2089e20cbf856d715f39ee68577ad2c344';
+    const SESSION_KEY = 'nv_net_auth';
+
+    async function sha256(message) {
+        const data = new TextEncoder().encode(message);
+        const buf = await crypto.subtle.digest('SHA-256', data);
+        return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    function showNav() {
+        document.getElementById('loginPage').style.display = 'none';
+        document.getElementById('navPage').style.display = 'block';
+        document.body.style.alignItems = 'flex-start';
+        document.body.style.paddingTop = '60px';
+    }
+
+    // 检查 session
+    if (sessionStorage.getItem(SESSION_KEY) === HASH) {
+        showNav();
+    }
+
+    // 登录
+    async function doLogin() {
+        const pwd = document.getElementById('passwordInput').value;
+        const hash = await sha256(pwd);
+        if (hash === HASH) {
+            sessionStorage.setItem(SESSION_KEY, HASH);
+            document.getElementById('loginError').style.display = 'none';
+            showNav();
+        } else {
+            document.getElementById('loginError').style.display = 'block';
+            document.getElementById('passwordInput').value = '';
+            document.getElementById('passwordInput').focus();
+        }
+    }
+
+    document.getElementById('loginBtn').addEventListener('click', doLogin);
+    document.getElementById('passwordInput').addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') doLogin();
+    });
+
+    // 登出
+    document.getElementById('logoutBtn').addEventListener('click', function() {
+        sessionStorage.removeItem(SESSION_KEY);
+        location.reload();
+    });
+    </script>
+</body>
+</html>
