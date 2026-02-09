@@ -349,6 +349,185 @@
             box-shadow: 0 0 30px rgba(255, 159, 10, 0.2);
         }
 
+        .switch-option.multiplane-option {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(255, 159, 10, 0.08));
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .switch-option.multiplane-option .switch-name {
+            background: linear-gradient(135deg, #3b82f6, #ff9f0a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .switch-option.multiplane-option.active {
+            border-color: #3b82f6;
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.2);
+        }
+
+        .multiplane-layout {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            align-items: center;
+        }
+
+        .multiplane-planes-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            width: 100%;
+        }
+
+        .plane-column {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 16px;
+            padding: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .plane-column.plane1 {
+            border-color: rgba(59, 130, 246, 0.4);
+        }
+
+        .plane-column.plane2 {
+            border-color: rgba(255, 159, 10, 0.4);
+        }
+
+        .plane-column .plane-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 12px;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        .plane-column.plane1 .plane-title {
+            color: #3b82f6;
+        }
+
+        .plane-column.plane2 .plane-title {
+            color: #ff9f0a;
+        }
+
+        .plane-column .layer-content {
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            margin-left: 0;
+            gap: 6px;
+        }
+
+        .plane-column .device-node {
+            min-width: auto;
+            padding: 8px 10px;
+            font-size: 0.75em;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .plane-column .ellipsis-node {
+            padding: 8px 6px;
+            flex-shrink: 0;
+        }
+
+        .plane-column .pod-box {
+            min-width: auto !important;
+            padding: 10px !important;
+            flex-shrink: 0;
+        }
+
+        .plane-column .pod-box .pod-title {
+            font-size: 0.85em;
+        }
+
+        .plane-column .pod-box .pod-content {
+            font-size: 0.85em;
+        }
+
+        .multiplane-gpu-row {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            padding: 20px 30px 10px 30px;
+            margin-top: -1px;
+            width: 70%;
+            max-width: 600px;
+            background: rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(250, 204, 21, 0.2);
+            border-top: none;
+            border-radius: 0 0 20px 20px;
+            position: relative;
+        }
+
+        .multiplane-gpu-row::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 20%;
+            right: 20%;
+            height: 2px;
+            background: linear-gradient(90deg, #3b82f6, var(--accent-yellow), #ff9f0a);
+        }
+
+        .multiplane-gpu-row .gpu-label {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.95em;
+            font-weight: 600;
+            color: var(--accent-yellow);
+            margin-bottom: 2px;
+        }
+
+        .multiplane-gpu-row .gpu-nodes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .multiplane-info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+        }
+
+        .multiplane-info-table th,
+        .multiplane-info-table td {
+            padding: 8px 12px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.9em;
+        }
+
+        .multiplane-info-table th {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .multiplane-info-table th.plane1-header {
+            color: #3b82f6;
+        }
+
+        .multiplane-info-table th.plane2-header {
+            color: #ff9f0a;
+        }
+
+        .multiplane-info-table td {
+            color: var(--text-primary);
+        }
+
+        @media (max-width: 1000px) {
+            .multiplane-planes-row {
+                grid-template-columns: 1fr;
+            }
+            .multiplane-gpu-row {
+                width: 90%;
+            }
+        }
+
         /* Quick Select */
         .quick-select {
             display: flex;
@@ -1909,6 +2088,10 @@
                     <div class="switch-name">400G 对比</div>
                     <div class="switch-spec">QM9790 vs Q3400降速</div>
                 </div>
+                <div class="switch-option multiplane-option" onclick="selectSwitch('MULTIPLANE')" id="switchMULTIPLANE">
+                    <div class="switch-name">MultiPlane</div>
+                    <div class="switch-spec">SN5600 双平面 | 128×400G | 最大 1,024 台</div>
+                </div>
             </div>
 
             <div class="input-row">
@@ -2118,6 +2301,28 @@
                     { count: 8192, label: '8,192 (最大)' }
                 ]
             },
+            'MULTIPLANE': {
+                name: 'MultiPlane',
+                switchModel: 'SN5600',
+                portsPerSwitch: 128,
+                halfK: 64,
+                serversPerSU: 64,
+                leavesPerLG: 8,
+                hcasPerGPU: 8,
+                numPlanes: 2,
+                maxTwoTier: 1024,
+                maxThreeTier: 1024,  // 仅两层
+                portSpeed: '400G',
+                isMultiPlane: true,
+                spineFactors: [1, 2, 4, 8, 16, 32, 64],
+                quickSelect: [
+                    { count: 64, label: '64 (1 SU)' },
+                    { count: 128, label: '128 (2 SU)' },
+                    { count: 256, label: '256 (4 SU)' },
+                    { count: 512, label: '512 (8 SU)' },
+                    { count: 1024, label: '1,024 (最大)' }
+                ]
+            },
             'COMPARE': {
                 name: '400G 方案对比',
                 maxThreeTier: 8192,  // Limited by QM9790
@@ -2146,6 +2351,10 @@
                     'COMPARISON MODE // QM9790 (64×400G) VS Q3400 (96×400G + 48×800G)';
                 // Show price input section
                 document.getElementById('priceInputSection').style.display = 'block';
+            } else if (switchType === 'MULTIPLANE') {
+                document.getElementById('subtitleText').textContent =
+                    'DUAL-PLANE TOPOLOGY // SN5600 // CX8 DUAL-PORT NIC';
+                document.getElementById('priceInputSection').style.display = 'none';
             } else {
                 document.getElementById('subtitleText').textContent =
                     `QUANTUM NETWORK TOPOLOGY // ${config.name} SWITCH (${config.portsPerSwitch} x ${config.portSpeed})`;
@@ -2252,6 +2461,12 @@
             // Handle comparison mode
             if (currentSwitch === 'COMPARE') {
                 results.innerHTML = generateComparisonHTML(numServers);
+                return;
+            }
+
+            // Handle MultiPlane mode
+            if (currentSwitch === 'MULTIPLANE') {
+                results.innerHTML = generateMultiPlaneTwoTierHTML(numServers, config);
                 return;
             }
 
@@ -4094,28 +4309,62 @@
             return html;
         }
 
-        function generateSpineNodes(numSpines) {
+        function generateSpineNodes(numSpines, prefix) {
+            prefix = prefix || '';
             const maxShow = 8;
             let html = '';
 
             if (numSpines <= maxShow) {
                 for (let i = 0; i < numSpines; i++) {
-                    html += `<div class="device-node spine">Spine${i+1}</div>`;
+                    html += `<div class="device-node spine">${prefix}Spine${i+1}</div>`;
                 }
             } else {
                 for (let i = 0; i < 4; i++) {
-                    html += `<div class="device-node spine">Spine${i+1}</div>`;
+                    html += `<div class="device-node spine">${prefix}Spine${i+1}</div>`;
                 }
                 html += `<div class="ellipsis-node">...</div>`;
                 for (let i = numSpines - 2; i < numSpines; i++) {
-                    html += `<div class="device-node spine">Spine${i+1}</div>`;
+                    html += `<div class="device-node spine">${prefix}Spine${i+1}</div>`;
                 }
             }
 
             return html;
         }
 
-        function generateLGBoxes(numSUs) {
+        function generateLeafNodes(numSUs, prefix) {
+            prefix = prefix || '';
+            const numLeafs = numSUs * 8;
+            let html = '';
+
+            function lgNode(i) {
+                return `<div class="device-node leaf" style="display:inline-flex; flex-direction:column; align-items:center; line-height:1.3;">
+                    <span>${prefix}LG${i+1}</span>
+                    <span style="font-size:0.8em; opacity:0.6;">Leaf1~8</span>
+                    <span style="font-size:0.75em; opacity:0.5;">→ SU${i+1}</span>
+                </div>`;
+            }
+
+            if (numSUs <= 4) {
+                for (let i = 0; i < numSUs; i++) {
+                    html += lgNode(i);
+                }
+            } else {
+                html += lgNode(0);
+                html += lgNode(1);
+                html += `<div class="ellipsis-node">...</div>`;
+                html += `<div class="device-node leaf" style="display:inline-flex; flex-direction:column; align-items:center; line-height:1.3;">
+                    <span>${prefix}LG${numSUs}</span>
+                    <span style="font-size:0.8em; opacity:0.6;">Leaf1~8</span>
+                    <span style="font-size:0.75em; opacity:0.5;">→ SU${numSUs}</span>
+                </div>`;
+            }
+
+            html += `<div style="font-size:0.7em; color:#888; white-space:nowrap; padding:4px 0;">共 ${numLeafs} Leaf (${numSUs} LG × 8)</div>`;
+            return html;
+        }
+
+        function generateLGBoxes(numSUs, prefix) {
+            prefix = prefix || '';
             const maxShow = 6;
             let html = '';
 
@@ -4125,7 +4374,7 @@
             for (let i = 0; i < (showEllipsis ? 3 : showCount); i++) {
                 html += `
                     <div class="pod-box" style="min-width: 120px; padding: 15px;">
-                        <div class="pod-title">LG${i+1}</div>
+                        <div class="pod-title">${prefix}LG${i+1}</div>
                         <div class="pod-content" style="margin-top: 5px;">
                             <div style="font-size: 0.8em; color: #4ecdc4;">Leaf1~8</div>
                             <div style="font-size: 0.75em; color: #888;">→ SU${i+1}</div>
@@ -4138,7 +4387,7 @@
                 html += `<div class="ellipsis-node">...</div>`;
                 html += `
                     <div class="pod-box" style="min-width: 120px; padding: 15px;">
-                        <div class="pod-title">LG${numSUs}</div>
+                        <div class="pod-title">${prefix}LG${numSUs}</div>
                         <div class="pod-content" style="margin-top: 5px;">
                             <div style="font-size: 0.8em; color: #4ecdc4;">Leaf1~8</div>
                             <div style="font-size: 0.75em; color: #888;">→ SU${numSUs}</div>
@@ -4438,7 +4687,8 @@
             return html;
         }
 
-        function generateLGList(numSUs) {
+        function generateLGList(numSUs, prefix) {
+            prefix = prefix || '';
             let html = '';
             const maxToShow = Math.min(numSUs, 4);
 
@@ -4446,7 +4696,7 @@
                 html += `
                     <div class="pod-item">
                         <span class="icon lg"></span>
-                        <span>LG${i + 1}: Leaf1~8 → SU${i + 1}</span>
+                        <span>${prefix}LG${i + 1}: Leaf1~8 → SU${i + 1}</span>
                     </div>
                 `;
             }
@@ -4456,7 +4706,7 @@
                 html += `
                     <div class="pod-item">
                         <span class="icon lg"></span>
-                        <span>LG${numSUs}: Leaf1~8 → SU${numSUs}</span>
+                        <span>${prefix}LG${numSUs}: Leaf1~8 → SU${numSUs}</span>
                     </div>
                 `;
             }
@@ -4555,7 +4805,11 @@
             svgContainer.innerHTML = '';
 
             const topologyData = JSON.parse(container.dataset.topology || '{}');
-            renderD3Topology(svgContainer, topologyData);
+            if (topologyData.isMultiPlane) {
+                renderMultiPlaneD3(svgContainer, topologyData);
+            } else {
+                renderD3Topology(svgContainer, topologyData);
+            }
         }
 
         function renderD3Topology(container, data) {
@@ -5045,6 +5299,552 @@
                 });
             });
 
+        }
+
+        // ========== MultiPlane (双平面) 拓扑 ==========
+
+        function generateMultiPlaneTwoTierHTML(numServers, config) {
+            const numSUs = Math.ceil(numServers / config.serversPerSU);
+            const numLeafsPerPlane = numSUs * config.leavesPerLG;
+
+            const minSpinesNeeded = Math.ceil(numLeafsPerPlane / 2);
+            const numSpinesPerPlane = config.spineFactors.find(f => f >= minSpinesNeeded) || config.halfK;
+            const connectionsPerSpine = config.halfK / numSpinesPerPlane;
+
+            const totalLeafs = numLeafsPerPlane * 2;
+            const totalSpines = numSpinesPerPlane * 2;
+            const totalSwitches = totalLeafs + totalSpines;
+
+            const topologyData = JSON.stringify({
+                isMultiPlane: true,
+                numPlanes: 2,
+                numSUs: numSUs,
+                numLeafsPerPlane: numLeafsPerPlane,
+                numSpinesPerPlane: numSpinesPerPlane,
+                numServers: numServers,
+                serversPerSU: config.serversPerSU,
+                connectionsPerSpine: connectionsPerSpine
+            }).replace(/"/g, '&quot;');
+
+            return `
+                <div class="fade-in">
+                    <span class="topology-badge two-tier" style="background: linear-gradient(135deg, rgba(59,130,246,0.2), rgba(255,159,10,0.2)); border-color: #3b82f6;">双平面架构 (Dual-Plane Leaf-Spine)</span>
+                    <span class="switch-badge">SN5600 - 128×400G</span>
+
+                    <!-- Summary -->
+                    <div class="summary-grid">
+                        <div class="summary-card gpu">
+                            <div class="value">${numServers.toLocaleString()}</div>
+                            <div class="label">GPU 服务器</div>
+                        </div>
+                        <div class="summary-card leaf">
+                            <div class="value">${numLeafsPerPlane} × 2</div>
+                            <div class="label">Leaf 交换机 (每平面)</div>
+                        </div>
+                        <div class="summary-card spine">
+                            <div class="value">${numSpinesPerPlane} × 2</div>
+                            <div class="label">Spine 交换机 (每平面)</div>
+                        </div>
+                        <div class="summary-card" style="border-left: 4px solid #888;">
+                            <div class="value">${numSUs}</div>
+                            <div class="label">SU 数量</div>
+                        </div>
+                        <div class="summary-card" style="border-left: 4px solid #666;">
+                            <div class="value">${totalSwitches}</div>
+                            <div class="label">交换机总数</div>
+                        </div>
+                    </div>
+
+                    <!-- 双平面参数表 -->
+                    <h3 class="section-title">双平面参数</h3>
+                    <div style="max-width: 700px; margin: 0 auto 30px auto;">
+                        <table class="multiplane-info-table">
+                            <thead>
+                                <tr>
+                                    <th>参数</th>
+                                    <th class="plane1-header">Plane 1</th>
+                                    <th class="plane2-header">Plane 2</th>
+                                    <th>总计</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Leaf 交换机</td>
+                                    <td>${numLeafsPerPlane}</td>
+                                    <td>${numLeafsPerPlane}</td>
+                                    <td>${totalLeafs}</td>
+                                </tr>
+                                <tr>
+                                    <td>Spine 交换机</td>
+                                    <td>${numSpinesPerPlane}</td>
+                                    <td>${numSpinesPerPlane}</td>
+                                    <td>${totalSpines}</td>
+                                </tr>
+                                <tr>
+                                    <td>每Leaf到每Spine</td>
+                                    <td>${connectionsPerSpine} 条</td>
+                                    <td>${connectionsPerSpine} 条</td>
+                                    <td>-</td>
+                                </tr>
+                                <tr>
+                                    <td>Leaf-Spine 线缆</td>
+                                    <td>${numLeafsPerPlane * numSpinesPerPlane * connectionsPerSpine}</td>
+                                    <td>${numLeafsPerPlane * numSpinesPerPlane * connectionsPerSpine}</td>
+                                    <td>${numLeafsPerPlane * numSpinesPerPlane * connectionsPerSpine * 2}</td>
+                                </tr>
+                                <tr>
+                                    <td>GPU-Leaf 线缆</td>
+                                    <td>${numServers * 8}</td>
+                                    <td>${numServers * 8}</td>
+                                    <td>${numServers * 16}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- 架构图 -->
+                    <h3 class="section-title">连接架构图</h3>
+                    <div class="topology-diagram" id="multiplane-diagram-container">
+                        <div class="diagram-tabs">
+                            <button class="diagram-tab active" onclick="switchDiagramView(this, 'multiplane-diagram-container', 'multiplane-arch-view')">架构示意</button>
+                            <button class="diagram-tab" onclick="switchDiagramView(this, 'multiplane-diagram-container', 'multiplane-d3-view')">网络拓扑</button>
+                        </div>
+
+                        <div id="multiplane-arch-view" class="diagram-view active">
+                            <div class="legend">
+                                <div class="legend-item"><div class="legend-color spine"></div>Spine</div>
+                                <div class="legend-item"><div class="legend-color leaf"></div>Leaf</div>
+                                <div class="legend-item"><div class="legend-color gpu"></div>GPU</div>
+                                <div class="legend-item"><div class="legend-color" style="background: #3b82f6;"></div>Plane 1</div>
+                                <div class="legend-item"><div class="legend-color" style="background: #ff9f0a;"></div>Plane 2</div>
+                            </div>
+
+                            <div class="multiplane-layout">
+                                <!-- 上层: 两个平面并排 -->
+                                <div class="multiplane-planes-row">
+                                    <!-- Plane 1 -->
+                                    <div class="plane-column plane1">
+                                        <div class="plane-title">PLANE 1 (Port1)</div>
+                                        <div class="layer-container">
+                                            <div class="layer">
+                                                <div class="layer-label spine">Spine 层</div>
+                                                <div class="layer-content">
+                                                    ${generateSpineNodes(numSpinesPerPlane, 'P1-')}
+                                                </div>
+                                            </div>
+                                            <div class="connection-arrows">
+                                                <div class="arrow-group">
+                                                    <div class="arrow-line"></div>
+                                                    <div class="arrow-head"></div>
+                                                    <div class="arrow-label">每Leaf ${connectionsPerSpine}条/Spine</div>
+                                                </div>
+                                            </div>
+                                            <div class="layer">
+                                                <div class="layer-label leaf">Leaf 层</div>
+                                                <div class="layer-content">
+                                                    ${generateLeafNodes(numSUs, 'P1-')}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Plane 2 -->
+                                    <div class="plane-column plane2">
+                                        <div class="plane-title">PLANE 2 (Port2)</div>
+                                        <div class="layer-container">
+                                            <div class="layer">
+                                                <div class="layer-label spine">Spine 层</div>
+                                                <div class="layer-content">
+                                                    ${generateSpineNodes(numSpinesPerPlane, 'P2-')}
+                                                </div>
+                                            </div>
+                                            <div class="connection-arrows">
+                                                <div class="arrow-group">
+                                                    <div class="arrow-line"></div>
+                                                    <div class="arrow-head"></div>
+                                                    <div class="arrow-label">每Leaf ${connectionsPerSpine}条/Spine</div>
+                                                </div>
+                                            </div>
+                                            <div class="layer">
+                                                <div class="layer-label leaf">Leaf 层</div>
+                                                <div class="layer-content">
+                                                    ${generateLeafNodes(numSUs, 'P2-')}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 下层: GPU 服务器居中 (倒三角) -->
+                                <div class="multiplane-gpu-row">
+                                    <div style="font-size: 0.8em; color: var(--text-muted);">
+                                        ↑ Port1 连接 Plane 1 &nbsp;&nbsp;|&nbsp;&nbsp; Port2 连接 Plane 2 ↑
+                                    </div>
+                                    <div class="gpu-label">GPU 服务器</div>
+                                    <div class="gpu-nodes">
+                                        ${generateSUNodes(numSUs, numServers, config.serversPerSU)}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="diagram-stats">
+                                <div class="diagram-stat">
+                                    <div class="num">${totalSwitches}</div>
+                                    <div class="txt">交换机总数</div>
+                                </div>
+                                <div class="diagram-stat">
+                                    <div class="num">128</div>
+                                    <div class="txt">SN5600 端口数</div>
+                                </div>
+                                <div class="diagram-stat">
+                                    <div class="num">2</div>
+                                    <div class="txt">平面数</div>
+                                </div>
+                                <div class="diagram-stat">
+                                    <div class="num">${config.serversPerSU}</div>
+                                    <div class="txt">每SU服务器数</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="multiplane-d3-view" class="diagram-view" data-topology="${topologyData}">
+                            <div class="d3-topology-container"></div>
+                        </div>
+                    </div>
+
+                    <!-- 连接规则 -->
+                    <div class="two-tier-info">
+                        <p><strong>双平面架构特点 (SN5600)：</strong></p>
+                        <p>• 每台 CX8 网卡提供 2 个 400G 端口，Port1 连接 Plane 1，Port2 连接 Plane 2</p>
+                        <p>• 每台 GPU 服务器有 8 个 CX8 网卡，共 16 个端口分配到两个平面</p>
+                        <p>• 每个平面独立的 Leaf-Spine 拓扑，Spine 全部端口用于连接 Leaf</p>
+                        <p>• SN5600 交换机: 64 个 OSFP cage × 双端口 = 128 × 400G</p>
+                        <p>• Leaf 上行端口 1-64 (到 Spine)，下行端口 65-128 (到 GPU)</p>
+                        <p>• 最大支持 ${config.maxTwoTier.toLocaleString()} 台服务器 (仅两层架构)</p>
+                    </div>
+
+                    <!-- 端口映射 -->
+                    <h3 class="section-title">端口映射说明</h3>
+                    <div class="pod-structure">
+                        <div class="pod-card">
+                            <div class="pod-header">SN5600 交换机端口分配</div>
+                            <div class="pod-body">
+                                <div class="pod-item">
+                                    <span class="icon spine"></span>
+                                    <span>端口 1-64: 上行端口 (到 Spine / 共 64 个 400G)</span>
+                                </div>
+                                <div class="pod-item">
+                                    <span class="icon leaf"></span>
+                                    <span>端口 65-128: 下行端口 (到 GPU / 共 64 个 400G)</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pod-card">
+                            <div class="pod-header">CX8 双端口网卡分配</div>
+                            <div class="pod-body">
+                                <div class="pod-item">
+                                    <span class="icon" style="background: #3b82f6;"></span>
+                                    <span>Port 1 (mlx5_x 端口1): → Plane 1 Leaf</span>
+                                </div>
+                                <div class="pod-item">
+                                    <span class="icon" style="background: #ff9f0a;"></span>
+                                    <span>Port 2 (mlx5_x 端口2): → Plane 2 Leaf</span>
+                                </div>
+                                <div class="pod-item">
+                                    <span class="icon gpu"></span>
+                                    <span>每台服务器: 8 × CX8 = 16 端口 (每平面 8 个)</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pod-card">
+                            <div class="pod-header">命名规则</div>
+                            <div class="pod-body">
+                                <div class="pod-item">
+                                    <span class="icon spine"></span>
+                                    <span>Spine: P{plane}-Spine{id} (如 P1-Spine1)</span>
+                                </div>
+                                <div class="pod-item">
+                                    <span class="icon leaf"></span>
+                                    <span>Leaf: P{plane}-LG{id}-Leaf{id} (如 P1-LG1-Leaf1)</span>
+                                </div>
+                                <div class="pod-item">
+                                    <span class="icon gpu"></span>
+                                    <span>GPU: SU{id}-GPU{id} (如 SU1-GPU1)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ========== D3.js MultiPlane 渲染 ==========
+
+        function renderMultiPlaneD3(container, data) {
+            const width = container.clientWidth || 1000;
+            const height = container.clientHeight || 600;
+
+            const svg = d3.select(container)
+                .append('svg')
+                .attr('width', width)
+                .attr('height', height)
+                .style('background', 'linear-gradient(180deg, #0d0d12 0%, #1a1a24 100%)');
+
+            const C = {
+                core: '#a855f7',
+                spine: '#22d3ee',
+                leaf: '#4ade80',
+                gpu: '#facc15',
+                plane1: '#3b82f6',
+                plane2: '#ff9f0a',
+                line: '#86efac',
+                boxBg: 'rgba(255,255,255,0.03)',
+                boxBorder: 'rgba(255,255,255,0.12)',
+                text: '#e5e5e5',
+                textDim: '#888'
+            };
+
+            const margin = { top: 20, right: 20, bottom: 20, left: 20 };
+            const numSUs = data.numSUs || 1;
+            const numLeafsPerPlane = data.numLeafsPerPlane || 8;
+            const numSpinesPerPlane = data.numSpinesPerPlane || 4;
+            const numServers = data.numServers || 64;
+            const serversPerSU = data.serversPerSU || 64;
+
+            // 倒三角布局: 上方两个 Plane 并排，下方 GPU 居中
+            const planeGap = 30;
+            const planeH = height * 0.55;
+            const planeW = (width - margin.left - margin.right - planeGap) / 2;
+            const gpuAreaY = margin.top + planeH + 15;
+            const gpuAreaH = height - gpuAreaY - margin.bottom;
+
+            const plane1X = margin.left;
+            const plane2X = margin.left + planeW + planeGap;
+
+            // 绘制 Plane 1 (左上)
+            drawPlaneBox(svg, plane1X, margin.top, planeW, planeH, 1, numSpinesPerPlane, numLeafsPerPlane, numSUs, C);
+
+            // 绘制 Plane 2 (右上)
+            drawPlaneBox(svg, plane2X, margin.top, planeW, planeH, 2, numSpinesPerPlane, numLeafsPerPlane, numSUs, C);
+
+            // 绘制 GPU 区域 (下方居中)
+            const gpuRowW = width * 0.55;
+            const gpuRowX = (width - gpuRowW) / 2;
+            drawGPURow(svg, gpuRowX, gpuAreaY, gpuRowW, gpuAreaH, numSUs, numServers, serversPerSU, C);
+
+            // 连接线: Plane 1 Leaf 底部 → GPU 区域顶部左侧
+            const plane1BottomY = margin.top + planeH;
+            const plane2BottomY = plane1BottomY;
+            const gpuTopY = gpuAreaY;
+            const gpuCenterX = width / 2;
+
+            // Plane 1 → GPU 连接 (3条贝塞尔曲线)
+            const p1Anchors = [plane1X + planeW * 0.25, plane1X + planeW * 0.5, plane1X + planeW * 0.75];
+            const gpuLeftAnchors = [gpuRowX + gpuRowW * 0.15, gpuRowX + gpuRowW * 0.3, gpuRowX + gpuRowW * 0.4];
+
+            p1Anchors.forEach((sx, i) => {
+                const path = d3.path();
+                path.moveTo(sx, plane1BottomY);
+                path.bezierCurveTo(sx, plane1BottomY + 20, gpuLeftAnchors[i], gpuTopY - 20, gpuLeftAnchors[i], gpuTopY);
+                svg.append('path')
+                    .attr('d', path.toString())
+                    .attr('fill', 'none')
+                    .attr('stroke', C.plane1)
+                    .attr('stroke-width', 1.5)
+                    .attr('stroke-opacity', 0.4 - i * 0.08)
+                    .attr('stroke-dasharray', '4,3');
+            });
+
+            // Plane 2 → GPU 连接
+            const p2Anchors = [plane2X + planeW * 0.25, plane2X + planeW * 0.5, plane2X + planeW * 0.75];
+            const gpuRightAnchors = [gpuRowX + gpuRowW * 0.6, gpuRowX + gpuRowW * 0.7, gpuRowX + gpuRowW * 0.85];
+
+            p2Anchors.forEach((sx, i) => {
+                const path = d3.path();
+                path.moveTo(sx, plane2BottomY);
+                path.bezierCurveTo(sx, plane2BottomY + 20, gpuRightAnchors[i], gpuTopY - 20, gpuRightAnchors[i], gpuTopY);
+                svg.append('path')
+                    .attr('d', path.toString())
+                    .attr('fill', 'none')
+                    .attr('stroke', C.plane2)
+                    .attr('stroke-width', 1.5)
+                    .attr('stroke-opacity', 0.4 - i * 0.08)
+                    .attr('stroke-dasharray', '4,3');
+            });
+
+            // 连接标签
+            svg.append('text')
+                .attr('x', (plane1X + planeW * 0.5 + gpuRowX + gpuRowW * 0.3) / 2)
+                .attr('y', (plane1BottomY + gpuTopY) / 2 + 4)
+                .attr('text-anchor', 'middle')
+                .attr('fill', C.plane1)
+                .attr('font-size', '10px')
+                .attr('font-weight', '500')
+                .text('Port1');
+
+            svg.append('text')
+                .attr('x', (plane2X + planeW * 0.5 + gpuRowX + gpuRowW * 0.7) / 2)
+                .attr('y', (plane2BottomY + gpuTopY) / 2 + 4)
+                .attr('text-anchor', 'middle')
+                .attr('fill', C.plane2)
+                .attr('font-size', '10px')
+                .attr('font-weight', '500')
+                .text('Port2');
+        }
+
+        function drawPlaneBox(svg, x, y, w, h, planeId, numSpines, numLeafs, numSUs, C) {
+            const g = svg.append('g');
+            const color = planeId === 1 ? C.plane1 : C.plane2;
+            const pad = 12;
+            const innerW = w - pad * 2;
+
+            // 外框
+            g.append('rect')
+                .attr('x', x).attr('y', y)
+                .attr('width', w).attr('height', h)
+                .attr('rx', 12)
+                .attr('fill', 'rgba(0,0,0,0.3)')
+                .attr('stroke', color)
+                .attr('stroke-width', 2)
+                .attr('stroke-opacity', 0.6);
+
+            // 平面标题
+            g.append('text')
+                .attr('x', x + w / 2).attr('y', y + 20)
+                .attr('text-anchor', 'middle')
+                .attr('fill', color)
+                .attr('font-family', 'Orbitron, sans-serif')
+                .attr('font-weight', '700')
+                .attr('font-size', '13px')
+                .text(`Plane ${planeId}`);
+
+            // 布局: Spine(30%) + conn(15%) + Leaf(30%) + info(25%)
+            const topPad = 30;
+            const contentH = h - topPad - pad;
+            const layerH = Math.max(40, contentH * 0.30);
+            const connH = Math.max(20, contentH * 0.15);
+            const startY = y + topPad;
+
+            // Spine 层
+            drawLayerBox(g, x + pad, startY, innerW, layerH, `P${planeId}-SG`, 'Spine', numSpines, C.spine, C);
+
+            // Spine-Leaf 连接
+            const spineConnY = startY + layerH;
+            drawMeshConnection(g, x + pad, spineConnY, innerW, connH, C.spine, C.leaf, `${numSpines}×${numLeafs}`);
+
+            // Leaf 层
+            const leafY = spineConnY + connH;
+            drawLayerBox(g, x + pad, leafY, innerW, layerH, `P${planeId}-LG`, 'Leaf', numLeafs, C.leaf, C);
+
+            // 底部信息
+            const infoY = leafY + layerH + 15;
+            g.append('text')
+                .attr('x', x + w / 2).attr('y', infoY)
+                .attr('text-anchor', 'middle')
+                .attr('fill', C.textDim)
+                .attr('font-size', '10px')
+                .text(`${numLeafs} Leaf + ${numSpines} Spine`);
+        }
+
+        function drawGPURow(svg, x, y, w, h, numSUs, numServers, serversPerSU, C) {
+            const g = svg.append('g');
+
+            // GPU 区域背景框
+            g.append('rect')
+                .attr('x', x).attr('y', y)
+                .attr('width', w).attr('height', h)
+                .attr('rx', 12)
+                .attr('fill', 'rgba(250,204,21,0.04)')
+                .attr('stroke', C.gpu)
+                .attr('stroke-width', 1.5)
+                .attr('stroke-opacity', 0.4);
+
+            // 顶部渐变线
+            const gradId = 'gpuGrad' + Math.random().toString(36).substr(2, 5);
+            const defs = svg.append('defs');
+            const grad = defs.append('linearGradient').attr('id', gradId);
+            grad.append('stop').attr('offset', '0%').attr('stop-color', '#3b82f6');
+            grad.append('stop').attr('offset', '50%').attr('stop-color', C.gpu);
+            grad.append('stop').attr('offset', '100%').attr('stop-color', '#ff9f0a');
+
+            g.append('rect')
+                .attr('x', x + w * 0.2).attr('y', y)
+                .attr('width', w * 0.6).attr('height', 2)
+                .attr('fill', `url(#${gradId})`);
+
+            // 标题
+            g.append('text')
+                .attr('x', x + w / 2).attr('y', y + 18)
+                .attr('text-anchor', 'middle')
+                .attr('fill', C.gpu)
+                .attr('font-family', 'Orbitron, sans-serif')
+                .attr('font-weight', '700')
+                .attr('font-size', '12px')
+                .text(`GPU 服务器 (${numServers} 台)`);
+
+            // GPU 图标横排显示
+            const gpuBoxW = 35;
+            const gpuBoxH = 28;
+            const showCount = Math.min(numSUs, 6);
+            const hasEllipsis = numSUs > 6;
+            const totalSlots = hasEllipsis ? showCount + 1 : showCount;
+            const gpuSpacing = Math.min(65, (w - 40) / totalSlots);
+            const startX = x + (w - gpuSpacing * (totalSlots - 1)) / 2;
+            const gpuY = y + 30;
+
+            for (let i = 0; i < showCount; i++) {
+                let idx, slotPos;
+                if (hasEllipsis) {
+                    if (i < 3) {
+                        idx = i;
+                        slotPos = i;
+                    } else {
+                        idx = numSUs - (showCount - i);
+                        slotPos = i + 1;  // 跳过省略号位置
+                    }
+                } else {
+                    idx = i;
+                    slotPos = i;
+                }
+
+                const gx = startX + slotPos * gpuSpacing - gpuBoxW / 2;
+                const gy = gpuY;
+
+                // GPU 图标
+                g.append('rect')
+                    .attr('x', gx).attr('y', gy)
+                    .attr('width', gpuBoxW).attr('height', gpuBoxH)
+                    .attr('rx', 4)
+                    .attr('fill', C.gpu + '25')
+                    .attr('stroke', C.gpu)
+                    .attr('stroke-width', 1);
+
+                for (let j = 0; j < 4; j++) {
+                    g.append('rect')
+                        .attr('x', gx + 4 + j * 7.5).attr('y', gy + 5)
+                        .attr('width', 5).attr('height', 18)
+                        .attr('rx', 1)
+                        .attr('fill', C.gpu + 'aa');
+                }
+
+                g.append('text')
+                    .attr('x', gx + gpuBoxW / 2).attr('y', gy + gpuBoxH + 12)
+                    .attr('text-anchor', 'middle')
+                    .attr('fill', C.textDim)
+                    .attr('font-size', '9px')
+                    .text(`SU${idx + 1}`);
+            }
+
+            // 省略号
+            if (hasEllipsis) {
+                const ellipsisX = startX + 3 * gpuSpacing;
+                g.append('text')
+                    .attr('x', ellipsisX).attr('y', gpuY + gpuBoxH / 2 + 5)
+                    .attr('text-anchor', 'middle')
+                    .attr('fill', C.textDim)
+                    .attr('font-size', '18px')
+                    .text('···');
+            }
         }
 
         function generateD3TopologyData(config) {
