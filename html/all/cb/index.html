@@ -482,8 +482,8 @@
         </div>
     </div>
 
-    <!-- SheetJS for Excel export -->
-    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+    <!-- SheetJS with style support for Excel export -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
     <script>
     // 产品数据
     const ndrProducts = [
@@ -908,42 +908,161 @@
         }
 
         const r = calcResults;
-        const gpuType = document.getElementById('gpuType').value || 'H800';
+        const gpuType = document.getElementById('gpuType').value || 'B200';
+        const workbook = XLSX.utils.book_new();
+        const ws = XLSX.utils.aoa_to_sheet([]);
 
-        // 创建工作簿
-        const wb = XLSX.utils.book_new();
+        const totalCols = 11;
+        const lastCol = totalCols - 1;
 
-        // 配置清单表
-        const wsData = [
-            ['产品名称', '型号', 'Product Code', '描述', '数量', '备注']
+        // 列宽: 序号/商品名称/规格型号/Product Code/产品描述/品牌/数量/单价(含税)/总价(含税)/货期/备注
+        ws['!cols'] = [
+            { wch: 6 }, { wch: 20 }, { wch: 28 }, { wch: 24 }, { wch: 38 },
+            { wch: 10 }, { wch: 8 }, { wch: 14 }, { wch: 14 }, { wch: 12 }, { wch: 22 }
         ];
 
-        // 添加产品数据
-        productData.forEach(item => {
-            wsData.push([item['产品名称'], item['型号'], item['Product Code'], item['描述'], item['数量'], item['备注']]);
+        const today = new Date();
+        const dateStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+
+        // ---- 第1行：公司标题 ----
+        XLSX.utils.sheet_add_aoa(ws, [["北京正阳恒卓科技有限公司 产品报价单"]], { origin: "A1" });
+        ws[XLSX.utils.encode_cell({ r: 0, c: 0 })].s = {
+            font: { bold: true, sz: 20, color: { rgb: "3B82F6" } },
+            alignment: { horizontal: "center", vertical: "center" },
+            fill: { fgColor: { rgb: "EFF6FF" } }
+        };
+        ws['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: lastCol } }];
+
+        // ---- 第2行：电话 + 报价日期 ----
+        const infoStyle = { font: { sz: 10, color: { rgb: "4B5563" } }, alignment: { horizontal: "left", vertical: "center" }, fill: { fgColor: { rgb: "F9FAFB" } } };
+        XLSX.utils.sheet_add_aoa(ws, [["电话：010-63085531"]], { origin: "A2" });
+        ws[XLSX.utils.encode_cell({ r: 1, c: 0 })].s = infoStyle;
+        ws['!merges'].push({ s: { r: 1, c: 0 }, e: { r: 1, c: 7 } });
+
+        XLSX.utils.sheet_add_aoa(ws, [["报价日期：" + dateStr]], { origin: "I2" });
+        ws[XLSX.utils.encode_cell({ r: 1, c: 8 })].s = { ...infoStyle, alignment: { horizontal: "right", vertical: "center" } };
+        ws['!merges'].push({ s: { r: 1, c: 8 }, e: { r: 1, c: lastCol } });
+
+        // ---- 第3行：地址 ----
+        XLSX.utils.sheet_add_aoa(ws, [["地址：北京市西城区长安兴融中心2号楼5A"]], { origin: "A3" });
+        ws[XLSX.utils.encode_cell({ r: 2, c: 0 })].s = infoStyle;
+        ws['!merges'].push({ s: { r: 2, c: 0 }, e: { r: 2, c: lastCol } });
+
+        // ---- 第4行：报价有效期 ----
+        XLSX.utils.sheet_add_aoa(ws, [["报价有效期：30天"]], { origin: "A4" });
+        ws[XLSX.utils.encode_cell({ r: 3, c: 0 })].s = infoStyle;
+        ws['!merges'].push({ s: { r: 3, c: 0 }, e: { r: 3, c: lastCol } });
+
+        // ---- 第5行：表头 (NVIDIA 绿色) ----
+        const headers = ["序号", "商品名称", "规格型号", "Product Code", "产品描述", "品牌", "数量", "单价(含税)", "总价(含税)", "货期", "备注"];
+        XLSX.utils.sheet_add_aoa(ws, [headers], { origin: "A5" });
+        for (let col = 0; col < totalCols; col++) {
+            const ref = XLSX.utils.encode_cell({ r: 4, c: col });
+            if (!ws[ref]) ws[ref] = { t: 's', v: '' };
+            ws[ref].s = {
+                fill: { fgColor: { rgb: "76B900" } },
+                font: { bold: true, sz: 11, color: { rgb: "FFFFFF" } },
+                alignment: { horizontal: "center", vertical: "center", wrapText: true },
+                border: {
+                    top: { style: "medium", color: { rgb: "5A8C00" } },
+                    bottom: { style: "medium", color: { rgb: "5A8C00" } },
+                    left: { style: "thin", color: { rgb: "5A8C00" } },
+                    right: { style: "thin", color: { rgb: "5A8C00" } }
+                }
+            };
+        }
+
+        // 行高
+        ws['!rows'] = [
+            { hpx: 40 }, { hpx: 22 }, { hpx: 22 }, { hpx: 22 }, { hpx: 32 }
+        ];
+
+        // ---- 数据行（从第6行开始）----
+        productData.forEach((item, index) => {
+            const excelRow = index + 6;
+            const rowIdx = index + 5;
+
+            XLSX.utils.sheet_add_aoa(ws, [[
+                index + 1,
+                item['产品名称'] || "",
+                item['型号'] || "",
+                item['Product Code'] || "",
+                item['描述'] || "",
+                "NVIDIA",
+                item['数量'],
+                "",
+                "",
+                "",
+                item['备注'] || ""
+            ]], { origin: `A${excelRow}` });
+
+            // 总价公式: I = H × G
+            const totalCell = XLSX.utils.encode_cell({ r: rowIdx, c: 8 });
+            ws[totalCell] = { t: 'n', f: `H${excelRow}*G${excelRow}`, z: '\u00A5#,##0.00' };
+
+            // 数据行样式
+            const isEven = index % 2 === 0;
+            for (let col = 0; col < totalCols; col++) {
+                const ref = XLSX.utils.encode_cell({ r: rowIdx, c: col });
+                if (!ws[ref]) ws[ref] = { t: 's', v: '' };
+
+                let hAlign = "left";
+                if ([0, 5, 6, 9].includes(col)) hAlign = "center";
+                else if ([7, 8].includes(col)) hAlign = "right";
+
+                ws[ref].s = {
+                    alignment: { horizontal: hAlign, vertical: "center", wrapText: true },
+                    fill: { fgColor: { rgb: isEven ? "FFFFFF" : "F9FAFB" } },
+                    font: { sz: 10, color: { rgb: "111827" } },
+                    border: {
+                        top: { style: "thin", color: { rgb: "E5E7EB" } },
+                        bottom: { style: "thin", color: { rgb: "E5E7EB" } },
+                        left: { style: "thin", color: { rgb: "E5E7EB" } },
+                        right: { style: "thin", color: { rgb: "E5E7EB" } }
+                    }
+                };
+                if (col === 7) ws[ref].z = '\u00A5#,##0.00';
+            }
+            ws['!rows'][rowIdx] = { hpx: 26 };
         });
 
-        const ws = XLSX.utils.aoa_to_sheet(wsData);
+        // ---- 合计行 ----
+        const totalRowIdx = productData.length + 5;
+        const totalExcelRow = totalRowIdx + 1;
+        const firstDataRow = 6;
+        const lastDataRow = productData.length + 5;
 
-        // 设置列宽
-        ws['!cols'] = [
-            { wch: 18 },
-            { wch: 25 },
-            { wch: 22 },
-            { wch: 45 },
-            { wch: 8 },
-            { wch: 18 }
-        ];
+        XLSX.utils.sheet_add_aoa(ws, [["", "", "", "", "", "", "", "合计:", "", "", ""]], { origin: `A${totalExcelRow}` });
 
-        XLSX.utils.book_append_sheet(wb, ws, '配置清单');
+        // 合计公式
+        const sumCell = XLSX.utils.encode_cell({ r: totalRowIdx, c: 8 });
+        ws[sumCell] = { t: 'n', f: `SUM(I${firstDataRow}:I${lastDataRow})`, z: '\u00A5#,##0.00' };
 
-        // 生成文件名
+        // 合计行样式
+        for (let col = 0; col < totalCols; col++) {
+            const ref = XLSX.utils.encode_cell({ r: totalRowIdx, c: col });
+            if (!ws[ref]) ws[ref] = { t: 's', v: '' };
+            ws[ref].s = {
+                alignment: { horizontal: [7, 8].includes(col) ? "right" : "center", vertical: "center" },
+                fill: { fgColor: { rgb: "F3F4F6" } },
+                font: { bold: true, sz: 11, color: { rgb: "111827" } },
+                border: {
+                    top: { style: "medium", color: { rgb: "374151" } },
+                    bottom: { style: "medium", color: { rgb: "374151" } },
+                    left: { style: "thin", color: { rgb: "E5E7EB" } },
+                    right: { style: "thin", color: { rgb: "E5E7EB" } }
+                }
+            };
+        }
+        ws['!rows'][totalRowIdx] = { hpx: 32 };
+
+        XLSX.utils.book_append_sheet(workbook, ws, '配置清单');
+
         let filename = `IB网络配置清单_${r.speed}`;
         if (r.gpuServerNum > 0) filename += `_${r.gpuServerNum}台${gpuType}`;
-        filename += `_${new Date().toISOString().slice(0,10)}.xlsx`;
+        filename += `_${dateStr}.xlsx`;
 
-        // 下载文件
-        XLSX.writeFile(wb, filename);
+        XLSX.writeFile(workbook, filename);
     }
     </script>
 </body>
