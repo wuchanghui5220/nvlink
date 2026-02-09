@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+<script>if(sessionStorage.getItem('nv_net_auth')!=='524f544a8b79f41c7c60c2b1a797af2089e20cbf856d715f39ee68577ad2c344'){location.replace('../')}</script>
 <head>
-    <script>if(sessionStorage.getItem('nv_net_auth')!=='524f544a8b79f41c7c60c2b1a797af2089e20cbf856d715f39ee68577ad2c344'){location.replace('../')}</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IB 网络配置计算器</title>
@@ -88,6 +88,9 @@
             padding: 8px 10px;
             color: #fff;
             font-size: 13px;
+            width: 100%;
+            min-width: 0;
+            box-sizing: border-box;
         }
 
         input:focus, select:focus {
@@ -383,6 +386,17 @@
                 </div>
             </div>
 
+            <div class="form-row" id="ufmRow">
+                <div class="form-group">
+                    <label>UFM 授权</label>
+                    <select id="ufmDuration">
+                        <option value="1S">1 年</option>
+                        <option value="3S">3 年</option>
+                        <option value="5S" selected>5 年</option>
+                    </select>
+                </div>
+            </div>
+
             <button class="btn-calculate" id="calculateButton">计算拓扑</button>
         </div>
 
@@ -497,6 +511,18 @@
         {name: '200G IB AOC 1分2线缆', model: 'MFS1S50-H030V', code: '', desc: 'Mellanox active optical cable, 200Gb/s to 2x100Gb/s IB HDR, QSFP56 to 2x QSFP56, 30m'}
     ];
 
+    const ufmProducts = [
+        {name: 'UFM Enterprise', model: 'UFM-EN-500-1S', code: '797-XUFETG+P2CMI12', desc: 'NVIDIA UFM Ent Subscription SW with Business Standard for 0-500 Nodes, 1 Year'},
+        {name: 'UFM Enterprise', model: 'UFM-EN-500-3S', code: '797-XUFETG+P2CMI36', desc: 'NVIDIA UFM Ent Subscription SW with Business Standard for 0-500 Nodes, 3 Years'},
+        {name: 'UFM Enterprise', model: 'UFM-EN-500-5S', code: '797-XUFETG+P2CMI60', desc: 'NVIDIA UFM Ent Subscription SW with Business Standard for 0-500 Nodes, 5 Years'},
+        {name: 'UFM Enterprise', model: 'UFM-EN-1000-1S', code: '797-XUFETA+P2CMI12', desc: 'NVIDIA UFM Ent Subscription SW with Business Standard for 500-1000 Nodes, 1 Year'},
+        {name: 'UFM Enterprise', model: 'UFM-EN-1000-3S', code: '797-XUFETA+P2CMI36', desc: 'NVIDIA UFM Ent Subscription SW with Business Standard for 500-1000 Nodes, 3 Years'},
+        {name: 'UFM Enterprise', model: 'UFM-EN-1000-5S', code: '797-XUFETA+P2CMI60', desc: 'NVIDIA UFM Ent Subscription SW with Business Standard for 500-1000 Nodes, 5 Years'},
+        {name: 'UFM Enterprise', model: 'UFM-EN-5000-1S', code: '797-XUFETB+P2CMI12', desc: 'NVIDIA UFM Ent Subscription SW with Business Standard for 1K+ Nodes, 1 Year'},
+        {name: 'UFM Enterprise', model: 'UFM-EN-5000-3S', code: '797-XUFETB+P2CMI36', desc: 'NVIDIA UFM Ent Subscription SW with Business Standard for 1K+ Nodes, 3 Years'},
+        {name: 'UFM Enterprise', model: 'UFM-EN-5000-5S', code: '797-XUFETB+P2CMI60', desc: 'NVIDIA UFM Ent Subscription SW with Business Standard for 1K+ Nodes, 5 Years'}
+    ];
+
     const PORTS = { HDR: 40, NDR: 64, SN5610_400G: 128, Q3: 144 };
     let calcResults = {};
     let productData = [];
@@ -523,6 +549,8 @@
             document.getElementById('planeCount').value = '1';
             document.getElementById('nicTypeGroup').style.display = 'none';
         }
+        // SN5610 RoCE 无 UFM 授权
+        document.getElementById('ufmRow').style.display = isSN5610 ? 'none' : '';
     });
     document.getElementById('planeCount').addEventListener('change', function() {
         const isDual = this.value === '2';
@@ -683,6 +711,18 @@
         const numPlanes = (inputSpeed === 3) ? parseInt(document.getElementById('planeCount').value) : 1;
         const nicType = (numPlanes === 2) ? document.getElementById('nicType').value : '';
 
+        // UFM (仅 IB 网络: HDR/NDR/XDR/Q3400-400G)
+        let ufmModel = '', ufmNodes = 0;
+        if (speed !== "SN5610-400G" && nodes > 0) {
+            ufmNodes = nodes + 2; // +2 UFM 服务器网卡
+            const ufmDuration = document.getElementById('ufmDuration').value;
+            let ufmTier;
+            if (ufmNodes <= 500) ufmTier = '500';
+            else if (ufmNodes <= 1000) ufmTier = '1000';
+            else ufmTier = '5000';
+            ufmModel = `UFM-EN-${ufmTier}-${ufmDuration}`;
+        }
+
         calcResults = {
             speed, ratioText, switchType, cableType, cableTypeUplink, ot800, ot400, ot1600,
             serverNum, nodes, spines, leafs,
@@ -694,7 +734,8 @@
             allCables: spineToLeafCables + leafToServerCables,
             spine2LeafOT, leaf2ServerOT, switchOT, hcaOT,
             q3SpineToLeafOT, q3LeafToServerOT, q3OT,
-            numPlanes, nicType
+            numPlanes, nicType,
+            ufmModel, ufmNodes
         };
 
         updateUI();
@@ -819,12 +860,28 @@
             }
         }
 
+        // UFM Enterprise 授权 + UFM 服务器配件
+        if (r.ufmModel) {
+            items.push({ model: r.ufmModel, num: r.ufmNodes, note: `UFM 授权 (${r.ufmNodes} Nodes)` });
+            // +2 交换机侧模块 MMA4Z00-NS
+            items.push({ model: 'MMA4Z00-NS', num: 2, note: 'UFM 服务器交换机侧模块' });
+            // UFM 服务器网卡侧模块
+            if (r.speed === "HDR") {
+                items.push({ model: 'MFS1S00-H030V', num: 2, note: 'UFM 服务器 AOC 线缆' });
+            } else {
+                // NDR/XDR/Q3400-400G: UFM 服务器使用 NDR 400G 网卡
+                items.push({ model: 'MMA4Z00-NS400', num: 2, note: 'UFM 服务器网卡模块' });
+                const ufmCable = r.gpuServerNum > 256 ? 'MFP7E10-N050' : 'MFP7E10-N030';
+                items.push({ model: ufmCable, num: 2, note: 'UFM 服务器 MPO 线缆' });
+            }
+        }
+
         // 保存产品数据用于导出
         productData = [];
 
         items.forEach(item => {
             if (item.num > 0) {
-                const prod = products.find(p => p.model === item.model);
+                const prod = products.find(p => p.model === item.model) || ndrProducts.find(p => p.model === item.model) || ufmProducts.find(p => p.model === item.model);
                 if (prod) {
                     const row = tbody.insertRow();
                     row.innerHTML = `<td>${prod.name}</td><td>${prod.model}</td><td>${prod.code || ''}</td><td>${prod.desc}</td><td>${item.num}</td><td>${item.note}</td>`;
