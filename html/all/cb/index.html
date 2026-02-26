@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-<script>if(sessionStorage.getItem('nv_net_auth')!=='524f544a8b79f41c7c60c2b1a797af2089e20cbf856d715f39ee68577ad2c344'){location.replace('../')}</script>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -308,6 +307,8 @@
                         <option value="3">SN5610 (800G)</option>
                         <option value="4">Q3400 (800G)</option>
                         <option value="5">Q3400 降速 (400G↓800G↑)</option>
+                        <option value="6">TH5 RoCE (400G)</option>
+                        <option value="7">TH4 RoCE (400G)</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -333,6 +334,16 @@
                     <select id="nicType">
                         <option value="800g" selected>单口800G</option>
                         <option value="400g">双口400G</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row" id="th4ModelRow" style="display:none">
+                <div class="form-group">
+                    <label>TH4 交换机型号</label>
+                    <select id="th4Model">
+                        <option value="S6981" selected>RG-S6981-64QC2VS (QSFP112)</option>
+                        <option value="S6980">RG-S6980-64QC (QSFP-DD)</option>
                     </select>
                 </div>
             </div>
@@ -523,7 +534,24 @@
         {name: 'UFM Enterprise', model: 'UFM-EN-5000-5S', code: '797-XUFETB+P2CMI60', desc: 'NVIDIA UFM Ent Subscription SW with Business Standard for 1K+ Nodes, 5 Years'}
     ];
 
-    const PORTS = { HDR: 40, NDR: 64, SN5610_400G: 128, Q3: 144 };
+    const th5Products = [
+        {name: 'TH5 RoCE交换机', model: 'RG-S6990-128QC2XS', code: '', desc: 'RG-S6990-128QC2XS主机，固化128口200G/400G QSFP112接口，2口10G SFP+接口，4个电源插槽，5个风扇插槽。标配电源支持2+2冗余，标配风扇支持4+1冗余，均支持热插拔，前后风道设计。'},
+        {name: '400G SR4模块', model: 'CR-QSFP04SR4-12D', code: '', desc: '接口: MPO-12，传输距离: 100m，波长: 850nm，光源: VCSEL PIN，光纤: MMF多模，发送功率: -4.6~+4dBm，灵敏度: < 4.6，工作温度: 0°C~+70°C（商业级）'},
+        {name: '400G VR4模块', model: 'CR-QSFP04VR4-12D', code: '', desc: '接口: MPO-12，传输距离: 50m，波长: 850nm，光源: VCSEL PIN，光纤: MMF多模，发送功率: -4.6~+4dBm，灵敏度: <-4.4，工作温度: 0°C~+70°C（商业级）'},
+        {name: '800G双端口400G VR模块', model: 'CR-OSFP08VR8-12D', code: '', desc: '接口: Dual MPO-12，传输距离: 50m，波长: 850nm，光源: VCSEL PIN，光纤: MMF多模，发送功率: -4.6~+4dBm，灵敏度: < 4.4，工作温度: 0°C~+70°C（商业级）'},
+        {name: 'MPO12-APC光纤(MMF)', model: 'MYCR-FS4H14F4FIB-030', code: '', desc: 'MPO跳线-8芯/多模OM4/低烟无卤/APC(母)-APC(母)/低损/B极性/洋红色/30m'},
+        {name: 'MPO12-APC光纤(MMF)', model: 'MYCR-FS4H14F4FIB-050', code: '', desc: 'MPO跳线-8芯/多模OM4/低烟无卤/APC(母)-APC(母)/低损/B极性/洋红色/50m'},
+        {name: 'MPO12-APC光纤(MMF)', model: 'MYCR-FS4H14F4FIB-100', code: '', desc: 'MPO跳线-8芯/多模OM4/低烟无卤/APC(母)-APC(母)/低损/B极性/洋红色/100m'}
+    ];
+
+    const th4Products = [
+        {name: 'TH4 RoCE交换机', model: 'RG-S6981-64QC2VS', code: '', desc: 'RG-S6981-64QC2VS主机，固化64口400G QSFP112接口，25口25GE SFP28接口，4个电源插槽，5个风扇插槽。标配电源支持2+2冗余，标配风扇支持4+1冗余，均支持热插拔，前后风道设计。'},
+        {name: 'TH4 RoCE交换机', model: 'RG-S6980-64QC', code: '', desc: 'RG-S6980-64QC主机，固化64口400G QSFP-DD接口，4个电源插槽，8个风扇插槽。标配电源支持2+2冗余，标配风扇支持7+1冗余，均支持热插拔，前后风道设计。'},
+        {name: '400G SR8模块(QSFP-DD)', model: 'CR-QSFD04SR8-16D', code: '', desc: '接口: MPO-16，传输距离: 100m，波长: 850nm，光源: VCSEL/PIN，光纤: MMF多模，发送功率: -6.5~+4dBm，灵敏度: <-7.9，工作温度: 0°C~+70°C（商业级）'},
+        {name: '400G VR4模块(QSFP-DD)', model: 'CR-QSFD04VR4-12D', code: '', desc: '接口: MPO-12，传输距离: 50m，波长: 850nm，光源: VCSEL/PIN，光纤: MMF多模，发送功率: -4.6~+4dBm，灵敏度: < 4.4，工作温度: 0°C~+70°C（商业级）'}
+    ];
+
+    const PORTS = { HDR: 40, NDR: 64, SN5610_400G: 128, Q3: 144, TH5: 128, TH4: 64 };
     let calcResults = {};
     let productData = [];
 
@@ -541,16 +569,21 @@
     document.getElementById('calculateButton').addEventListener('click', calculate);
     document.getElementById('downloadExcel').addEventListener('click', downloadExcel);
 
-    // SN5610 平面/网卡类型联动
+    // SN5610/TH5 平面/网卡类型联动
     document.getElementById('speed').addEventListener('change', function() {
         const isSN5610 = this.value === '3';
-        document.getElementById('planeRow').style.display = isSN5610 ? '' : 'none';
-        if (!isSN5610) {
+        const isTH5 = this.value === '6';
+        const isTH4 = this.value === '7';
+        const isRoCE = isSN5610 || isTH5 || isTH4;
+        document.getElementById('planeRow').style.display = isRoCE ? '' : 'none';
+        if (!isRoCE) {
             document.getElementById('planeCount').value = '1';
             document.getElementById('nicTypeGroup').style.display = 'none';
         }
-        // SN5610 RoCE 无 UFM 授权
-        document.getElementById('ufmRow').style.display = isSN5610 ? 'none' : '';
+        // TH4 型号选择
+        document.getElementById('th4ModelRow').style.display = isTH4 ? '' : 'none';
+        // RoCE 无 UFM 授权
+        document.getElementById('ufmRow').style.display = isRoCE ? 'none' : '';
     });
     document.getElementById('planeCount').addEventListener('change', function() {
         const isDual = this.value === '2';
@@ -577,6 +610,7 @@
 
         let ports, speed, switchType, cableType, cableTypeUplink, ot800, ot400, ot1600, downlinkPorts;
 
+        const totalServerCount = gpuServerNum + storageServerNum + cpuServerNum + otherServerNum;
         const useLongCable = gpuServerNum > 256;
 
         switch(inputSpeed) {
@@ -603,11 +637,52 @@
                 cableTypeUplink = useLongCable ? "MFP7E30-N050" : "MFP7E30-N030"; // Spine-Leaf SMF
                 ot800 = "MMA4Z00-NS"; ot400 = "MMA4Z00-NS400"; ot1600 = "MMS4A00-XM";
                 break;
+            case 6:
+                ports = PORTS.TH5; speed = "TH5-RoCE"; switchType = "RG-S6990-128QC2XS";
+                // MPO线缆根据集群规模选择不同长度
+                if (totalServerCount <= 128) {
+                    cableType = "MYCR-FS4H14F4FIB-030";        // Leaf-Server 30m
+                    cableTypeUplink = "MYCR-FS4H14F4FIB-030";  // Spine-Leaf 30m
+                } else if (totalServerCount <= 256) {
+                    cableType = "MYCR-FS4H14F4FIB-030";        // Leaf-Server 30m
+                    cableTypeUplink = "MYCR-FS4H14F4FIB-050";  // Spine-Leaf 50m
+                } else {
+                    cableType = "MYCR-FS4H14F4FIB-030";        // Leaf-Server 30m
+                    cableTypeUplink = "MYCR-FS4H14F4FIB-100";  // Spine-Leaf 100m
+                }
+                break;
+            case 7:
+                ports = PORTS.TH4; speed = "TH4-RoCE";
+                switchType = document.getElementById('th4Model').value === 'S6980' ? "RG-S6980-64QC" : "RG-S6981-64QC2VS";
+                // MPO线缆根据集群规模选择不同长度 (同 TH5 规则)
+                if (totalServerCount <= 128) {
+                    cableType = "MYCR-FS4H14F4FIB-030";
+                    cableTypeUplink = "MYCR-FS4H14F4FIB-030";
+                } else if (totalServerCount <= 256) {
+                    cableType = "MYCR-FS4H14F4FIB-030";
+                    cableTypeUplink = "MYCR-FS4H14F4FIB-050";
+                } else {
+                    cableType = "MYCR-FS4H14F4FIB-030";
+                    cableTypeUplink = "MYCR-FS4H14F4FIB-100";
+                }
+                break;
+        }
+
+        // RoCE 交换机光模块型号 (TH5/TH4 各自不同)
+        let roceSR = '', roceVR = '';
+        if (speed === "TH5-RoCE") { roceSR = 'CR-QSFP04SR4-12D'; roceVR = 'CR-QSFP04VR4-12D'; }
+        else if (speed === "TH4-RoCE") {
+            if (document.getElementById('th4Model').value === 'S6980') {
+                roceSR = 'CR-QSFD04SR8-16D'; roceVR = 'CR-QSFD04VR4-12D';  // QSFP-DD
+            } else {
+                roceSR = 'CR-QSFP04SR4-12D'; roceVR = 'CR-QSFP04VR4-12D';  // QSFP112 (同TH5)
+            }
         }
 
         // 计算 bisection (上行端口数)
         let bisection, ratioText;
         if (speed === "Q3400-400G") { bisection = 48; ratioText = "1:1"; }
+        else if (speed === "TH4-RoCE") { bisection = Math.ceil(64 / RA); ratioText = "1:1"; }
         else if (RA === 2 && ports === PORTS.HDR) { bisection = 20; ratioText = "1:1"; }
         else if (RA === 2 && ports === PORTS.NDR) { bisection = 32; ratioText = "1:1"; }
         else if (RA === 3 && ports === PORTS.HDR) { bisection = 16; ratioText = "3:5"; }
@@ -696,24 +771,39 @@
             leaf2ServerOT = Math.ceil(nodes / 2);
         }
 
+        // RoCE (TH5/TH4) 光模块: QSFP 单端口400G, 每条链路两端各需1个模块
+        let th5SR4 = 0, th5VR4Switch = 0, th5VR4Server = 0;
+        if (speed === "TH5-RoCE" || speed === "TH4-RoCE") {
+            th5SR4 = spineToLeafCables * 2;   // Spine-Leaf SR4, 两端各1个
+            th5VR4Switch = nodes;              // Leaf-Server VR4 交换机侧
+            th5VR4Server = nodes;              // Leaf-Server VR4 网卡侧
+        }
+
         if (dacCableNumber > 0) {
-            leafToServerCables -= dacCableNumber * 2;
-            hcaOT -= dacCableNumber * 2;
-            if (speed === "NDR" || speed === "SN5610-400G") {
-                leaf2ServerOT -= dacCableNumber;
-                switchOT = spine2LeafOT + leaf2ServerOT;
-            } else if (speed === "XDR") {
-                q3LeafToServerOT -= dacCableNumber;
-                q3OT = q3SpineToLeafOT + q3LeafToServerOT;
+            if (speed === "TH5-RoCE" || speed === "TH4-RoCE") {
+                // RoCE 单端口模块, DAC 1:1 替换
+                leafToServerCables -= dacCableNumber;
+                th5VR4Switch -= dacCableNumber;
+                th5VR4Server -= dacCableNumber;
+            } else {
+                leafToServerCables -= dacCableNumber * 2;
+                hcaOT -= dacCableNumber * 2;
+                if (speed === "NDR" || speed === "SN5610-400G") {
+                    leaf2ServerOT -= dacCableNumber;
+                    switchOT = spine2LeafOT + leaf2ServerOT;
+                } else if (speed === "XDR") {
+                    q3LeafToServerOT -= dacCableNumber;
+                    q3OT = q3SpineToLeafOT + q3LeafToServerOT;
+                }
             }
         }
 
-        const numPlanes = (inputSpeed === 3) ? parseInt(document.getElementById('planeCount').value) : 1;
+        const numPlanes = (inputSpeed === 3 || inputSpeed === 6 || inputSpeed === 7) ? parseInt(document.getElementById('planeCount').value) : 1;
         const nicType = (numPlanes === 2) ? document.getElementById('nicType').value : '';
 
         // UFM (仅 IB 网络: HDR/NDR/XDR/Q3400-400G)
         let ufmModel = '', ufmNodes = 0;
-        if (speed !== "SN5610-400G" && nodes > 0) {
+        if (speed !== "SN5610-400G" && speed !== "TH5-RoCE" && speed !== "TH4-RoCE" && nodes > 0) {
             ufmNodes = nodes + 2; // +2 UFM 服务器网卡
             const ufmDuration = document.getElementById('ufmDuration').value;
             let ufmTier;
@@ -735,7 +825,9 @@
             spine2LeafOT, leaf2ServerOT, switchOT, hcaOT,
             q3SpineToLeafOT, q3LeafToServerOT, q3OT,
             numPlanes, nicType,
-            ufmModel, ufmNodes
+            ufmModel, ufmNodes,
+            th5SR4, th5VR4Switch, th5VR4Server,
+            roceSR, roceVR
         };
 
         updateUI();
@@ -801,6 +893,18 @@
                 <div class="info-row"><span>Leaf-Server MMA4Z00-NS (800G)</span><span>${r.leaf2ServerOT}</span></div>
                 <div class="info-row"><span>交换机侧总数</span><span>${r.q3SpineToLeafOT + r.leaf2ServerOT}</span></div>
                 <div class="info-row"><span>HCA MMA4Z00-NS400 (400G)</span><span>${r.hcaOT}</span></div>`;
+        } else if (r.speed === "TH5-RoCE" || r.speed === "TH4-RoCE") {
+            otHtml = `
+                <div class="info-row"><span>Spine-Leaf SR 模块</span><span>${r.th5SR4 * np}</span></div>
+                <div class="info-row"><span>Leaf-Server VR (交换机侧)</span><span>${r.th5VR4Switch * np}</span></div>
+                <div class="info-row"><span>交换机侧总数</span><span>${(r.th5SR4 + r.th5VR4Switch) * np}</span></div>`;
+            if (np > 1 && r.nicType === '800g') {
+                otHtml += `<div class="info-row"><span>网卡侧 OSFP双端口400G</span><span>${r.th5VR4Server}</span></div>`;
+            } else if (np > 1 && r.nicType === '400g') {
+                otHtml += `<div class="info-row"><span>网卡侧 QSFP单端口400G</span><span>${r.th5VR4Server * 2}</span></div>`;
+            } else {
+                otHtml += `<div class="info-row"><span>VR (网卡侧)</span><span>${r.th5VR4Server}</span></div>`;
+            }
         } else if (r.speed === "HDR") {
             otHtml = `<div class="info-row"><span>HDR AOC 线缆</span><span>${r.allCables}</span></div>`;
         }
@@ -819,12 +923,34 @@
 
         const tbody = document.querySelector('#productTable tbody');
         tbody.innerHTML = '';
-        const products = r.speed === "HDR" ? hdrProducts : ndrProducts;
+        const products = r.speed === "HDR" ? hdrProducts : (r.speed === "TH5-RoCE" ? th5Products : (r.speed === "TH4-RoCE" ? th4Products : ndrProducts));
         const pn = np > 1 ? ` (×${np}平面)` : '';
 
         let items;
 
-        if (r.speed === "Q3400-400G") {
+        if (r.speed === "TH5-RoCE" || r.speed === "TH4-RoCE") {
+            // RoCE: QSFP 单端口400G, 不同层使用不同光模块和线缆长度
+            items = [
+                { model: r.switchType, num: r.spines * np, note: 'Spine 交换机' + pn },
+                { model: r.switchType, num: r.leafs * np, note: 'Leaf 交换机' + pn },
+                { model: r.roceSR, num: r.th5SR4 * np, note: 'Spine-Leaf SR 模块' + pn },
+                { model: r.roceVR, num: r.th5VR4Switch * np, note: 'Leaf-Server VR (交换机侧)' + pn },
+            ];
+            // 网卡侧模块: 双平面时根据网卡类型区分
+            if (np > 1 && r.nicType === '800g') {
+                // OSFP双端口400G: 1个模块=2×400G, 一个端口一个平面
+                items.push({ model: 'CR-OSFP08VR8-12D', num: r.th5VR4Server, note: '网卡侧 OSFP双端口400G' });
+            } else if (np > 1 && r.nicType === '400g') {
+                // QSFP单端口400G: 每个网卡2个模块, 每平面各1个
+                items.push({ model: r.roceVR, num: r.th5VR4Server * 2, note: '网卡侧 QSFP单端口400G' });
+            } else {
+                items.push({ model: r.roceVR, num: r.th5VR4Server, note: 'VR (网卡侧)' });
+            }
+            items.push(
+                { model: r.cableTypeUplink, num: r.spineToLeafCables * np, note: 'Spine-Leaf MPO 线缆' + pn },
+                { model: r.cableType, num: r.leafToServerCables * np, note: 'Leaf-Server MPO 线缆' + pn }
+            );
+        } else if (r.speed === "Q3400-400G") {
             // Q3400 降速: 非对称端口 (96×400G↓ + 48×800G↑), 不同层使用不同线缆和光模块
             items = [
                 { model: r.switchType, num: r.spines, note: 'Spine 交换机' },
@@ -881,7 +1007,7 @@
 
         items.forEach(item => {
             if (item.num > 0) {
-                const prod = products.find(p => p.model === item.model) || ndrProducts.find(p => p.model === item.model) || ufmProducts.find(p => p.model === item.model);
+                const prod = products.find(p => p.model === item.model) || ndrProducts.find(p => p.model === item.model) || ufmProducts.find(p => p.model === item.model) || th5Products.find(p => p.model === item.model) || th4Products.find(p => p.model === item.model);
                 if (prod) {
                     const row = tbody.insertRow();
                     row.innerHTML = `<td>${prod.name}</td><td>${prod.model}</td><td>${prod.code || ''}</td><td>${prod.desc}</td><td>${item.num}</td><td>${item.note}</td>`;
@@ -978,6 +1104,7 @@
         ];
 
         // ---- 数据行（从第6行开始）----
+        const brand = (r.speed === "TH5-RoCE" || r.speed === "TH4-RoCE") ? "锐捷" : "NVIDIA";
         productData.forEach((item, index) => {
             const excelRow = index + 6;
             const rowIdx = index + 5;
@@ -988,7 +1115,7 @@
                 item['型号'] || "",
                 item['Product Code'] || "",
                 item['描述'] || "",
-                "NVIDIA",
+                brand,
                 item['数量'],
                 "",
                 "",

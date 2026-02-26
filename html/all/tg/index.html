@@ -388,7 +388,10 @@
                         <select id="scheme" onchange="onSchemeChange()">
                             <option value="x800">Q3400 (144×800G) - X800 全速</option>
                             <option value="x800_400g">Q3400 降速 (96×400G+48×800G)</option>
+                            <option value="sn5610">SN5610 (128×400G) - Spectrum-X</option>
                             <option value="qm9790">QM9790 (64×400G) - X400</option>
+                            <option value="th5">TH5 (128×400G) - RoCE</option>
+                            <option value="th4">TH4 (64×400G) - RoCE</option>
                         </select>
                     </div>
 
@@ -596,6 +599,84 @@
             minSpineDivisor: 2,
             quickValues: [32, 128, 256, 512, 1024, 2048, 4096, 8192],
             filePrefix: 'topology_compute'
+        },
+        'sn5610': {
+            name: 'SN5610 (128×400G)',
+            switchModel: 'SN5610',
+            portSpec: '128 × 400G',
+            portsPerSwitch: 128,
+            uplinkPorts: 64,
+            downlinkPorts: 64,
+            downlinkPortStart: 65,
+            serversPerSu: 64,
+            leavesPerLg: 8,
+            hcasPerGpu: 8,
+            // SuperPOD
+            serversPerSuperpod: 512,
+            leafsPerSuperpod: 64,
+            spinesPerSuperpod: 64,
+            susPerSuperpod: 8,
+            numCgs: 64,
+            // 范围
+            maxTwoTier: 1024,
+            maxThreeTier: 65536,
+            spineFactors: [1, 2, 4, 8, 16, 32, 64],
+            coreFactors: [1, 2, 4, 8, 16, 32, 64],
+            minSpineDivisor: 2,
+            quickValues: [64, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536],
+            filePrefix: 'topology_compute_sn5610'
+        },
+        'th5': {
+            name: 'TH5 (128×400G) RoCE',
+            switchModel: 'TH5',
+            portSpec: '128 × 400G',
+            portsPerSwitch: 128,
+            uplinkPorts: 64,
+            downlinkPorts: 64,
+            downlinkPortStart: 65,
+            serversPerSu: 64,
+            leavesPerLg: 8,
+            hcasPerGpu: 8,
+            // SuperPOD
+            serversPerSuperpod: 512,
+            leafsPerSuperpod: 64,
+            spinesPerSuperpod: 64,
+            susPerSuperpod: 8,
+            numCgs: 64,
+            // 范围
+            maxTwoTier: 1024,
+            maxThreeTier: 65536,
+            spineFactors: [1, 2, 4, 8, 16, 32, 64],
+            coreFactors: [1, 2, 4, 8, 16, 32, 64],
+            minSpineDivisor: 2,
+            quickValues: [64, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536],
+            filePrefix: 'topology_compute_th5'
+        },
+        'th4': {
+            name: 'TH4 (64×400G) RoCE',
+            switchModel: 'TH4',
+            portSpec: '64 × 400G',
+            portsPerSwitch: 64,
+            uplinkPorts: 32,
+            downlinkPorts: 32,
+            downlinkPortStart: 33,
+            serversPerSu: 32,
+            leavesPerLg: 8,
+            hcasPerGpu: 8,
+            // SuperPOD
+            serversPerSuperpod: 128,
+            leafsPerSuperpod: 32,
+            spinesPerSuperpod: 32,
+            susPerSuperpod: 4,
+            numCgs: 32,
+            // 范围
+            maxTwoTier: 256,
+            maxThreeTier: 8192,
+            spineFactors: [1, 2, 4, 8, 16, 32],
+            coreFactors: [1, 2, 4, 8, 16, 32],
+            minSpineDivisor: 2,
+            quickValues: [32, 128, 256, 512, 1024, 2048, 4096, 8192],
+            filePrefix: 'topology_compute_th4'
         }
     };
 
