@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NVIDIA DGX H200 架构逻辑图</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #ffffff;
+    font-family: 'Segoe UI', 'Microsoft YaHei', Arial, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+  }
+  .diagram {
+    position: relative;
+    width: 1200px;
+    min-height: 820px;
+  }
+  .title {
+    text-align: center;
+    font-size: 22px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 8px;
+  }
+  .subtitle {
+    text-align: center;
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 18px;
+  }
+
+  /* SVG lines layer */
+  svg.lines {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Component blocks */
+  .block {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-weight: 600;
+    font-size: 13px;
+    border-radius: 5px;
+    z-index: 2;
+    line-height: 1.3;
+  }
+
+  /* CPU blocks */
+  .cpu {
+    background: #d9d9d9;
+    border: 2px solid #b0b0b0;
+    color: #333;
+    width: 160px;
+    height: 56px;
+    font-size: 14px;
+    font-weight: 700;
+    border-radius: 6px;
+  }
+
+  /* UPI label */
+  .upi-label {
+    position: absolute;
+    font-size: 11px;
+    color: #666;
+    font-weight: 500;
+    z-index: 3;
+  }
+
+  /* PEX Switch blocks - using Interposer Board concept for H200 */
+  .pex {
+    background: #2171b5;
+    border: 2px solid #1a5a8f;
+    color: #fff;
+    width: 100px;
+    height: 48px;
+    font-size: 11px;
+    border-radius: 5px;
+  }
+
+  /* NIC blocks */
+  .nic {
+    background: #6baed6;
+    border: 1.5px solid #4292c6;
+    color: #fff;
+    width: 82px;
+    height: 28px;
+    font-size: 10px;
+    font-weight: 600;
+    border-radius: 4px;
+  }
+
+  /* NIC at CPU level */
+  .nic-cpu {
+    background: #fd8d3c;
+    border: 1.5px solid #e6550d;
+    color: #fff;
+    width: 82px;
+    height: 28px;
+    font-size: 10px;
+    font-weight: 600;
+    border-radius: 4px;
+  }
+
+  /* NVMe blocks */
+  .nvme {
+    background: #fd8d3c;
+    border: 1.5px solid #e6550d;
+    color: #fff;
+    width: 72px;
+    height: 28px;
+    font-size: 10px;
+    font-weight: 600;
+    border-radius: 4px;
+  }
+
+  /* GPU blocks */
+  .gpu {
+    background: #f0f8e8;
+    border: 2.5px solid #76b900;
+    color: #333;
+    width: 90px;
+    height: 72px;
+    font-size: 12px;
+    font-weight: 700;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+  }
+
+  .gpu .gpu-sub {
+    font-size: 9px;
+    font-weight: 400;
+    color: #666;
+  }
+
+  /* NVSwitch bar */
+  .nvswitch-bar {
+    background: linear-gradient(180deg, #76b900, #5a8f00);
+    border: 2px solid #4a7500;
+    color: #fff;
+    width: 1020px;
+    height: 42px;
+    font-size: 14px;
+    font-weight: 700;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+  }
+
+  .nvswitch-bar .nvsw-sub {
+    font-size: 10px;
+    font-weight: 400;
+    opacity: 0.9;
+  }
+
+  /* BMC block */
+  .bmc {
+    background: #bcbddc;
+    border: 1.5px solid #9e9ac8;
+    color: #333;
+    width: 82px;
+    height: 28px;
+    font-size: 10px;
+    font-weight: 600;
+    border-radius: 4px;
+  }
+
+  /* Annotation text */
+  .annot {
+    position: absolute;
+    font-size: 10px;
+    color: #999;
+    z-index: 3;
+    font-style: italic;
+  }
+
+  /* Legend */
+  .legend {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    color: #555;
+  }
+  .legend-color {
+    width: 14px;
+    height: 14px;
+    border-radius: 3px;
+    border: 1px solid rgba(0,0,0,0.15);
+  }
+</style>
+</head>
+<body>
+<div class="diagram" id="diagram">
+  <div class="title">NVIDIA DGX H200 Server 架构逻辑图</div>
+  <div class="subtitle">8× H200 SXM5 · Dual Xeon 8480C · 10× ConnectX-7 400G · 4× NVSwitch 3rd Gen · NVLink 4.0</div>
+
+  <!-- SVG Connection Lines -->
+  <svg class="lines" id="svg-lines" viewBox="0 0 1200 820" preserveAspectRatio="xMidYMid meet">
+    <!-- UPI between CPUs -->
+    <line x1="440" y1="93" x2="760" y2="93" stroke="#888" stroke-width="2.5" marker-end="url(#arrowGray)" marker-start="url(#arrowGrayR)"/>
+    <text x="600" y="88" text-anchor="middle" fill="#666" font-size="10" font-weight="500">UPI</text>
+
+    <!-- CPU0 to PEX Switches (PCIe Gen5) -->
+    <!-- CPU0 → PEX0 -->
+    <line x1="370" y1="120" x2="195" y2="220" stroke="#555" stroke-width="1.5"/>
+    <!-- CPU0 → PEX1 -->
+    <line x1="430" y1="120" x2="395" y2="220" stroke="#555" stroke-width="1.5"/>
+
+    <!-- CPU1 to PEX Switches -->
+    <!-- CPU1 → PEX2 -->
+    <line x1="770" y1="120" x2="605" y2="220" stroke="#555" stroke-width="1.5"/>
+    <!-- CPU1 → PEX3 -->
+    <line x1="830" y1="120" x2="805" y2="220" stroke="#555" stroke-width="1.5"/>
+    <!-- CPU1 → PEX4 (right side) -->
+
+    <!-- CPU to top NICs -->
+    <!-- CPU0 left NIC -->
+    <line x1="340" y1="80" x2="215" y2="72" stroke="#aaa" stroke-width="1" stroke-dasharray="4,3"/>
+    <!-- CPU1 right NIC -->
+    <line x1="860" y1="80" x2="985" y2="72" stroke="#aaa" stroke-width="1" stroke-dasharray="4,3"/>
+
+    <!-- PEX0 to GPU0, GPU1 -->
+    <line x1="170" y1="268" x2="115" y2="380" stroke="#76b900" stroke-width="1.8"/>
+    <line x1="220" y1="268" x2="245" y2="380" stroke="#76b900" stroke-width="1.8"/>
+
+    <!-- PEX1 to GPU2, GPU3 -->
+    <line x1="370" y1="268" x2="375" y2="380" stroke="#76b900" stroke-width="1.8"/>
+    <line x1="420" y1="268" x2="505" y2="380" stroke="#76b900" stroke-width="1.8"/>
+
+    <!-- PEX2 to GPU4, GPU5 -->
+    <line x1="580" y1="268" x2="505" y2="380" stroke="#76b900" stroke-width="1.5" opacity="0.3"/>
+    <line x1="580" y1="268" x2="635" y2="380" stroke="#76b900" stroke-width="1.8"/>
+    <line x1="630" y1="268" x2="635" y2="380" stroke="#76b900" stroke-width="1.5" opacity="0.3"/>
+    <line x1="630" y1="268" x2="765" y2="380" stroke="#76b900" stroke-width="1.8"/>
+
+    <!-- PEX3 to GPU6, GPU7 -->
+    <line x1="780" y1="268" x2="765" y2="380" stroke="#76b900" stroke-width="1.5" opacity="0.3"/>
+    <line x1="780" y1="268" x2="895" y2="380" stroke="#76b900" stroke-width="1.8"/>
+    <line x1="830" y1="268" x2="895" y2="380" stroke="#76b900" stroke-width="1.5" opacity="0.3"/>
+    <line x1="830" y1="268" x2="1025" y2="380" stroke="#76b900" stroke-width="1.8"/>
+
+    <!-- NIC connections to PEX Switches -->
+    <!-- PEX0 NICs -->
+    <line x1="137" y1="220" x2="100" y2="195" stroke="#4292c6" stroke-width="1.2"/>
+    <line x1="137" y1="268" x2="100" y2="290" stroke="#4292c6" stroke-width="1.2"/>
+    <!-- PEX0 NVMe -->
+    <line x1="245" y1="220" x2="275" y2="195" stroke="#e6550d" stroke-width="1.2"/>
+    <line x1="245" y1="268" x2="275" y2="290" stroke="#e6550d" stroke-width="1.2"/>
+
+    <!-- PEX1 NICs -->
+    <line x1="337" y1="220" x2="300" y2="195" stroke="#4292c6" stroke-width="1.2"/>
+    <line x1="337" y1="268" x2="300" y2="290" stroke="#4292c6" stroke-width="1.2"/>
+    <!-- PEX1 NVMe -->
+    <line x1="445" y1="220" x2="475" y2="195" stroke="#e6550d" stroke-width="1.2"/>
+    <line x1="445" y1="268" x2="475" y2="290" stroke="#e6550d" stroke-width="1.2"/>
+
+    <!-- PEX2 NICs -->
+    <line x1="547" y1="220" x2="510" y2="195" stroke="#4292c6" stroke-width="1.2"/>
+    <line x1="547" y1="268" x2="510" y2="290" stroke="#4292c6" stroke-width="1.2"/>
+    <!-- PEX2 NVMe -->
+    <line x1="655" y1="220" x2="685" y2="195" stroke="#e6550d" stroke-width="1.2"/>
+    <line x1="655" y1="268" x2="685" y2="290" stroke="#e6550d" stroke-width="1.2"/>
+
+    <!-- PEX3 NICs -->
+    <line x1="747" y1="220" x2="710" y2="195" stroke="#4292c6" stroke-width="1.2"/>
+    <line x1="747" y1="268" x2="710" y2="290" stroke="#4292c6" stroke-width="1.2"/>
+    <!-- PEX3 NVMe -->
+    <line x1="855" y1="220" x2="885" y2="195" stroke="#e6550d" stroke-width="1.2"/>
+    <line x1="855" y1="268" x2="885" y2="290" stroke="#e6550d" stroke-width="1.2"/>
+
+    <!-- GPU to NVSwitch connections (many green lines) -->
+    <!-- GPU0 -->
+    <line x1="95" y1="452" x2="140" y2="495" stroke="#76b900" stroke-width="1.5" opacity="0.7"/>
+    <line x1="105" y1="452" x2="200" y2="495" stroke="#76b900" stroke-width="1.2" opacity="0.5"/>
+    <line x1="115" y1="452" x2="300" y2="495" stroke="#76b900" stroke-width="1" opacity="0.35"/>
+    <line x1="125" y1="452" x2="400" y2="495" stroke="#76b900" stroke-width="1" opacity="0.25"/>
+
+    <!-- GPU1 -->
+    <line x1="225" y1="452" x2="230" y2="495" stroke="#76b900" stroke-width="1.5" opacity="0.7"/>
+    <line x1="235" y1="452" x2="350" y2="495" stroke="#76b900" stroke-width="1.2" opacity="0.5"/>
+    <line x1="245" y1="452" x2="450" y2="495" stroke="#76b900" stroke-width="1" opacity="0.35"/>
+    <line x1="255" y1="452" x2="550" y2="495" stroke="#76b900" stroke-width="1" opacity="0.25"/>
+
+    <!-- GPU2 -->
+    <line x1="355" y1="452" x2="310" y2="495" stroke="#76b900" stroke-width="1.2" opacity="0.5"/>
+    <line x1="365" y1="452" x2="400" y2="495" stroke="#76b900" stroke-width="1.5" opacity="0.7"/>
+    <line x1="375" y1="452" x2="500" y2="495" stroke="#76b900" stroke-width="1" opacity="0.35"/>
+    <line x1="385" y1="452" x2="600" y2="495" stroke="#76b900" stroke-width="1" opacity="0.25"/>
+
+    <!-- GPU3 -->
+    <line x1="485" y1="452" x2="420" y2="495" stroke="#76b900" stroke-width="1.2" opacity="0.5"/>
+    <line x1="495" y1="452" x2="500" y2="495" stroke="#76b900" stroke-width="1.5" opacity="0.7"/>
+    <line x1="505" y1="452" x2="600" y2="495" stroke="#76b900" stroke-width="1" opacity="0.35"/>
+    <line x1="515" y1="452" x2="700" y2="495" stroke="#76b900" stroke-width="1" opacity="0.25"/>
+
+    <!-- GPU4 -->
+    <line x1="615" y1="452" x2="500" y2="495" stroke="#76b900" stroke-width="1" opacity="0.25"/>
+    <line x1="625" y1="452" x2="600" y2="495" stroke="#76b900" stroke-width="1" opacity="0.35"/>
+    <line x1="635" y1="452" x2="680" y2="495" stroke="#76b900" stroke-width="1.5" opacity="0.7"/>
+    <line x1="645" y1="452" x2="750" y2="495" stroke="#76b900" stroke-width="1.2" opacity="0.5"/>
+
+    <!-- GPU5 -->
+    <line x1="745" y1="452" x2="600" y2="495" stroke="#76b900" stroke-width="1" opacity="0.25"/>
+    <line x1="755" y1="452" x2="700" y2="495" stroke="#76b900" stroke-width="1" opacity="0.35"/>
+    <line x1="765" y1="452" x2="800" y2="495" stroke="#76b900" stroke-width="1.5" opacity="0.7"/>
+    <line x1="775" y1="452" x2="870" y2="495" stroke="#76b900" stroke-width="1.2" opacity="0.5"/>
+
+    <!-- GPU6 -->
+    <line x1="875" y1="452" x2="700" y2="495" stroke="#76b900" stroke-width="1" opacity="0.25"/>
+    <line x1="885" y1="452" x2="800" y2="495" stroke="#76b900" stroke-width="1" opacity="0.35"/>
+    <line x1="895" y1="452" x2="900" y2="495" stroke="#76b900" stroke-width="1.5" opacity="0.7"/>
+    <line x1="905" y1="452" x2="960" y2="495" stroke="#76b900" stroke-width="1.2" opacity="0.5"/>
+
+    <!-- GPU7 -->
+    <line x1="1005" y1="452" x2="800" y2="495" stroke="#76b900" stroke-width="1" opacity="0.25"/>
+    <line x1="1015" y1="452" x2="900" y2="495" stroke="#76b900" stroke-width="1" opacity="0.35"/>
+    <line x1="1025" y1="452" x2="970" y2="495" stroke="#76b900" stroke-width="1.2" opacity="0.5"/>
+    <line x1="1035" y1="452" x2="1020" y2="495" stroke="#76b900" stroke-width="1.5" opacity="0.7"/>
+
+    <!-- Arrow markers -->
+    <defs>
+      <marker id="arrowGray" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+        <path d="M0,0 L8,3 L0,6" fill="#888"/>
+      </marker>
+      <marker id="arrowGrayR" markerWidth="8" markerHeight="6" refX="0" refY="3" orient="auto">
+        <path d="M8,0 L0,3 L8,6" fill="#888"/>
+      </marker>
+    </defs>
+  </svg>
+
+  <!-- ========== CPU Layer ========== -->
+  <!-- CPU0 -->
+  <div class="block cpu" style="left:310px; top:65px;">
+    CPU 0<br><span style="font-size:10px; font-weight:400;">Xeon 8480C · 56核</span>
+  </div>
+  <!-- CPU1 -->
+  <div class="block cpu" style="left:710px; top:65px;">
+    CPU 1<br><span style="font-size:10px; font-weight:400;">Xeon 8480C · 56核</span>
+  </div>
+
+  <!-- CPU-level NICs (管理/存储) -->
+  <div class="block nic-cpu" style="left:152px; top:58px;">400G NIC</div>
+  <div class="block nic-cpu" style="left:952px; top:58px;">400G NIC</div>
+
+  <!-- Annotations for CPU NICs -->
+  <div class="annot" style="left:142px; top:42px;">存储/管理网络</div>
+  <div class="annot" style="left:942px; top:42px;">存储/管理网络</div>
+
+  <!-- ========== PCIe Gen5 annotation ========== -->
+  <div class="annot" style="left:280px; top:140px; font-style:normal; color:#555; font-weight:600; font-size:11px;">PCIe Gen5</div>
+  <div class="annot" style="left:840px; top:140px; font-style:normal; color:#555; font-weight:600; font-size:11px;">PCIe Gen5</div>
+
+  <!-- ========== PEX / Interposer Switches ========== -->
+  <!-- PEX0 -->
+  <div class="block pex" style="left:145px; top:220px;">
+    PEX<br>Switch
+  </div>
+  <!-- PEX1 -->
+  <div class="block pex" style="left:345px; top:220px;">
+    PEX<br>Switch
+  </div>
+  <!-- PEX2 -->
+  <div class="block pex" style="left:555px; top:220px;">
+    PEX<br>Switch
+  </div>
+  <!-- PEX3 -->
+  <div class="block pex" style="left:755px; top:220px;">
+    PEX<br>Switch
+  </div>
+
+  <!-- ========== NICs on PEX Switches ========== -->
+  <!-- PEX0 NICs -->
+  <div class="block nic" style="left:48px; top:181px;">400G NIC</div>
+  <div class="block nic" style="left:48px; top:278px;">400G NIC</div>
+  <!-- PEX0 NVMe -->
+  <div class="block nvme" style="left:260px; top:181px;">NVMe</div>
+  <div class="block nvme" style="left:260px; top:278px;">NVMe</div>
+
+  <!-- PEX1 NICs -->
+  <div class="block nic" style="left:248px; top:181px; visibility:hidden;">400G NIC</div>
+  <div class="block nic" style="left:258px; top:181px; visibility:hidden;">400G NIC</div>
+
+  <!-- Correct PEX1 NICs & NVMe -->
+  <div class="block nic" style="left:248px; top:181px; visibility:hidden;"></div>
+
+  <!-- Re-do PEX area with correct positions -->
+
+  <!-- PEX1 left NICs -->
+  <div class="block nic" style="left:258px; top:181px;">400G NIC</div>
+  <div class="block nic" style="left:258px; top:278px;">400G NIC</div>
+  <!-- PEX1 right NVMe -->
+  <div class="block nvme" style="left:460px; top:181px;">NVMe</div>
+  <div class="block nvme" style="left:460px; top:278px;">NVMe</div>
+
+  <!-- PEX2 left NICs -->
+  <div class="block nic" style="left:468px; top:181px;">400G NIC</div>
+  <div class="block nic" style="left:468px; top:278px;">400G NIC</div>
+  <!-- PEX2 right NVMe -->
+  <div class="block nvme" style="left:670px; top:181px;">NVMe</div>
+  <div class="block nvme" style="left:670px; top:278px;">NVMe</div>
+
+  <!-- PEX3 left NICs -->
+  <div class="block nic" style="left:668px; top:181px;">400G NIC</div>
+  <div class="block nic" style="left:668px; top:278px;">400G NIC</div>
+  <!-- PEX3 right NVMe -->
+  <div class="block nvme" style="left:870px; top:181px;">NVMe</div>
+  <div class="block nvme" style="left:870px; top:278px;">NVMe</div>
+
+  <!-- BMC / OOB -->
+  <div class="block bmc" style="left:980px; top:230px;">BMC<br><span style="font-size:8px;">1G RJ45 OOB</span></div>
+
+  <!-- ========== GPU Layer ========== -->
+  <div class="block gpu" style="left:70px; top:380px;">
+    <div>H200</div>
+    <div class="gpu-sub">GPU #0</div>
+    <div class="gpu-sub">141GB HBM3e</div>
+  </div>
+  <div class="block gpu" style="left:200px; top:380px;">
+    <div>H200</div>
+    <div class="gpu-sub">GPU #1</div>
+    <div class="gpu-sub">141GB HBM3e</div>
+  </div>
+  <div class="block gpu" style="left:330px; top:380px;">
+    <div>H200</div>
+    <div class="gpu-sub">GPU #2</div>
+    <div class="gpu-sub">141GB HBM3e</div>
+  </div>
+  <div class="block gpu" style="left:460px; top:380px;">
+    <div>H200</div>
+    <div class="gpu-sub">GPU #3</div>
+    <div class="gpu-sub">141GB HBM3e</div>
+  </div>
+  <div class="block gpu" style="left:590px; top:380px;">
+    <div>H200</div>
+    <div class="gpu-sub">GPU #4</div>
+    <div class="gpu-sub">141GB HBM3e</div>
+  </div>
+  <div class="block gpu" style="left:720px; top:380px;">
+    <div>H200</div>
+    <div class="gpu-sub">GPU #5</div>
+    <div class="gpu-sub">141GB HBM3e</div>
+  </div>
+  <div class="block gpu" style="left:850px; top:380px;">
+    <div>H200</div>
+    <div class="gpu-sub">GPU #6</div>
+    <div class="gpu-sub">141GB HBM3e</div>
+  </div>
+  <div class="block gpu" style="left:980px; top:380px;">
+    <div>H200</div>
+    <div class="gpu-sub">GPU #7</div>
+    <div class="gpu-sub">141GB HBM3e</div>
+  </div>
+
+  <!-- ========== NVSwitch Bar ========== -->
+  <div class="block nvswitch-bar" style="left:90px; top:495px;">
+    NVSwitch × 4
+    <span class="nvsw-sub">3rd Gen · NVLink 4.0 · 全互联 All-to-All</span>
+    <span class="nvsw-sub">总双向带宽 7.2 TB/s</span>
+  </div>
+
+  <!-- ========== Bottom annotations ========== -->
+  <div class="annot" style="left:90px; top:548px; font-style:normal; color:#76b900; font-size:11px; font-weight:600;">
+    ▲ NVLink 4.0: 18 Links/GPU · 每 GPU 900 GB/s 双向带宽
+  </div>
+
+  <!-- ========== Spec Summary ========== -->
+  <div style="position:absolute; left:90px; top:575px; z-index:3;">
+    <table style="font-size:11px; color:#555; border-collapse:collapse;">
+      <tr>
+        <td style="padding:3px 12px 3px 0; font-weight:600; color:#333;">GPU</td>
+        <td style="padding:3px 0;">8× NVIDIA H200 SXM5 (Hopper) · 141GB HBM3e/GPU · 4.8 TB/s 显存带宽</td>
+      </tr>
+      <tr>
+        <td style="padding:3px 12px 3px 0; font-weight:600; color:#333;">CPU</td>
+        <td style="padding:3px 0;">2× Intel Xeon Platinum 8480C · 112 核心 · 2 TB DDR5 系统内存</td>
+      </tr>
+      <tr>
+        <td style="padding:3px 12px 3px 0; font-weight:600; color:#333;">互联</td>
+        <td style="padding:3px 0;">4× NVSwitch (NVLink 4.0, 7.2 TB/s) · PCIe Gen5 x16 · UPI CPU间互联</td>
+      </tr>
+      <tr>
+        <td style="padding:3px 12px 3px 0; font-weight:600; color:#333;">网络</td>
+        <td style="padding:3px 0;">8× ConnectX-7 OSFP 400Gb/s (计算) + 2× QSFP112 400Gb/s (存储/管理) · 总 4 Tb/s</td>
+      </tr>
+      <tr>
+        <td style="padding:3px 12px 3px 0; font-weight:600; color:#333;">存储</td>
+        <td style="padding:3px 0;">2× 1.92TB M.2 NVMe (OS) + 8× 3.84TB U.2 NVMe (数据) · GPUDirect Storage</td>
+      </tr>
+      <tr>
+        <td style="padding:3px 12px 3px 0; font-weight:600; color:#333;">电源</td>
+        <td style="padding:3px 0;">6× PSU (4+2 冗余) · 最大功耗 10.2 kW · 8U 机箱</td>
+      </tr>
+    </table>
+  </div>
+
+  <!-- Legend -->
+  <div class="legend" style="bottom:10px; left:90px;">
+    <div class="legend-item"><div class="legend-color" style="background:#d9d9d9;"></div>CPU</div>
+    <div class="legend-item"><div class="legend-color" style="background:#2171b5;"></div>PEX Switch</div>
+    <div class="legend-item"><div class="legend-color" style="background:#6baed6;"></div>400G NIC (计算)</div>
+    <div class="legend-item"><div class="legend-color" style="background:#fd8d3c;"></div>NVMe / NIC (存储)</div>
+    <div class="legend-item"><div class="legend-color" style="background:#f0f8e8; border-color:#76b900;"></div>H200 GPU</div>
+    <div class="legend-item"><div class="legend-color" style="background:#76b900;"></div>NVSwitch</div>
+    <div class="legend-item"><div class="legend-color" style="background:#bcbddc;"></div>BMC</div>
+  </div>
+</div>
+</body>
+</html>
