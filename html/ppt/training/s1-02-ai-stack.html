@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智算培训 - 2. AI 系统全栈架构</title>
+<link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<div class="slide-container tmpl-content chapter-1">
+  <div class="slide-main">
+    <div class="section-title">2. AI 系统全栈架构</div>
+    <div class="section-desc">从应用层到基础设施层，AI 系统的完整技术栈</div>
+    <div class="content-grid cols-2" style="flex:1;">
+      <div class="card" style="grid-row: span 2;">
+        <div class="card-title">全栈分层架构</div>
+        <div style="display:flex;flex-direction:column;gap:var(--pad-xs);margin-top:var(--pad-xs);">
+          <div class="highlight-box highlight-blue"><strong>应用层</strong> — ChatBot / 图像生成 / 自动驾驶 / 代码助手</div>
+          <div class="highlight-box highlight-blue"><strong>框架层</strong> — PyTorch / TensorFlow / JAX / DeepSpeed / Megatron-LM</div>
+          <div class="highlight-box highlight-purple"><strong>运行时</strong> — CUDA / cuDNN / NCCL / MPI / RDMA Verbs</div>
+          <div class="highlight-box highlight-purple"><strong>驱动层</strong> — GPU Driver / OFED / 固件</div>
+          <div class="highlight-box highlight-green"><strong>硬件层</strong> — GPU / NVLink / NVSwitch / InfiniBand / 存储</div>
+          <div class="highlight-box highlight-green"><strong>基础设施</strong> — 供电 / 散热(液冷) / 机柜 / 布线</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">计算维度</div>
+        <ul class="compact-list">
+          <li><strong>GPU</strong> — 万级 CUDA Core + Tensor Core</li>
+          <li><strong>GPU 互联</strong> — NVLink (900GB/s) + NVSwitch</li>
+          <li><strong>CPU</strong> — 任务调度、数据预处理</li>
+          <li><strong>内存</strong> — HBM3e (80~192GB/GPU)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">通信维度</div>
+        <ul class="compact-list">
+          <li><strong>机内</strong> — PCIe 5.0 / NVLink / NVSwitch</li>
+          <li><strong>机间</strong> — InfiniBand NDR 400Gb/s</li>
+          <li><strong>集合通信</strong> — AllReduce / AllGather / Ring</li>
+          <li><strong>协议栈</strong> — RDMA / GPUDirect / SHARP</li>
+        </ul>
+      </div>
+      <div class="card span-2">
+        <div class="card-title">存储维度 &amp; 管理维度</div>
+        <div class="grid-2">
+          <ul class="compact-list">
+            <li><strong>并行文件系统</strong> — Lustre / GPFS / BeeGFS</li>
+            <li><strong>对象存储</strong> — Checkpoint / Dataset 持久化</li>
+            <li><strong>本地 NVMe</strong> — 训练数据缓存加速</li>
+          </ul>
+          <ul class="compact-list">
+            <li><strong>集群调度</strong> — Slurm / Kubernetes</li>
+            <li><strong>监控运维</strong> — UFM / DCGM / Prometheus</li>
+            <li><strong>网络管理</strong> — Subnet Manager / QoS</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const NAV = { prev: 's1-01-ai-history.html', next: 's1-03-cluster-basics.html', section: 1, topic: '2. AI 系统全栈架构', pageNum: 5, totalPages: 35 };
+</script>
+<script src="js/nav.js"></script>
+</body>
+</html>

@@ -1,0 +1,104 @@
+/* Header */
+.slide-header {
+  height: var(--header-h);
+  display: flex;
+  align-items: center;
+  padding: 0 var(--pad-lg);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-header);
+  gap: var(--pad-sm);
+  flex-shrink: 0;
+}
+
+.slide-header .chapter-indicator {
+  width: 3px;
+  height: 60%;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.slide-header .chapter-label {
+  font-size: var(--fs-small);
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.slide-header .page-number {
+  margin-left: auto;
+  font-size: var(--fs-tiny);
+  color: var(--text-light);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Main content area */
+.slide-main {
+  height: var(--content-h);
+  padding: var(--pad-md) var(--pad-lg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Footer */
+.slide-footer {
+  height: var(--footer-h);
+  display: flex;
+  align-items: center;
+  padding: 0 var(--pad-lg);
+  border-top: 1px solid var(--border);
+  background: var(--bg-footer);
+  gap: var(--pad-md);
+  flex-shrink: 0;
+}
+
+.slide-footer .topic-name {
+  font-size: var(--fs-tiny);
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 40%;
+}
+
+.slide-footer .progress-bar {
+  flex: 1;
+  height: 2px;
+  background: var(--border-light);
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+.slide-footer .progress-bar .progress-fill {
+  height: 100%;
+  border-radius: 1px;
+  transition: width 0.3s ease;
+}
+
+.slide-footer .nav-arrows {
+  display: flex;
+  gap: var(--pad-sm);
+  align-items: center;
+}
+
+.slide-footer .nav-arrows a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.8em;
+  height: 1.8em;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-size: var(--fs-small);
+  transition: background 0.15s, color 0.15s;
+  text-decoration: none;
+}
+
+.slide-footer .nav-arrows a:hover {
+  background: var(--border-light);
+  color: var(--text-primary);
+}
+
+/* Chapter color variants */
+.chapter-1 .chapter-indicator, .chapter-1 .progress-fill { background: var(--accent-1); }
+.chapter-2 .chapter-indicator, .chapter-2 .progress-fill { background: var(--accent-2); }
+.chapter-3 .chapter-indicator, .chapter-3 .progress-fill { background: var(--accent-3); }

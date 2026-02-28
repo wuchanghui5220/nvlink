@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智算培训 - 13. 运维 — 故障处理</title>
+<link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<div class="slide-container tmpl-content chapter-3">
+  <div class="slide-main">
+    <div class="section-title">13. 运维管理 — 常见故障处理方法</div>
+    <div class="content-grid cols-2" style="flex:1;">
+      <div class="card">
+        <div class="card-title">硬件类故障</div>
+        <table class="data-table">
+          <tr><th>故障</th><th>诊断命令</th><th>处置</th></tr>
+          <tr><td>服务器宕机</td><td><code>ipmitool power status</code></td><td>BMC 重启 / 报修</td></tr>
+          <tr><td>GPU 过热降频</td><td><code>nvidia-smi -q -d TEMP</code></td><td>检查液冷/风扇</td></tr>
+          <tr><td>GPU 卡离线</td><td><code>lspci | grep NVIDIA</code></td><td>重置 PCIe / 重插卡</td></tr>
+          <tr><td>GPU 内存错误</td><td><code>nvidia-smi -q -d ECC</code></td><td>隔离节点 + 报修</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-title">网络类故障</div>
+        <table class="data-table">
+          <tr><th>故障</th><th>诊断命令</th><th>处置</th></tr>
+          <tr><td>IB 端口 Down</td><td><code>ibstat</code></td><td>检查线缆 / 光模块</td></tr>
+          <tr><td>速率降级</td><td><code>iblinkinfo</code></td><td>更换线缆 / 光模块</td></tr>
+          <tr><td>SM 未连接</td><td><code>sminfo</code></td><td>检查 OpenSM 服务</td></tr>
+          <tr><td>带宽异常</td><td><code>ib_write_bw</code></td><td>路由 / 拥塞分析</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-title">软件/驱动故障</div>
+        <table class="data-table">
+          <tr><th>故障</th><th>诊断</th><th>处置</th></tr>
+          <tr><td>驱动不兼容</td><td><code>dmesg | grep -i nvidia</code></td><td>回退版本 / 重装</td></tr>
+          <tr><td>RDMA 异常</td><td><code>ibv_devinfo</code></td><td>重启 openibd</td></tr>
+          <tr><td>MPI 启动失败</td><td>检查 SSH 互信</td><td>修复 hostfile/权限</td></tr>
+          <tr><td>存储挂载失败</td><td><code>mount / dmesg</code></td><td>检查存储服务状态</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-title">故障预防策略</div>
+        <ul class="compact-list">
+          <li><strong>预防性维护</strong> — 固件定期升级，线缆定期巡检</li>
+          <li><strong>监控告警</strong> — 温度/ECC/端口异常即时通知</li>
+          <li><strong>备份冗余</strong> — SM 双活、数据定期备份</li>
+          <li><strong>文档管理</strong> — 变更记录、故障 KB 积累</li>
+          <li><strong>演练机制</strong> — 季度故障演练，验证恢复流程</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const NAV = { prev: 's3-13-ops-2.html', next: 's3-14-gpu-ops.html', section: 3, topic: '13. 智算集群运维管理', pageNum: 31, totalPages: 35 };
+</script>
+<script src="js/nav.js"></script>
+</body>
+</html>

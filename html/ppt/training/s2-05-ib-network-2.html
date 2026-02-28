@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智算培训 - 5. IB 网络 — 驱动与 OpenSM</title>
+<link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<div class="slide-container tmpl-code chapter-2">
+  <div class="slide-main">
+    <div class="section-title">5. IB 网络 — OFED 驱动安装与 OpenSM 配置</div>
+    <div class="code-layout">
+      <div class="code-panel">
+        <div class="section-subtitle" style="margin-bottom:var(--pad-xs);">MLNX_OFED 驱动安装 <a href="https://developer.nvidia.com/networking/infiniband-software" target="_blank" style="font-weight:400;font-size:var(--fs-tiny);margin-left:0.5em;">下载地址</a></div>
+        <div class="code-block" style="flex:1;">
+<span class="cmt"># ① 下载 MLNX_OFED 安装包（从 NVIDIA 官网获取对应版本）</span>
+wget https://content.mellanox.com/.../MLNX_OFED_LINUX-24.10-x.x.x-ubuntu22.04-x86_64.tgz
+
+<span class="cmt"># ② 解压并安装</span>
+tar -xzf MLNX_OFED_LINUX-*.tgz
+<span class="kw">cd</span> MLNX_OFED_LINUX-*/
+<span class="kw">sudo</span> ./mlnxofedinstall --add-kernel-support
+
+<span class="cmt"># ③ 加载驱动并验证</span>
+<span class="kw">sudo</span> /etc/init.d/openibd restart
+ibstat                               <span class="cmt"># 查看 HCA 状态</span>
+ibdev2netdev                         <span class="cmt"># 查看 IB 设备与网络接口映射</span>
+
+<span class="cmt"># ④ OpenSM 配置 (/etc/opensm/opensm.conf)</span>
+opensm -c <span class="str">/etc/opensm/opensm.conf</span>              <span class="cmt"># 使用命令生成默认配置文件</span>
+sm_priority <span class="num">15</span>                      <span class="cmt"># Master SM 优先级</span>
+routing_engine <span class="str">ar_updn</span>              <span class="cmt"># 自适应路由 + 上下树算法</span>
+root_guid_file <span class="str">/etc/opensm/root_guid.conf</span>  <span class="cmt"># 根交换机 GUID</span>
+
+<span class="cmt"># ⑤ 启动 OpenSM</span>
+<span class="kw">sudo</span> systemctl enable opensmd
+<span class="kw">sudo</span> systemctl start opensmd
+<span class="kw">sudo</span> sminfo                          <span class="cmt"># 验证 SM 状态</span></div>
+      </div>
+      <div class="info-panel">
+        <div class="card">
+          <div class="card-title">安装前检查</div>
+          <ul class="compact-list">
+            <li>确认内核版本匹配 OFED 包</li>
+            <li>关闭 Nouveau 开源驱动</li>
+            <li>确认 HCA 硬件已被 <code>lspci</code> 识别</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title">SM 工作流程</div>
+          <ol class="steps">
+            <li>启动扫描全网拓扑</li>
+            <li>收集所有节点 GUID 信息</li>
+            <li>分配 LID，计算路由表</li>
+            <li>下发路由表到每台交换机和网卡</li>
+            <li>持续监控，动态调整</li>
+          </ol>
+        </div>
+        <div class="card">
+          <div class="card-title">常用路由算法</div>
+          <table class="data-table">
+            <tr><th>算法</th><th>特点</th></tr>
+            <tr><td><code>minhop</code></td><td>最少跳数，简单快速</td></tr>
+            <tr><td><code>updn</code></td><td>上下树，避免环路</td></tr>
+            <tr><td><code>ar_updn</code></td><td>自适应路由 + UPDN</td></tr>
+            <tr><td><code>ftree</code></td><td>Fat-Tree 专用优化</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const NAV = { prev: 's2-05-ib-network.html', next: 's2-06-storage.html', section: 2, topic: '5. InfiniBand 网络基础', pageNum: 11, totalPages: 35 };
+</script>
+<script src="js/nav.js"></script>
+</body>
+</html>

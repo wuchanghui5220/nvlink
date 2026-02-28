@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智算培训 - 11. GPU 单机优化</title>
+<link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<div class="slide-container tmpl-content chapter-3">
+  <div class="slide-main">
+    <div class="section-title">11. GPU 单机优化</div>
+    <div class="content-grid cols-2" style="flex:1;">
+      <div class="card">
+        <div class="card-title">BIOS 级优化</div>
+        <ul class="compact-list">
+          <li><strong>Above 4G Decoding</strong> — 必须启用</li>
+          <li><strong>PCIe Speed</strong> — Gen5 最大速率</li>
+          <li><strong>Power Profile</strong> — Maximum Performance</li>
+          <li><strong>Hyper-Threading</strong> — 训练场景通常启用</li>
+          <li><strong>NUMA</strong> — 启用，确保 GPU 就近访问内存</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">GPU 运行时配置</div>
+        <ul class="compact-list">
+          <li><strong>持久模式</strong> — <code>nvidia-smi -pm 1</code> 降低初始化延迟</li>
+          <li><strong>功耗管理</strong> — <code>nvidia-smi -pl &lt;watts&gt;</code> 平衡性能/功耗</li>
+          <li><strong>时钟锁定</strong> — <code>nvidia-smi -ac &lt;mem&gt;,&lt;core&gt;</code> 稳定性能</li>
+          <li><strong>ECC 模式</strong> — 训练开启 ECC，推理可关闭提速 ~5%</li>
+          <li><strong>计算模式</strong> — Exclusive Process 避免 GPU 争抢</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">NUMA 亲和性优化</div>
+        <ul class="compact-list">
+          <li>确认 GPU ↔ CPU Socket ↔ 内存 的亲和关系</li>
+          <li><code>nvidia-smi topo -m</code> 查看 GPU 拓扑</li>
+          <li><code>numactl --cpunodebind=0 --membind=0 ./train</code></li>
+          <li>GPU 进程绑定到同 NUMA 节点的 CPU 核心</li>
+          <li>IB 网卡也应在同一 NUMA 节点</li>
+        </ul>
+        <div class="highlight-box highlight-green" style="margin-top:var(--pad-xs);">
+          NUMA 错位可导致 10-30% 性能损失
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">系统内核调优</div>
+        <ul class="compact-list">
+          <li><strong>CPU Governor</strong> — <code>cpupower frequency-set -g performance</code></li>
+          <li><strong>透明大页</strong> — 可关闭避免延迟抖动</li>
+          <li><strong>VM 参数</strong> — <code>vm.zone_reclaim_mode=0</code></li>
+          <li><strong>文件描述符</strong> — <code>ulimit -n 1048576</code></li>
+          <li><strong>mlnx_tune</strong> — OFED 自动调优内核网络参数</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const NAV = { prev: 's3-10-gpu-software-2.html', next: 's3-11-gpu-single-2.html', section: 3, topic: '11. GPU 单机优化', pageNum: 24, totalPages: 35 };
+</script>
+<script src="js/nav.js"></script>
+</body>
+</html>

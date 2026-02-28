@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智算培训 - 4. GPU 服务器概述</title>
+<link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<div class="slide-container tmpl-content chapter-2">
+  <div class="slide-main">
+    <div class="section-title">4. GPU 服务器概述</div>
+    <div class="content-grid cols-2" style="flex:1;">
+      <div class="card">
+        <div class="card-title">核心组件概览</div>
+        <table class="data-table">
+          <tr><th>组件</th><th>角色与配置建议</th></tr>
+          <tr><td><strong>GPU</strong></td><td>核心算力单元 — H200，HBM3e 141GB</td></tr>
+          <tr><td><strong>CPU</strong></td><td>任务调度 — Xeon/EPYC，每 GPU ≥ 6 物理核</td></tr>
+          <tr><td><strong>内存</strong></td><td>≥ 全部显存总和 2x（8×141G → 1128GB+）</td></tr>
+          <tr><td><strong>存储</strong></td><td>NVMe SSD 本地缓存 + 并行文件系统</td></tr>
+          <tr><td><strong>网络</strong></td><td>IB NDR 400Gb/s × 8 口（每 GPU 一路）</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-title">GPU 互联技术</div>
+        <table class="data-table">
+          <tr><th>技术</th><th>带宽</th><th>特点</th></tr>
+          <tr><td><strong>PCIe 5.0</strong></td><td>128 GB/s (x16)</td><td>CPU↔GPU 基础互联</td></tr>
+          <tr><td><strong>NVLink 4</strong></td><td>900 GB/s</td><td>GPU↔GPU 高速点对点</td></tr>
+          <tr><td><strong>NVSwitch</strong></td><td>全互联</td><td>机内 8 卡全连接无阻塞</td></tr>
+        </table>
+        <div class="highlight-box highlight-purple" style="margin-top:var(--pad-xs);">
+          运维要点：检查 GPU 均匀分布在不同 CPU Socket 和 PCIe Root Port 下，避免资源争抢
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">BIOS 关键配置</div>
+        <ul class="compact-list">
+          <li><strong>Above 4G Decoding</strong> — 必须启用，支持大显存地址空间</li>
+          <li><strong>PCIe Link Speed</strong> — 设为 Gen5 最高版本</li>
+          <li><strong>CPU Power Mgmt</strong> — Maximum Performance 模式</li>
+          <li><strong>VT-x / SR-IOV</strong> — 虚拟化场景按需启用</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">BMC 远程管理</div>
+        <ul class="compact-list">
+          <li>IPMI / Redfish API 远程电源控制与监控</li>
+          <li>传感器：温度、功耗、风扇转速实时采集</li>
+          <li>GPU 高功耗 — 需重点设置温度告警阈值</li>
+        </ul>
+        <div class="code-block" style="margin-top:var(--pad-xs);font-size:var(--fs-tiny);">
+<span class="cmt"># 检查服务器健康状态</span>
+ipmitool -I lanplus -H &lt;BMC_IP&gt; -U admin -P pass sensor list
+<span class="cmt"># 远程电源管理</span>
+ipmitool ... power on|off|reset</div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const NAV = { prev: 's2-divider.html', next: 's2-04-gpu-server-2.html', section: 2, topic: '4. GPU 服务器概述', pageNum: 8, totalPages: 35 };
+</script>
+<script src="js/nav.js"></script>
+</body>
+</html>

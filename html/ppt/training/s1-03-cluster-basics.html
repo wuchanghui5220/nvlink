@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智算培训 - 3. 智算集群基础概述</title>
+<link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<div class="slide-container tmpl-content chapter-1">
+  <div class="slide-main">
+    <div class="section-title">3. 智算集群基础概述</div>
+    <div class="content-grid cols-2" style="flex:1;">
+      <div class="card">
+        <div class="card-title">什么是智算集群</div>
+        <ul class="compact-list">
+          <li>专为 AI 训练/推理设计的大规模 GPU 计算集群</li>
+          <li>核心目标：将数百~数千 GPU 组成统一算力池</li>
+          <li>关键挑战：GPU 间高效通信 &amp; 数据高速供给</li>
+          <li>典型规模：千卡级 (训练) / 百卡级 (推理)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">核心硬件组成</div>
+        <table class="data-table">
+          <tr><th>组件</th><th>典型配置</th></tr>
+          <tr><td>GPU 服务器</td><td>8×H100/H800 + 2×CPU</td></tr>
+          <tr><td>IB 交换机</td><td>QM9700 NDR 400G</td></tr>
+          <tr><td>存储系统</td><td>Lustre / GPFS 并行存储</td></tr>
+          <tr><td>管理网络</td><td>25/100GbE 以太网</td></tr>
+          <tr><td>散热系统</td><td>液冷 (冷板式/浸没式)</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-title">网络架构特点</div>
+        <ul class="compact-list">
+          <li><strong>双网分离</strong> — 计算网 (IB) + 管理/存储网 (Ethernet)</li>
+          <li><strong>无损网络</strong> — IB 基于信用的流控，零丢包</li>
+          <li><strong>RDMA</strong> — 绕过 CPU，GPU 直接读写远端内存</li>
+          <li><strong>GPUDirect</strong> — GPU↔GPU / GPU↔存储 零拷贝</li>
+          <li><strong>Fat-Tree</strong> — 非阻塞全带宽拓扑，等分带宽 1:1</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">与传统 HPC / 云计算对比</div>
+        <table class="data-table">
+          <tr><th>维度</th><th>传统集群</th><th>智算集群</th></tr>
+          <tr><td>核心算力</td><td>CPU 为主</td><td>GPU 为主</td></tr>
+          <tr><td>互联网络</td><td>Ethernet/IB</td><td>IB + NVLink</td></tr>
+          <tr><td>通信模式</td><td>MPI 点对点</td><td>集合通信为主</td></tr>
+          <tr><td>存储需求</td><td>中等 I/O</td><td>极高吞吐</td></tr>
+          <tr><td>功耗密度</td><td>10-15kW/柜</td><td>50-100kW/柜</td></tr>
+        </table>
+      </div>
+      <div class="card span-2">
+        <div class="card-title">典型训练工作流</div>
+        <div style="display:flex;align-items:center;gap:var(--pad-sm);font-size:var(--fs-small);flex-wrap:wrap;">
+          <span class="badge badge-blue">数据加载</span> →
+          <span class="badge badge-blue">前向传播</span> →
+          <span class="badge badge-blue">反向传播</span> →
+          <span class="badge badge-purple">梯度同步 (AllReduce)</span> →
+          <span class="badge badge-blue">参数更新</span> →
+          <span class="badge badge-green">Checkpoint</span>
+          <span style="color:var(--text-muted);margin-left:auto;">循环至收敛</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const NAV = { prev: 's1-02-ai-stack.html', next: 's2-divider.html', section: 1, topic: '3. 智算集群基础概述', pageNum: 6, totalPages: 35 };
+</script>
+<script src="js/nav.js"></script>
+</body>
+</html>

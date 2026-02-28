@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智算培训 - 14. GPU 运维 — UFM 安装</title>
+<link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<div class="slide-container tmpl-code chapter-3">
+  <div class="slide-main">
+    <div class="section-title">14. GPU 运维 — UFM HA 部署实施 <a href="https://docs.nvidia.com/networking/display/ufmenterpriseumv62311/Installing-UFM-Server-Software" target="_blank" style="font-size:var(--fs-tiny);font-weight:400;color:var(--accent-1);margin-left:var(--pad-sm);">官方文档 ↗</a></div>
+    <div class="code-layout">
+      <div class="code-panel">
+        <div class="section-subtitle" style="margin-bottom:var(--pad-xs);">UFM 高可用安装步骤</div>
+        <div class="code-block" style="flex:1;">
+<span class="cmt"># ① 预部署准备（两台服务器均执行）</span>
+<span class="kw">sudo</span> apt install pacemaker pcs drbd-utils -y   <span class="cmt"># Ubuntu</span>
+<span class="kw">sudo</span> yum install pcs pacemaker drbd84-utils -y  <span class="cmt"># CentOS/RHEL</span>
+fdisk /dev/sdb                       <span class="cmt"># 创建同名分区 /dev/sdb1 (10-20GB)</span>
+mkdir -p /opt/ufm/files && chmod 755 /opt/ufm/files
+
+<span class="cmt"># ② 安装 UFM Enterprise 容器（主服务器）</span>
+docker run -it --name=ufm_installer --rm \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v /etc/systemd/system/:/etc/systemd_files/ \
+  -v /opt/ufm/files/:/installation/ufm_files/ \
+  -v /tmp/license_file/:/installation/ufm_licenses/ \
+  mellanox/ufm-enterprise:latest --install
+
+<span class="cmt"># 备服务器（不挂载 license 目录）</span>
+docker run -it --name=ufm_installer --rm \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  -v /etc/systemd/system/:/etc/systemd_files/ \
+  -v /opt/ufm/files/:/installation/ufm_files/ \
+  mellanox/ufm-enterprise:latest --install
+
+<span class="cmt"># ③ 下载并安装 UFM-HA 包（两台服务器均执行）</span>
+wget https://www.mellanox.com/downloads/ufm/ufm_ha/<span class="num">5.8.0</span>/ufm_ha_5.8.0-4.tgz
+tar -xzf ufm_ha_5.8.0-4.tgz
+<span class="kw">cd</span> /tmp/ufm_ha_* && ./install.sh -l /opt/ufm/files/ -d /dev/sdb1 -p enterprise
+
+<span class="cmt"># ④ 配置 HA 集群（仅在主服务器执行，双链路配置）</span>
+configure_ha_nodes.sh \
+  --cluster-password <span class="str">12345678</span> \
+  --master-primary-ip <span class="str">10.10.50.1</span> \
+  --standby-primary-ip <span class="str">10.10.50.2</span> \
+  --master-secondary-ip <span class="str">192.168.10.1</span> \
+  --standby-secondary-ip <span class="str">192.168.10.2</span> \
+  --virtual-ip <span class="str">10.10.50.3</span>
+
+<span class="cmt"># ⑤ 验证并启动</span>
+drbdadm status                       <span class="cmt"># DRBD 同步状态</span>
+ufm_ha_cluster status                <span class="cmt"># 集群状态</span>
+ufm_ha_cluster start                 <span class="cmt"># 启动集群</span>
+
+<span class="cmt"># ⑥ 卸载（先停止集群，两台服务器均执行）</span>
+ufm_ha_cluster stop
+/opt/ufm/ufm_ha/uninstall_ha.sh</div>
+      </div>
+      <div class="info-panel">
+        <div class="card">
+          <div class="card-title">部署前置条件</div>
+          <ul class="compact-list">
+            <li>两台服务器 + 共享 VIP</li>
+            <li>DRBD 同名分区 /dev/sdb1 (10-20GB)</li>
+            <li>双向 SSH root 免密互信</li>
+            <li>hostname -i 返回正确管理 IP</li>
+            <li>Docker 已安装</li>
+            <li>/opt/ufm/files/ 目录已创建 (755)</li>
+            <li>两台服务器的 IB 网卡名称一致</li>
+            <li>关闭防火墙 + 禁用 SELinux</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title">HA 架构</div>
+          <ul class="compact-list">
+            <li><strong>DRBD</strong> — 数据实时同步</li>
+            <li><strong>Pacemaker</strong> — 资源管理与故障切换</li>
+            <li><strong>VIP</strong> — 虚拟 IP 自动漂移</li>
+            <li>故障切换时间 &lt;30s</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title">常用管理命令</div>
+          <table class="data-table">
+            <tr><th>命令</th><th>功能</th></tr>
+            <tr><td><code>ufm_ha_cluster start</code></td><td>启动 HA 集群</td></tr>
+            <tr><td><code>ufm_ha_cluster status</code></td><td>查看集群状态</td></tr>
+            <tr><td><code>ufm_ha_cluster stop</code></td><td>停止 HA 集群</td></tr>
+            <tr><td><code>drbdadm status</code></td><td>DRBD 同步状态</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const NAV = { prev: 's3-14-gpu-ops.html', next: 's3-14-gpu-ops-3.html', section: 3, topic: '14. GPU 集群运维管理', pageNum: 33, totalPages: 35 };
+</script>
+<script src="js/nav.js"></script>
+</body>
+</html>

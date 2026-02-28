@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智算培训 - 11. 单机优化 — CPU 亲和性</title>
+<link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<div class="slide-container tmpl-content chapter-3">
+  <div class="slide-main">
+    <div class="section-title">11. 单机优化 — CPU 亲和性与内存优化</div>
+    <div class="content-grid cols-2" style="flex:1;">
+      <div class="card span-2">
+        <div class="card-title">GPU 服务器架构示意图（点击查看大图）</div>
+        <div style="display:flex;gap:var(--pad-sm);align-items:flex-start;">
+          <div style="flex:1;text-align:center;">
+            <img src="img/H200.jpg" alt="H200 服务器架构" style="width:100%;border-radius:var(--radius-sm);border:1px solid var(--border);">
+            <div style="font-size:var(--fs-tiny);color:var(--text-muted);margin-top:var(--pad-xs);font-weight:700;">HGX H200</div>
+          </div>
+          <div style="flex:1;text-align:center;">
+            <img src="img/B200.jpg" alt="B200 服务器架构" style="width:100%;border-radius:var(--radius-sm);border:1px solid var(--border);">
+            <div style="font-size:var(--fs-tiny);color:var(--text-muted);margin-top:var(--pad-xs);font-weight:700;">HGX B200</div>
+          </div>
+          <div style="flex:1;text-align:center;">
+            <img src="img/B300.png" alt="B300 服务器架构" style="width:100%;border-radius:var(--radius-sm);border:1px solid var(--border);">
+            <div style="font-size:var(--fs-tiny);color:var(--text-muted);margin-top:var(--pad-xs);font-weight:700;">HGX B300</div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">亲和性绑定命令</div>
+        <div class="code-block" style="font-size:var(--fs-tiny);">
+<span class="cmt"># 查看 GPU 与 NUMA 的对应关系</span>
+nvidia-smi topo -m
+
+<span class="cmt"># 绑定到 Node 0 运行训练</span>
+numactl --cpunodebind=<span class="num">0</span> --membind=<span class="num">0</span> \
+  python train.py
+
+<span class="cmt"># taskset 绑定 CPU 核心</span>
+taskset -cp <span class="num">0-31</span> &lt;PID&gt;</div>
+      </div>
+      <div class="card">
+        <div class="card-title">内存优化要点</div>
+        <ul class="compact-list">
+          <li><strong>内存通道均衡</strong> — 所有通道等量填充</li>
+          <li><strong>ECC 开启</strong> — 训练场景防止静默数据错误</li>
+          <li><strong>Huge Pages</strong> — 减少 TLB miss，可选 2MB/1GB</li>
+          <li><strong>zone_reclaim_mode=0</strong> — 允许跨 NUMA 分配</li>
+          <li><strong>Pin Memory</strong> — PyTorch DataLoader <code>pin_memory=True</code></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const NAV = { prev: 's3-11-gpu-single-2.html', next: 's3-12-gpu-cluster.html', section: 3, topic: '11. GPU 单机优化', pageNum: 26, totalPages: 35 };
+</script>
+<script src="js/nav.js"></script>
+</body>
+</html>

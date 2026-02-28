@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智算培训 - 9. 主要网络优化</title>
+<link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<div class="slide-container tmpl-code chapter-3">
+  <div class="slide-main">
+    <div class="section-title">9. 主要网络优化 — 链路检查与诊断</div>
+    <div class="code-layout">
+      <div class="code-panel">
+        <div class="section-subtitle" style="margin-bottom:var(--pad-xs);">IB 网络诊断命令集</div>
+        <div class="code-block" style="flex:1;">
+<span class="cmt"># ── 拓扑发现 ──</span>
+ibnetdiscover                        <span class="cmt"># 发现全网拓扑</span>
+ibswitches                           <span class="cmt"># 列出所有交换机</span>
+ibhosts                              <span class="cmt"># 列出所有主机 HCA</span>
+ibstat                               <span class="cmt"># 本机 HCA 端口状态</span>
+
+<span class="cmt"># ── 链路质量 ──</span>
+iblinkinfo                           <span class="cmt"># 全网链路速率与状态</span>
+iblinkinfo -d                        <span class="cmt"># 列出 LinkDown 链路</span>
+ibdiagnet                            <span class="cmt"># 全网诊断（综合报告）</span>
+
+<span class="cmt"># ── 路径追踪 ──</span>
+ibtracert &lt;src_lid&gt; &lt;dst_lid&gt;        <span class="cmt"># 两节点间路径</span>
+
+<span class="cmt"># ── 性能计数器 ──</span>
+perfquery -a                         <span class="cmt"># 端口性能计数器</span>
+
+<span class="cmt"># ── 光模块信息 ──</span>
+mlxlink -d mlx5_0 -m -c              <span class="cmt"># 光模块温度/功率/信号</span></div>
+      </div>
+      <div class="info-panel">
+        <div class="card">
+          <div class="card-title">诊断流程</div>
+          <ol class="steps">
+            <li>确认端口 State = Active, Speed = NDR</li>
+            <li>ibdiagnet 全网扫描，检查错误计数</li>
+            <li>iblinkinfo -R 找出降速链路</li>
+            <li>mlxlink 检查光模块信号质量</li>
+            <li>perfquery 查看丢包/重传计数</li>
+          </ol>
+        </div>
+        <div class="card">
+          <div class="card-title">常见问题与排查</div>
+          <ul class="compact-list">
+            <li><strong>端口 Down</strong> — 检查线缆/光模块/对端</li>
+            <li><strong>速率降级</strong> — 光模块不匹配或线缆损坏</li>
+            <li><strong>Symbol Error</strong> — 信号衰减，更换线缆</li>
+            <li><strong>SM 未启动</strong> — 检查 opensm 服务状态</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title">健康标准</div>
+          <ul class="compact-list">
+            <li>所有端口 Active + 额定速率</li>
+            <li>Error Counter 全零</li>
+            <li>光模块温度 &lt;80°C</li>
+            <li>信号功率在规范范围内</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const NAV = { prev: 's3-08-network-design-2.html', next: 's3-09-network-opt-2.html', section: 3, topic: '9. 主要网络优化', pageNum: 19, totalPages: 35 };
+</script>
+<script src="js/nav.js"></script>
+</body>
+</html>

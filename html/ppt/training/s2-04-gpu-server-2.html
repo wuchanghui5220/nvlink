@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智算培训 - 4. GPU 服务器 — 驱动安装</title>
+<link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<div class="slide-container tmpl-content chapter-2">
+  <div class="slide-main">
+    <div class="section-title">4. GPU 服务器 — 驱动安装与容器化配置</div>
+    <div class="content-grid cols-2" style="flex:1;">
+      <!-- 左列：驱动安装（区分 RTX 与 HGX） -->
+      <div class="card" style="display:flex;flex-direction:column;gap:var(--pad-sm);">
+        <div class="card-title" style="color:var(--accent-2);">驱动安装</div>
+
+        <div class="highlight-box highlight-purple">
+          <strong>预安装准备</strong>（所有类型 GPU 通用）
+        </div>
+        <div class="code-block" style="font-size:var(--fs-tiny);">
+<span class="cmt"># Ubuntu: 安装 gcc 和内核头文件</span>
+<span class="kw">sudo</span> apt install gcc-12 linux-headers-$(<span class="fn">uname</span> -r)
+<span class="cmt"># CentOS:</span>
+<span class="kw">sudo</span> dnf install gcc kernel-devel-$(<span class="fn">uname</span> -r) kernel-headers</div>
+
+        <div style="border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--pad-sm);">
+          <div style="font-weight:700;font-size:var(--fs-small);color:var(--accent-2);margin-bottom:var(--pad-xs);">桌面推理卡 (RTX 4090)</div>
+          <div style="font-size:var(--fs-small);color:var(--text-muted);margin-bottom:var(--pad-xs);">
+            从 <strong>nvidia.com/drivers</strong> 下载对应型号 .deb 包
+          </div>
+          <div class="code-block" style="font-size:var(--fs-tiny);">
+<span class="cmt"># 安装驱动 .deb 包</span>
+<span class="kw">sudo</span> dpkg -i nvidia-driver-local-repo-ubuntu2204-*.deb
+<span class="kw">sudo</span> apt update && <span class="kw">sudo</span> apt install cuda-drivers -y
+nvidia-smi  <span class="cmt"># 验证</span></div>
+        </div>
+        <div style="border:1px solid var(--border);border-radius:var(--radius-md);padding:var(--pad-sm);">
+          <div style="font-weight:700;font-size:var(--fs-small);color:var(--accent-2);margin-bottom:var(--pad-xs);">数据中心卡 (HGX H100/H200)</div>
+          <div style="font-size:var(--fs-small);color:var(--text-muted);margin-bottom:var(--pad-xs);">
+            从 <a href="https://developer.nvidia.com/cuda-toolkit-archive" target="_blank"><strong>developer.nvidia.com/cuda-toolkit-archive</strong></a> 下载 .run 包
+          </div>
+          <div class="code-block" style="font-size:var(--fs-tiny);">
+<span class="cmt"># CUDA .run 静默安装（含驱动+工具包）</span>
+<span class="kw">sudo</span> sh cuda_12.9.1_575.57.08_linux.run --silent --driver --toolkit --override
+nvidia-smi  <span class="cmt"># 验证</span></div>
+        </div>
+
+        <div class="highlight-box highlight-purple" style="font-size:var(--fs-tiny);">
+          安装要点：务必预先安装内核头文件和开发包，否则驱动编译会失败
+        </div>
+      </div>
+
+      <!-- 右列：容器化与服务管理 -->
+      <div class="card" style="display:flex;flex-direction:column;gap:var(--pad-sm);">
+        <div class="card-title" style="color:var(--accent-2);">容器化与服务管理</div>
+
+        <div style="font-size:var(--fs-small);font-weight:600;color:var(--text-primary);">① 安装 Docker</div>
+        <div class="code-block" style="font-size:var(--fs-tiny);">
+<span class="kw">sudo</span> apt update && <span class="kw">sudo</span> apt install docker.io -y</div>
+
+        <div style="font-size:var(--fs-small);font-weight:600;color:var(--text-primary);">② NVIDIA Container Toolkit</div>
+        <div class="code-block" style="font-size:var(--fs-tiny);">
+<span class="cmt"># 添加 GPG 密钥</span>
+curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey \
+  | <span class="kw">sudo</span> gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg
+<span class="cmt"># 安装工具包</span>
+<span class="kw">sudo</span> apt-get update && <span class="kw">sudo</span> apt-get install -y nvidia-container-toolkit
+<span class="cmt"># 配置 Docker 运行时</span>
+<span class="kw">sudo</span> nvidia-ctk runtime configure --runtime=docker</div>
+
+        <div style="font-size:var(--fs-small);font-weight:600;color:var(--text-primary);">③ Fabric Manager（NVLink 多 GPU 系统必需）<a href="https://developer.download.nvidia.cn/compute/cuda/repos/ubuntu2204/x86_64/" target="_blank" style="font-weight:400;font-size:var(--fs-tiny);margin-left:0.5em;">下载地址</a></div>
+        <div class="code-block" style="font-size:var(--fs-tiny);">
+<span class="kw">sudo</span> dpkg -i nvidia-fabricmanager-575_575.57.08-1_amd64.deb
+<span class="kw">sudo</span> systemctl enable nvidia-fabricmanager</div>
+
+        <div style="font-size:var(--fs-small);font-weight:600;color:var(--text-primary);">④ 开启系统服务</div>
+        <div class="code-block" style="font-size:var(--fs-tiny);">
+<span class="kw">sudo</span> systemctl enable nvidia-persistenced   <span class="cmt"># GPU 持久化</span>
+<span class="kw">sudo</span> systemctl restart docker                <span class="cmt"># 重启 Docker</span></div>
+
+        <div style="font-size:var(--fs-small);font-weight:600;color:var(--text-primary);">⑤ 可选配置</div>
+        <div class="code-block" style="font-size:var(--fs-tiny);">
+<span class="kw">sudo</span> nvidia-smi -pl <span class="num">600</span>    <span class="cmt"># 功耗限制 600W</span>
+<span class="kw">sudo</span> nvidia-smi -e <span class="num">1</span>      <span class="cmt"># 启用 ECC 纠错</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const NAV = { prev: 's2-04-gpu-server.html', next: 's2-05-ib-network.html', section: 2, topic: '4. GPU 服务器概述', pageNum: 9, totalPages: 35 };
+</script>
+<script src="js/nav.js"></script>
+</body>
+</html>

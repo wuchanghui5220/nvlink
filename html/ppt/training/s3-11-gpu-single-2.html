@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智算培训 - 11. 单机优化 — 性能测试</title>
+<link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<div class="slide-container tmpl-code chapter-3">
+  <div class="slide-main">
+    <div class="section-title">11. 单机优化 — GPU 性能测试与基准</div>
+    <div class="code-layout">
+      <div class="code-panel">
+        <div class="section-subtitle" style="margin-bottom:var(--pad-xs);">单机 NCCL 测试与 GPU Benchmark</div>
+        <div class="code-block" style="flex:1;">
+<span class="cmt"># ── 编译 NCCL Tests ──</span>
+git clone https://github.com/NVIDIA/nccl-tests.git
+<span class="kw">cd</span> nccl-tests
+make -j src.build <span class="var">CUDA_HOME</span>=/usr/local/cuda
+
+<span class="cmt"># ── 单机 8 卡 All-Reduce 带宽测试 ──</span>
+./build/all_reduce_perf -b <span class="num">8</span> -e <span class="num">1G</span> -f <span class="num">2</span> -g <span class="num">8</span>
+<span class="cmt"># -b 8     最小消息 8B</span>
+<span class="cmt"># -e 1G    最大消息 1GB</span>
+<span class="cmt"># -f 2     步长倍数 2x</span>
+<span class="cmt"># -g 8     使用 8 张 GPU</span>
+
+<span class="cmt"># ── 关注 busbw 列 ──</span>
+<span class="cmt"># NVLink 连接: 接近理论带宽 (~600+ GB/s for 8×H100)</span>
+<span class="cmt"># PCIe 连接: 接近 PCIe 有效带宽</span>
+
+<span class="cmt"># ── GPU 计算基准 ──</span>
+<span class="cmt"># CUDA samples deviceQuery</span>
+<span class="kw">cd</span> /usr/local/cuda/samples/1_Utilities/deviceQuery
+<span class="kw">sudo</span> make && ./deviceQuery
+
+<span class="cmt"># GPU Burn — 压力测试</span>
+git clone https://github.com/wilicc/gpu-burn.git
+<span class="kw">cd</span> gpu-burn && make
+./gpu_burn <span class="num">300</span>                        <span class="cmt"># 300 秒持续压力</span></div>
+      </div>
+      <div class="info-panel">
+        <div class="card">
+          <div class="card-title">测试结果解读</div>
+          <ul class="compact-list">
+            <li><strong>busbw</strong> — 实际总线带宽，核心指标</li>
+            <li><strong>algbw</strong> — 算法带宽，含协议开销</li>
+            <li>大消息 (≥1MB) 看吞吐，小消息看延迟</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title">性能基准 (8×H100 NVLink)</div>
+          <table class="data-table">
+            <tr><th>测试</th><th>预期值</th></tr>
+            <tr><td>AllReduce busbw</td><td>~450-480 GB/s</td></tr>
+            <tr><td>AllGather busbw</td><td>~420-460 GB/s</td></tr>
+            <tr><td>GPU Burn 稳定温度</td><td>&lt;80°C (液冷)</td></tr>
+          </table>
+        </div>
+        <div class="card">
+          <div class="card-title">异常排查</div>
+          <ul class="compact-list">
+            <li>busbw 远低于预期 → 检查 NVLink 状态</li>
+            <li><code>nvidia-smi nvlink -s</code> 看是否有 inactive link</li>
+            <li>GPU Burn 报错 → ECC 错误或散热不足</li>
+            <li><code>dmesg | grep -i gpu</code> 查看内核错误</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const NAV = { prev: 's3-11-gpu-single.html', next: 's3-11-gpu-single-3.html', section: 3, topic: '11. GPU 单机优化', pageNum: 25, totalPages: 35 };
+</script>
+<script src="js/nav.js"></script>
+</body>
+</html>

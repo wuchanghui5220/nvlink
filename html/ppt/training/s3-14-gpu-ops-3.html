@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智算培训 - 14. GPU 运维 — IB 故障代码</title>
+<link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<div class="slide-container tmpl-content chapter-3">
+  <div class="slide-main">
+    <div class="section-title">14. GPU 运维 — IB 网络故障排查速查表</div>
+    <div class="content-grid cols-2" style="flex:1;">
+      <div class="card">
+        <div class="card-title">链路状态检查</div>
+        <table class="data-table">
+          <tr><th>故障现象</th><th>排查命令</th><th>处置</th></tr>
+          <tr><td>端口无法 UP</td><td><code>ibstat</code> / <code>ibstatus</code></td><td>检查线缆/对端/光模块</td></tr>
+          <tr><td>速率降级</td><td><code>ibstatus | grep rate</code></td><td>两端速率配置一致性</td></tr>
+          <tr><td>信号质量差</td><td><code>mlxlink -d mlx5_0 -p 1 -m -c</code></td><td>查看眼图/信噪比/误码，更换线缆</td></tr>
+          <tr><td>SM 不可达</td><td><code>sminfo</code> / <code>smpquery</code></td><td>检查 OpenSM 服务状态</td></tr>
+        </table>
+        <div class="code-block" style="margin-top:var(--pad-xs);font-size:var(--fs-tiny);">
+<span class="cmt"># 查看当前 SM 主节点信息</span>
+$ sminfo
+sminfo: sm lid <span class="num">1169</span> sm guid <span class="str">0x1070fd0300722d3a</span>, activity count <span class="num">566472039</span> priority <span class="num">15</span> state <span class="num">3</span> SMINFO_MASTER
+
+<span class="cmt"># 根据 lid 查询 SM 所在节点名称</span>
+$ smpquery nd <span class="num">1169</span>
+Node Description:...........compute-ufm01 mlx5_0</div>
+      </div>
+      <div class="card">
+        <div class="card-title">错误计数器诊断</div>
+        <table class="data-table">
+          <tr><th>故障现象</th><th>排查命令</th><th>处置</th></tr>
+          <tr><td>端口错误累积</td><td><code>perfquery -x</code></td><td>查看 SymbolErr / RcvErr 计数</td></tr>
+          <tr><td>全网健康扫描</td><td><code>ibdiagnet</code></td><td>生成诊断报告，定位问题端口</td></tr>
+          <tr><td>清除错误计数</td><td><code>perfquery -x -R</code></td><td>清零后观察是否持续增长</td></tr>
+          <tr><td>拓扑异常</td><td><code>ibnetdiscover</code></td><td>对比预期拓扑，发现缺失链路</td></tr>
+        </table>
+        <div class="code-block" style="margin-top:var(--pad-xs);font-size:var(--fs-tiny);">
+<span class="cmt"># ibdiagnet 全面诊断（常用参数组合）</span>
+ibdiagnet --pc -P all=1 --pm_pause_time <span class="num">600</span> -r \
+  --get_phy_info --extended_speeds all \
+  --get_cable_info --cable_info_disconnected \
+  --reset_phy_info --congestion_control \
+  --sharp --rail_validation \
+  --phy_cable_disconnected</div>
+      </div>
+      <div class="card">
+        <div class="card-title">性能与路由排查</div>
+        <table class="data-table">
+          <tr><th>故障现象</th><th>排查命令</th><th>处置</th></tr>
+          <tr><td>带宽异常低</td><td><code>ib_write_bw -d mlx5_0</code></td><td>对比基准值，检查 PCIe/NUMA</td></tr>
+          <tr><td>延迟过高</td><td><code>ib_write_lat -d mlx5_0</code></td><td>路径分析，排查交换机拥塞</td></tr>
+          <tr><td>路由不均衡</td><td><code>ibroute / dump_fts</code></td><td>调整 SM 路由算法</td></tr>
+          <tr><td>端口拥塞</td><td><code>perfquery -x</code> 查 XmitWait</td><td>检查流量热点，调整拓扑</td></tr>
+        </table>
+        <div class="code-block" style="margin-top:var(--pad-xs);font-size:var(--fs-tiny);">
+<span class="cmt"># 查看本地端口计数器</span>
+$ perfquery
+<span class="cmt"># Port counters: Lid 942 port 1 (CapMask: 0x5A01)</span>
+PortXmitData:.....................<span class="num">63576</span>
+PortRcvData:......................<span class="num">63576</span>
+PortXmitPkts:....................<span class="num">883</span>
+PortRcvPkts:.....................<span class="num">883</span>
+PortXmitWait:....................<span class="num">0</span>
+</div>
+      </div>
+      <div class="card">
+        <div class="card-title">日志来源与位置</div>
+        <table class="data-table">
+          <tr><th>日志来源</th><th>路径 / 命令</th><th>关注内容</th></tr>
+          <tr><td>内核驱动</td><td><code>dmesg | grep mlx5</code></td><td>链路 up/down、固件异常</td></tr>
+          <tr><td>系统日志</td><td><code>/var/log/syslog</code></td><td>mlx5_core 报错事件</td></tr>
+          <tr><td>OpenSM</td><td><code>/var/log/opensm.log</code></td><td>拓扑变化、路由重算</td></tr>
+          <tr><td>UFM 平台</td><td>Web UI → Events</td><td>端口告警、温度、拥塞事件</td></tr>
+        </table>
+        <div class="code-block" style="margin-top:var(--pad-xs);font-size:var(--fs-tiny);">
+<span class="cmt"># UFM 告警示例 — 端口 Flapping（反复 up/down）</span>
+<span class="str">Warning</span>  2025-12-08 15:33:04
+Unhealthy IB Port
+ default(383) / Switch: Compute-SU4-Leaf31-D09-28U / 1/10/2
+Peer Port is considered by SM as unhealthy due to <span class="str">FLAPPING</span>.</div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const NAV = { prev: 's3-14-gpu-ops-2.html', next: 'ending.html', section: 3, topic: '14. GPU 集群运维管理', pageNum: 34, totalPages: 35 };
+</script>
+<script src="js/nav.js"></script>
+</body>
+</html>

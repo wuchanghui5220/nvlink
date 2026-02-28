@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智算培训 - 9. 网络优化 — 带宽与延迟测试</title>
+<link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<div class="slide-container tmpl-code chapter-3">
+  <div class="slide-main">
+    <div class="section-title">9. 网络优化 — 带宽与延迟性能测试</div>
+    <div class="code-layout">
+      <div class="code-panel">
+        <div class="section-subtitle" style="margin-bottom:var(--pad-xs);">RDMA 性能测试工具</div>
+        <div class="code-block" style="flex:1;">
+<span class="cmt"># ── 带宽测试 ──</span>
+<span class="cmt"># 服务端</span>
+ib_write_bw -d mlx5_0 -s <span class="num">65536</span> -q 2 --report_gbits
+<span class="cmt"># 客户端</span>
+ib_write_bw -d mlx5_0 -s <span class="num">65536</span> -q 2 --report_gbits &lt;server_ip&gt;
+
+<span class="cmt"># 其他带宽测试</span>
+ib_read_bw  -d mlx5_0 &lt;server_ip&gt;   <span class="cmt"># RDMA Read 带宽</span>
+ib_send_bw  -d mlx5_0 &lt;server_ip&gt;   <span class="cmt"># Send/Recv 带宽</span>
+
+<span class="cmt"># ── 延迟测试 ──</span>
+ib_write_lat -d mlx5_0 &lt;server_ip&gt;  <span class="cmt"># RDMA Write 延迟</span>
+ib_read_lat  -d mlx5_0 &lt;server_ip&gt;  <span class="cmt"># RDMA Read 延迟</span>
+ib_send_lat  -d mlx5_0 &lt;server_ip&gt;  <span class="cmt"># Send/Recv 延迟</span>
+
+</div>
+      </div>
+      <div class="info-panel">
+        <div class="card">
+          <div class="card-title">性能基准参考</div>
+          <table class="data-table">
+            <tr><th>指标</th><th>NDR 400G</th></tr>
+            <tr><td>单端口带宽</td><td>~390 Gb/s</td></tr>
+            <tr><td>RDMA 延迟</td><td>&lt;2μs</td></tr>
+            <tr><td>双端口</td><td>~780 Gb/s</td></tr>
+          </table>
+        </div>
+        <div class="card">
+          <div class="card-title">测试工具选择</div>
+          <table class="data-table">
+            <tr><th>工具</th><th>优势</th></tr>
+            <tr><td><code>ib_write_bw</code></td><td>最常用，单向带宽</td></tr>
+            <tr><td><code>ib_read_bw</code></td><td>测试远端读取性能</td></tr>
+            <tr><td><code>ib_send_bw</code></td><td>双端协同发送接收</td></tr>
+            <tr><td><code>qperf</code></td><td>一站式多协议对比</td></tr>
+          </table>
+        </div>
+        <div class="card">
+          <div class="card-title">低于预期的排查</div>
+          <ul class="compact-list">
+            <li>确认 PCIe 速率 Gen5 x16</li>
+            <li>检查 NUMA 亲和性是否正确</li>
+            <li>排除交换机拥塞 (perfquery)</li>
+            <li>验证 MTU 设为 4096 (IB 最优)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const NAV = { prev: 's3-09-network-opt.html', next: 's3-09-network-opt-3.html', section: 3, topic: '9. 主要网络优化', pageNum: 20, totalPages: 35 };
+</script>
+<script src="js/nav.js"></script>
+</body>
+</html>

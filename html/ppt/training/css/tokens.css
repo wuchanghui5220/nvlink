@@ -1,0 +1,72 @@
+:root {
+  /* Background */
+  --bg-page: #f8fafc;
+  --bg-card: #ffffff;
+  --bg-code: #1e293b;
+  --bg-header: #ffffff;
+  --bg-footer: #ffffff;
+
+  /* Border */
+  --border: #e2e8f0;
+  --border-light: #f1f5f9;
+
+  /* Text */
+  --text-primary: #1e293b;
+  --text-body: #334155;
+  --text-muted: #64748b;
+  --text-light: #94a3b8;
+  --text-code: #e2e8f0;
+  --text-on-accent: #ffffff;
+
+  /* Chapter accents */
+  --accent-1: #2563eb;
+  --accent-1-light: #dbeafe;
+  --accent-1-bg: #eff6ff;
+  --accent-2: #7c3aed;
+  --accent-2-light: #ede9fe;
+  --accent-2-bg: #f5f3ff;
+  --accent-3: #059669;
+  --accent-3-light: #d1fae5;
+  --accent-3-bg: #ecfdf5;
+
+  /* Syntax highlighting (VS Code Dark+) */
+  --syn-keyword: #569cd6;
+  --syn-string: #ce9178;
+  --syn-comment: #6a9955;
+  --syn-function: #dcdcaa;
+  --syn-number: #b5cea8;
+  --syn-type: #4ec9b0;
+  --syn-variable: #9cdcfe;
+  --syn-operator: #d4d4d4;
+
+  /* Spacing */
+  --header-h: 5%;
+  --footer-h: 4%;
+  --content-h: 91%;
+  --pad-xs: 0.4%;
+  --pad-sm: 0.8%;
+  --pad-md: 1.2%;
+  --pad-lg: 2%;
+
+  /* Typography */
+  --font-sans: 'Inter', 'Noto Sans SC', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --fs-hero: clamp(2rem, 3.5vw, 4rem);
+  --fs-h1: clamp(1.2rem, 2vw, 2.2rem);
+  --fs-h2: clamp(0.9rem, 1.4vw, 1.5rem);
+  --fs-h3: clamp(0.75rem, 1.1vw, 1.15rem);
+  --fs-body: clamp(0.65rem, 0.95vw, 1rem);
+  --fs-small: clamp(0.55rem, 0.8vw, 0.85rem);
+  --fs-code: clamp(0.55rem, 0.78vw, 0.82rem);
+  --fs-tiny: clamp(0.5rem, 0.7vw, 0.75rem);
+  --lh: 1.4;
+
+  /* Radius */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+
+  /* Shadow */
+  --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-hover: 0 4px 12px rgba(0,0,0,0.08);
+}

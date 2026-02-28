@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智算培训 - 12. GPU 集群优化</title>
+<link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<div class="slide-container tmpl-content chapter-3">
+  <div class="slide-main">
+    <div class="section-title">12. GPU 集群优化</div>
+    <div class="content-grid cols-3" style="flex:1;">
+      <div class="card span-2">
+        <div class="card-title">分布式并行策略（4D/5D 并行）</div>
+        <table class="data-table">
+          <tr><th>策略</th><th>切分对象</th><th>适用场景</th></tr>
+          <tr><td><strong>数据并行 (DP)</strong></td><td>数据批次</td><td>模型放得下单卡，通常演进为 ZeRO/FSDP</td></tr>
+          <tr><td><strong>张量并行 (TP)</strong></td><td>层内权重矩阵</td><td>单层参数超大，限制在单机 8 卡内（依赖 NVLink）</td></tr>
+          <tr><td><strong>流水线并行 (PP)</strong></td><td>层间切分</td><td>层数极多，跨节点通信，需解决 Bubble 问题</td></tr>
+          <tr><td><strong>序列并行 (SP)</strong></td><td>Context 长度</td><td>长文本训练必备（RingAttention/Ulysses），解决单卡放不下长序列</td></tr>
+          <tr><td><strong>专家并行 (EP)</strong></td><td>MoE 路由专家</td><td>Mixtral/DeepSeek 等 MoE 模型，依赖 All-to-All 通信</td></tr>
+          <tr><td><strong>ZeRO / FSDP</strong></td><td>优化器/梯度/参数</td><td>通用显存优化，大集群常用 ZeRO-1/2 配合 3D 并行</td></tr>
+        </table>
+        <div class="highlight-box highlight-green" style="margin-top:var(--pad-xs);font-size:var(--fs-tiny);">
+          当前趋势：混合使用 DP + TP + PP + SP + EP（4D/5D 并行），按模型架构和集群规模灵活组合
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">集合通信模式</div>
+        <ul class="compact-list">
+          <li><strong>AllReduce</strong> — 梯度聚合，最关键操作</li>
+          <li><strong>AllGather</strong> — 参数收集（ZeRO-3/FSDP 前向）</li>
+          <li><strong>ReduceScatter</strong> — 分片梯度聚合（ZeRO 反向）</li>
+          <li><strong>Broadcast</strong> — 参数广播初始化</li>
+          <li><strong>P2P Send/Recv</strong> — 流水线并行微批次传递</li>
+          <li><strong>All-to-All</strong> — MoE Token 分发 / SP 维度转换</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">NCCL 跨节点优化</div>
+        <ul class="compact-list">
+          <li><strong>拓扑感知</strong> — 自动检测 NVLink/PCIe/IB 拓扑</li>
+          <li><strong>NCCL_TOPO_FILE</strong> — 虚拟化/复杂拓扑手动指定</li>
+          <li><strong>NCCL_ALGO</strong> — Tree / Ring / Collnet (SHARP)</li>
+          <li><strong>NCCL_PROTO</strong> — LL/LL128/Simple 协议选择</li>
+          <li><strong>SHARP</strong> — 交换机内硬件级聚合 (In-Network)</li>
+          <li><strong>GPUDirect RDMA</strong> — GPU 显存直接跨机通信</li>
+          <li><strong>NCCL_IB_HCA</strong> — 多网卡绑定 NUMA 亲和性</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">计算与显存优化</div>
+        <ul class="compact-list">
+          <li><strong>FlashAttention-2/3</strong> — 长文本训练核心优化</li>
+          <li><strong>混合精度</strong> — BF16/FP16，H100+ 支持 FP8</li>
+          <li><strong>梯度检查点</strong> — 用计算换显存，长序列必开</li>
+          <li><strong>CPU/NVMe Offload</strong> — ZeRO-Offload 卸载状态</li>
+          <li><strong>异步 Checkpoint</strong> — 避免保存时集群假死</li>
+        </ul>
+      </div>
+      <div class="card span-2">
+        <div class="card-title">集群瓶颈诊断与容错</div>
+        <div style="display:flex;gap:var(--pad-sm);">
+          <div style="flex:1;">
+            <div style="font-weight:700;font-size:var(--fs-small);margin-bottom:var(--pad-xs);">瓶颈诊断</div>
+            <ul class="compact-list">
+              <li>单机 busbw 正常但多机下降 → 跨机网络瓶颈</li>
+              <li>AllReduce 耗时不均 → Straggler 慢节点（温度/ECC/降频）</li>
+              <li>通信占比过高 → 计算/通信比失衡，调整并行策略</li>
+            </ul>
+          </div>
+          <div style="flex:1;">
+            <div style="font-weight:700;font-size:var(--fs-small);margin-bottom:var(--pad-xs);">诊断工具链</div>
+            <ul class="compact-list">
+              <li><strong>轻量级</strong> — <code>NCCL_DEBUG=INFO</code></li>
+              <li><strong>性能跑分</strong> — <code>nccl-tests all_reduce_perf</code></li>
+              <li><strong>深度分析</strong> — PyTorch Profiler / Nsight Systems</li>
+              <li><strong>容错</strong> — NCCL Timeout 后自动剔除坏节点 + Checkpoint 恢复</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const NAV = { prev: 's3-11-gpu-single-3.html', next: 's3-12-gpu-cluster-2.html', section: 3, topic: '12. GPU 集群优化', pageNum: 27, totalPages: 35 };
+</script>
+<script src="js/nav.js"></script>
+</body>
+</html>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智算培训 - 13. 运维 — 命令大全</title>
+<link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<div class="slide-container tmpl-content chapter-3">
+  <div class="slide-main">
+    <div class="section-title">13. 运维管理 — 基础运维命令大全</div>
+    <div class="content-grid cols-2" style="flex:1;">
+      <div class="card">
+        <div class="card-title">系统监控</div>
+        <table class="data-table">
+          <tr><th>命令</th><th>用途</th></tr>
+          <tr><td><code>htop / top</code></td><td>CPU/内存实时监控</td></tr>
+          <tr><td><code>free -h</code></td><td>内存使用概览</td></tr>
+          <tr><td><code>df -h</code></td><td>磁盘空间使用</td></tr>
+          <tr><td><code>uptime / w</code></td><td>系统负载/在线用户</td></tr>
+          <tr><td><code>dmesg -T</code></td><td>内核消息（硬件错误）</td></tr>
+          <tr><td><code>journalctl -xe</code></td><td>系统日志查看</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-title">GPU 管理</div>
+        <table class="data-table">
+          <tr><th>命令</th><th>用途</th></tr>
+          <tr><td><code>nvidia-smi -l 1</code></td><td>每秒刷新 GPU 状态</td></tr>
+          <tr><td><code>nvidia-smi topo -m</code></td><td>GPU 拓扑关系</td></tr>
+          <tr><td><code>nvidia-smi -pm 1</code></td><td>启用持久模式</td></tr>
+          <tr><td><code>dcgmi diag -r 3</code></td><td>DCGM 全面诊断</td></tr>
+          <tr><td><code>nvidia-smi pmon</code></td><td>进程级 GPU 监控</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-title">网络诊断</div>
+        <table class="data-table">
+          <tr><th>命令</th><th>用途</th></tr>
+          <tr><td><code>ibstat</code></td><td>HCA 端口状态</td></tr>
+          <tr><td><code>ibdev2netdev</code></td><td>IB 设备 → 网络接口映射</td></tr>
+          <tr><td><code>iblinkinfo</code></td><td>全网链路状态</td></tr>
+          <tr><td><code>ibdiagnet</code></td><td>全网综合诊断</td></tr>
+          <tr><td><code>iperf3 -s / -c</code></td><td>以太网带宽测试</td></tr>
+          <tr><td><code>ss -tulnp</code></td><td>端口/连接状态</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-title">Slurm 作业调度</div>
+        <table class="data-table">
+          <tr><th>命令</th><th>用途</th></tr>
+          <tr><td><code>sinfo</code></td><td>分区与节点状态</td></tr>
+          <tr><td><code>squeue -u $USER</code></td><td>用户作业列表</td></tr>
+          <tr><td><code>sbatch</code></td><td>提交批处理作业</td></tr>
+          <tr><td><code>scontrol show node</code></td><td>节点详细信息</td></tr>
+          <tr><td><code>sacct -j &lt;id&gt;</code></td><td>作业资源消耗统计</td></tr>
+          <tr><td><code>sreport</code></td><td>集群使用率报告</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const NAV = { prev: 's3-13-ops.html', next: 's3-13-ops-3.html', section: 3, topic: '13. 智算集群运维管理', pageNum: 30, totalPages: 35 };
+</script>
+<script src="js/nav.js"></script>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智算培训 - 6. 存储设计 — 容量计算</title>
+<link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<div class="slide-container tmpl-content chapter-2">
+  <div class="slide-main">
+    <div class="section-title">6. 存储设计 — 全闪存储容量计算</div>
+    <div class="section-desc">场景：128 台 H200 节点（1024 张 GPU），从业务需求倒推存储设计</div>
+    <div class="content-grid cols-2" style="flex:1;">
+
+      <div class="card">
+        <div class="card-title">① 训练数据集</div>
+        <table class="data-table">
+          <tr><th>推导步骤</th><th>数值</th></tr>
+          <tr><td>原始数据集（Common Crawl 等）</td><td>10~50 TB（压缩后）</td></tr>
+          <tr><td>× 预处理膨胀系数（分词/格式转换）</td><td>×2~3</td></tr>
+          <tr><td><strong>单项目数据集</strong></td><td><strong>30~150 TB</strong></td></tr>
+          <tr><td>× 并行项目数（3~5 个训练任务共享集群）</td><td>×3</td></tr>
+          <tr style="background:var(--accent-2-bg);"><td><strong>数据集合计</strong></td><td><strong>~100~450 TB</strong></td></tr>
+        </table>
+        <div class="highlight-box highlight-purple" style="margin-top:var(--pad-xs);font-size:var(--fs-tiny);">
+          建议按 <strong>500 TB</strong> 规划，为数据版本迭代和新增任务留余量
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">② Checkpoint 检查点</div>
+        <table class="data-table">
+          <tr><th>推导步骤</th><th>175B 模型</th><th>1T 模型</th></tr>
+          <tr><td>参数 (BF16, ×2B)</td><td>350 GB</td><td>2 TB</td></tr>
+          <tr><td>梯度 (BF16, ×2B)</td><td>350 GB</td><td>2 TB</td></tr>
+          <tr><td>优化器 Adam (FP32, ×12B)</td><td>2.1 TB</td><td>12 TB</td></tr>
+          <tr><td><strong>单次 Checkpoint</strong></td><td><strong>2.8 TB</strong></td><td><strong>16 TB</strong></td></tr>
+          <tr><td>× 保留版本数 (10)</td><td>28 TB</td><td>160 TB</td></tr>
+          <tr><td>× 并行项目数 (2~3)</td><td>56~84 TB</td><td>320~480 TB</td></tr>
+        </table>
+        <div class="highlight-box highlight-purple" style="margin-top:var(--pad-xs);font-size:var(--fs-tiny);">
+          千卡集群通常承载百亿~万亿参数，建议按 <strong>300 TB</strong> 规划
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">③ Scratch 暂存与日志</div>
+        <table class="data-table">
+          <tr><th>推导步骤</th><th>数值</th></tr>
+          <tr><td>每节点 Scratch（验证结果/日志/Activations）</td><td>2~4 TB</td></tr>
+          <tr><td>× 128 节点</td><td>256~512 TB</td></tr>
+          <tr><td>用户 Home / 代码 / 容器镜像</td><td>+50 TB</td></tr>
+          <tr style="background:var(--accent-2-bg);"><td><strong>Scratch 合计</strong></td><td><strong>~500 TB</strong></td></tr>
+        </table>
+      </div>
+
+      <div class="card">
+        <div class="card-title">④ 冗余与管理空间</div>
+        <ul class="compact-list">
+          <li>全闪存储占用率 &gt;80% 后性能大幅下降</li>
+          <li>RAID / 纠删码冗余开销</li>
+          <li>可用率系数通常取 <strong>0.7</strong></li>
+        </ul>
+        <table class="data-table" style="margin-top:var(--pad-xs);">
+          <tr><th>计算</th><th>数值</th></tr>
+          <tr><td>净容量需求 (500+300+500)</td><td>1,300 TB</td></tr>
+          <tr><td>÷ 可用率 0.7</td><td>~1,860 TB</td></tr>
+          <tr style="background:var(--accent-2-bg);"><td><strong>裸容量（含冗余）</strong></td><td><strong>~1.9 PB</strong></td></tr>
+        </table>
+      </div>
+
+      <div class="card span-2">
+        <div class="card-title">总结与性能要求</div>
+        <div class="grid-2">
+          <table class="data-table">
+            <tr><th>项目</th><th>净容量</th><th>推导依据</th></tr>
+            <tr><td>训练数据集</td><td>500 TB</td><td>50TB × 3x膨胀 × 3项目 + 余量</td></tr>
+            <tr><td>Checkpoint</td><td>300 TB</td><td>多模型规模 × 10版本 × 多项目</td></tr>
+            <tr><td>Scratch / Home</td><td>500 TB</td><td>128节点 × 4TB + 镜像/代码</td></tr>
+            <tr><td>冗余系数 ÷0.7</td><td>+560 TB</td><td>RAID + SSD 性能余量</td></tr>
+            <tr style="background:var(--accent-2-bg);font-weight:700;"><td>总计（裸容量）</td><td>~1.9 PB</td><td>NVMe 全闪并行文件系统</td></tr>
+          </table>
+          <div style="display:flex;flex-direction:column;gap:var(--pad-xs);">
+            <div class="highlight-box highlight-purple" style="font-size:var(--fs-small);">
+              <strong>容量是下限，带宽是上限</strong>
+            </div>
+            <table class="data-table">
+              <tr><th>带宽需求</th><th>推导</th></tr>
+              <tr><td><strong>数据加载</strong></td><td>1024 GPU × ~200MB/s ≈ 200 GB/s</td></tr>
+              <tr><td><strong>Checkpoint 写入</strong></td><td>2.8TB ÷ 60s ≈ 47 GB/s</td></tr>
+              <tr><td><strong>建议聚合带宽</strong></td><td><strong>500 GB/s ~ 1 TB/s</strong></td></tr>
+            </table>
+            <div style="font-size:var(--fs-tiny);color:var(--text-muted);">
+              每 GPU 数据加载速率因任务而异：LLM 50~200MB/s，多模态/视觉 200~500MB/s；建议按峰值场景规划<br>
+              带宽瓶颈主要来自训练数据持续加载而非 Checkpoint；需支持 GPUDirect Storage (GDS)
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+<script>
+const NAV = { prev: 's2-06-storage.html', next: 's3-divider.html', section: 2, topic: '6. 存储技术概述', pageNum: 13, totalPages: 35 };
+</script>
+<script src="js/nav.js"></script>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智算培训 - 12. 集群优化 — 跨节点测试</title>
+<link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<div class="slide-container tmpl-code chapter-3">
+  <div class="slide-main">
+    <div class="section-title">12. 集群优化 — 跨节点 NCCL 测试</div>
+    <div class="code-layout">
+      <div class="code-panel">
+        <div class="section-subtitle" style="margin-bottom:var(--pad-xs);">多节点 All-Reduce 测试</div>
+        <div class="code-block" style="flex:1;">
+<span class="cmt"># ── 准备 hostfile ──</span>
+<span class="cmt"># 内容：每行一个节点 IP + GPU 数量</span>
+cat hostfile
+<span class="str">192.168.1.101 slots=8</span>
+<span class="str">192.168.1.102 slots=8</span>
+
+<span class="cmt"># ── 2 节点 16 卡 All-Reduce 测试 ──</span>
+mpirun -np <span class="num">16</span> \
+  -N <span class="num">8</span> \
+  --host node01,node02 \
+  -mca btl_tcp_if_include bond0.1000 \          <span class="cmt"># MPI 控制消息强制走这个 VLAN</span>
+  -x <span class="var">LD_LIBRARY_PATH</span> \
+  -x <span class="var">NCCL_SOCKET_IFNAME</span>=bond0.1000 \            <span class="cmt"># NCCL 初始化握手强制走这个 VLAN</span>
+  -x <span class="var">NCCL_IB_HCA</span>=mlx5_0,mlx5_1,mlx5_2,mlx5_3,mlx5_4,mlx5_5,mlx5_6,mlx5_7 \
+  -x <span class="var">NCCL_IB_DISABLE</span>=0 \
+  -x <span class="var">NCCL_NET_GDR_LEVEL</span>=PHB \
+  -x <span class="var">NCCL_DEBUG</span>=INFO \
+  ./build/all_reduce_perf -b <span class="num">512M</span> -e <span class="num">8G</span> -f <span class="num">2</span> -g <span class="num">1</span> -c <span class="num">1</span> -n <span class="num">10</span>
+
+<span class="cmt"># ── 关键参数说明 ──</span>
+-mca btl_tcp_if_include         <span class="cmt"># MPI 控制消息网卡（非训练数据）</span>
+<span class="var">NCCL_SOCKET_IFNAME</span>=bond0.1000   <span class="cmt"># NCCL Socket 握手连接网卡 (OOB)</span>
+<span class="var">NCCL_IB_HCA</span>=mlx5_0..mlx5_7     <span class="cmt"># 绑定 8 张 IB 网卡（训练数据走 RDMA）</span>
+<span class="var">NCCL_IB_DISABLE</span>=0              <span class="cmt"># 启用 IB 传输</span>
+<span class="var">NCCL_NET_GDR_LEVEL</span>=PHB         <span class="cmt"># GPUDirect RDMA 级别（同 PCIe Hub）</span>
+<span class="var">NCCL_COLLNET_ENABLE</span>=1           <span class="cmt"># 启用 SHARP 交换机内聚合</span>
+<span class="var">NCCL_ALGO</span>=CollNet               <span class="cmt"># 强制使用 CollNet 算法（需 SHARP 支持）</span>
+<span class="var">NCCL_DEBUG</span>=INFO                 <span class="cmt"># 调试信息输出</span></div>
+      </div>
+      <div class="info-panel">
+        <div class="card">
+          <div class="card-title">跨节点性能基准</div>
+          <table class="data-table">
+            <tr><th>节点</th><th>GPU</th><th>busbw (NDR)</th><th>备注</th></tr>
+            <tr><td>1</td><td>8</td><td>420~480+ GB/s</td><td>NVLink 基准，SHARP 最高</td></tr>
+            <tr><td>2</td><td>16</td><td>360~400+ GB/s</td><td>接近基准，最佳多节点</td></tr>
+            <tr><td>8</td><td>64</td><td>340~390 GB/s</td><td>略降，常见良好值</td></tr>
+            <tr><td>128</td><td>1024</td><td>300~380 GB/s</td><td>优化后仍高</td></tr>
+          </table>
+          <div class="highlight-box highlight-green" style="margin-top:var(--pad-xs);">
+            启用 SHARP 后大消息 busbw 可达 380~400 GB/s（理论线速的 92~98%）
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">性能低于预期排查</div>
+          <ul class="compact-list">
+            <li>IB 网络健康检查 → <code>ibdiagnet </code></li>
+            <li>NCCL 选错设备 → 检查 <code>NCCL_IB_HCA</code></li>
+            <li>路由不均衡 → SM 路由算法调整</li>
+            <li>PCIe 瓶颈 → BIOS 配置检查</li>
+            <li>NUMA 错位 → <code>nvidia-smi topo -m</code></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const NAV = { prev: 's3-12-gpu-cluster.html', next: 's3-13-ops.html', section: 3, topic: '12. GPU 集群优化', pageNum: 28, totalPages: 35 };
+</script>
+<script src="js/nav.js"></script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智算培训 - 10. GPU 软件 — 监控工具</title>
+<link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<div class="slide-container tmpl-code chapter-3">
+  <div class="slide-main">
+    <div class="section-title">10. GPU 软件 — 监控与管理工具</div>
+    <div class="code-layout">
+      <div class="code-panel">
+        <div class="section-subtitle" style="margin-bottom:var(--pad-xs);">GPU 监控命令</div>
+        <div class="code-block" style="flex:1;">
+<span class="cmt"># ── nvidia-smi 常用操作 ──</span>
+nvidia-smi                           <span class="cmt"># GPU 概览（温度/功耗/显存/利用率）</span>
+nvidia-smi -l <span class="num">1</span>                     <span class="cmt"># 每秒刷新</span>
+nvidia-smi -q                        <span class="cmt"># 详细信息（所有属性）</span>
+nvidia-smi -q -d POWER               <span class="cmt"># 仅看功耗信息</span>
+nvidia-smi topo -m                   <span class="cmt"># GPU 拓扑（NVLink/PCIe 互联）</span>
+nvidia-smi topo -p2p a               <span class="cmt"># GPU 间 P2P 访问能力矩阵</span>
+nvidia-smi nvlink -s                 <span class="cmt"># NVLink 状态</span>
+
+<span class="cmt"># ── DCGM (Data Center GPU Manager) ──</span>
+dcgmi discovery -l                   <span class="cmt"># 列出所有 GPU</span>
+dcgmi diag -r <span class="num">3</span>                     <span class="cmt"># Level 3 全面诊断（~15min）</span>
+dcgmi health -c -g <span class="num">0</span>                <span class="cmt"># 健康检查</span>
+dcgmi stats -e                       <span class="cmt"># 启用统计收集</span>
+
+<span class="cmt"># ── nvidia-persistenced ──</span>
+<span class="kw">sudo</span> systemctl enable nvidia-persistenced
+<span class="kw">sudo</span> systemctl start nvidia-persistenced
+
+<span class="cmt"># ── 进程级 GPU 使用查看 ──</span>
+nvidia-smi pmon -c <span class="num">1</span>                <span class="cmt"># 进程级 GPU 利用率</span></div>
+      </div>
+      <div class="info-panel">
+        <div class="card">
+          <div class="card-title">DCGM 功能矩阵</div>
+          <table class="data-table">
+            <tr><th>功能</th><th>说明</th></tr>
+            <tr><td>健康监控</td><td>XID 错误、ECC 错误检测</td></tr>
+            <tr><td>诊断测试</td><td>L1~L3 多级别 GPU 测试</td></tr>
+            <tr><td>性能采集</td><td>利用率/温度/功耗时序</td></tr>
+            <tr><td>Prometheus</td><td>dcgm-exporter 指标导出</td></tr>
+          </table>
+        </div>
+        <div class="card">
+          <div class="card-title">监控架构</div>
+          <ul class="compact-list">
+            <li><strong>采集层</strong> — dcgm-exporter / node-exporter</li>
+            <li><strong>存储层</strong> — Prometheus / VictoriaMetrics</li>
+            <li><strong>展示层</strong> — Grafana Dashboard</li>
+            <li><strong>告警层</strong> — Alertmanager / PagerDuty</li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="card-title">关键告警阈值</div>
+          <ul class="compact-list">
+            <li>GPU 温度 &gt;85°C → 降频警告</li>
+            <li>显存利用率 &gt;95% → OOM 风险</li>
+            <li>ECC 错误 &gt;0 → 硬件异常</li>
+            <li>XID Error → 需排查具体代码</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const NAV = { prev: 's3-10-gpu-software.html', next: 's3-11-gpu-single.html', section: 3, topic: '10. GPU 软件生态', pageNum: 23, totalPages: 35 };
+</script>
+<script src="js/nav.js"></script>
+</body>
+</html>

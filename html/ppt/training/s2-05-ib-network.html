@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智算培训 - 5. InfiniBand 网络基础</title>
+<link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<div class="slide-container tmpl-content chapter-2">
+  <div class="slide-main">
+    <div class="section-title">5. InfiniBand 网络基础</div>
+    <div class="content-grid cols-2" style="flex:1;">
+      <div class="card">
+        <div class="card-title">IB 技术代际演进</div>
+        <table class="data-table">
+          <tr><th>代际</th><th>速率 (单端口)</th><th>典型产品</th></tr>
+          <tr><td>EDR</td><td>100 Gb/s</td><td>ConnectX-5</td></tr>
+          <tr><td>HDR</td><td>200 Gb/s</td><td>ConnectX-6</td></tr>
+          <tr><td>NDR</td><td>400 Gb/s</td><td>ConnectX-7, QM9700</td></tr>
+          <tr><td>XDR</td><td>800 Gb/s</td><td>ConnectX-8, X800</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-title">核心硬件设备</div>
+        <ul class="compact-list">
+          <li><strong>交换机</strong> — QM9700 (NDR 64 口) / X800 Q3400 (XDR 144 口, 115.2Tbps)</li>
+          <li><strong>网卡 (HCA)</strong> — ConnectX-7/8，PCIe Gen5，1~2 端口</li>
+          <li><strong>线缆</strong> — DAC 铜缆 (≤3m) / AOC 有源光缆 / 光模块+光纤</li>
+          <li><strong>连接器</strong> — QSFP56 (200G) / OSFP (400~800G)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">IB vs Ethernet 对比</div>
+        <table class="data-table">
+          <tr><th>维度</th><th>InfiniBand</th><th>Ethernet (RoCE)</th></tr>
+          <tr><td>设计目标</td><td>HPC/AI 低延迟</td><td>通用数据中心</td></tr>
+          <tr><td>传输模式</td><td>原生 RDMA</td><td>RoCEv2 (需 PFC/ECN)</td></tr>
+          <tr><td>流控</td><td>基于信用，零丢包</td><td>需额外配置无损</td></tr>
+          <tr><td>延迟</td><td>&lt;1μs</td><td>~2-5μs</td></tr>
+          <tr><td>管理</td><td>Subnet Manager</td><td>标准以太网管理</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-title">关键协议与技术</div>
+        <ul class="compact-list">
+          <li><strong>RDMA</strong> — 远程直接内存访问，绕过 CPU/OS 内核</li>
+          <li><strong>GPUDirect RDMA</strong> — GPU↔远端 GPU 零拷贝传输</li>
+          <li><strong>GPUDirect Storage</strong> — GPU↔NVMe/存储直接传输</li>
+          <li><strong>SHARP</strong> — 交换机内完成 AllReduce，减少网络流量</li>
+          <li><strong>Adaptive Routing</strong> — 动态选路避拥塞</li>
+        </ul>
+      </div>
+      <div class="card span-2">
+        <div class="card-title">子网管理器 (Subnet Manager)</div>
+        <div class="grid-2">
+          <div>
+            <div class="section-subtitle" style="font-size:var(--fs-small);">核心功能</div>
+            <ul class="compact-list">
+              <li>网络拓扑发现与 LID 分配</li>
+              <li>路由计算 (UPDN/MinHop/AR) 与表下发</li>
+              <li>故障检测与自动恢复</li>
+            </ul>
+          </div>
+          <div>
+            <div class="section-subtitle" style="font-size:var(--fs-small);">部署方式</div>
+            <ul class="compact-list">
+              <li><strong>OpenSM</strong> — 运行在管理服务器上</li>
+              <li><strong>内置 SM</strong> — 运行在交换机芯片内</li>
+              <li>支持 Master/Standby 高可用</li>
+              <li>最大支持 65,536 节点</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const NAV = { prev: 's2-04-gpu-server-2.html', next: 's2-05-ib-network-2.html', section: 2, topic: '5. InfiniBand 网络基础', pageNum: 10, totalPages: 35 };
+</script>
+<script src="js/nav.js"></script>
+</body>
+</html>

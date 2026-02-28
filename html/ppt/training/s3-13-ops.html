@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智算培训 - 13. 智算集群运维管理</title>
+<link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<div class="slide-container tmpl-content chapter-3">
+  <div class="slide-main">
+    <div class="section-title">13. 智算集群运维管理</div>
+    <div class="content-grid cols-3" style="flex:1;">
+      <div class="card">
+        <div class="card-title">运维三大支柱</div>
+        <ul class="compact-list">
+          <li><strong>监控观测</strong> — 实时感知集群健康</li>
+          <li><strong>自动化运维</strong> — 减少人工干预</li>
+          <li><strong>风险管控</strong> — 变更管理 + 应急响应</li>
+        </ul>
+        <div class="highlight-box highlight-green" style="margin-top:var(--pad-xs);">
+          目标：128 台服务器 / 1024 GPU 的规模化运维
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">标准流程 (5 步)</div>
+        <ol class="steps">
+          <li>需求分析与影响评估</li>
+          <li>方案设计与评审</li>
+          <li>测试验证 (灰度/金丝雀)</li>
+          <li>生产实施 (变更窗口)</li>
+          <li>监控验证 (回滚预案)</li>
+        </ol>
+      </div>
+      <div class="card">
+        <div class="card-title">监控指标体系</div>
+        <ul class="compact-list">
+          <li><strong>GPU</strong> — 温度/利用率/显存/ECC</li>
+          <li><strong>CPU/内存</strong> — 负载/内存使用</li>
+          <li><strong>网络</strong> — IB 端口状态/延迟/错误</li>
+          <li><strong>存储</strong> — I/O 吞吐/延迟/容量</li>
+          <li><strong>作业</strong> — 队列深度/等待时间</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">健康检查清单</div>
+        <ul class="compact-list">
+          <li>硬件扫描 — <code>lspci</code> / <code>nvidia-smi</code></li>
+          <li>网络连通 — <code>ibstat</code> / <code>ibping</code></li>
+          <li>存储完整性 — <code>mount</code> / <code>df -h</code></li>
+          <li>服务可用 — Slurm / OpenSM / UFM</li>
+          <li>性能基线 — NCCL / ib_write_bw</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">作业调度 (Slurm)</div>
+        <ul class="compact-list">
+          <li><code>sinfo</code> — 查看集群分区与节点状态</li>
+          <li><code>squeue</code> — 查看作业队列</li>
+          <li><code>sbatch job.sh</code> — 提交批处理作业</li>
+          <li><code>srun --gres=gpu:8</code> — 交互式运行</li>
+          <li><code>scancel &lt;jobid&gt;</code> — 取消作业</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">应急响应流程</div>
+        <ol class="steps">
+          <li><strong>发现</strong> — 监控告警/用户报告</li>
+          <li><strong>评估</strong> — 影响范围与等级</li>
+          <li><strong>处置</strong> — 隔离故障节点/切换</li>
+          <li><strong>恢复</strong> — 根因分析 + 修复</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const NAV = { prev: 's3-12-gpu-cluster-2.html', next: 's3-13-ops-2.html', section: 3, topic: '13. 智算集群运维管理', pageNum: 29, totalPages: 35 };
+</script>
+<script src="js/nav.js"></script>
+</body>
+</html>

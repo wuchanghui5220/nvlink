@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智算培训 - 9. 网络优化 — 调优技术</title>
+<link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<div class="slide-container tmpl-content chapter-3">
+  <div class="slide-main">
+    <div class="section-title">9. 网络优化 — IB 网络调优技术</div>
+    <div class="content-grid cols-2" style="flex:1;">
+      <div class="card">
+        <div class="card-title">物理层调优</div>
+        <ul class="compact-list">
+          <li><code>ibdiagnet</code> — 全网诊断，生成健康报告</li>
+          <li>启用拥塞控制 <code>mlnx_congestion_control 2</code></li>
+          <li>启用 SHARP <code>sharp_enabled 2</code> — 网内计算加速</li>
+          <li>检查并修复降速链路和错误计数器</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">OpenSM 路由优化</div>
+        <ul class="compact-list">
+          <li><code>routing_engine ar_updn</code> — 自适应路由</li>
+          <li><code>root_guid_file</code> — 指定 Spine 为根节点</li>
+          <li>Adaptive Routing 动态选路避拥塞</li>
+          <li>定期重刷路由表 (拓扑变化后)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">系统级调优</div>
+        <ul class="compact-list">
+          <li><strong>NUMA 绑定</strong> — <code>numactl --cpunodebind=0 --membind=0</code></li>
+          <li><strong>OFED 调优</strong> — <code>mlnx_tune</code> 自动优化内核参数</li>
+          <li><strong>CPU Governor</strong> — performance 模式锁频</li>
+          <li><strong>IRQ 亲和</strong> — 网卡中断绑定到同 NUMA 节点</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">MPI / UCX 通信调优</div>
+        <ul class="compact-list">
+          <li><strong>UCX</strong> — 统一通信框架，自动选最优传输</li>
+          <li><code>UCX_NET_DEVICES=mlx5_0:1</code> — 指定 IB 设备</li>
+          <li><code>UCX_TLS=rc,dc</code> — 选择可靠/动态连接</li>
+          <li>MPI 进程绑定与 NUMA 拓扑对齐</li>
+        </ul>
+      </div>
+      <div class="card span-2">
+        <div class="card-title">性能验证工具链</div>
+        <div style="display:flex;align-items:center;gap:var(--pad-sm);font-size:var(--fs-small);flex-wrap:wrap;">
+          <span class="badge badge-green">ibdiagnet</span>
+          <span style="color:var(--text-light);">→</span>
+          <span class="badge badge-green">ib_write_bw</span>
+          <span style="color:var(--text-light);">→</span>
+          <span class="badge badge-green">NCCL all_reduce_perf</span>
+          <span style="color:var(--text-light);">→</span>
+          <span class="badge badge-green">实际训练 benchmark</span>
+          <span style="color:var(--text-muted);margin-left:auto;">逐层验证，从底向上</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const NAV = { prev: 's3-09-network-opt-2.html', next: 's3-10-gpu-software.html', section: 3, topic: '9. 主要网络优化', pageNum: 21, totalPages: 35 };
+</script>
+<script src="js/nav.js"></script>
+</body>
+</html>

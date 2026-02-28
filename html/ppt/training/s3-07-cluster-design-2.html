@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智算培训 - 7. 集群设计 — 产品配置</title>
+<link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<div class="slide-container tmpl-content chapter-3">
+  <div class="slide-main">
+    <div class="section-title">7. 集群设计 — 典型产品配置</div>
+    <div class="content-grid cols-2" style="flex:1;">
+      <div class="card span-2">
+        <div class="card-title">千卡集群硬件清单 (128 节点 × 8 GPU)</div>
+        <table class="data-table">
+          <tr><th>类别</th><th>设备</th><th>数量</th><th>说明</th></tr>
+          <tr><td><strong>计算</strong></td><td>8×H200 GPU 服务器</td><td>128 台</td><td>141GB HBM3e/GPU, 2×CPU, 2TB RAM</td></tr>
+          <tr><td><strong>计算网 Leaf</strong></td><td>QM9700 NDR 400G 交换机</td><td>32 台</td><td>每台下联 32 个 GPU 端口</td></tr>
+          <tr><td><strong>计算网 Spine</strong></td><td>QM9700 NDR 400G 交换机</td><td>16 台</td><td>1:1 无阻塞 Fat-Tree</td></tr>
+          <tr><td><strong>存储网</strong></td><td>HDR 200G 交换机</td><td>21 台</td><td>存储节点互联</td></tr>
+          <tr><td><strong>管理网</strong></td><td>25GbE 以太网交换机</td><td>6 台</td><td>SSH / BMC / 监控</td></tr>
+          <tr><td><strong>存储</strong></td><td>Lustre/GPFS 存储节点</td><td>12 台</td><td>PB 级并行文件系统</td></tr>
+          <tr><td><strong>管理</strong></td><td>管理服务器</td><td>3 台</td><td>Slurm / UFM / 监控</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-title">综合算力指标</div>
+        <div style="display:flex;flex-direction:column;gap:var(--pad-xs);">
+          <div class="kv-row"><span class="kv-key">GPU 总数</span><span class="kv-val">1,024 × H200</span></div>
+          <div class="kv-row"><span class="kv-key">FP16 算力</span><span class="kv-val">~1.0 EFLOPS</span></div>
+          <div class="kv-row"><span class="kv-key">显存总量</span><span class="kv-val">~144 TB HBM3e</span></div>
+          <div class="kv-row"><span class="kv-key">IB 端口数</span><span class="kv-val">1,024 × NDR 400G</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">管理软件栈</div>
+        <table class="data-table">
+          <tr><th>层面</th><th>工具</th></tr>
+          <tr><td>作业调度</td><td>Slurm / PBS Pro / LSF</td></tr>
+          <tr><td>容器编排</td><td>Kubernetes + GPU Operator</td></tr>
+          <tr><td>网络管理</td><td>UFM Enterprise</td></tr>
+          <tr><td>GPU 监控</td><td>DCGM + Prometheus + Grafana</td></tr>
+          <tr><td>日志集中</td><td>ELK / Loki</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const NAV = { prev: 's3-07-cluster-design.html', next: 's3-08-network-design.html', section: 3, topic: '7. 智算集群的设计', pageNum: 16, totalPages: 35 };
+</script>
+<script src="js/nav.js"></script>
+</body>
+</html>

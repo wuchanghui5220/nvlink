@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智算培训 - 8. 网络设计 — 部署流程</title>
+<link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<div class="slide-container tmpl-content chapter-3">
+  <div class="slide-main">
+    <div class="section-title">8. 网络设计 — IB 网络开局流程</div>
+    <div class="content-grid cols-2" style="flex:1;">
+      <div class="card span-2">
+        <div class="card-title">开局实施四阶段</div>
+        <div style="display:flex;align-items:center;gap:var(--pad-sm);font-size:var(--fs-small);">
+          <div class="highlight-box highlight-green" style="flex:1;text-align:center;padding:var(--pad-sm);">
+            <strong>① 需求分析与规划</strong><br>业务需求 · 性能规格 · 拓扑设计
+          </div>
+          <span style="color:var(--text-light);font-size:1.2em;">→</span>
+          <div class="highlight-box highlight-green" style="flex:1;text-align:center;padding:var(--pad-sm);">
+            <strong>② 硬件部署与连接</strong><br>设备上架 · 线缆连接 · 硬件验证
+          </div>
+          <span style="color:var(--text-light);font-size:1.2em;">→</span>
+          <div class="highlight-box highlight-green" style="flex:1;text-align:center;padding:var(--pad-sm);">
+            <strong>③ 软件配置与调试</strong><br>驱动安装 · SM 配置 · UFM 部署
+          </div>
+          <span style="color:var(--text-light);font-size:1.2em;">→</span>
+          <div class="highlight-box highlight-green" style="flex:1;text-align:center;padding:var(--pad-sm);">
+            <strong>④ 测试验证与运维</strong><br>性能测试 · 故障排查 · 监控上线
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">关键实施步骤</div>
+        <ol class="steps">
+          <li>业务需求调研与带宽计算</li>
+          <li>网络拓扑设计与设备选型</li>
+          <li>机房布局规划与线缆设计</li>
+          <li>IB 交换机与网卡安装部署</li>
+          <li>驱动程序与固件版本管理</li>
+          <li>子网管理器配置与优化</li>
+          <li>UFM 平台部署与监控配置</li>
+          <li>网络性能测试与调优验证</li>
+        </ol>
+      </div>
+      <div class="card">
+        <div class="card-title">线缆规划要点</div>
+        <ul class="compact-list">
+          <li><strong>DAC 铜缆</strong> — ≤3m 柜内短连接，成本低功耗低</li>
+          <li><strong>AOC 有源光缆</strong> — 3~30m 柜间连接，即插即用</li>
+          <li><strong>光模块+光纤</strong> — &gt;30m 或跨楼层，MPO-12/16</li>
+          <li><strong>标签管理</strong> — 两端标记 Src/Dst 端口号</li>
+          <li><strong>走线规划</strong> — 计算网/存储网/管理网物理分离</li>
+        </ul>
+        <div class="highlight-box highlight-green" style="margin-top:var(--pad-xs);">
+          1024 端口集群 ≈ 2000+ 根线缆，严格的标签和走线是运维生命线
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const NAV = { prev: 's3-08-network-design.html', next: 's3-09-network-opt.html', section: 3, topic: '8. 网络设计与组网', pageNum: 18, totalPages: 35 };
+</script>
+<script src="js/nav.js"></script>
+</body>
+</html>

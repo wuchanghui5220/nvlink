@@ -1,0 +1,20 @@
+/* Standard content template - card grid */
+.tmpl-content .slide-main {
+  display: flex;
+  flex-direction: column;
+}
+
+.tmpl-content .content-grid {
+  display: grid;
+  gap: var(--pad-sm);
+  flex: 1;
+}
+
+.tmpl-content .content-grid.cols-2 { grid-template-columns: 1fr 1fr; }
+.tmpl-content .content-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+.tmpl-content .content-grid.cols-2x1 { grid-template-columns: 1fr 1fr; }
+
+/* Full-width card spanning both columns */
+.tmpl-content .card.span-2 { grid-column: span 2; }
+.tmpl-content .card.span-3 { grid-column: span 3; }
+.tmpl-content .card.span-full { grid-column: 1 / -1; }

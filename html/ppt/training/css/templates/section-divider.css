@@ -1,0 +1,70 @@
+/* Section divider template */
+.tmpl-divider .slide-main {
+  display: flex;
+  align-items: stretch;
+  padding: 0;
+}
+
+.tmpl-divider .divider-accent {
+  width: 6px;
+  flex-shrink: 0;
+}
+
+.tmpl-divider .divider-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: var(--pad-lg) var(--pad-lg) var(--pad-lg) var(--pad-lg);
+}
+
+.tmpl-divider .divider-chapter-num {
+  font-size: var(--fs-tiny);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: var(--pad-xs);
+}
+
+.tmpl-divider .divider-title {
+  font-size: var(--fs-hero);
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  margin-bottom: var(--pad-md);
+}
+
+.tmpl-divider .divider-topics {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(30%, 1fr));
+  gap: var(--pad-xs) var(--pad-md);
+  list-style: none;
+  padding: 0;
+}
+
+.tmpl-divider .divider-topics li {
+  font-size: var(--fs-body);
+  color: var(--text-body);
+  display: flex;
+  align-items: baseline;
+  gap: 0.5em;
+  padding: 0.2em 0;
+}
+
+.tmpl-divider .divider-topics .topic-num {
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* Chapter colors */
+.chapter-1 .divider-accent { background: var(--accent-1); }
+.chapter-1 .divider-chapter-num { color: var(--accent-1); }
+.chapter-1 .divider-topics .topic-num { color: var(--accent-1); }
+
+.chapter-2 .divider-accent { background: var(--accent-2); }
+.chapter-2 .divider-chapter-num { color: var(--accent-2); }
+.chapter-2 .divider-topics .topic-num { color: var(--accent-2); }
+
+.chapter-3 .divider-accent { background: var(--accent-3); }
+.chapter-3 .divider-chapter-num { color: var(--accent-3); }
+.chapter-3 .divider-topics .topic-num { color: var(--accent-3); }

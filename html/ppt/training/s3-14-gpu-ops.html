@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智算培训 - 14. GPU 集群运维管理</title>
+<link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<div class="slide-container tmpl-content chapter-3">
+  <div class="slide-main">
+    <div class="section-title">14. GPU 集群运维管理 — UFM 监控平台</div>
+    <div class="content-grid cols-2" style="flex:1;">
+      <div class="card span-2">
+        <div class="card-title">NVIDIA UFM (Unified Fabric Manager) 产品组合</div>
+        <div style="display:flex;gap:var(--pad-sm);">
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;">
+            <img src="img/ufm-telemetry.png" alt="UFM Telemetry" style="max-height:12vh;border-radius:var(--radius-sm);border:1px solid var(--border);">
+            <div style="font-size:var(--fs-tiny);margin-top:auto;padding-top:var(--pad-xs);text-align:center;"><strong>UFM Telemetry</strong><br><span style="color:var(--text-muted);">实时网络遥测与监控</span></div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;">
+            <img src="img/ufm-enterprise.png" alt="UFM Enterprise" style="max-height:12vh;border-radius:var(--radius-sm);border:1px solid var(--border);">
+            <div style="font-size:var(--fs-tiny);margin-top:auto;padding-top:var(--pad-xs);text-align:center;"><strong>UFM Enterprise</strong><br><span style="color:var(--text-muted);">网络可视化 · 拓扑管理 · 配置控制</span></div>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;align-items:center;">
+            <img src="img/ufm-cyber-ai.png" alt="UFM Cyber-AI" style="max-height:12vh;border-radius:var(--radius-sm);border:1px solid var(--border);">
+            <div style="font-size:var(--fs-tiny);margin-top:auto;padding-top:var(--pad-xs);text-align:center;"><strong>UFM Cyber-AI</strong><br><span style="color:var(--text-muted);">AI 驱动网络智能分析</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">UFM 核心功能</div>
+        <ul class="compact-list">
+          <li><strong>实时监控</strong> — 端口状态/带宽/错误计数</li>
+          <li><strong>拓扑可视化</strong> — 全网设备关系图</li>
+          <li><strong>路径分析</strong> — 任意两节点间路径追踪</li>
+          <li><strong>性能监控</strong> — 带宽/延迟/流量热点</li>
+          <li><strong>智能分析</strong> — 异常检测/预警/根因分析</li>
+          <li><strong>配置管理</strong> — 批量固件升级/参数下发</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="card-title">UFM 管理功能模块</div>
+        <table class="data-table">
+          <tr><th>模块</th><th>功能</th></tr>
+          <tr><td>拓扑管理</td><td>可视化拓扑 · 设备状态 · 路径分析</td></tr>
+          <tr><td>性能监控</td><td>带宽/延迟 · 端口利用率 · 流量热点</td></tr>
+          <tr><td>智能分析</td><td>异常检测 · 性能预警 · 根因分析</td></tr>
+          <tr><td>系统管理</td><td>权限管理 · 配置参数 · 日志审计</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const NAV = { prev: 's3-13-ops-3.html', next: 's3-14-gpu-ops-2.html', section: 3, topic: '14. GPU 集群运维管理', pageNum: 32, totalPages: 35 };
+</script>
+<script src="js/nav.js"></script>
+</body>
+</html>

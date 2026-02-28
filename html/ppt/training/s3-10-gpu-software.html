@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智算培训 - 10. GPU 软件生态</title>
+<link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<div class="slide-container tmpl-content chapter-3">
+  <div class="slide-main">
+    <div class="section-title">10. GPU 软件生态</div>
+    <div class="content-grid cols-2" style="flex:1;">
+      <div class="card span-2">
+        <div class="card-title">NVIDIA GPU 软件栈全景</div>
+        <div style="display:flex;gap:var(--pad-sm);font-size:var(--fs-small);">
+          <div class="highlight-box highlight-green" style="flex:1;text-align:center;">
+            <strong>应用框架</strong><br>PyTorch · TensorFlow · JAX
+          </div>
+          <div class="highlight-box highlight-green" style="flex:1;text-align:center;">
+            <strong>分布式训练</strong><br>DeepSpeed · Megatron-LM · FSDP
+          </div>
+          <div class="highlight-box highlight-green" style="flex:1;text-align:center;">
+            <strong>通信库</strong><br>NCCL · MPI · Gloo
+          </div>
+          <div class="highlight-box highlight-green" style="flex:1;text-align:center;">
+            <strong>计算库</strong><br>CUDA · cuDNN · cuBLAS · TensorRT
+          </div>
+          <div class="highlight-box highlight-green" style="flex:1;text-align:center;">
+            <strong>驱动/固件</strong><br>GPU Driver · OFED · DCGM
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">CUDA 生态核心库</div>
+        <table class="data-table">
+          <tr><th>库</th><th>功能</th></tr>
+          <tr><td><strong>CUDA Runtime</strong></td><td>GPU 通用并行计算 API</td></tr>
+          <tr><td><strong>cuDNN</strong></td><td>深度学习原语（卷积/池化/归一化）</td></tr>
+          <tr><td><strong>cuBLAS</strong></td><td>线性代数 (GEMM 矩阵乘)</td></tr>
+          <tr><td><strong>TensorRT</strong></td><td>推理优化（量化/图优化/Kernel融合）</td></tr>
+          <tr><td><strong>Triton Server</strong></td><td>模型部署推理服务框架</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-title">NCCL 通信库</div>
+        <ul class="compact-list">
+          <li>NVIDIA 集合通信库 — 分布式训练基石</li>
+          <li>支持 AllReduce / AllGather / Broadcast 等</li>
+          <li>自动感知 NVLink / NVSwitch / IB 拓扑</li>
+          <li>支持 Ring / Tree / SHARP 多种算法</li>
+        </ul>
+        <div class="highlight-box highlight-green" style="margin-top:var(--pad-xs);">
+          核心原则：除非有充分的测试数据支持，不要随意修改 NCCL 默认环境变量
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">分布式训练框架</div>
+        <table class="data-table">
+          <tr><th>框架</th><th>特点</th></tr>
+          <tr><td><strong>DeepSpeed</strong></td><td>ZeRO 内存优化，微软出品</td></tr>
+          <tr><td><strong>Megatron-LM</strong></td><td>张量/流水线并行，NVIDIA 出品</td></tr>
+          <tr><td><strong>PyTorch FSDP</strong></td><td>全分片数据并行，原生集成</td></tr>
+          <tr><td><strong>vLLM</strong></td><td>高效推理引擎，PagedAttention</td></tr>
+        </table>
+      </div>
+      <div class="card">
+        <div class="card-title">容器化与调度</div>
+        <ul class="compact-list">
+          <li><strong>NGC Containers</strong> — NVIDIA 预构建优化镜像</li>
+          <li><strong>NVIDIA Container Toolkit</strong> — Docker GPU 支持</li>
+          <li><strong>GPU Operator</strong> — Kubernetes GPU 自动管理</li>
+          <li><strong>MIG</strong> — 多实例 GPU，单卡虚拟化分割</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+const NAV = { prev: 's3-09-network-opt-3.html', next: 's3-10-gpu-software-2.html', section: 3, topic: '10. GPU 软件生态', pageNum: 22, totalPages: 35 };
+</script>
+<script src="js/nav.js"></script>
+</body>
+</html>
