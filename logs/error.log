@@ -1888,3 +1888,4 @@
 2026/03/02 02:20:31 [error] 28#28: *1502 "/usr/share/nginx/html/ppt/training/index.html" is not found (2: No such file or directory), client: 13.213.37.162, server: nvlink.vip, request: "GET /ppt/training/ HTTP/1.1", host: "nvlink.vip"
 2026/03/02 02:20:40 [error] 28#28: *1502 "/usr/share/nginx/html/ppt/index.html" is not found (2: No such file or directory), client: 13.213.37.162, server: nvlink.vip, request: "GET /ppt/ HTTP/1.1", host: "nvlink.vip"
 2026/03/02 02:20:41 [error] 28#28: *1502 "/usr/share/nginx/html/ppt/index.html" is not found (2: No such file or directory), client: 13.213.37.162, server: nvlink.vip, request: "GET /ppt/ HTTP/1.1", host: "nvlink.vip"
+2026/03/02 02:31:18 [error] 29#29: *1520 open() "/usr/share/nginx/html/fapi/v1/order" failed (2: No such file or directory), client: 176.97.70.37, server: nvlink.vip, request: "GET /fapi/v1/order HTTP/1.1", host: "fapi.binance.com"
