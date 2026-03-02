@@ -1,6 +1,6 @@
 User-agent: *
 Allow: /
+Disallow: /all/
 Disallow: /report.html
-Disallow: /ppt/
 
 Sitemap: https://nvlink.vip/sitemap.xml
