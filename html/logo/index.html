@@ -1,380 +1,392 @@
-
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SVG LOGO 终极编辑器 (完整版)</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            display: flex;
-            background-color: #f0f2f5;
-            margin: 0;
-            padding: 20px;
-            height: calc(100vh - 40px);
-            gap: 20px;
-        }
-        .controls {
-            width: 380px;
-            padding: 20px;
-            background-color: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            overflow-y: auto;
-        }
-        .preview {
-            flex-grow: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            padding: 30px;
-            transition: background-color 0.3s;
-            overflow: hidden;
-        }
-        .control-group {
-            margin-bottom: 25px;
-            border-bottom: 1px solid #e8e8e8;
-            padding-bottom: 15px;
-        }
-        .control-group:last-child { border-bottom: none; }
-        h2 { text-align: center; margin-top: 0; }
-        h3 {
-            margin-top: 0; color: #333; font-size: 1.1em;
-            border-left: 4px solid #45a3b9; padding-left: 10px;
-        }
-        label, .label-like {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 10px; color: #555; font-size: 0.9em;
-        }
-        label > span:first-child, .label-like > span:first-child {
-            white-space: nowrap;
-            margin-right: 15px;
-            flex-shrink: 0;
-        }
-        input[type="range"] { width: 100%; cursor: pointer; }
-        input[type="color"] {
-            border: 1px solid #ccc; padding: 2px; border-radius: 4px;
-            cursor: pointer; min-width: 40px; min-height: 25px;
-        }
-        input[type="number"] {
-            width: 80px; padding: 4px 8px; border-radius: 4px; border: 1px solid #ccc;
-        }
-        select, .main-btn {
-            width: 100%; padding: 8px 12px; border-radius: 4px;
-            border: 1px solid #ccc; font-size: 0.9em; cursor: pointer;
-        }
-        .main-btn {
-            background-color: #45a3b9; color: white; border: none;
-            font-weight: bold; margin-top: 10px; transition: background-color 0.2s;
-        }
-        .main-btn:hover { background-color: #307E9B; }
-        .preset-buttons { display: flex; gap: 10px; }
-        .preset-btn {
-            flex: 1; padding: 8px; border: 1px solid #ccc;
-            background-color: #f9f9f9; border-radius: 4px; cursor: pointer;
-            transition: all 0.2s; font-size: 0.85em;
-        }
-        .preset-btn:hover { border-color: #45a3b9; background-color: #e8f6f9; }
-        #svg-container {
-            width: 80%;
-            max-width: 500px;
-            transition: transform 0.1s ease-out;
-        }
-        textarea {
-            width: calc(100% - 16px); height: 150px; margin-top: 15px;
-            border: 1px solid #ccc; border-radius: 4px; font-family: monospace;
-            font-size: 0.8em; resize: vertical; padding: 8px;
-        }
-        .output-container { display: none; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZYHZ Elite Logo Editor</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: Inter, -apple-system, sans-serif; background: #f0f2f5; display: flex; height: 100vh; }
+
+  .panel {
+    width: 320px; background: #fff; padding: 20px; overflow-y: auto;
+    box-shadow: 2px 0 12px rgba(0,0,0,0.08); flex-shrink: 0;
+  }
+  .panel h2 { font-size: 16px; margin-bottom: 16px; color: #333; }
+  .group { margin-bottom: 18px; border-bottom: 1px solid #eee; padding-bottom: 14px; }
+  .group:last-child { border-bottom: none; }
+  .group h3 {
+    font-size: 13px; font-weight: 600; color: #555; margin-bottom: 10px;
+    border-left: 3px solid #76B900; padding-left: 8px;
+  }
+  .row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .row label { font-size: 12px; color: #666; white-space: nowrap; }
+  .row input[type="range"] { width: 120px; }
+  .row .val { font-size: 11px; color: #999; width: 42px; text-align: right; font-family: monospace; }
+  .row select { width: 140px; font-size: 12px; padding: 3px 6px; }
+
+  .btn {
+    width: 100%; padding: 10px; border: none; border-radius: 6px; cursor: pointer;
+    font-size: 13px; font-weight: 600; margin-top: 6px; transition: all .2s;
+  }
+  .btn-primary { background: #76B900; color: #fff; }
+  .btn-primary:hover { background: #5a8f00; }
+  .btn-secondary { background: #eee; color: #333; }
+  .btn-secondary:hover { background: #ddd; }
+
+  .preview {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    transition: background .3s; position: relative; overflow: hidden;
+  }
+  .preview.light { background: #ffffff; }
+  .preview.dark { background: #1a1a1a; }
+  .preview.green { background: #76B900; }
+  .preview.gray { background: #f0f2f5; }
+  .preview.checker {
+    background-image: linear-gradient(45deg, #ccc 25%, transparent 25%),
+      linear-gradient(-45deg, #ccc 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #ccc 75%),
+      linear-gradient(-45deg, transparent 75%, #ccc 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+    background-color: #fff;
+  }
+
+  #logoContainer { transition: transform .1s; }
+
+  .ref-img {
+    position: absolute; bottom: 20px; right: 20px; opacity: 0.6;
+    border: 1px solid #ccc; border-radius: 4px; max-width: 280px;
+  }
+  .ref-img img { width: 100%; display: block; border-radius: 3px; }
+  .ref-label { font-size: 10px; color: #999; text-align: center; padding: 2px 0; background: #fff; }
+
+  textarea {
+    width: 100%; height: 120px; margin-top: 8px; font-family: monospace;
+    font-size: 10px; border: 1px solid #ddd; border-radius: 4px; padding: 6px; resize: vertical;
+  }
+  .output { display: none; }
+</style>
 </head>
 <body>
 
-    <div class="controls">
-        <h2>LOGO 效果调节器</h2>
+<div class="panel">
+  <h2>ZYHZ × NVIDIA Elite Logo</h2>
+  <p style="font-size:11px;color:#999;margin-bottom:14px;">基于官方 AI 矢量源文件</p>
 
-        <div class="control-group">
-            <h3>🖼️ 画布设置</h3>
-            <label><span>背景颜色:</span> <input type="color" id="bg-color" value="#ffffff"></label>
-            <label><span>缩放 (<span id="zoom-val">200</span>%):</span> <input type="range" id="zoom-slider" min="0.1" max="3" step="0.05" value="2"></label>
-        </div>
-
-        <div class="control-group">
-            <h3>✨ 预设方案</h3>
-            <div class="preset-buttons">
-                <button class="preset-btn" data-preset="dark">深邃黑</button>
-                <button class="preset-btn" data-preset="light">经典白</button>
-                <button class="preset-btn" data-preset="green">活力绿</button>
-                <button class="preset-btn" data-preset="cyan">蓝绿青</button>
-            </div>
-        </div>
-
-        <div class="control-group">
-            <h3>🎨 渐变颜色</h3>
-            <label><span>高光:</span> <input type="color" id="color-stop1" value="#5EC9E0"></label>
-            <label><span>主色:</span> <input type="color" id="color-stop2" value="#45a3b9"></label>
-            <label><span>阴影:</span> <input type="color" id="color-stop3" value="#2A788B"></label>
-        </div>
-        
-        <div class="control-group">
-            <h3>🧭 渐变方向</h3>
-            <select id="gradient-direction">
-                <option value="0,0,100,100">左上 → 右下</option>
-                <option value="0,0,100,0">左 → 右</option>
-                <option value="0,0,0,100">上 → 下</option>
-                <option value="100,0,0,100">右上 → 左下</option>
-            </select>
-        </div>
-
-        <div class="control-group">
-            <h3>👻 投影效果</h3>
-            <label><span>启用投影:</span> <input type="checkbox" id="shadow-toggle" checked></label>
-            <label><span>左右偏移 (<span id="shadow-dx-val">3</span>):</span> <input type="range" id="shadow-dx" min="-20" max="20" value="3"></label>
-            <label><span>上下偏移 (<span id="shadow-dy-val">5</span>):</span> <input type="range" id="shadow-dy" min="-20" max="20" value="5"></label>
-            <label><span>模糊半径 (<span id="shadow-blur-val">3</span>):</span> <input type="range" id="shadow-blur" min="0" max="20" value="3"></label>
-            <label><span>投影颜色:</span> <input type="color" id="shadow-color" value="#000000"></label>
-            <label><span>不透明度 (<span id="shadow-opacity-val">0.4</span>):</span> <input type="range" id="shadow-opacity" min="0" max="1" step="0.05" value="0.4"></label>
-        </div>
-        
-        <div class="control-group">
-            <h3>📥 导出图像</h3>
-            <div class="label-like">
-                <span>导出宽度 (px):</span>
-                <input type="number" id="export-width" value="1200">
-            </div>
-            <label><span>包含背景色:</span> <input type="checkbox" id="export-with-bg" checked></label>
-            <button id="download-btn" class="main-btn">下载为 PNG</button>
-        </div>
-
-        <button id="generate-btn" class="main-btn">生成SVG代码</button>
-        <div id="output-container" class="output-container">
-            <textarea id="svg-output" readonly></textarea>
-        </div>
+  <div class="group">
+    <h3>画布</h3>
+    <div class="row">
+      <label>背景</label>
+      <select id="bgSelect">
+        <option value="light" selected>白色</option>
+        <option value="gray">浅灰</option>
+        <option value="dark">深色</option>
+        <option value="green">NVIDIA 绿</option>
+        <option value="checker">棋盘格 (验证透明)</option>
+      </select>
     </div>
-
-    <div class="preview">
-        <div id="svg-container">
-            <svg id="logo-svg" version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="100%" height="auto">
-                <defs>
-                    <linearGradient id="logo3DGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop id="stop1" offset="0%" style="stop-color:#5EC9E0;stop-opacity:1" />
-                        <stop id="stop2" offset="50%" style="stop-color:#45a3b9;stop-opacity:1" />
-                        <stop id="stop3" offset="100%" style="stop-color:#2A788B;stop-opacity:1" />
-                    </linearGradient>
-                    <filter id="dropShadowFilter" x="-20%" y="-20%" width="140%" height="140%">
-                        <feDropShadow id="shadow-effect" dx="3" dy="5" stdDeviation="3" flood-color="#000000" flood-opacity="0.4"/>
-                    </filter>
-                </defs>
-                <style>
-                    .s0 { 
-                        fill: url(#logo3DGradient);
-                        filter: url(#dropShadowFilter);
-                    } 
-                </style>
-                <g id="logo-group">
-                    <!-- ZYHZ, Swoosh, Sparkle Paths -->
-                    <path class="s0" d="m79.44 359.96c3.59-4.48 7.23-8.93 10.76-13.45q21.17-27.13 42.3-54.29c0.43-0.56 0.82-1.15 1.54-2.14-18.24 0-36.08 0-54.57 0 1.3-1.68 2.19-2.85 3.09-4 6.39-8.19 12.82-16.36 19.15-24.59 1.01-1.3 2.09-1.68 3.66-1.68q46.43 0.02 92.86-0.12c2.61-0.01 4.45 0.5 6.34 2.64 4.87 5.51 10.19 10.61 15.31 15.89 4.73 4.87 9.43 9.77 14.34 14.86-5.86 6.92-11.61 13.71-17.57 20.74-1.88-1.97-3.55-3.76-5.26-5.51-5.5-5.69-10.99-11.4-16.56-17.02-0.64-0.65-1.75-1.16-2.65-1.18q-9.47-0.19-18.95-0.1c-0.82 0.01-1.91 0.49-2.4 1.12-10.03 12.75-19.98 25.56-29.95 38.36-0.08 0.11-0.05 0.29-0.13 0.7 17.9 0 35.74 0 54.23 0-1.28 1.68-2.22 2.89-3.15 4.11-6.25 8.2-12.48 16.42-18.81 24.56-0.61 0.79-1.9 1.51-2.88 1.51-30.23 0.08-60.47 0.07-90.7 0.07q0-0.24 0-0.48z"/>
-                    <path class="s0" d="m520.56 331.16c-2.71 3.33-5.47 6.62-8.1 10.01-4.51 5.81-8.87 11.73-13.44 17.49-0.71 0.9-2.18 1.7-3.3 1.7-29.43 0.1-58.86 0.08-88.29 0.08-0.54 0-1.07-0.05-2.02-0.11 3.15-4.09 6.08-7.93 9.05-11.73q15.17-19.49 30.35-38.96 18.79-24.1 37.54-48.24c0.93-1.2 1.94-1.62 3.44-1.61 10.56 0.07 21.12 0.04 31.67 0.03 1.04 0 2.07-0.12 3.1-0.18q0 0.48 0 0.96c-4.27 5.37-8.57 10.71-12.79 16.11q-16.83 21.52-33.61 43.08c-2.58 3.31-5.11 6.66-7.77 10.14 0.51 0.15 0.72 0.26 0.93 0.26q26.62 0.02 53.24 0.01 0 0.48 0 0.96z"/>
-                    <path class="s0" d="m311.29 360.27c-10.08 0-19.89 0-30.06 0q0-1.31 0-2.57c0-20.32-0.02-40.63 0.05-60.95 0-1.23 0.43-2.73 1.21-3.66 8.82-10.66 17.76-21.22 26.64-31.83 0.45-0.53 0.64-1.29 0.95-1.95q0.53 0.34 1.06 0.67c0.05 0.81 0.15 1.62 0.15 2.43 0.01 10.08 0.06 20.16-0.04 30.23-0.02 2.03 0.6 2.54 2.56 2.53q28.2-0.1 56.39 0.01c2.06 0.01 2.52-0.66 2.5-2.6-0.09-9.91-0.04-19.83-0.04-29.75 0-0.87 0-1.74 0-2.84 34.93 0 69.66 0 104.9 0-2.45 3.23-4.66 6.18-6.92 9.1-4.89 6.31-9.85 12.58-14.68 18.94-1.08 1.42-2.18 1.98-3.98 1.97-15.75-0.07-31.51-0.04-47.26-0.03-0.63 0-1.25 0.07-2.14 0.13 0 23.41 0 46.71 0 70.17-10.07 0-19.85 0-29.92 0 0-0.99 0-1.84 0-2.7 0-9.99-0.04-19.99 0.03-29.99 0.02-1.83-0.45-2.52-2.4-2.51q-28.32 0.09-56.63 0c-1.94-0.01-2.42 0.66-2.4 2.5 0.07 10 0.03 20 0.03 29.99 0 0.86 0 1.72 0 2.71z"/>
-                    <path class="s0" d="m305.56 260.06c-4.48 5.29-8.64 10.23-12.83 15.14-13.83 16.24-27.69 32.46-41.48 48.75-0.63 0.75-0.94 1.99-0.95 3.01-0.08 10.16-0.05 20.31-0.06 30.47 0 0.86 0 1.73 0 2.76-0.77 0.09-1.37 0.23-1.98 0.23-8.63 0.01-17.27-0.04-25.9 0.04-1.77 0.02-2.32-0.45-2.31-2.28 0.07-13.35 0.02-26.7 0.07-40.06 0.01-0.86 0.34-1.91 0.89-2.55q23.08-27.25 46.3-54.39c0.58-0.69 1.71-1.3 2.58-1.31 11.44-0.08 22.87-0.06 34.31-0.05 0.29 0 0.58 0.1 1.36 0.24z"/>
-                    <path class="s0" d="m351.93 288.09c-2.78 0-5.03 0.17-7.24-0.08-0.93-0.11-1.96-0.93-2.62-1.71-15.3-18.09-31.45-35.39-48.95-51.39-14.9-13.62-30.38-26.52-48.1-36.4-6.45-3.6-13.1-6.84-20.55-7.65-2.55-0.28-5.34-0.08-7.77 0.68-4.52 1.42-6.2 5.27-6.7 9.65-0.76 6.67 0.76 13.05 2.77 19.33 5.39 16.81 13.97 32.06 23.12 47.03 1.59 2.59 3.24 5.14 4.84 7.72 0.08 0.12 0.06 0.3 0.16 1.06-0.86-0.56-1.58-0.78-1.91-1.26-16.16-23.4-31.65-47.2-41.16-74.25-2.1-5.96-3.54-12.36-4.02-18.66-0.93-12.37 5.59-17.6 17.76-14.95 9.77 2.13 18.36 6.96 26.7 12.22 18.98 11.94 35.89 26.47 52.16 41.79 21.4 20.16 41.2 41.81 59.79 64.57 0.49 0.6 0.93 1.23 1.72 2.3z"/>
-                    <path class="s0" d="m397.62 366.68c2.8 0 5.26-0.06 7.71 0.05 0.49 0.02 1.14 0.55 1.39 1.03 7.5 14.06 14.72 28.26 17.52 44.16 0.62 3.56 0.69 7.35 0.27 10.95-0.79 6.65-5.1 10.5-11.79 10.02-4.7-0.33-9.5-1.48-13.91-3.17-12.73-4.87-23.84-12.63-34.67-20.74-5.43-4.07-10.69-8.37-16.03-12.56q0.19-0.27 0.38-0.54c0.65 0.47 1.32 0.92 1.95 1.41 9.53 7.44 19.29 14.59 30.27 19.75 4.95 2.32 10.31 3.79 15.54 5.46 1.48 0.47 3.18 0.38 4.76 0.3 5.43-0.26 8.99-3.2 10.17-8.51 1.48-6.63 0.34-13.16-1.87-19.34-3.07-8.56-6.79-16.89-10.25-25.3-0.38-0.94-0.88-1.82-1.44-2.97z"/>
-                    <path class="s0" d="m314.89 365.1c10.27-0.87 15.3-7.25 17.77-16.59 2.52 9.55 7.69 15.98 18.29 16.61-10.64 0.61-15.85 7.1-18.31 16.78-2.35-9.51-7.47-15.88-17.75-16.8z"/>
-                    
-                    <!-- ## RESTORED CHINESE TEXT PATHS ## -->
-                    <path class="s0" d="m146.6 398.81h11.84v2.55h-28.06v-2.55h4.89v-12.9h2.54v12.9h6.24v-18.6h-12.19v-2.54h25.1v2.54h-10.36v7.73h8.43v2.54h-8.43z"/>
-                    <path fill-rule="evenodd" class="s0" d="m173.05 381.72l-2.25 5.09q0.29 0.48 0.69 1.3 0.4 0.82 0.74 2.03 0.34 1.21 0.58 2.8 0.24 1.59 0.24 3.59v1.25h-6.53v-2.54h3.99q-0.1-1.9-0.42-3.28-0.32-1.39-0.69-2.3-0.37-0.92-0.66-1.37-0.29-0.45-0.32-0.52l-0.55-0.61 0.32-0.71 2.35-5.27v-1.39h-4.73v21.79h-2.54v-24.33h9.78zm16.87 16.77q0 1.22-0.84 2.06-0.84 0.83-2.06 0.84h-12.29v-23.79h12.65v-0.48h2.54zm-12.65-18.35v6.99h10.11v-6.99zm0 18.7h9.72q0.38 0 0.38-0.35v-8.82h-10.1z"/>
-                    <path fill-rule="evenodd" class="s0" d="m194.36 393.89q0.39-1.13 0.63-2.09 0.24-0.97 0.43-2.3 0.2-1.34 0.2-2.95v-4.96h2.54v4.96q0 1.8-0.23 3.3-0.22 1.5-0.5 2.59-0.27 1.1-0.49 1.74-0.23 0.64-0.26 0.68zm7.21-16.87v6.47h2.51v2.54h-2.51v15.84h-2.55v-24.85zm2.03 0.42h19.28v2.54h-19.28zm0 21.63h19.28v2.54h-19.28zm17.51-5.12q0 1.22-0.85 2.06-0.86 0.84-2.05 0.84h-12.84v-14.32h13.2v-0.74h2.54zm-13.2-8.88v3.06h10.66v-3.06zm10.3 9.24q0.35 0 0.35-0.38v-3.26h-10.65v3.64z"/>
-                    <path fill-rule="evenodd" class="s0" d="m242.22 396.69h13.1v2.54h-13.1v2.64h-2.54v-2.64h-13.1v-2.54h13.1v-2.22h-9.98v-11.97h9.69v-5.6h2.54v1.48h11.75v2.54h-11.75v1.58h7.72v-0.58h2.55v9.65q0 1.23-0.86 2.06-0.85 0.84-2.04 0.84h-7.08zm-9.98-11.65v2.22h17.41v-2.22zm0 6.89h17.06q0.36 0 0.36-0.36v-1.77h-17.42z"/>
-                    <path fill-rule="evenodd" class="s0" d="m266.36 383.14h4.67v2.54h-4.67v16.26h-2.54v-16.26h-0.29q-0.07 1.03-0.23 2.8-0.16 1.77-0.45 3.96-0.29 2.19-0.69 4.62-0.4 2.43-0.98 4.81l-2.45-0.58q0.52-2.22 0.9-4.55 0.39-2.34 0.66-4.43 0.28-2.09 0.44-3.83 0.16-1.74 0.25-2.8h-1.86v-2.54h4.7v-2.96h-4.25v-2.54h5.89q0.51 0 1.19-0.08 0.67-0.08 1.37-0.2 0.69-0.12 1.28-0.25 0.6-0.12 0.92-0.18l0.58 2.44q-0.03 0-0.47 0.12-0.43 0.11-1.07 0.22-0.65 0.11-1.42 0.24-0.77 0.13-1.48 0.2zm2.9 4.08l1.73 14.2-2.51 0.32-1.73-14.19zm7.78 5.4l-5.89-4.28 1.52-2.06 5.86 4.28zm10.58 2.64l-4.15 0.71v5.83h-2.54v-5.38l-8.88 1.58-0.45-2.51 9.33-1.64v-16.77h2.54v16.35l3.74-0.68zm-8.86-8.66l-5.85-4.28 1.48-2.06 5.89 4.28z"/>
-                    <path class="s0" d="m297.9 376.9v3.28h3.35v2.54h-3.35v8.18l2.99-1.16 0.91 2.38-3.9 1.48v5.31q0 1.22-0.84 2.06-0.83 0.84-2.06 0.84h-3.41v-2.55h3.39q0.38 0 0.38-0.35l0.03-4.34-3.54 1.35-0.9-2.38 4.41-1.68v-9.14h-3.77v-2.54h3.77v-3.28zm3.06 22.56q2.25-0.94 4.1-1.93 1.85-1 3.4-2.03l-5.48-3.51 1.36-2.12 6.3 4.02q2.35-1.9 3.62-3.43 1.28-1.53 1.63-2.07v-0.23h-12.87v-2.51h6.4v-3.6h-7.34v-2.55h7.34v-2.6h2.54v2.6h7.34v2.55h-7.34v3.6h3.93v-0.52h2.54v3.96l-0.16 0.29q-0.03 0.07-0.35 0.57-0.32 0.5-0.97 1.28-0.64 0.79-1.66 1.85-1.01 1.07-2.39 2.23l6.92 4.41-1.36 2.12-7.69-4.86q-1.74 1.22-3.92 2.46-2.19 1.24-4.93 2.37z"/>
-                </g>
-            </svg>
-        </div>
+    <div class="row">
+      <label>缩放</label>
+      <input type="range" id="zoom" min="0.3" max="3" step="0.05" value="1">
+      <span class="val" id="zoomVal">100%</span>
     </div>
+  </div>
 
-    <script>
-        // JS代码与上一版完全相同，无需改动
-        const controls = {
-            bgColor: document.getElementById('bg-color'),
-            zoomSlider: document.getElementById('zoom-slider'),
-            colorStop1: document.getElementById('color-stop1'),
-            colorStop2: document.getElementById('color-stop2'),
-            colorStop3: document.getElementById('color-stop3'),
-            gradientDirection: document.getElementById('gradient-direction'),
-            shadowToggle: document.getElementById('shadow-toggle'),
-            shadowDx: document.getElementById('shadow-dx'),
-            shadowDy: document.getElementById('shadow-dy'),
-            shadowBlur: document.getElementById('shadow-blur'),
-            shadowColor: document.getElementById('shadow-color'),
-            shadowOpacity: document.getElementById('shadow-opacity'),
-            exportWidth: document.getElementById('export-width'),
-            exportWithBg: document.getElementById('export-with-bg'),
-        };
-        const valueSpans = {
-            zoom: document.getElementById('zoom-val'),
-            dx: document.getElementById('shadow-dx-val'),
-            dy: document.getElementById('shadow-dy-val'),
-            blur: document.getElementById('shadow-blur-val'),
-            opacity: document.getElementById('shadow-opacity-val'),
-        };
-        const svgElements = {
-            stop1: document.getElementById('stop1'),
-            stop2: document.getElementById('stop2'),
-            stop3: document.getElementById('stop3'),
-            gradient: document.getElementById('logo3DGradient'),
-            shadow: document.getElementById('shadow-effect'),
-            logoGroupStyle: document.querySelector('.s0').style,
-        };
-        const previewArea = document.querySelector('.preview');
-        const svgContainer = document.getElementById('svg-container');
+  <div class="group">
+    <h3>整体位置与大小</h3>
+    <div class="row"><label>显示宽度</label><input type="range" id="dispW" min="400" max="1200" step="10" value="800"><span class="val" id="dispWVal">800</span></div>
+  </div>
 
-        const presets = {
-            dark: {
-                bgColor: '#1a1a1a', color1: '#E0F7FA', color2: '#80DEEA', color3: '#26C6DA',
-                gradientDir: '0,0,100,100', shadow: true, dx: 0, dy: 2, blur: 8,
-                shadowColor: '#80DEEA', shadowOpacity: 0.3
-            },
-            light: {
-                bgColor: '#ffffff', color1: '#5EC9E0', color2: '#45a3b9', color3: '#2A788B',
-                gradientDir: '0,0,100,100', shadow: true, dx: 3, dy: 5, blur: 3,
-                shadowColor: '#000000', shadowOpacity: 0.4
-            },
-            green: {
-                bgColor: '#76B900', color1: '#FFFFFF', color2: '#E0E0E0', color3: '#BDBDBD',
-                gradientDir: '0,0,100,100', shadow: true, dx: 2, dy: 3, blur: 4,
-                shadowColor: '#000000', shadowOpacity: 0.3
-            },
-            cyan: {
-                bgColor: '#ffffff', color1: '#3b82f6', color2: '#06b6d4', color3: '#22c55e',
-                gradientDir: '0,0,100,100', shadow: true, dx: 3, dy: 5, blur: 3,
-                shadowColor: '#000000', shadowOpacity: 0.3
-            }
-        };
+  <div class="group">
+    <h3>ZYHZ Logo 颜色</h3>
+    <div class="row"><label>图层可见</label>
+      <select id="zyhzLayer">
+        <option value="colored" selected>彩色层</option>
+        <option value="black">黑色层</option>
+        <option value="both">双层叠加</option>
+      </select>
+    </div>
+    <div class="row"><label>彩色层颜色</label>
+      <select id="zyhzColor">
+        <option value="#45a3b9" selected>原始青色 #45a3b9</option>
+        <option value="#5EC9E0">亮青色 #5EC9E0</option>
+        <option value="#2A788B">深青色 #2A788B</option>
+        <option value="#76B900">NVIDIA 绿 #76B900</option>
+        <option value="#000000">黑色</option>
+        <option value="custom">自定义...</option>
+      </select>
+    </div>
+    <div class="row" id="customColorRow" style="display:none">
+      <label>自定义颜色</label>
+      <input type="color" id="zyhzCustomColor" value="#45a3b9">
+    </div>
+  </div>
 
-        function updateAllVisuals() {
-            previewArea.style.backgroundColor = controls.bgColor.value;
-            const zoomValue = controls.zoomSlider.value;
-            svgContainer.style.transform = `scale(${zoomValue})`;
-            valueSpans.zoom.textContent = Math.round(zoomValue * 100);
+  <button class="btn btn-primary" id="btnCode">生成 SVG 代码</button>
+  <div class="group" style="margin-top:12px;">
+    <h3>导出 PNG</h3>
+    <div class="row">
+      <label>尺寸</label>
+      <select id="pngSize">
+        <option value="1200">1200px (网页用)</option>
+        <option value="2400" selected>2400px (高清)</option>
+        <option value="4800">4800px (印刷)</option>
+        <option value="7200">7200px (大幅面)</option>
+        <option value="9600">9600px (超大幅面)</option>
+      </select>
+    </div>
+    <div class="row">
+      <label>透明背景</label>
+      <input type="checkbox" id="pngTransparent" checked>
+    </div>
+    <button class="btn btn-secondary" id="btnPng">导出 PNG</button>
+  </div>
+  <div class="output" id="outputWrap">
+    <textarea id="svgCode" readonly></textarea>
+  </div>
+</div>
 
-            svgElements.stop1.style.stopColor = controls.colorStop1.value;
-            svgElements.stop2.style.stopColor = controls.colorStop2.value;
-            svgElements.stop3.style.stopColor = controls.colorStop3.value;
-            const [x1, y1, x2, y2] = controls.gradientDirection.value.split(',');
-            svgElements.gradient.setAttribute('x1', `${x1}%`);
-            svgElements.gradient.setAttribute('y1', `${y1}%`);
-            svgElements.gradient.setAttribute('x2', `${x2}%`);
-            svgElements.gradient.setAttribute('y2', `${y2}%`);
-            
-            svgElements.logoGroupStyle.filter = controls.shadowToggle.checked ? 'url(#dropShadowFilter)' : 'none';
-            
-            const dx = controls.shadowDx.value;
-            const dy = controls.shadowDy.value;
-            const blur = controls.shadowBlur.value;
-            const opacity = controls.shadowOpacity.value;
-            svgElements.shadow.setAttribute('dx', dx);
-            svgElements.shadow.setAttribute('dy', dy);
-            svgElements.shadow.setAttribute('stdDeviation', blur);
-            svgElements.shadow.setAttribute('flood-color', controls.shadowColor.value);
-            svgElements.shadow.setAttribute('flood-opacity', opacity);
-            valueSpans.dx.textContent = dx;
-            valueSpans.dy.textContent = dy;
-            valueSpans.blur.textContent = blur;
-            valueSpans.opacity.textContent = opacity;
-        }
+<div class="preview light" id="previewArea">
+  <div id="logoContainer">
+    <svg id="logoSvg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+         viewBox="0 0 1066.6667 365.33334" width="800" height="274">
 
-        function applyPreset(presetName) {
-            const preset = presets[presetName];
-            if (!preset) return;
-            Object.assign(controls.bgColor, { value: preset.bgColor });
-            Object.assign(controls.colorStop1, { value: preset.color1 });
-            Object.assign(controls.colorStop2, { value: preset.color2 });
-            Object.assign(controls.colorStop3, { value: preset.color3 });
-            Object.assign(controls.gradientDirection, { value: preset.gradientDir });
-            Object.assign(controls.shadowToggle, { checked: preset.shadow });
-            Object.assign(controls.shadowDx, { value: preset.dx });
-            Object.assign(controls.shadowDy, { value: preset.dy });
-            Object.assign(controls.shadowBlur, { value: preset.blur });
-            Object.assign(controls.shadowColor, { value: preset.shadowColor });
-            Object.assign(controls.shadowOpacity, { value: preset.shadowOpacity });
-            updateAllVisuals();
-        }
+      <!-- 图层 1: NVIDIA Elite Partner Badge -->
+      <g id="layer1">
+        <path d="M 371.363,65.993 H 734.766 V 207.618 H 371.363 Z"
+          style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"
+          transform="matrix(1.3333333,0,0,-1.3333333,0,365.33333)" />
+        <path id="badgeContent"
+          d="M 0,0 C -1.327,0 -2.358,-0.299 -3.096,-0.898 -3.834,-1.497 -4.407,-2.3 -4.813,-3.305 v 3.113 h -3.113 v -16.43 h 3.531 v 8.28 c 0,1.219 0.207,2.197 0.625,2.936 0.416,0.738 0.963,1.278 1.637,1.621 0.674,0.341 1.394,0.513 2.166,0.513 H 1.67 L 1.67,0 Z M -15.016,-6.93 H -23.2 c 0.129,1.412 0.55,2.481 1.268,3.209 0.717,0.726 1.663,1.09 2.84,1.09 h 0.256 c 1.198,0 2.134,-0.348 2.808,-1.043 0.674,-0.695 1.012,-1.706 1.012,-3.031 z m -3.787,7.188 h -0.289 c -2.332,0 -4.183,-0.723 -5.551,-2.166 -1.37,-1.446 -2.055,-3.439 -2.055,-5.985 v -1.058 c 0,-2.59 0.669,-4.585 2.006,-5.985 1.337,-1.402 3.204,-2.103 5.6,-2.103 h 0.48 c 1.52,0 2.835,0.283 3.948,0.851 1.112,0.566 1.957,1.343 2.535,2.326 l -2.567,1.668 c -0.385,-0.663 -0.893,-1.159 -1.525,-1.492 -0.63,-0.331 -1.428,-0.496 -2.391,-0.496 h -0.48 c -1.263,0 -2.252,0.395 -2.969,1.186 -0.716,0.792 -1.106,1.99 -1.17,3.595 h 11.647 v 1.957 c 0,2.353 -0.646,4.225 -1.942,5.616 -1.294,1.389 -3.052,2.086 -5.277,2.086 m -17.585,0 h -0.322 c -1.219,0 -2.272,-0.263 -3.16,-0.787 -0.888,-0.524 -1.588,-1.235 -2.101,-2.133 v 2.47 h -3.114 v -16.43 h 3.531 v 9.05 c 0,1.091 0.192,1.99 0.577,2.695 0.384,0.707 0.887,1.229 1.508,1.572 0.621,0.343 1.272,0.514 1.958,0.514 h 0.225 c 1.175,0 2.053,-0.359 2.631,-1.074 0.578,-0.718 0.865,-1.75 0.865,-3.098 v -9.659 h 3.532 v 10.141 c 0,2.182 -0.558,3.85 -1.67,5.006 -1.113,1.155 -2.598,1.733 -4.46,1.733 m -12.804,-3.37 0.418,2.92 h -5.36 v 4.846 h -3.529 v -4.846 h -3.467 v -2.92 h 3.467 v -8.279 c 0,-1.732 0.436,-3.064 1.314,-3.994 0.878,-0.932 2.354,-1.397 4.43,-1.397 h 3.145 v 2.985 h -2.793 c -0.855,0 -1.498,0.197 -1.924,0.593 -0.429,0.396 -0.643,1.054 -0.643,1.973 v 8.119 z m -18.595,2.214 c -0.738,-0.599 -1.311,-1.402 -1.717,-2.407 v 3.113 h -3.113 v -16.43 h 3.531 v 8.28 c 0,1.219 0.208,2.197 0.625,2.936 0.417,0.738 0.963,1.278 1.637,1.621 0.674,0.341 1.395,0.513 2.166,0.513 h 1.637 V 0 h -1.67 c -1.327,0 -2.357,-0.299 -3.096,-0.898 m -12.819,-9.016 c 0,-1.306 -0.374,-2.349 -1.123,-3.129 -0.748,-0.782 -1.755,-1.172 -3.017,-1.172 h -0.32 c -0.92,0 -1.632,0.209 -2.134,0.627 -0.503,0.416 -0.753,0.989 -0.753,1.717 0,0.726 0.217,1.26 0.656,1.603 0.439,0.341 1.214,0.589 2.326,0.738 l 4.365,0.641 z M -83.75,0.258 h -0.482 c -1.604,0 -2.968,-0.328 -4.091,-0.979 -1.123,-0.653 -1.93,-1.546 -2.423,-2.68 l 2.728,-1.412 c 0.385,0.791 0.881,1.353 1.492,1.684 0.61,0.333 1.374,0.498 2.294,0.498 h 0.353 c 2.182,0 3.273,-1.219 3.273,-3.658 v -0.129 l -5.808,-0.77 c -1.627,-0.214 -2.861,-0.748 -3.706,-1.603 -0.845,-0.857 -1.267,-1.957 -1.267,-3.305 0,-1.562 0.481,-2.777 1.443,-3.643 0.963,-0.867 2.321,-1.3 4.075,-1.3 h 0.224 c 1.221,0 2.311,0.263 3.274,0.787 0.963,0.524 1.691,1.234 2.182,2.133 v -2.503 h 3.113 v 10.397 c 0,2.118 -0.568,3.728 -1.701,4.83 -1.134,1.101 -2.791,1.653 -4.973,1.653 m -12.612,-2.119 c 0,-1.284 -0.423,-2.226 -1.267,-2.823 -0.845,-0.599 -1.973,-0.898 -3.385,-0.898 h -4.428 v 8.246 h 4.428 c 1.412,0 2.54,-0.299 3.385,-0.898 0.844,-0.599 1.267,-1.531 1.267,-2.792 z m 1.477,5.857 c -1.477,1.229 -3.488,1.844 -6.033,1.844 h -8.215 v -22.462 h 3.691 v 7.895 h 4.524 c 2.545,0 4.556,0.604 6.033,1.813 1.476,1.208 2.213,2.925 2.213,5.15 v 0.674 c 0,2.161 -0.737,3.855 -2.213,5.086 m 45.437,21.168 h -8.184 c 0.129,1.412 0.55,2.481 1.268,3.209 0.717,0.726 1.662,1.09 2.84,1.09 h 0.255 c 1.198,0 2.135,-0.348 2.809,-1.043 0.674,-0.695 1.012,-1.706 1.012,-3.032 z m -3.787,7.188 h -0.289 c -2.332,0 -4.183,-0.723 -5.551,-2.167 -1.371,-1.445 -2.055,-3.438 -2.055,-5.984 v -1.059 c 0,-2.589 0.668,-4.584 2.006,-5.984 1.337,-1.402 3.203,-2.104 5.6,-2.104 h 0.48 c 1.52,0 2.835,0.284 3.947,0.852 1.113,0.566 1.958,1.342 2.536,2.326 l -2.567,1.668 c -0.385,-0.663 -0.894,-1.159 -1.525,-1.492 -0.631,-0.331 -1.428,-0.496 -2.391,-0.496 h -0.48 c -1.263,0 -2.252,0.395 -2.969,1.186 -0.716,0.792 -1.106,1.99 -1.17,3.595 h 11.646 v 1.957 c 0,2.353 -0.646,4.224 -1.941,5.616 -1.294,1.389 -3.052,2.086 -5.277,2.086 M -72.617,20.703 c 0,-1.733 0.437,-3.065 1.315,-3.994 0.877,-0.932 2.354,-1.397 4.43,-1.397 h 3.144 v 2.985 h -2.793 c -0.855,0 -1.497,0.196 -1.924,0.593 -0.428,0.396 -0.642,1.054 -0.642,1.973 v 8.119 h 4.941 l 0.418,2.92 h -5.359 v 4.846 h -3.53 v -4.846 h -3.466 v -2.92 h 3.466 z m -6.064,17.809 h -3.658 v -3.69 h 3.658 z m -0.063,-6.61 h -3.531 v -16.43 h 3.531 z m -8.184,6.995 h -3.531 V 15.473 h 3.531 z m -7.605,-20.311 h -10.909 v 6.705 h 8.278 l 0.449,3.113 h -8.727 v 6.418 h 10.748 v 3.112 h -14.439 V 15.472 h 14.6 z m -42.493,-67.579 h -1.802 V 70.851 h 1.802 z M 51.598,-59.884 H -311.805 V 81.741 H 51.598 Z m -367.001,-3.597 H 55.195 V 85.338 h -370.598 z"
+          style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+          transform="matrix(1.3333333,0,0,-1.3333333,910.89173,197.4972)" />
+        <!-- NVIDIA Logo (main) -->
+        <path d="m 0,0 c 0,0 8.306,12.256 24.89,13.523 v 4.445 C 6.521,16.494 -9.386,0.937 -9.386,0.937 c 0,0 9.009,-26.046 34.276,-28.43 v 4.726 C 6.349,-20.434 0,0 0,0 m 24.89,-13.368 v -4.329 C 10.876,-15.198 6.987,-0.631 6.987,-0.631 c 0,0 6.728,7.455 17.903,8.663 v -4.75 c -0.009,0 -0.015,0.003 -0.022,0.003 -5.864,0.704 -10.446,-4.775 -10.446,-4.775 0,0 2.567,-9.224 10.468,-11.878 m 0,39.538 v -8.202 c 0.539,0.043 1.078,0.077 1.62,0.097 20.885,0.703 34.491,-17.128 34.491,-17.128 0,0 -15.629,-19.004 -31.91,-19.004 -1.492,0 -2.889,0.138 -4.201,0.37 v -5.07 c 1.122,-0.142 2.285,-0.226 3.498,-0.226 15.152,0 26.109,7.737 36.72,16.895 1.757,-1.409 8.96,-4.835 10.441,-6.337 C 65.46,-20.88 41.95,-27.687 28.621,-27.687 c -1.284,0 -2.519,0.077 -3.731,0.194 v -7.125 H 82.478 V 26.17 Z m 0,-18.138 v 5.491 c 0.533,0.037 1.071,0.066 1.62,0.083 15.018,0.472 24.871,-12.904 24.871,-12.904 0,0 -10.642,-14.78 -22.052,-14.78 -1.643,0 -3.113,0.265 -4.439,0.71 v 16.65 c 5.846,-0.706 7.022,-3.288 10.538,-9.147 l 7.817,6.591 c 0,0 -5.706,7.484 -15.326,7.484 -1.047,0 -2.047,-0.074 -3.029,-0.178"
+          style="fill:#76b900;fill-opacity:1;fill-rule:nonzero;stroke:none"
+          transform="matrix(1.3333333,0,0,-1.3333333,548.9284,154.7968)" />
+        <!-- NVIDIA wordmark (NVIDIA text) -->
+        <path d="m 0,0 3.91,-10.7 h -7.944 z m -4.19,4.167 -9.014,-22.84 h 6.365 l 1.426,4.037 H 5.254 l 1.35,-4.037 h 6.911 L 4.433,4.169 Z m -18.096,-22.848 h 6.456 V 4.174 l -6.457,10e-4 z m -44.833,22.856 -5.387,-18.114 -5.163,18.113 -6.968,10e-4 7.373,-22.856 h 9.303 l 7.43,22.856 z m 26.104,-4.977 h 2.775 c 4.026,0 6.63,-1.808 6.63,-6.499 0,-4.693 -2.604,-6.501 -6.63,-6.501 h -2.775 z m -6.404,4.977 v -22.856 h 10.47 c 5.579,0 7.399,0.928 9.368,3.008 1.392,1.46 2.291,4.666 2.291,8.169 0,3.213 -0.761,6.079 -2.089,7.863 -2.391,3.192 -5.837,3.816 -10.98,3.816 z m -61.173,0.032 v -22.888 h 6.513 v 17.379 l 5.045,-0.002 c 1.671,0 2.861,-0.415 3.667,-1.275 1.021,-1.088 1.437,-2.842 1.437,-6.052 v -10.05 l 6.309,0.002 10e-4,12.644 c 0,9.025 -5.752,10.242 -11.38,10.242 h -11.592 m 50.78,-0.031 0.002,-22.857 h 6.455 V 4.175 Z"
+          style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+          transform="matrix(1.3333333,0,0,-1.3333333,670.57653,221.04067)" />
+      </g>
 
-        Object.values(controls).forEach(control => {
-            control.addEventListener('input', updateAllVisuals);
-            control.addEventListener('change', updateAllVisuals);
-        });
+      <!-- 图层 3: ZYHZ Logo 黑色底层 -->
+      <g id="layerBlack">
+        <path d="m 0,0 c 1.974,2.465 3.973,4.91 5.916,7.399 7.761,9.94 15.504,19.894 23.252,29.844 0.238,0.306 0.455,0.629 0.85,1.176 H 0.017 c 0.714,0.924 1.204,1.564 1.699,2.199 3.515,4.502 7.047,8.991 10.53,13.517 0.552,0.718 1.148,0.923 2.011,0.922 17.016,-0.001 34.033,0.011 51.049,0.067 1.434,0.004 2.447,-0.276 3.486,-1.451 2.677,-3.026 5.602,-5.832 8.418,-8.736 2.597,-2.678 5.181,-5.369 7.878,-8.166 -3.22,-3.804 -6.383,-7.539 -9.656,-11.405 -1.034,1.085 -1.955,2.066 -2.891,3.033 -3.026,3.127 -6.043,6.263 -9.105,9.355 -0.353,0.356 -0.96,0.635 -1.456,0.645 -3.472,0.074 -6.946,0.09 -10.418,0.058 -0.45,-0.004 -1.049,-0.268 -1.321,-0.614 C 44.73,30.831 39.256,23.79 33.779,16.752 33.734,16.694 33.747,16.591 33.708,16.366 H 63.52 C 62.812,15.445 62.297,14.78 61.786,14.111 58.348,9.603 54.928,5.082 51.448,0.608 51.109,0.172 50.402,-0.222 49.865,-0.224 33.243,-0.269 16.622,-0.262 0,-0.264 Z"
+          style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+          transform="matrix(1.3333333,0,0,-1.3333333,82.257733,225.96947)" />
+        <path d="m 0,0 c -1.488,-1.831 -3.01,-3.636 -4.455,-5.5 -2.476,-3.193 -4.874,-6.448 -7.384,-9.615 -0.393,-0.496 -1.202,-0.936 -1.82,-0.938 -16.178,-0.052 -32.357,-0.043 -48.535,-0.042 -0.294,0 -0.589,0.03 -1.11,0.058 1.734,2.251 3.343,4.36 4.973,6.453 5.558,7.142 11.125,14.278 16.687,21.417 6.883,8.836 13.77,17.668 20.635,26.517 0.513,0.662 1.067,0.89 1.896,0.885 5.803,-0.035 11.606,-0.021 17.41,-0.014 0.568,0.001 1.135,0.063 1.703,0.097 L 0,38.79 C -2.346,35.84 -4.711,32.904 -7.033,29.936 -13.202,22.05 -19.356,14.152 -25.509,6.253 -26.928,4.432 -28.317,2.589 -29.777,0.681 -29.498,0.597 -29.383,0.533 -29.269,0.532 -19.513,0.528 -9.756,0.528 0,0.528 Z"
+          style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+          transform="matrix(1.3333333,0,0,-1.3333333,405.5988,204.85907)" />
+        <path d="m 0,0 h -16.528 v 1.416 c 0,11.168 -0.012,22.336 0.028,33.504 0.003,0.68 0.24,1.504 0.664,2.016 4.853,5.856 9.767,11.662 14.649,17.494 0.247,0.296 0.349,0.713 0.518,1.074 0.196,-0.123 0.391,-0.246 0.587,-0.369 0.027,-0.445 0.078,-0.89 0.079,-1.336 0.005,-5.54 0.033,-11.08 -0.022,-16.62 -0.011,-1.113 0.331,-1.394 1.412,-1.39 10.332,0.038 20.665,0.04 30.998,-0.002 1.131,-0.005 1.383,0.362 1.373,1.426 -0.049,5.452 -0.023,10.904 -0.023,16.357 0,0.478 0,0.955 0,1.559 h 57.673 c -1.347,-1.772 -2.563,-3.395 -3.804,-4.998 -2.691,-3.472 -5.419,-6.916 -8.075,-10.415 -0.592,-0.781 -1.195,-1.089 -2.186,-1.084 -8.661,0.041 -17.322,0.024 -25.984,0.02 -0.342,0 -0.684,-0.043 -1.176,-0.076 V 0.005 H 33.735 v 1.479 c 0,5.497 -0.021,10.993 0.02,16.489 0.008,1.009 -0.249,1.386 -1.322,1.382 -10.377,-0.034 -20.754,-0.034 -31.131,0 C 0.234,19.359 -0.028,18.989 -0.02,17.978 0.022,12.482 0,6.986 0,1.49 Z"
+          style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+          transform="matrix(1.3333333,0,0,-1.3333333,252.2052,226.19733)" />
+        <path d="m 0,0 c -2.463,-2.908 -4.751,-5.623 -7.053,-8.325 -7.605,-8.929 -15.223,-17.847 -22.802,-26.797 -0.349,-0.413 -0.522,-1.099 -0.526,-1.659 -0.04,-5.582 -0.028,-11.165 -0.031,-16.748 0,-0.476 0,-0.953 0,-1.519 -0.422,-0.051 -0.755,-0.124 -1.088,-0.125 -4.747,-0.008 -9.494,0.019 -14.241,-0.026 -0.972,-0.009 -1.276,0.252 -1.271,1.255 0.042,7.341 0.013,14.682 0.043,22.022 0.002,0.474 0.184,1.05 0.485,1.406 8.462,9.985 16.944,19.953 25.453,29.899 0.324,0.378 0.94,0.715 1.423,0.718 6.286,0.048 12.572,0.033 18.857,0.028 C -0.59,0.129 -0.429,0.076 0,0"
+          style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+          transform="matrix(1.3333333,0,0,-1.3333333,248.0044,152.73867)" />
+        <path d="m 0,0 c -1.531,0 -2.77,-0.093 -3.983,0.044 -0.513,0.058 -1.078,0.51 -1.439,0.937 -8.414,9.948 -17.293,19.456 -26.912,28.252 -8.191,7.49 -16.698,14.579 -26.444,20.013 -3.544,1.976 -7.201,3.758 -11.296,4.204 -1.401,0.152 -2.934,0.043 -4.272,-0.375 -2.485,-0.776 -3.408,-2.894 -3.682,-5.303 -0.416,-3.667 0.42,-7.177 1.525,-10.626 2.961,-9.242 7.68,-17.626 12.709,-25.854 0.871,-1.425 1.778,-2.827 2.663,-4.244 0.041,-0.067 0.028,-0.169 0.086,-0.585 -0.476,0.306 -0.868,0.429 -1.052,0.695 -8.884,12.862 -17.4,25.947 -22.629,40.814 -1.154,3.282 -1.945,6.8 -2.207,10.262 -0.514,6.802 3.071,9.675 9.764,8.216 5.369,-1.171 10.091,-3.826 14.679,-6.714 C -52.06,53.171 -42.761,45.18 -33.818,36.758 -22.052,25.677 -11.167,13.776 -0.946,1.263 -0.678,0.935 -0.437,0.585 0,0"
+          style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+          transform="matrix(1.3333333,0,0,-1.3333333,281.9956,173.28413)" />
+        <path d="m 0,0 c 1.54,0 2.893,0.031 4.241,-0.027 0.268,-0.011 0.628,-0.307 0.766,-0.567 4.122,-7.731 8.092,-15.537 9.627,-24.277 0.344,-1.961 0.384,-4.043 0.15,-6.021 -0.431,-3.655 -2.802,-5.773 -6.477,-5.511 -2.585,0.185 -5.226,0.815 -7.651,1.745 -6.999,2.68 -13.106,6.943 -19.062,11.404 -2.984,2.236 -5.874,4.597 -8.807,6.902 0.069,0.1 0.138,0.199 0.207,0.299 0.358,-0.258 0.723,-0.505 1.07,-0.776 5.242,-4.09 10.606,-8.022 16.643,-10.856 2.72,-1.276 5.666,-2.088 8.544,-3.002 0.81,-0.258 1.746,-0.208 2.617,-0.166 2.983,0.145 4.94,1.761 5.591,4.677 0.813,3.644 0.187,7.236 -1.03,10.635 C 4.743,-10.836 2.698,-6.26 0.797,-1.632 0.586,-1.12 0.311,-0.634 0,0"
+          style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+          transform="matrix(1.3333333,0,0,-1.3333333,315.48013,230.8908)" />
+        <path d="M 0,0 C 5.645,0.478 8.413,3.985 9.767,9.122 11.157,3.871 13.998,0.339 19.823,-0.011 13.973,-0.346 11.109,-3.913 9.758,-9.234 8.465,-4.003 5.65,-0.501 0,0"
+          style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+          transform="matrix(1.3333333,0,0,-1.3333333,254.8424,229.73707)" />
+        <path d="M 0,0 H 6.511 V -1.398 H -8.918 V 0 h 2.69 V 7.095 H -4.83 V 0 h 3.432 v 10.227 h -6.706 v 1.398 H 5.697 V 10.227 H 0 V 5.981 H 4.636 V 4.583 H 0 Z"
+          style="fill:#343434;fill-opacity:1;fill-rule:nonzero;stroke:none"
+          transform="matrix(1.3333333,0,0,-1.3333333,131.484,254.4468)" />
+        <path d="M 0,0 H 5.344 C 5.485,0 5.556,0.065 5.556,0.195 V 5.043 H 0 Z m 0,6.441 h 5.556 v 3.84 H 0 Z M 6.954,0.195 C 6.954,-0.253 6.8,-0.631 6.493,-0.938 6.185,-1.244 5.807,-1.398 5.358,-1.398 h -6.756 v 13.076 h 6.954 v 0.265 H 6.954 Z M -2.318,9.413 -3.557,6.618 C -3.45,6.441 -3.324,6.202 -3.176,5.901 -3.029,5.6 -2.893,5.229 -2.769,4.786 -2.645,4.344 -2.539,3.831 -2.451,3.247 -2.362,2.663 -2.318,2.005 -2.318,1.274 V 0.584 H -5.91 v 1.398 h 2.194 c -0.035,0.696 -0.112,1.297 -0.23,1.804 -0.118,0.508 -0.245,0.929 -0.38,1.266 -0.136,0.336 -0.257,0.586 -0.363,0.752 -0.106,0.165 -0.165,0.259 -0.177,0.283 l -0.301,0.336 0.177,0.389 1.292,2.902 v 0.761 H -6.299 V -1.504 h -1.398 v 13.377 h 5.379 z"
+          style="fill:#343434;fill-opacity:1;fill-rule:nonzero;stroke:none"
+          transform="matrix(1.3333333,0,0,-1.3333333,153.9672,254.4704)" />
+        <path d="M 0,0 C 0.13,0 0.195,0.07 0.195,0.21 V 1.999 H -5.662 V 0 Z M -5.662,3.397 H 0.195 V 5.078 H -5.662 Z M 1.592,0.198 C 1.592,-0.251 1.436,-0.629 1.124,-0.937 0.811,-1.244 0.436,-1.398 0,-1.398 H -7.06 V 6.476 H 0.195 V 6.883 H 1.592 Z M -8.033,-2.619 H 2.566 V -4.017 H -8.033 Z m 0,11.891 H 2.566 V 7.874 H -8.033 Z m -1.115,0.23 V 5.945 h 1.38 V 4.547 h -1.38 v -8.705 h -1.398 V 9.502 Z M -13.111,0.23 c 0.141,0.413 0.256,0.796 0.345,1.15 0.088,0.354 0.168,0.776 0.239,1.265 0.07,0.49 0.106,1.029 0.106,1.619 v 2.725 h 1.398 V 4.264 c 0,-0.66 -0.042,-1.265 -0.124,-1.813 -0.083,-0.549 -0.174,-1.024 -0.274,-1.425 -0.101,-0.401 -0.192,-0.719 -0.275,-0.955 -0.082,-0.236 -0.13,-0.36 -0.141,-0.372 z"
+          style="fill:#343434;fill-opacity:1;fill-rule:nonzero;stroke:none"
+          transform="matrix(1.3333333,0,0,-1.3333333,183.976,251.14387)" />
+        <path d="M 0,0 H 9.378 C 9.507,0 9.572,0.065 9.572,0.195 V 1.168 H 0 Z M 0,2.566 H 9.572 V 3.787 H 0 Z m 5.485,-5.185 h 7.202 V -4.017 H 5.485 v -1.45 H 4.087 v 1.45 h -7.201 v 1.398 h 7.201 v 1.221 H -1.398 V 5.184 H 3.928 V 8.263 H 5.326 V 7.449 h 6.458 V 6.051 H 5.326 V 5.184 H 9.572 V 5.503 H 10.97 V 0.195 c 0,-0.449 -0.156,-0.826 -0.469,-1.133 -0.312,-0.307 -0.687,-0.46 -1.123,-0.46 H 5.485 Z"
+          style="fill:#343434;fill-opacity:1;fill-rule:nonzero;stroke:none"
+          transform="matrix(1.3333333,0,0,-1.3333333,194.26213,249.39813)" />
+        <path d="M 0,0 -3.22,2.353 -2.406,3.486 0.832,1.132 Z M 4.866,-4.76 2.583,-5.149 V -8.352 H 1.186 v 2.955 l -4.884,-0.867 -0.248,1.38 5.132,0.903 v 9.218 h 1.397 v -8.988 l 2.053,0.371 z m -5.821,1.451 -3.238,2.354 0.831,1.132 3.22,-2.353 z m -4.282,2.973 0.955,-7.803 -1.38,-0.177 -0.956,7.803 z M -6.83,1.911 h 2.566 V 0.513 H -6.83 v -8.935 h -1.398 v 8.935 h -0.159 c -0.024,-0.378 -0.065,-0.891 -0.124,-1.539 -0.059,-0.649 -0.141,-1.375 -0.247,-2.177 -0.107,-0.802 -0.234,-1.648 -0.381,-2.539 -0.148,-0.89 -0.327,-1.772 -0.54,-2.645 l -1.344,0.319 c 0.188,0.813 0.354,1.648 0.495,2.503 0.142,0.855 0.262,1.666 0.363,2.433 0.1,0.767 0.179,1.469 0.239,2.106 0.059,0.637 0.106,1.15 0.141,1.539 h -1.026 v 1.398 h 2.583 v 1.628 h -2.335 v 1.398 h 3.238 c 0.188,0 0.407,0.014 0.654,0.042 0.248,0.028 0.499,0.065 0.752,0.11 0.254,0.045 0.49,0.09 0.708,0.135 0.218,0.045 0.386,0.079 0.504,0.102 L -4.388,3.981 C -4.4,3.981 -4.485,3.96 -4.645,3.919 -4.804,3.878 -5.002,3.837 -5.237,3.795 -5.474,3.754 -5.733,3.71 -6.016,3.663 -6.299,3.615 -6.571,3.58 -6.83,3.557 Z"
+          style="fill:#343434;fill-opacity:1;fill-rule:nonzero;stroke:none"
+          transform="matrix(1.3333333,0,0,-1.3333333,228.37613,245.50547)" />
+        <path d="M 0,0 C 0.826,0.342 1.578,0.696 2.256,1.062 2.934,1.427 3.557,1.799 4.123,2.176 L 1.115,4.105 1.858,5.273 5.326,3.061 C 6.187,3.757 6.85,4.385 7.316,4.946 7.782,5.506 8.08,5.886 8.21,6.087 V 6.211 H 1.132 v 1.38 H 4.654 V 9.573 H 0.619 v 1.397 h 4.035 v 1.434 H 6.051 V 10.97 h 4.035 V 9.573 H 6.051 V 7.591 H 8.21 V 7.874 H 9.608 V 5.698 L 9.519,5.538 C 9.507,5.514 9.443,5.411 9.325,5.229 9.207,5.046 9.03,4.81 8.794,4.521 8.558,4.232 8.254,3.893 7.883,3.503 7.511,3.114 7.072,2.707 6.564,2.283 L 10.369,-0.142 9.626,-1.309 5.397,1.363 C 4.76,0.914 4.04,0.463 3.238,0.009 2.436,-0.445 1.533,-0.878 0.531,-1.292 Z m -1.681,12.404 v -1.805 h 1.84 V 9.201 h -1.84 V 4.707 L -0.035,5.344 0.46,4.034 -1.681,3.22 V 0.301 c 0,-0.448 -0.153,-0.826 -0.46,-1.132 -0.307,-0.307 -0.684,-0.461 -1.132,-0.461 h -1.876 v 1.398 h 1.86 c 0.14,0 0.21,0.065 0.21,0.195 l 0.018,2.389 -1.946,-0.744 -0.496,1.31 2.424,0.92 v 5.025 h -2.07 v 1.398 h 2.07 v 1.805 z"
+          style="fill:#343434;fill-opacity:1;fill-rule:nonzero;stroke:none"
+          transform="matrix(1.3333333,0,0,-1.3333333,244.63093,254.91867)" />
+      </g>
 
-        document.querySelectorAll('.preset-btn').forEach(button => {
-            button.addEventListener('click', (e) => applyPreset(e.target.dataset.preset));
-        });
-        
-        const generateBtn = document.getElementById('generate-btn');
-        const outputContainer = document.getElementById('output-container');
-        const svgOutput = document.getElementById('svg-output');
-        const logoSvg = document.getElementById('logo-svg');
+      <!-- 图层 4: ZYHZ Logo 彩色层 -->
+      <g id="layerColored" class="zyhz-colored">
+        <path d="m 0,0 c 1.973,2.464 3.972,4.908 5.914,7.396 7.758,9.936 15.498,19.887 23.243,29.833 0.238,0.306 0.455,0.629 0.85,1.176 H 0.017 c 0.713,0.924 1.203,1.563 1.699,2.198 3.513,4.5 7.044,8.987 10.525,13.512 0.552,0.718 1.148,0.922 2.011,0.922 17.01,-0.002 34.02,0.01 51.03,0.066 1.434,0.005 2.446,-0.275 3.485,-1.449 2.676,-3.025 5.6,-5.83 8.414,-8.733 2.597,-2.678 5.18,-5.368 7.876,-8.163 -3.22,-3.803 -6.381,-7.536 -9.653,-11.401 -1.033,1.084 -1.954,2.065 -2.889,3.031 -3.025,3.127 -6.041,6.261 -9.102,9.352 -0.353,0.356 -0.96,0.635 -1.456,0.645 -3.47,0.074 -6.943,0.09 -10.414,0.058 -0.45,-0.004 -1.048,-0.268 -1.32,-0.614 C 44.714,30.82 39.242,23.781 33.767,16.746 33.722,16.688 33.734,16.585 33.695,16.36 H 63.497 C 62.789,15.44 62.274,14.774 61.764,14.105 58.327,9.6 54.908,5.08 51.429,0.608 51.09,0.172 50.384,-0.222 49.847,-0.224 33.231,-0.269 16.616,-0.262 0,-0.264 0,-0.176 0,-0.088 0,0"
+          style="fill:#45a3b9;fill-opacity:1;fill-rule:nonzero;stroke:none"
+          transform="matrix(1.3333333,0,0,-1.3333333,82.1108,226.12973)" />
+        <path d="m 0,0 c -1.487,-1.831 -3.009,-3.634 -4.454,-5.498 -2.475,-3.192 -4.872,-6.446 -7.381,-9.612 -0.392,-0.495 -1.201,-0.935 -1.819,-0.937 -16.172,-0.052 -32.345,-0.043 -48.517,-0.042 -0.294,0 -0.589,0.03 -1.109,0.058 1.732,2.25 3.341,4.358 4.97,6.451 5.557,7.139 11.121,14.272 16.681,21.409 6.881,8.832 13.766,17.661 20.628,26.507 0.513,0.661 1.066,0.89 1.895,0.885 5.801,-0.035 11.602,-0.021 17.403,-0.014 0.568,0 1.135,0.063 1.703,0.097 L 0,38.776 C -2.345,35.827 -4.709,32.892 -7.03,29.925 -13.197,22.042 -19.349,14.147 -25.5,6.251 -26.918,4.43 -28.307,2.588 -29.767,0.68 -29.487,0.597 -29.373,0.532 -29.258,0.532 -19.505,0.527 -9.753,0.528 0,0.528 Z"
+          style="fill:#45a3b9;fill-opacity:1;fill-rule:nonzero;stroke:none"
+          transform="matrix(1.3333333,0,0,-1.3333333,405.33333,205.02707)" />
+        <path d="m 0,0 h -16.522 v 1.415 c 0,11.164 -0.012,22.329 0.029,33.493 0.002,0.679 0.239,1.503 0.662,2.014 4.852,5.854 9.764,11.658 14.644,17.489 0.247,0.295 0.349,0.712 0.519,1.073 0.195,-0.123 0.39,-0.246 0.586,-0.369 0.027,-0.445 0.078,-0.89 0.079,-1.335 0.005,-5.538 0.033,-11.077 -0.022,-16.614 -0.011,-1.114 0.33,-1.394 1.411,-1.39 10.329,0.037 20.658,0.04 30.987,-0.002 1.13,-0.005 1.383,0.362 1.373,1.425 -0.049,5.45 -0.023,10.901 -0.023,16.351 0,0.478 0,0.955 0,1.559 h 57.652 c -1.347,-1.772 -2.562,-3.394 -3.803,-4.996 -2.69,-3.472 -5.417,-6.914 -8.072,-10.412 -0.592,-0.78 -1.195,-1.088 -2.186,-1.084 -8.657,0.042 -17.315,0.025 -25.973,0.021 -0.343,0 -0.685,-0.043 -1.176,-0.076 V 0.005 H 33.723 v 1.479 c 0,5.494 -0.021,10.988 0.02,16.482 0.008,1.009 -0.25,1.386 -1.322,1.382 -10.373,-0.034 -20.746,-0.034 -31.119,0 C 0.233,19.352 -0.028,18.982 -0.02,17.971 0.022,12.477 0,6.983 0,1.489 0,1.018 0,0.547 0,0"
+          style="fill:#45a3b9;fill-opacity:1;fill-rule:nonzero;stroke:none"
+          transform="matrix(1.3333333,0,0,-1.3333333,251.996,226.35747)" />
+        <path d="m 0,0 c -2.462,-2.907 -4.749,-5.621 -7.051,-8.322 -7.602,-8.925 -15.216,-17.84 -22.793,-26.787 -0.349,-0.413 -0.522,-1.098 -0.526,-1.659 -0.04,-5.58 -0.028,-11.161 -0.03,-16.741 -0.001,-0.477 0,-0.953 0,-1.519 -0.423,-0.051 -0.755,-0.124 -1.088,-0.125 -4.745,-0.007 -9.491,0.02 -14.236,-0.025 -0.972,-0.01 -1.276,0.251 -1.27,1.254 0.041,7.338 0.013,14.676 0.043,22.014 10e-4,0.474 0.183,1.049 0.484,1.405 8.459,9.982 16.938,19.946 25.444,29.888 0.324,0.378 0.94,0.715 1.422,0.718 6.283,0.048 12.567,0.033 18.851,0.028 C -0.59,0.129 -0.429,0.076 0,0"
+          style="fill:#45a3b9;fill-opacity:1;fill-rule:nonzero;stroke:none"
+          transform="matrix(1.3333333,0,0,-1.3333333,247.79667,152.92573)" />
+        <path d="m 0,0 c -1.53,0 -2.769,-0.093 -3.982,0.044 -0.512,0.058 -1.077,0.51 -1.438,0.936 -8.411,9.945 -17.286,19.449 -26.902,28.242 -8.188,7.488 -16.692,14.574 -26.435,20.006 -3.542,1.975 -7.198,3.756 -11.291,4.202 -1.401,0.153 -2.933,0.043 -4.271,-0.375 -2.484,-0.776 -3.407,-2.893 -3.68,-5.301 -0.416,-3.665 0.42,-7.174 1.524,-10.622 2.96,-9.238 7.677,-17.62 12.704,-25.844 0.871,-1.425 1.778,-2.827 2.662,-4.242 0.042,-0.068 0.028,-0.17 0.087,-0.586 -0.477,0.306 -0.869,0.429 -1.053,0.695 -8.88,12.858 -17.393,25.938 -22.62,40.8 -1.154,3.28 -1.944,6.797 -2.206,10.258 -0.514,6.799 3.07,9.671 9.76,8.212 5.367,-1.17 10.088,-3.824 14.674,-6.711 10.426,-6.563 19.722,-14.55 28.662,-22.97 C -22.044,25.668 -11.163,13.771 -0.946,1.263 -0.678,0.935 -0.437,0.585 0,0"
+          style="fill:#45a3b9;fill-opacity:1;fill-rule:nonzero;stroke:none"
+          transform="matrix(1.3333333,0,0,-1.3333333,281.77547,173.4636)" />
+        <path d="m 0,0 c 1.54,0 2.892,0.031 4.24,-0.027 0.267,-0.011 0.627,-0.307 0.765,-0.567 4.121,-7.728 8.09,-15.531 9.624,-24.268 0.344,-1.96 0.383,-4.042 0.15,-6.018 -0.431,-3.654 -2.802,-5.772 -6.475,-5.509 -2.584,0.184 -5.224,0.815 -7.649,1.743 -6.995,2.68 -13.1,6.941 -19.054,11.401 -2.983,2.234 -5.872,4.595 -8.804,6.899 0.069,0.1 0.138,0.199 0.207,0.299 0.357,-0.258 0.723,-0.505 1.07,-0.776 5.239,-4.089 10.601,-8.019 16.636,-10.851 2.72,-1.277 5.665,-2.088 8.542,-3.002 0.809,-0.257 1.744,-0.208 2.616,-0.166 2.981,0.145 4.937,1.761 5.588,4.676 0.813,3.642 0.188,7.233 -1.03,10.63 -1.685,4.704 -3.729,9.278 -5.63,13.904 C 0.586,-1.119 0.311,-0.633 0,0"
+          style="fill:#45a3b9;fill-opacity:1;fill-rule:nonzero;stroke:none"
+          transform="matrix(1.3333333,0,0,-1.3333333,315.2476,231.0492)" />
+        <path d="M 0,0 C 5.643,0.477 8.409,3.983 9.763,9.118 11.153,3.87 13.992,0.339 19.816,-0.011 13.967,-0.346 11.105,-3.911 9.755,-9.231 8.462,-4.002 5.648,-0.501 0,0"
+          style="fill:#45a3b9;fill-opacity:1;fill-rule:nonzero;stroke:none"
+          transform="matrix(1.3333333,0,0,-1.3333333,254.63227,229.89587)" />
+        <path d="M 0,0 H 6.509 V -1.397 H -8.915 V 0 h 2.689 v 7.093 h 1.397 V 0 h 3.432 v 10.223 h -6.704 v 1.398 H 5.695 V 10.223 H 0 V 5.978 H 4.634 V 4.581 H 0 Z"
+          style="fill:#45a3b9;fill-opacity:1;fill-rule:nonzero;stroke:none"
+          transform="matrix(1.3333333,0,0,-1.3333333,131.31907,254.59653)" />
+        <path d="M 0,0 H 5.342 C 5.483,0 5.554,0.065 5.554,0.195 V 5.041 H 0 Z m 0,6.438 h 5.554 v 3.838 H 0 Z M 6.951,0.195 c 0,-0.448 -0.153,-0.826 -0.461,-1.132 -0.307,-0.307 -0.685,-0.46 -1.134,-0.46 h -6.753 v 13.071 h 6.951 v 0.265 H 6.951 Z M -2.317,9.41 -3.555,6.615 C -3.449,6.438 -3.323,6.2 -3.175,5.899 -3.028,5.598 -2.892,5.227 -2.768,4.785 -2.644,4.342 -2.538,3.829 -2.45,3.246 -2.361,2.662 -2.317,2.005 -2.317,1.274 v -0.69 h -3.591 v 1.397 h 2.194 C -3.75,2.677 -3.827,3.278 -3.944,3.785 -4.062,4.292 -4.189,4.714 -4.325,5.05 -4.46,5.386 -4.581,5.636 -4.687,5.802 -4.793,5.967 -4.852,6.061 -4.864,6.084 l -0.301,0.337 0.177,0.389 1.291,2.9 v 0.761 h -2.6 V -1.503 h -1.397 v 13.371 h 5.377 z"
+          style="fill:#45a3b9;fill-opacity:1;fill-rule:nonzero;stroke:none"
+          transform="matrix(1.3333333,0,0,-1.3333333,153.794,254.62013)" />
+        <path d="M 0,0 C 0.13,0 0.195,0.07 0.195,0.21 V 1.999 H -5.66 V 0 Z m -5.66,3.396 h 5.855 v 1.68 H -5.66 Z M 1.592,0.198 C 1.592,-0.251 1.435,-0.629 1.123,-0.937 0.811,-1.244 0.436,-1.397 0,-1.397 H -7.057 V 6.474 H 0.195 V 6.88 H 1.592 Z M -8.03,-2.618 H 2.565 V -4.015 H -8.03 Z m 0,11.886 H 2.565 V 7.871 H -8.03 Z m -1.114,0.23 V 5.943 h 1.379 V 4.546 h -1.379 v -8.703 h -1.398 V 9.498 Z M -13.106,0.23 c 0.141,0.413 0.256,0.796 0.345,1.15 0.088,0.353 0.168,0.775 0.238,1.264 0.071,0.489 0.106,1.029 0.106,1.619 v 2.724 h 1.398 V 4.263 c 0,-0.661 -0.042,-1.265 -0.124,-1.813 -0.083,-0.549 -0.174,-1.023 -0.274,-1.424 -0.101,-0.401 -0.192,-0.719 -0.274,-0.955 -0.083,-0.236 -0.13,-0.36 -0.142,-0.372 z"
+          style="fill:#45a3b9;fill-opacity:1;fill-rule:nonzero;stroke:none"
+          transform="matrix(1.3333333,0,0,-1.3333333,183.79187,251.2948)" />
+        <path d="m 0,0 h 9.374 c 0.13,0 0.195,0.065 0.195,0.195 V 1.167 H 0 Z m 0,2.565 h 9.569 v 1.22 H 0 Z m 5.483,-5.183 h 7.199 V -4.015 H 5.483 v -1.45 H 4.086 v 1.45 h -7.199 v 1.397 h 7.199 v 1.221 H -1.397 V 5.182 H 3.927 V 8.26 H 5.324 V 7.446 H 11.78 V 6.049 H 5.324 V 5.182 h 4.245 v 0.319 h 1.397 V 0.195 c 0,-0.449 -0.156,-0.826 -0.468,-1.132 -0.313,-0.307 -0.687,-0.46 -1.124,-0.46 H 5.483 Z"
+          style="fill:#45a3b9;fill-opacity:1;fill-rule:nonzero;stroke:none"
+          transform="matrix(1.3333333,0,0,-1.3333333,194.07413,249.54973)" />
+        <path d="M 0,0 -3.219,2.352 -2.406,3.484 0.831,1.132 Z M 4.864,-4.758 2.582,-5.147 V -8.349 H 1.185 v 2.954 l -4.882,-0.866 -0.247,1.379 5.129,0.902 V 5.236 H 2.582 V -3.75 l 2.052,0.372 z m -5.819,1.45 -3.237,2.353 0.831,1.132 3.22,-2.353 z m -4.281,2.972 0.956,-7.8 -1.38,-0.177 -0.955,7.8 z M -6.827,1.91 h 2.564 V 0.513 H -6.827 V -8.419 H -8.225 V 0.513 H -8.384 C -8.408,0.135 -8.449,-0.378 -8.508,-1.026 -8.567,-1.675 -8.649,-2.4 -8.755,-3.201 -8.861,-4.003 -8.988,-4.849 -9.136,-5.74 -9.283,-6.63 -9.463,-7.511 -9.675,-8.384 l -1.344,0.319 c 0.188,0.813 0.353,1.647 0.495,2.502 0.141,0.855 0.262,1.666 0.363,2.432 0.1,0.767 0.179,1.468 0.238,2.105 0.059,0.637 0.106,1.15 0.142,1.539 h -1.026 V 1.91 h 2.582 v 1.627 h -2.334 v 1.398 h 3.236 c 0.189,0 0.407,0.014 0.655,0.042 0.247,0.028 0.498,0.065 0.752,0.11 0.253,0.045 0.489,0.09 0.707,0.136 0.218,0.045 0.386,0.078 0.504,0.101 L -4.386,3.98 C -4.398,3.98 -4.484,3.959 -4.643,3.918 -4.802,3.876 -5,3.835 -5.236,3.794 -5.472,3.753 -5.731,3.708 -6.014,3.661 -6.297,3.614 -6.568,3.579 -6.827,3.555 Z"
+          style="fill:#45a3b9;fill-opacity:1;fill-rule:nonzero;stroke:none"
+          transform="matrix(1.3333333,0,0,-1.3333333,228.1756,245.6584)" />
+        <path d="m 0,0 c 0.825,0.342 1.577,0.696 2.255,1.061 0.678,0.366 1.3,0.737 1.866,1.115 L 1.114,4.104 1.857,5.271 5.324,3.06 c 0.861,0.696 1.524,1.324 1.99,1.884 0.465,0.56 0.763,0.94 0.893,1.141 V 6.208 H 1.132 v 1.38 h 3.52 V 9.569 H 0.619 v 1.397 h 4.033 v 1.433 h 1.397 v -1.433 h 4.033 V 9.569 H 6.049 V 7.588 H 8.207 V 7.871 H 9.604 V 5.695 L 9.516,5.536 C 9.504,5.512 9.439,5.409 9.321,5.227 9.203,5.044 9.026,4.808 8.791,4.519 8.555,4.23 8.251,3.891 7.88,3.502 7.508,3.113 7.069,2.706 6.562,2.282 L 10.365,-0.141 9.622,-1.309 5.395,1.362 C 4.758,0.914 4.039,0.463 3.237,0.009 2.435,-0.445 1.533,-0.878 0.531,-1.291 Z M -1.68,12.399 V 10.595 H 0.159 V 9.198 H -1.68 V 4.705 L -0.035,5.342 0.46,4.033 -1.68,3.219 V 0.301 c 0,-0.448 -0.154,-0.825 -0.46,-1.132 -0.307,-0.307 -0.684,-0.46 -1.132,-0.46 h -1.875 v 1.397 h 1.859 c 0.14,0 0.21,0.065 0.21,0.195 l 0.018,2.388 -1.946,-0.743 -0.495,1.309 2.423,0.919 v 5.024 h -2.069 v 1.397 h 2.069 v 1.804 z"
+          style="fill:#45a3b9;fill-opacity:1;fill-rule:nonzero;stroke:none"
+          transform="matrix(1.3333333,0,0,-1.3333333,244.42453,255.06827)" />
+      </g>
+    </svg>
+  </div>
 
-        generateBtn.addEventListener('click', () => {
-            const finalSvgCode = new XMLSerializer().serializeToString(logoSvg);
-            svgOutput.value = formatXml(finalSvgCode);
-            outputContainer.style.display = 'block';
-        });
+</div>
 
-        document.getElementById('download-btn').addEventListener('click', () => {
-            const svgString = new XMLSerializer().serializeToString(logoSvg);
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-            const img = new Image();
-            const svgBlob = new Blob([svgString], {type: 'image/svg+xml;charset=utf-8'});
-            const url = URL.createObjectURL(svgBlob);
-            
-            img.onload = function() {
-                const svgSize = logoSvg.viewBox.baseVal;
-                const ratio = svgSize.height / svgSize.width;
-                const exportWidth = parseInt(controls.exportWidth.value, 10) || 1200;
-                canvas.width = exportWidth;
-                canvas.height = exportWidth * ratio;
-                
-                if (controls.exportWithBg.checked) {
-                    ctx.fillStyle = controls.bgColor.value;
-                    ctx.fillRect(0, 0, canvas.width, canvas.height);
-                }
+<script>
+const $ = id => document.getElementById(id);
 
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                URL.revokeObjectURL(url);
-                
-                const pngUrl = canvas.toDataURL('image/png');
-                const a = document.createElement('a');
-                a.href = pngUrl;
-                a.download = 'logo.png';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-            };
-            img.src = url;
-        });
+// Background
+$('bgSelect').addEventListener('change', e => {
+  $('previewArea').className = 'preview ' + e.target.value;
+});
 
-        function formatXml(xml) {
-            let formatted = '', pad = 0;
-            xml.replace(/(>)(<)(\/*)/g, '$1\r\n$2$3').split('\r\n').forEach(node => {
-                let indent = 0;
-                if (node.match(/.+<\/\w[^>]*>$/)) indent = 0;
-                else if (node.match(/^<\/\w/)) pad = Math.max(0, pad - 1);
-                else if (node.match(/^<\w[^>]*[^\/]>.*$/)) indent = 1;
-                let padding = ''.padStart(pad * 2, ' ');
-                formatted += padding + node + '\r\n';
-                pad += indent;
-            });
-            return formatted.trim();
-        }
-        
-        applyPreset('light');
-    </script>
+// Zoom
+$('zoom').addEventListener('input', () => {
+  const v = $('zoom').value;
+  $('logoContainer').style.transform = `scale(${v})`;
+  $('zoomVal').textContent = Math.round(v * 100) + '%';
+});
+
+// Display width
+$('dispW').addEventListener('input', () => {
+  const w = $('dispW').value;
+  const svg = $('logoSvg');
+  const ratio = 365.33334 / 1066.6667;
+  svg.setAttribute('width', w);
+  svg.setAttribute('height', Math.round(w * ratio));
+  $('dispWVal').textContent = w;
+});
+
+// ZYHZ layer visibility
+$('zyhzLayer').addEventListener('change', () => {
+  const v = $('zyhzLayer').value;
+  $('layerBlack').style.display = (v === 'colored') ? 'none' : '';
+  $('layerColored').style.display = (v === 'black') ? 'none' : '';
+});
+// Default: only show colored layer
+$('layerBlack').style.display = 'none';
+
+// ZYHZ color
+function updateZyhzColor(color) {
+  const paths = $('layerColored').querySelectorAll('path');
+  paths.forEach(p => {
+    p.style.fill = color;
+  });
+}
+
+$('zyhzColor').addEventListener('change', () => {
+  const v = $('zyhzColor').value;
+  if (v === 'custom') {
+    $('customColorRow').style.display = 'flex';
+    updateZyhzColor($('zyhzCustomColor').value);
+  } else {
+    $('customColorRow').style.display = 'none';
+    updateZyhzColor(v);
+  }
+});
+
+$('zyhzCustomColor').addEventListener('input', () => {
+  updateZyhzColor($('zyhzCustomColor').value);
+});
+
+// Generate SVG code
+$('btnCode').addEventListener('click', () => {
+  const svg = $('logoSvg');
+  const code = new XMLSerializer().serializeToString(svg);
+  $('svgCode').value = code;
+  $('outputWrap').style.display = 'block';
+});
+
+// Export PNG
+$('btnPng').addEventListener('click', () => {
+  const svg = $('logoSvg');
+  const pngW = parseInt($('pngSize').value);
+  const pngH = Math.round(pngW * 365.33334 / 1066.6667);
+  const transparent = $('pngTransparent').checked;
+
+  // Use foreignObject + canvas approach for reliable transparency
+  const canvas = document.createElement('canvas');
+  canvas.width = pngW;
+  canvas.height = pngH;
+  const ctx = canvas.getContext('2d');
+
+  // Always start with clear (transparent) canvas
+  ctx.clearRect(0, 0, pngW, pngH);
+
+  if (!transparent) {
+    const bgMap = { light:'#ffffff', gray:'#f0f2f5', dark:'#1a1a1a', green:'#76B900', checker:'#ffffff' };
+    ctx.fillStyle = bgMap[$('bgSelect').value] || '#ffffff';
+    ctx.fillRect(0, 0, pngW, pngH);
+  }
+
+  // Clone and prepare SVG
+  const clone = svg.cloneNode(true);
+  clone.setAttribute('width', pngW);
+  clone.setAttribute('height', pngH);
+  // Remove any id to avoid conflicts
+  clone.removeAttribute('id');
+
+  // Serialize SVG
+  const svgStr = new XMLSerializer().serializeToString(clone);
+  const img = new Image();
+
+  img.onload = () => {
+    ctx.drawImage(img, 0, 0, pngW, pngH);
+
+    // Verify transparency: check a corner pixel
+    const pixel = ctx.getImageData(0, 0, 1, 1).data;
+    console.log('Corner pixel RGBA:', pixel[0], pixel[1], pixel[2], pixel[3],
+      '(alpha 0 = transparent, 255 = opaque)');
+
+    canvas.toBlob((blob) => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      const suffix = transparent ? '-transparent' : '';
+      a.download = `zyhz-nvidia-elite-${pngW}px${suffix}.png`;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 5000);
+    }, 'image/png');
+  };
+
+  img.onerror = (e) => {
+    console.error('SVG render failed:', e);
+    alert('导出失败，请查看控制台');
+  };
+
+  // Encode SVG to data URI
+  img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgStr);
+});
+</script>
 </body>
 </html>
-

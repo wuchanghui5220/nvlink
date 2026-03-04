@@ -1,0 +1,380 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG LOGO 终极编辑器 (完整版)</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            display: flex;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+            height: calc(100vh - 40px);
+            gap: 20px;
+        }
+        .controls {
+            width: 380px;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            overflow-y: auto;
+        }
+        .preview {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            padding: 30px;
+            transition: background-color 0.3s;
+            overflow: hidden;
+        }
+        .control-group {
+            margin-bottom: 25px;
+            border-bottom: 1px solid #e8e8e8;
+            padding-bottom: 15px;
+        }
+        .control-group:last-child { border-bottom: none; }
+        h2 { text-align: center; margin-top: 0; }
+        h3 {
+            margin-top: 0; color: #333; font-size: 1.1em;
+            border-left: 4px solid #45a3b9; padding-left: 10px;
+        }
+        label, .label-like {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 10px; color: #555; font-size: 0.9em;
+        }
+        label > span:first-child, .label-like > span:first-child {
+            white-space: nowrap;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        input[type="range"] { width: 100%; cursor: pointer; }
+        input[type="color"] {
+            border: 1px solid #ccc; padding: 2px; border-radius: 4px;
+            cursor: pointer; min-width: 40px; min-height: 25px;
+        }
+        input[type="number"] {
+            width: 80px; padding: 4px 8px; border-radius: 4px; border: 1px solid #ccc;
+        }
+        select, .main-btn {
+            width: 100%; padding: 8px 12px; border-radius: 4px;
+            border: 1px solid #ccc; font-size: 0.9em; cursor: pointer;
+        }
+        .main-btn {
+            background-color: #45a3b9; color: white; border: none;
+            font-weight: bold; margin-top: 10px; transition: background-color 0.2s;
+        }
+        .main-btn:hover { background-color: #307E9B; }
+        .preset-buttons { display: flex; gap: 10px; }
+        .preset-btn {
+            flex: 1; padding: 8px; border: 1px solid #ccc;
+            background-color: #f9f9f9; border-radius: 4px; cursor: pointer;
+            transition: all 0.2s; font-size: 0.85em;
+        }
+        .preset-btn:hover { border-color: #45a3b9; background-color: #e8f6f9; }
+        #svg-container {
+            width: 80%;
+            max-width: 500px;
+            transition: transform 0.1s ease-out;
+        }
+        textarea {
+            width: calc(100% - 16px); height: 150px; margin-top: 15px;
+            border: 1px solid #ccc; border-radius: 4px; font-family: monospace;
+            font-size: 0.8em; resize: vertical; padding: 8px;
+        }
+        .output-container { display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="controls">
+        <h2>LOGO 效果调节器</h2>
+
+        <div class="control-group">
+            <h3>🖼️ 画布设置</h3>
+            <label><span>背景颜色:</span> <input type="color" id="bg-color" value="#ffffff"></label>
+            <label><span>缩放 (<span id="zoom-val">200</span>%):</span> <input type="range" id="zoom-slider" min="0.1" max="3" step="0.05" value="2"></label>
+        </div>
+
+        <div class="control-group">
+            <h3>✨ 预设方案</h3>
+            <div class="preset-buttons">
+                <button class="preset-btn" data-preset="dark">深邃黑</button>
+                <button class="preset-btn" data-preset="light">经典白</button>
+                <button class="preset-btn" data-preset="green">活力绿</button>
+                <button class="preset-btn" data-preset="cyan">蓝绿青</button>
+            </div>
+        </div>
+
+        <div class="control-group">
+            <h3>🎨 渐变颜色</h3>
+            <label><span>高光:</span> <input type="color" id="color-stop1" value="#5EC9E0"></label>
+            <label><span>主色:</span> <input type="color" id="color-stop2" value="#45a3b9"></label>
+            <label><span>阴影:</span> <input type="color" id="color-stop3" value="#2A788B"></label>
+        </div>
+        
+        <div class="control-group">
+            <h3>🧭 渐变方向</h3>
+            <select id="gradient-direction">
+                <option value="0,0,100,100">左上 → 右下</option>
+                <option value="0,0,100,0">左 → 右</option>
+                <option value="0,0,0,100">上 → 下</option>
+                <option value="100,0,0,100">右上 → 左下</option>
+            </select>
+        </div>
+
+        <div class="control-group">
+            <h3>👻 投影效果</h3>
+            <label><span>启用投影:</span> <input type="checkbox" id="shadow-toggle" checked></label>
+            <label><span>左右偏移 (<span id="shadow-dx-val">3</span>):</span> <input type="range" id="shadow-dx" min="-20" max="20" value="3"></label>
+            <label><span>上下偏移 (<span id="shadow-dy-val">5</span>):</span> <input type="range" id="shadow-dy" min="-20" max="20" value="5"></label>
+            <label><span>模糊半径 (<span id="shadow-blur-val">3</span>):</span> <input type="range" id="shadow-blur" min="0" max="20" value="3"></label>
+            <label><span>投影颜色:</span> <input type="color" id="shadow-color" value="#000000"></label>
+            <label><span>不透明度 (<span id="shadow-opacity-val">0.4</span>):</span> <input type="range" id="shadow-opacity" min="0" max="1" step="0.05" value="0.4"></label>
+        </div>
+        
+        <div class="control-group">
+            <h3>📥 导出图像</h3>
+            <div class="label-like">
+                <span>导出宽度 (px):</span>
+                <input type="number" id="export-width" value="1200">
+            </div>
+            <label><span>包含背景色:</span> <input type="checkbox" id="export-with-bg" checked></label>
+            <button id="download-btn" class="main-btn">下载为 PNG</button>
+        </div>
+
+        <button id="generate-btn" class="main-btn">生成SVG代码</button>
+        <div id="output-container" class="output-container">
+            <textarea id="svg-output" readonly></textarea>
+        </div>
+    </div>
+
+    <div class="preview">
+        <div id="svg-container">
+            <svg id="logo-svg" version="1.2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="100%" height="auto">
+                <defs>
+                    <linearGradient id="logo3DGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop id="stop1" offset="0%" style="stop-color:#5EC9E0;stop-opacity:1" />
+                        <stop id="stop2" offset="50%" style="stop-color:#45a3b9;stop-opacity:1" />
+                        <stop id="stop3" offset="100%" style="stop-color:#2A788B;stop-opacity:1" />
+                    </linearGradient>
+                    <filter id="dropShadowFilter" x="-20%" y="-20%" width="140%" height="140%">
+                        <feDropShadow id="shadow-effect" dx="3" dy="5" stdDeviation="3" flood-color="#000000" flood-opacity="0.4"/>
+                    </filter>
+                </defs>
+                <style>
+                    .s0 { 
+                        fill: url(#logo3DGradient);
+                        filter: url(#dropShadowFilter);
+                    } 
+                </style>
+                <g id="logo-group">
+                    <!-- ZYHZ, Swoosh, Sparkle Paths -->
+                    <path class="s0" d="m79.44 359.96c3.59-4.48 7.23-8.93 10.76-13.45q21.17-27.13 42.3-54.29c0.43-0.56 0.82-1.15 1.54-2.14-18.24 0-36.08 0-54.57 0 1.3-1.68 2.19-2.85 3.09-4 6.39-8.19 12.82-16.36 19.15-24.59 1.01-1.3 2.09-1.68 3.66-1.68q46.43 0.02 92.86-0.12c2.61-0.01 4.45 0.5 6.34 2.64 4.87 5.51 10.19 10.61 15.31 15.89 4.73 4.87 9.43 9.77 14.34 14.86-5.86 6.92-11.61 13.71-17.57 20.74-1.88-1.97-3.55-3.76-5.26-5.51-5.5-5.69-10.99-11.4-16.56-17.02-0.64-0.65-1.75-1.16-2.65-1.18q-9.47-0.19-18.95-0.1c-0.82 0.01-1.91 0.49-2.4 1.12-10.03 12.75-19.98 25.56-29.95 38.36-0.08 0.11-0.05 0.29-0.13 0.7 17.9 0 35.74 0 54.23 0-1.28 1.68-2.22 2.89-3.15 4.11-6.25 8.2-12.48 16.42-18.81 24.56-0.61 0.79-1.9 1.51-2.88 1.51-30.23 0.08-60.47 0.07-90.7 0.07q0-0.24 0-0.48z"/>
+                    <path class="s0" d="m520.56 331.16c-2.71 3.33-5.47 6.62-8.1 10.01-4.51 5.81-8.87 11.73-13.44 17.49-0.71 0.9-2.18 1.7-3.3 1.7-29.43 0.1-58.86 0.08-88.29 0.08-0.54 0-1.07-0.05-2.02-0.11 3.15-4.09 6.08-7.93 9.05-11.73q15.17-19.49 30.35-38.96 18.79-24.1 37.54-48.24c0.93-1.2 1.94-1.62 3.44-1.61 10.56 0.07 21.12 0.04 31.67 0.03 1.04 0 2.07-0.12 3.1-0.18q0 0.48 0 0.96c-4.27 5.37-8.57 10.71-12.79 16.11q-16.83 21.52-33.61 43.08c-2.58 3.31-5.11 6.66-7.77 10.14 0.51 0.15 0.72 0.26 0.93 0.26q26.62 0.02 53.24 0.01 0 0.48 0 0.96z"/>
+                    <path class="s0" d="m311.29 360.27c-10.08 0-19.89 0-30.06 0q0-1.31 0-2.57c0-20.32-0.02-40.63 0.05-60.95 0-1.23 0.43-2.73 1.21-3.66 8.82-10.66 17.76-21.22 26.64-31.83 0.45-0.53 0.64-1.29 0.95-1.95q0.53 0.34 1.06 0.67c0.05 0.81 0.15 1.62 0.15 2.43 0.01 10.08 0.06 20.16-0.04 30.23-0.02 2.03 0.6 2.54 2.56 2.53q28.2-0.1 56.39 0.01c2.06 0.01 2.52-0.66 2.5-2.6-0.09-9.91-0.04-19.83-0.04-29.75 0-0.87 0-1.74 0-2.84 34.93 0 69.66 0 104.9 0-2.45 3.23-4.66 6.18-6.92 9.1-4.89 6.31-9.85 12.58-14.68 18.94-1.08 1.42-2.18 1.98-3.98 1.97-15.75-0.07-31.51-0.04-47.26-0.03-0.63 0-1.25 0.07-2.14 0.13 0 23.41 0 46.71 0 70.17-10.07 0-19.85 0-29.92 0 0-0.99 0-1.84 0-2.7 0-9.99-0.04-19.99 0.03-29.99 0.02-1.83-0.45-2.52-2.4-2.51q-28.32 0.09-56.63 0c-1.94-0.01-2.42 0.66-2.4 2.5 0.07 10 0.03 20 0.03 29.99 0 0.86 0 1.72 0 2.71z"/>
+                    <path class="s0" d="m305.56 260.06c-4.48 5.29-8.64 10.23-12.83 15.14-13.83 16.24-27.69 32.46-41.48 48.75-0.63 0.75-0.94 1.99-0.95 3.01-0.08 10.16-0.05 20.31-0.06 30.47 0 0.86 0 1.73 0 2.76-0.77 0.09-1.37 0.23-1.98 0.23-8.63 0.01-17.27-0.04-25.9 0.04-1.77 0.02-2.32-0.45-2.31-2.28 0.07-13.35 0.02-26.7 0.07-40.06 0.01-0.86 0.34-1.91 0.89-2.55q23.08-27.25 46.3-54.39c0.58-0.69 1.71-1.3 2.58-1.31 11.44-0.08 22.87-0.06 34.31-0.05 0.29 0 0.58 0.1 1.36 0.24z"/>
+                    <path class="s0" d="m351.93 288.09c-2.78 0-5.03 0.17-7.24-0.08-0.93-0.11-1.96-0.93-2.62-1.71-15.3-18.09-31.45-35.39-48.95-51.39-14.9-13.62-30.38-26.52-48.1-36.4-6.45-3.6-13.1-6.84-20.55-7.65-2.55-0.28-5.34-0.08-7.77 0.68-4.52 1.42-6.2 5.27-6.7 9.65-0.76 6.67 0.76 13.05 2.77 19.33 5.39 16.81 13.97 32.06 23.12 47.03 1.59 2.59 3.24 5.14 4.84 7.72 0.08 0.12 0.06 0.3 0.16 1.06-0.86-0.56-1.58-0.78-1.91-1.26-16.16-23.4-31.65-47.2-41.16-74.25-2.1-5.96-3.54-12.36-4.02-18.66-0.93-12.37 5.59-17.6 17.76-14.95 9.77 2.13 18.36 6.96 26.7 12.22 18.98 11.94 35.89 26.47 52.16 41.79 21.4 20.16 41.2 41.81 59.79 64.57 0.49 0.6 0.93 1.23 1.72 2.3z"/>
+                    <path class="s0" d="m397.62 366.68c2.8 0 5.26-0.06 7.71 0.05 0.49 0.02 1.14 0.55 1.39 1.03 7.5 14.06 14.72 28.26 17.52 44.16 0.62 3.56 0.69 7.35 0.27 10.95-0.79 6.65-5.1 10.5-11.79 10.02-4.7-0.33-9.5-1.48-13.91-3.17-12.73-4.87-23.84-12.63-34.67-20.74-5.43-4.07-10.69-8.37-16.03-12.56q0.19-0.27 0.38-0.54c0.65 0.47 1.32 0.92 1.95 1.41 9.53 7.44 19.29 14.59 30.27 19.75 4.95 2.32 10.31 3.79 15.54 5.46 1.48 0.47 3.18 0.38 4.76 0.3 5.43-0.26 8.99-3.2 10.17-8.51 1.48-6.63 0.34-13.16-1.87-19.34-3.07-8.56-6.79-16.89-10.25-25.3-0.38-0.94-0.88-1.82-1.44-2.97z"/>
+                    <path class="s0" d="m314.89 365.1c10.27-0.87 15.3-7.25 17.77-16.59 2.52 9.55 7.69 15.98 18.29 16.61-10.64 0.61-15.85 7.1-18.31 16.78-2.35-9.51-7.47-15.88-17.75-16.8z"/>
+                    
+                    <!-- ## RESTORED CHINESE TEXT PATHS ## -->
+                    <path class="s0" d="m146.6 398.81h11.84v2.55h-28.06v-2.55h4.89v-12.9h2.54v12.9h6.24v-18.6h-12.19v-2.54h25.1v2.54h-10.36v7.73h8.43v2.54h-8.43z"/>
+                    <path fill-rule="evenodd" class="s0" d="m173.05 381.72l-2.25 5.09q0.29 0.48 0.69 1.3 0.4 0.82 0.74 2.03 0.34 1.21 0.58 2.8 0.24 1.59 0.24 3.59v1.25h-6.53v-2.54h3.99q-0.1-1.9-0.42-3.28-0.32-1.39-0.69-2.3-0.37-0.92-0.66-1.37-0.29-0.45-0.32-0.52l-0.55-0.61 0.32-0.71 2.35-5.27v-1.39h-4.73v21.79h-2.54v-24.33h9.78zm16.87 16.77q0 1.22-0.84 2.06-0.84 0.83-2.06 0.84h-12.29v-23.79h12.65v-0.48h2.54zm-12.65-18.35v6.99h10.11v-6.99zm0 18.7h9.72q0.38 0 0.38-0.35v-8.82h-10.1z"/>
+                    <path fill-rule="evenodd" class="s0" d="m194.36 393.89q0.39-1.13 0.63-2.09 0.24-0.97 0.43-2.3 0.2-1.34 0.2-2.95v-4.96h2.54v4.96q0 1.8-0.23 3.3-0.22 1.5-0.5 2.59-0.27 1.1-0.49 1.74-0.23 0.64-0.26 0.68zm7.21-16.87v6.47h2.51v2.54h-2.51v15.84h-2.55v-24.85zm2.03 0.42h19.28v2.54h-19.28zm0 21.63h19.28v2.54h-19.28zm17.51-5.12q0 1.22-0.85 2.06-0.86 0.84-2.05 0.84h-12.84v-14.32h13.2v-0.74h2.54zm-13.2-8.88v3.06h10.66v-3.06zm10.3 9.24q0.35 0 0.35-0.38v-3.26h-10.65v3.64z"/>
+                    <path fill-rule="evenodd" class="s0" d="m242.22 396.69h13.1v2.54h-13.1v2.64h-2.54v-2.64h-13.1v-2.54h13.1v-2.22h-9.98v-11.97h9.69v-5.6h2.54v1.48h11.75v2.54h-11.75v1.58h7.72v-0.58h2.55v9.65q0 1.23-0.86 2.06-0.85 0.84-2.04 0.84h-7.08zm-9.98-11.65v2.22h17.41v-2.22zm0 6.89h17.06q0.36 0 0.36-0.36v-1.77h-17.42z"/>
+                    <path fill-rule="evenodd" class="s0" d="m266.36 383.14h4.67v2.54h-4.67v16.26h-2.54v-16.26h-0.29q-0.07 1.03-0.23 2.8-0.16 1.77-0.45 3.96-0.29 2.19-0.69 4.62-0.4 2.43-0.98 4.81l-2.45-0.58q0.52-2.22 0.9-4.55 0.39-2.34 0.66-4.43 0.28-2.09 0.44-3.83 0.16-1.74 0.25-2.8h-1.86v-2.54h4.7v-2.96h-4.25v-2.54h5.89q0.51 0 1.19-0.08 0.67-0.08 1.37-0.2 0.69-0.12 1.28-0.25 0.6-0.12 0.92-0.18l0.58 2.44q-0.03 0-0.47 0.12-0.43 0.11-1.07 0.22-0.65 0.11-1.42 0.24-0.77 0.13-1.48 0.2zm2.9 4.08l1.73 14.2-2.51 0.32-1.73-14.19zm7.78 5.4l-5.89-4.28 1.52-2.06 5.86 4.28zm10.58 2.64l-4.15 0.71v5.83h-2.54v-5.38l-8.88 1.58-0.45-2.51 9.33-1.64v-16.77h2.54v16.35l3.74-0.68zm-8.86-8.66l-5.85-4.28 1.48-2.06 5.89 4.28z"/>
+                    <path class="s0" d="m297.9 376.9v3.28h3.35v2.54h-3.35v8.18l2.99-1.16 0.91 2.38-3.9 1.48v5.31q0 1.22-0.84 2.06-0.83 0.84-2.06 0.84h-3.41v-2.55h3.39q0.38 0 0.38-0.35l0.03-4.34-3.54 1.35-0.9-2.38 4.41-1.68v-9.14h-3.77v-2.54h3.77v-3.28zm3.06 22.56q2.25-0.94 4.1-1.93 1.85-1 3.4-2.03l-5.48-3.51 1.36-2.12 6.3 4.02q2.35-1.9 3.62-3.43 1.28-1.53 1.63-2.07v-0.23h-12.87v-2.51h6.4v-3.6h-7.34v-2.55h7.34v-2.6h2.54v2.6h7.34v2.55h-7.34v3.6h3.93v-0.52h2.54v3.96l-0.16 0.29q-0.03 0.07-0.35 0.57-0.32 0.5-0.97 1.28-0.64 0.79-1.66 1.85-1.01 1.07-2.39 2.23l6.92 4.41-1.36 2.12-7.69-4.86q-1.74 1.22-3.92 2.46-2.19 1.24-4.93 2.37z"/>
+                </g>
+            </svg>
+        </div>
+    </div>
+
+    <script>
+        // JS代码与上一版完全相同，无需改动
+        const controls = {
+            bgColor: document.getElementById('bg-color'),
+            zoomSlider: document.getElementById('zoom-slider'),
+            colorStop1: document.getElementById('color-stop1'),
+            colorStop2: document.getElementById('color-stop2'),
+            colorStop3: document.getElementById('color-stop3'),
+            gradientDirection: document.getElementById('gradient-direction'),
+            shadowToggle: document.getElementById('shadow-toggle'),
+            shadowDx: document.getElementById('shadow-dx'),
+            shadowDy: document.getElementById('shadow-dy'),
+            shadowBlur: document.getElementById('shadow-blur'),
+            shadowColor: document.getElementById('shadow-color'),
+            shadowOpacity: document.getElementById('shadow-opacity'),
+            exportWidth: document.getElementById('export-width'),
+            exportWithBg: document.getElementById('export-with-bg'),
+        };
+        const valueSpans = {
+            zoom: document.getElementById('zoom-val'),
+            dx: document.getElementById('shadow-dx-val'),
+            dy: document.getElementById('shadow-dy-val'),
+            blur: document.getElementById('shadow-blur-val'),
+            opacity: document.getElementById('shadow-opacity-val'),
+        };
+        const svgElements = {
+            stop1: document.getElementById('stop1'),
+            stop2: document.getElementById('stop2'),
+            stop3: document.getElementById('stop3'),
+            gradient: document.getElementById('logo3DGradient'),
+            shadow: document.getElementById('shadow-effect'),
+            logoGroupStyle: document.querySelector('.s0').style,
+        };
+        const previewArea = document.querySelector('.preview');
+        const svgContainer = document.getElementById('svg-container');
+
+        const presets = {
+            dark: {
+                bgColor: '#1a1a1a', color1: '#E0F7FA', color2: '#80DEEA', color3: '#26C6DA',
+                gradientDir: '0,0,100,100', shadow: true, dx: 0, dy: 2, blur: 8,
+                shadowColor: '#80DEEA', shadowOpacity: 0.3
+            },
+            light: {
+                bgColor: '#ffffff', color1: '#5EC9E0', color2: '#45a3b9', color3: '#2A788B',
+                gradientDir: '0,0,100,100', shadow: true, dx: 3, dy: 5, blur: 3,
+                shadowColor: '#000000', shadowOpacity: 0.4
+            },
+            green: {
+                bgColor: '#76B900', color1: '#FFFFFF', color2: '#E0E0E0', color3: '#BDBDBD',
+                gradientDir: '0,0,100,100', shadow: true, dx: 2, dy: 3, blur: 4,
+                shadowColor: '#000000', shadowOpacity: 0.3
+            },
+            cyan: {
+                bgColor: '#ffffff', color1: '#3b82f6', color2: '#06b6d4', color3: '#22c55e',
+                gradientDir: '0,0,100,100', shadow: true, dx: 3, dy: 5, blur: 3,
+                shadowColor: '#000000', shadowOpacity: 0.3
+            }
+        };
+
+        function updateAllVisuals() {
+            previewArea.style.backgroundColor = controls.bgColor.value;
+            const zoomValue = controls.zoomSlider.value;
+            svgContainer.style.transform = `scale(${zoomValue})`;
+            valueSpans.zoom.textContent = Math.round(zoomValue * 100);
+
+            svgElements.stop1.style.stopColor = controls.colorStop1.value;
+            svgElements.stop2.style.stopColor = controls.colorStop2.value;
+            svgElements.stop3.style.stopColor = controls.colorStop3.value;
+            const [x1, y1, x2, y2] = controls.gradientDirection.value.split(',');
+            svgElements.gradient.setAttribute('x1', `${x1}%`);
+            svgElements.gradient.setAttribute('y1', `${y1}%`);
+            svgElements.gradient.setAttribute('x2', `${x2}%`);
+            svgElements.gradient.setAttribute('y2', `${y2}%`);
+            
+            svgElements.logoGroupStyle.filter = controls.shadowToggle.checked ? 'url(#dropShadowFilter)' : 'none';
+            
+            const dx = controls.shadowDx.value;
+            const dy = controls.shadowDy.value;
+            const blur = controls.shadowBlur.value;
+            const opacity = controls.shadowOpacity.value;
+            svgElements.shadow.setAttribute('dx', dx);
+            svgElements.shadow.setAttribute('dy', dy);
+            svgElements.shadow.setAttribute('stdDeviation', blur);
+            svgElements.shadow.setAttribute('flood-color', controls.shadowColor.value);
+            svgElements.shadow.setAttribute('flood-opacity', opacity);
+            valueSpans.dx.textContent = dx;
+            valueSpans.dy.textContent = dy;
+            valueSpans.blur.textContent = blur;
+            valueSpans.opacity.textContent = opacity;
+        }
+
+        function applyPreset(presetName) {
+            const preset = presets[presetName];
+            if (!preset) return;
+            Object.assign(controls.bgColor, { value: preset.bgColor });
+            Object.assign(controls.colorStop1, { value: preset.color1 });
+            Object.assign(controls.colorStop2, { value: preset.color2 });
+            Object.assign(controls.colorStop3, { value: preset.color3 });
+            Object.assign(controls.gradientDirection, { value: preset.gradientDir });
+            Object.assign(controls.shadowToggle, { checked: preset.shadow });
+            Object.assign(controls.shadowDx, { value: preset.dx });
+            Object.assign(controls.shadowDy, { value: preset.dy });
+            Object.assign(controls.shadowBlur, { value: preset.blur });
+            Object.assign(controls.shadowColor, { value: preset.shadowColor });
+            Object.assign(controls.shadowOpacity, { value: preset.shadowOpacity });
+            updateAllVisuals();
+        }
+
+        Object.values(controls).forEach(control => {
+            control.addEventListener('input', updateAllVisuals);
+            control.addEventListener('change', updateAllVisuals);
+        });
+
+        document.querySelectorAll('.preset-btn').forEach(button => {
+            button.addEventListener('click', (e) => applyPreset(e.target.dataset.preset));
+        });
+        
+        const generateBtn = document.getElementById('generate-btn');
+        const outputContainer = document.getElementById('output-container');
+        const svgOutput = document.getElementById('svg-output');
+        const logoSvg = document.getElementById('logo-svg');
+
+        generateBtn.addEventListener('click', () => {
+            const finalSvgCode = new XMLSerializer().serializeToString(logoSvg);
+            svgOutput.value = formatXml(finalSvgCode);
+            outputContainer.style.display = 'block';
+        });
+
+        document.getElementById('download-btn').addEventListener('click', () => {
+            const svgString = new XMLSerializer().serializeToString(logoSvg);
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            const img = new Image();
+            const svgBlob = new Blob([svgString], {type: 'image/svg+xml;charset=utf-8'});
+            const url = URL.createObjectURL(svgBlob);
+            
+            img.onload = function() {
+                const svgSize = logoSvg.viewBox.baseVal;
+                const ratio = svgSize.height / svgSize.width;
+                const exportWidth = parseInt(controls.exportWidth.value, 10) || 1200;
+                canvas.width = exportWidth;
+                canvas.height = exportWidth * ratio;
+                
+                if (controls.exportWithBg.checked) {
+                    ctx.fillStyle = controls.bgColor.value;
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                }
+
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                URL.revokeObjectURL(url);
+                
+                const pngUrl = canvas.toDataURL('image/png');
+                const a = document.createElement('a');
+                a.href = pngUrl;
+                a.download = 'logo.png';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            };
+            img.src = url;
+        });
+
+        function formatXml(xml) {
+            let formatted = '', pad = 0;
+            xml.replace(/(>)(<)(\/*)/g, '$1\r\n$2$3').split('\r\n').forEach(node => {
+                let indent = 0;
+                if (node.match(/.+<\/\w[^>]*>$/)) indent = 0;
+                else if (node.match(/^<\/\w/)) pad = Math.max(0, pad - 1);
+                else if (node.match(/^<\w[^>]*[^\/]>.*$/)) indent = 1;
+                let padding = ''.padStart(pad * 2, ' ');
+                formatted += padding + node + '\r\n';
+                pad += indent;
+            });
+            return formatted.trim();
+        }
+        
+        applyPreset('light');
+    </script>
+</body>
+</html>
+
