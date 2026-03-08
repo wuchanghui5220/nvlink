@@ -4286,3 +4286,4 @@
 2026/03/08 14:44:53 [error] 28#28: *10084 open() "/usr/share/nginx/html/ppt/training/index4.html" failed (2: No such file or directory), client: 40.77.167.55, server: nvlink.vip, request: "GET /ppt/training/index4.html HTTP/1.1", host: "nvlink.vip"
 2026/03/08 15:06:51 [error] 28#28: *10090 open() "/usr/share/nginx/html/fapi/v1/order" failed (2: No such file or directory), client: 176.97.70.122, server: nvlink.vip, request: "GET /fapi/v1/order HTTP/1.1", host: "fapi.binance.com"
 2026/03/08 15:06:58 [error] 28#28: *10091 open() "/usr/share/nginx/html/ppt/gb200/index7.html" failed (2: No such file or directory), client: 52.167.144.150, server: nvlink.vip, request: "GET /ppt/gb200/index7.html HTTP/1.1", host: "nvlink.vip"
+2026/03/08 15:13:25 [error] 28#28: *10096 open() "/usr/share/nginx/html/.env" failed (2: No such file or directory), client: 136.0.207.173, server: nvlink.vip, request: "GET /.env HTTP/1.1", host: "52.194.182.25"
