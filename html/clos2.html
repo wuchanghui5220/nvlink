@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>3-Stage Clos Network | Dynamic Topology Controller</title>
+    <style>
+        body { margin: 0; background-color: #000; overflow: hidden; font-family: 'Inter', sans-serif; }
+        canvas { display: block; }
+        
+        /* 交互控制面板样式 */
+        #control-panel {
+            position: absolute; top: 20px; left: 20px;
+            background: rgba(10, 10, 10, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            padding: 15px;
+            width: 280px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            z-index: 100;
+        }
+        #title { color: #fff; font-size: 14px; letter-spacing: 1px; margin-bottom: 12px; font-weight: bold; }
+        .desc { color: #888; font-size: 11px; margin-bottom: 15px; line-height: 1.4; }
+        
+        button {
+            width: 100%;
+            background: #111;
+            color: #ccc;
+            border: 1px solid #333;
+            border-radius: 4px;
+            padding: 8px;
+            margin-bottom: 8px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+        }
+        button:hover { background: #222; border-color: #555; color: #fff; }
+        button.active { background: #004466; border-color: #00aaff; color: #fff; box-shadow: 0 0 10px rgba(0,170,255,0.4); }
+    </style>
+</head>
+<body>
+
+    <div id="control-panel">
+        <div id="title">TOPOLOGY CONTROLLER</div>
+        <div class="desc">点击下方按钮，动态修改 3级 Clos 网络（Leaf-Spine-Core）的物理连接策略。</div>
+        
+        <button id="btn-full" class="active" onclick="changeTopology('full')">
+            1. 标准 3级 Clos 全连接 (无阻塞)
+        </button>
+        <button id="btn-plane" onclick="changeTopology('plane')">
+            2. 单 Spine 平面连接 (带宽受限)
+        </button>
+        <button id="btn-sparse" onclick="changeTopology('sparse')">
+            3. 稀疏连接 (冗余不足)
+        </button>
+        <button id="btn-over" onclick="changeTopology('over')">
+            4. 过载全连接 (演示超大带宽)
+        </button>
+    </div>
+
+    <script src="three.min.js"></script>
+    <script src="OrbitControls.js"></script>
+
+    <script>
+        // --- 1. 场景基础初始化 (同前) ---
+        const scene = new THREE.Scene();
+        scene.fog = new THREE.Fog(0x000000, 30, 200);
+        const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(-45, 30, 60); // 侧上方的经典Clos视角
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        document.body.appendChild(renderer.domElement);
+
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+
+        // --- 2. 参数化配置 (匹配原图色值) ---
+        const config = {
+            leaf:  { color: 0xffffff, z: -15 },  // 底层：白
+            spine: { color: 0x00f2ff, z: 0 },    // 中层：青
+            core:  { color: 0xff00ff, z: 15 }    // 顶层：洋红
+        };
+
+        const planesPerLayer = 4;
+        const nodesPerPlane = 4;
+        const allNodes = []; // 存储坐标用于重新连线 [layerIndex][planeIndex][nodeIndex]
+
+        // 创建发光贴图函数
+        function createGlowTexture(colorStr) {
+            const canvas = document.createElement('canvas'); canvas.width = 64; canvas.height = 64;
+            const ctx = canvas.getContext('2d');
+            const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+            const c = new THREE.Color(colorStr);
+            gradient.addColorStop(0, `rgba(${c.r*255}, ${c.g*255}, ${c.b*255}, 1)`);
+            gradient.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.fillStyle = gradient; ctx.fillRect(0, 0, 64, 64);
+            const tex = new THREE.Texture(canvas); tex.needsUpdate = true;
+            return tex;
+        }
+
+        // --- 3. 构建静态节点 (不随交互改变) ---
+        const layerKeys = ['core', 'spine', 'leaf']; 
+        layerKeys.forEach((key, lIdx) => {
+            const layer = config[key];
+            allNodes[lIdx] = [];
+
+            for (let p = 0; p < planesPerLayer; p++) {
+                allNodes[lIdx][p] = [];
+                
+                // 计算平面的位置偏移
+                const planeX = p * 2.5;
+                const planeY = (p - 1.5) * 6;
+
+                // A. 绘制半透明玻璃平面
+                const planeGeom = new THREE.PlaneGeometry(20, 14);
+                const planeMat = new THREE.MeshPhongMaterial({
+                    color: 0x222222, transparent: true, opacity: 0.1, side: THREE.DoubleSide, depthWrite: false, emissive: layer.color, emissiveIntensity: 0.05
+                });
+                const plane = new THREE.Mesh(planeGeom, planeMat);
+                plane.position.set(planeX, planeY, layer.z);
+                scene.add(plane);
+
+                // B. 绘制节点
+                for (let n = 0; n < nodesPerPlane; n++) {
+                    const nodeX = planeX + (n - 1.5) * 4.5;
+                    const nodeY = planeY + 3;
+
+                    const sphGeom = new THREE.SphereGeometry(0.35, 16, 16);
+                    const sphMat = new THREE.MeshBasicMaterial({ color: layer.color });
+                    const node = new THREE.Mesh(sphGeom, sphMat);
+                    node.position.set(nodeX, nodeY, layer.z);
+                    scene.add(node);
+                    allNodes[lIdx][p][n] = node.position;
+
+                    // 节点外发光 Sprite
+                    const spriteMat = new THREE.SpriteMaterial({
+                        map: createGlowTexture(layer.color), blending: THREE.AdditiveBlending, transparent: true, opacity: 0.8
+                    });
+                    const sprite = new THREE.Sprite(spriteMat);
+                    sprite.scale.set(2, 2, 1);
+                    node.add(sprite);
+                }
+            }
+        });
+
+        // --- 4. 连线交互核心逻辑 ---
+
+        // 用于存储当前所有连线的数组，便于移除
+        let currentLines = [];
+
+        // 统一的发光线条绘制函数
+        function addGlowLine(v1, v2, color, opacity = 0.15) {
+            const geometry = new THREE.BufferGeometry().setFromPoints([v1, v2]);
+            const material = new THREE.LineBasicMaterial({
+                color: color, transparent: true, opacity: opacity, blending: THREE.AdditiveBlending
+                // 这里关键：不使用线宽，因为大多数浏览器不支持，转而通过 AdditiveBlending 增强发光
+            });
+            const line = new THREE.Line(geometry, material);
+            scene.add(line);
+            currentLines.push(line); // 记录这根线
+        }
+
+        // --- 核心拓扑生成函数 ---
+        function rebuildTopology(strategy = 'full') {
+            // A. 清除旧连线
+            currentLines.forEach(line => scene.remove(line));
+            currentLines = []; // 清空数组
+            console.log(`Rebuilding topology: ${strategy}`);
+
+            // B. 根据策略重新连接
+            if (strategy === 'full') {
+                // 1. 标准无阻塞 Clos 全连接 (Spine N 连到 Leaf 面 N)
+                // Spine 层 (index 1) 连接到 Leaf 层 (index 2)
+                for(let sp=0; sp<4; sp++) {
+                    for(let sn=0; sn<4; sn++) {
+                        for(let lp=0; lp<4; lp++) {
+                            addGlowLine(allNodes[1][sp][sn], allNodes[2][lp][sn], config.spine.color);
+                        }
+                    }
+                }
+                // Core (index 0) 连接到 Spine (index 1)
+                for(let cp=0; cp<4; cp++) {
+                    for(let cn=0; cn<4; cn++) {
+                        for(let sp=0; sp<4; sp++) {
+                            addGlowLine(allNodes[0][cp][cn], allNodes[1][sp][cn], config.core.color);
+                        }
+                    }
+                }
+            } else if (strategy === 'plane') {
+                // 2. 单 Spine 平面连接 (带宽受限)
+                // 演示：所有 Leaf 节点只连接到第 0 号 Spine 平面的四个节点上。
+                for(let lp=0; lp<4; lp++) {
+                    for(let ln=0; ln<4; ln++) {
+                        for(let sn=0; sn<4; sn++) {
+                            addGlowLine(allNodes[2][lp][ln], allNodes[1][0][sn], config.spine.color, 0.3); // 加强线条演示带宽
+                        }
+                    }
+                }
+                // Core 也只连 Spine 0
+                for(let cp=0; cp<4; cp++) {
+                    for(let cn=0; cn<4; cn++) {
+                        addGlowLine(allNodes[0][cp][cn], allNodes[1][0][0], config.core.color, 0.3); // 演示严重的阻塞
+                    }
+                }
+            } else if (strategy === 'sparse') {
+                // 3. 稀疏连接 (冗余不足)
+                // 演示：Leaf 平面0只连Spine平面0，Leaf平面1只连Spine平面1
+                for(let p=0; p<4; p++) {
+                    for(let ln=0; ln<4; ln++) {
+                        // Leaf 层的每个节点的 n 号端口，只连接到对应 Spine 层的 n 号节点
+                        addGlowLine(allNodes[2][p][ln], allNodes[1][p][ln], config.spine.color, 0.4); 
+                        addGlowLine(allNodes[1][p][ln], allNodes[0][p][ln], config.core.color, 0.4); 
+                    }
+                }
+            } else if (strategy === 'over') {
+                // 4. 过载全连接 (演示超大带宽)
+                // 演示：在标准全连接基础上，将线条加亮，模拟超大带宽需求
+                for(let sp=0; sp<4; sp++) {
+                    for(let sn=0; sn<4; sn++) {
+                        for(let lp=0; lp<4; lp++) {
+                            addGlowLine(allNodes[1][sp][sn], allNodes[2][lp][sn], config.spine.color, 0.6); // 高亮度
+                        }
+                    }
+                }
+                for(let cp=0; cp<4; cp++) {
+                    for(let cn=0; cn<4; cn++) {
+                        for(let sp=0; sp<4; sp++) {
+                            addGlowLine(allNodes[0][cp][cn], allNodes[1][sp][cn], config.core.color, 0.6); // 高亮度
+                        }
+                    }
+                }
+            }
+        }
+
+        // --- 5. 环境灯光与动画 (同前) ---
+        scene.add(new THREE.AmbientLight(0xffffff, 0.3));
+        const pointLight = new THREE.PointLight(0xffffff, 1); pointLight.position.set(20, 50, 20); scene.add(pointLight);
+
+        function animate() { requestAnimationFrame(animate); controls.update(); renderer.render(scene, camera); }
+        animate();
+
+        // 窗口自适应
+        window.addEventListener('resize', () => { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); });
+
+        // --- 6. 按钮交互函数 ---
+        function changeTopology(strategy) {
+            rebuildTopology(strategy); // 调用3D重绘
+
+            // 更新按钮 UI 状态
+            const buttons = document.querySelectorAll('button');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${strategy}`).classList.add('active');
+        }
+
+        // --- 7. 初始加载 ---
+        rebuildTopology('full'); // 默认加载全连接
+
+    </script>
+</body>
+</html>
