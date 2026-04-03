@@ -1,0 +1,1337 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <script>if(sessionStorage.getItem('nv_net_auth')!=='524f544a8b79f41c7c60c2b1a797af2089e20cbf856d715f39ee68577ad2c344'){location.replace('../')}</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GPU 集群 IDC 电力计算器</title>
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+<style>
+  [v-cloak] { display: none; }
+  body { font-family: 'Inter', system-ui, -apple-system, sans-serif; transition: background-color 0.3s, color 0.3s; }
+  /* number input arrows */
+  input[type=number]::-webkit-inner-spin-button { opacity: 1; }
+  /* transitions */
+  .fade-enter-active, .fade-leave-active { transition: all 0.3s ease; }
+  .fade-enter-from, .fade-leave-to { opacity: 0; max-height: 0; }
+  .fade-enter-to, .fade-leave-from { opacity: 1; max-height: 1000px; }
+  /* card hover */
+  .stat-card { transition: transform 0.15s, box-shadow 0.15s; }
+  /* theme transition */
+  section, header, div, footer, .stat-card { transition: background-color 0.3s, border-color 0.3s, color 0.3s; }
+
+  /* ===== Dark mode scrollbar ===== */
+  .dark ::-webkit-scrollbar { width: 6px; }
+  .dark ::-webkit-scrollbar-track { background: #1e293b; }
+  .dark ::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
+  .dark .stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.3); }
+
+  /* ===== Light mode overrides ===== */
+  html:not(.dark) ::-webkit-scrollbar { width: 6px; }
+  html:not(.dark) ::-webkit-scrollbar-track { background: #f1f5f9; }
+  html:not(.dark) ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+  html:not(.dark) .stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.08); }
+
+  /* backgrounds */
+  html:not(.dark) .bg-slate-900 { background-color: #f1f5f9 !important; }
+  html:not(.dark) .bg-slate-800 { background-color: #ffffff !important; }
+  html:not(.dark) .bg-slate-800\/80 { background-color: rgba(255,255,255,0.9) !important; }
+  html:not(.dark) .bg-slate-700 { background-color: #e2e8f0 !important; }
+  html:not(.dark) .bg-slate-700\/50 { background-color: #f1f5f9 !important; }
+  html:not(.dark) .bg-slate-900\/60 { background-color: #f8fafc !important; }
+  html:not(.dark) .bg-brand-600\/20 { background-color: rgba(26,111,245,0.1) !important; }
+
+  /* text */
+  html:not(.dark) .text-white { color: #0f172a !important; }
+  html:not(.dark) .text-slate-200 { color: #334155 !important; }
+  html:not(.dark) .text-slate-300 { color: #475569 !important; }
+  html:not(.dark) .text-slate-400 { color: #64748b !important; }
+  html:not(.dark) .text-slate-500 { color: #94a3b8 !important; }
+  html:not(.dark) .text-slate-600 { color: #94a3b8 !important; }
+
+  /* borders */
+  html:not(.dark) .border-slate-700 { border-color: #e2e8f0 !important; }
+  html:not(.dark) .border-slate-600 { border-color: #cbd5e1 !important; }
+  html:not(.dark) .border-slate-600\/50 { border-color: #e2e8f0 !important; }
+  html:not(.dark) .border-slate-700\/50 { border-color: #e2e8f0 !important; }
+  html:not(.dark) .hover\:border-slate-500:hover { border-color: #94a3b8 !important; }
+  html:not(.dark) .border-b.border-slate-700 { border-color: #e2e8f0 !important; }
+  html:not(.dark) hr { border-color: #e2e8f0 !important; }
+
+  /* backdrop */
+  html:not(.dark) .backdrop-blur { backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+
+  /* theme toggle */
+  .theme-toggle { position: relative; width: 44px; height: 24px; border-radius: 12px; cursor: pointer; border: none; padding: 0; transition: background-color 0.3s; }
+  .dark .theme-toggle { background-color: #334155; }
+  html:not(.dark) .theme-toggle { background-color: #cbd5e1; }
+  .theme-toggle-knob { position: absolute; top: 2px; width: 20px; height: 20px; border-radius: 50%; transition: transform 0.3s, background-color 0.3s; display: flex; align-items: center; justify-content: center; }
+  .dark .theme-toggle-knob { transform: translateX(22px); background-color: #1e293b; }
+  html:not(.dark) .theme-toggle-knob { transform: translateX(2px); background-color: #ffffff; }
+  .theme-toggle-knob svg { width: 14px; height: 14px; }
+  .dark .theme-toggle-knob svg { color: #fbbf24; }
+  html:not(.dark) .theme-toggle-knob svg { color: #f59e0b; }
+</style>
+<script>
+tailwind.config = {
+  darkMode: 'class',
+  theme: {
+    extend: {
+      colors: {
+        brand: { 50:'#eef7ff', 100:'#d9edff', 200:'#bce0ff', 300:'#8eccff', 400:'#59b0ff', 500:'#3390ff', 600:'#1a6ff5', 700:'#1459e1', 800:'#1749b6', 900:'#173f8f' }
+      }
+    }
+  }
+}
+</script>
+</head>
+<body class="bg-slate-900 text-slate-200 min-h-screen">
+<div id="app" v-cloak>
+
+  <!-- Header -->
+  <header class="bg-slate-800/80 backdrop-blur border-b border-slate-700 sticky top-0 z-50">
+    <div class="max-w-[1600px] mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 bg-brand-600 rounded-lg flex items-center justify-center text-white font-bold text-sm">G</div>
+        <h1 class="text-lg font-semibold text-white">GPU 集群 IDC 电力计算器</h1>
+      </div>
+      <div class="flex items-center gap-4">
+        <span class="text-xs text-slate-400">数据基准：NVIDIA HGX 官方规格 | 2026-04</span>
+        <button class="theme-toggle" @click="toggleDark" :title="darkMode ? '切换到浅色模式' : '切换到深色模式'">
+          <div class="theme-toggle-knob">
+            <svg v-if="darkMode" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+            <svg v-else fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.25a.75.75 0 01.75.75v2.25a.75.75 0 01-1.5 0V3a.75.75 0 01.75-.75zM7.5 12a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zm11.394-5.834a.75.75 0 00-1.06-1.06l-1.591 1.59a.75.75 0 101.06 1.061l1.591-1.59zM12 18a.75.75 0 01.75.75V21a.75.75 0 01-1.5 0v-2.25A.75.75 0 0112 18zm5.834-1.166a.75.75 0 00-1.06 1.06l1.59 1.591a.75.75 0 101.061-1.06l-1.59-1.591zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12zm.166 5.834a.75.75 0 001.06 1.06l1.591-1.59a.75.75 0 10-1.06-1.061l-1.591 1.59zm12.668-11.668a.75.75 0 00-1.06 1.06l1.59 1.591a.75.75 0 001.061-1.06l-1.59-1.591zM6 12a.75.75 0 01-.75.75H3a.75.75 0 010-1.5h2.25A.75.75 0 016 12z"/></svg>
+          </div>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="max-w-[1600px] mx-auto px-4 sm:px-6 py-6">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+      <!-- ==================== Left Panel: Inputs ==================== -->
+      <div class="lg:col-span-4 xl:col-span-3 space-y-4">
+
+        <!-- GPU Selection -->
+        <section class="bg-slate-800 rounded-xl p-5 border border-slate-700">
+          <h2 class="text-sm font-semibold text-brand-400 uppercase tracking-wider mb-3">GPU 选型</h2>
+
+          <div class="grid grid-cols-4 gap-2 mb-3">
+            <button v-for="m in gpuModels" :key="m.id"
+              @click="input.gpuModel = m.id"
+              :class="[
+                'py-2 px-1 rounded-lg text-xs font-medium border transition-all',
+                input.gpuModel === m.id
+                  ? 'bg-brand-600/20 border-brand-500 text-brand-300'
+                  : 'bg-slate-700/50 border-slate-600 text-slate-400 hover:border-slate-500'
+              ]">
+              {{ m.id }}
+            </button>
+          </div>
+
+          <!-- GPU specs summary (one line) + collapsible detail -->
+          <div class="text-xs text-slate-400 mb-1 flex items-center justify-between">
+            <span>{{ currentGpu.arch }} · {{ currentGpu.tdp }}W · {{ currentGpu.memoryGB }}GB {{ currentGpu.memoryType }}</span>
+            <button @click="showGpuSpecs = !showGpuSpecs"
+              class="text-[10px] text-slate-500 hover:text-brand-400 transition-colors flex items-center gap-1">
+              {{ showGpuSpecs ? '收起' : '详情' }}
+              <svg :class="['w-3 h-3 transition-transform', showGpuSpecs ? 'rotate-180' : '']" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Collapsible GPU info badge -->
+          <div v-show="showGpuSpecs" class="bg-slate-700/50 rounded-lg p-3 mb-3 text-xs space-y-1.5">
+            <div class="flex justify-between"><span class="text-slate-400">架构</span><span class="text-slate-200">{{ currentGpu.arch }}</span></div>
+            <div class="flex justify-between"><span class="text-slate-400">单 GPU TDP</span><span class="text-slate-200">{{ currentGpu.tdp }} W</span></div>
+            <div class="flex justify-between"><span class="text-slate-400">整机功耗 (8-GPU)</span><span class="text-slate-200">{{ currentGpu.systemPower }} kW</span></div>
+            <div class="flex justify-between"><span class="text-slate-400">显存 (单 GPU)</span><span class="text-slate-200">{{ currentGpu.memoryGB }} GB {{ currentGpu.memoryType }}</span></div>
+            <div class="mt-2 pt-2 border-t border-slate-600/50">
+              <table class="w-full text-xs">
+                <thead>
+                  <tr class="text-slate-500">
+                    <th class="text-left font-medium pb-1">精度</th>
+                    <th class="text-right font-medium pb-1">Dense</th>
+                    <th class="text-right font-medium pb-1">Sparse</th>
+                  </tr>
+                </thead>
+                <tbody class="text-slate-300">
+                  <tr>
+                    <td class="text-slate-400 py-0.5">FP16</td>
+                    <td class="text-right tabular-nums">{{ fmtFlops(currentGpu.fp16Dense) }}</td>
+                    <td class="text-right tabular-nums text-slate-400">{{ fmtFlops(currentGpu.fp16Sparse) }}</td>
+                  </tr>
+                  <tr>
+                    <td class="text-slate-400 py-0.5">FP8</td>
+                    <td class="text-right tabular-nums">{{ fmtFlops(currentGpu.fp8Dense) }}</td>
+                    <td class="text-right tabular-nums text-slate-400">{{ fmtFlops(currentGpu.fp8Sparse) }}</td>
+                  </tr>
+                  <tr>
+                    <td class="text-slate-400 py-0.5">FP4</td>
+                    <td class="text-right tabular-nums">{{ currentGpu.fp4Dense ? fmtFlops(currentGpu.fp4Dense) : '—' }}</td>
+                    <td class="text-right tabular-nums text-slate-400">{{ currentGpu.fp4Sparse ? fmtFlops(currentGpu.fp4Sparse) : '—' }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- GPU Count / Network Equipment (Tabbed) -->
+        <section class="bg-slate-800 rounded-xl border border-slate-700">
+          <!-- Tab Header -->
+          <div class="flex border-b border-slate-700">
+            <button @click="leftTab = 'gpu'"
+              :class="['flex-1 py-2.5 text-xs font-semibold uppercase tracking-wider transition-colors',
+                leftTab === 'gpu' ? 'text-brand-400 border-b-2 border-brand-500' : 'text-slate-500 hover:text-slate-300']">
+              GPU 总数
+            </button>
+            <button @click="leftTab = 'network'"
+              :class="['flex-1 py-2.5 text-xs font-semibold uppercase tracking-wider transition-colors',
+                leftTab === 'network' ? 'text-brand-400 border-b-2 border-brand-500' : 'text-slate-500 hover:text-slate-300']">
+              网络设备
+              <span class="ml-1 text-[10px] text-slate-500 font-normal">{{ fmt(networkTopo.totalNetPower) }}kW</span>
+            </button>
+          </div>
+
+          <!-- Tab: GPU Count -->
+          <div v-show="leftTab === 'gpu'" class="p-5">
+            <div class="flex items-center justify-between mb-1">
+              <label class="text-xs text-slate-400">{{ inputByMachine ? '服务器台数' : 'GPU 总数' }}</label>
+              <button @click="toggleInputMode"
+                class="flex items-center gap-1.5 text-[10px] text-slate-500 hover:text-brand-400 transition-colors">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/></svg>
+                切换为{{ inputByMachine ? 'GPU 数' : '服务器数' }}
+              </button>
+            </div>
+            <div class="flex items-center gap-2 mb-1">
+              <input type="range"
+                :value="inputByMachine ? machineInput : input.gpuCount"
+                @input="onCountSlider($event)"
+                :min="inputByMachine ? 1 : 8"
+                :max="inputByMachine ? 12500 : 100000"
+                :step="inputByMachine ? 1 : 8"
+                class="flex-1 h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-brand-500">
+              <input type="number"
+                :value="inputByMachine ? machineInput : input.gpuCount"
+                @input="onCountInput($event)"
+                :min="inputByMachine ? 1 : 8"
+                :step="inputByMachine ? 1 : 8"
+                class="w-24 bg-slate-700 border border-slate-600 rounded-lg px-3 py-1.5 text-sm text-right focus:border-brand-500 focus:outline-none">
+            </div>
+            <div class="text-xs text-slate-500 mb-3">
+              <span v-if="inputByMachine">{{ input.gpuCount }} GPU（{{ currentGpu.gpuPerMachine }} GPU/台），{{ rackCount }} 个机柜</span>
+              <span v-else>{{ machineCount }} 台 DGX/HGX，{{ rackCount }} 个机柜</span>
+            </div>
+
+            <!-- Total Compute -->
+            <div class="bg-slate-900/60 rounded-lg p-3 text-xs border border-slate-700/50">
+              <div class="text-slate-400 font-medium mb-2">集群总算力 ({{ input.gpuCount }} GPU)</div>
+              <table class="w-full text-xs">
+                <thead>
+                  <tr class="text-slate-500">
+                    <th class="text-left font-medium pb-1">精度</th>
+                    <th class="text-right font-medium pb-1">Dense</th>
+                    <th class="text-right font-medium pb-1">Sparse</th>
+                  </tr>
+                </thead>
+                <tbody class="text-slate-200">
+                  <tr>
+                    <td class="text-slate-400 py-0.5">FP16</td>
+                    <td class="text-right tabular-nums font-medium">{{ fmtPflops(totalCompute.fp16Dense) }}</td>
+                    <td class="text-right tabular-nums text-slate-400">{{ fmtPflops(totalCompute.fp16Sparse) }}</td>
+                  </tr>
+                  <tr>
+                    <td class="text-slate-400 py-0.5">FP8</td>
+                    <td class="text-right tabular-nums font-medium">{{ fmtPflops(totalCompute.fp8Dense) }}</td>
+                    <td class="text-right tabular-nums text-slate-400">{{ fmtPflops(totalCompute.fp8Sparse) }}</td>
+                  </tr>
+                  <tr>
+                    <td class="text-slate-400 py-0.5">FP4</td>
+                    <td class="text-right tabular-nums font-medium">{{ totalCompute.fp4Dense > 0 ? fmtPflops(totalCompute.fp4Dense) : '—' }}</td>
+                    <td class="text-right tabular-nums text-slate-400">{{ totalCompute.fp4Sparse > 0 ? fmtPflops(totalCompute.fp4Sparse) : '—' }}</td>
+                  </tr>
+                </tbody>
+              </table>
+              <hr class="border-slate-700/50 my-2">
+              <div class="flex justify-between">
+                <span class="text-slate-400">总显存</span>
+                <span class="text-brand-300 font-medium">{{ fmt(result.totalMemoryTB) }} TB</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab: Network Equipment -->
+          <div v-show="leftTab === 'network'" class="p-5">
+            <label class="block text-xs text-slate-400 mb-1">计算网络交换机</label>
+            <select v-model="input.computeSwitch"
+              class="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 mb-3 focus:border-brand-500 focus:outline-none">
+              <option v-for="s in computeSwitchModels" :key="s.id" :value="s.id">{{ s.label }}</option>
+            </select>
+
+            <div class="bg-slate-700/50 rounded-lg p-3 text-xs space-y-1.5">
+              <div class="text-slate-400 font-medium mb-1">计算网络拓扑 (Leaf-Spine)</div>
+              <div class="flex justify-between">
+                <span class="text-slate-500">Leaf 交换机</span>
+                <span class="text-slate-200">{{ networkTopo.leafCount }} 台 × {{ currentSwitch.tdp.toLocaleString() }}W</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-500">Spine 交换机</span>
+                <span class="text-slate-200">{{ networkTopo.spineCount }} 台 × {{ currentSwitch.tdp.toLocaleString() }}W</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-500">计算网络功耗</span>
+                <span class="text-slate-200 font-medium">{{ fmt(networkTopo.computeNetPower) }} kW</span>
+              </div>
+
+              <hr class="border-slate-600/50">
+
+              <div class="flex items-center justify-between">
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" v-model="input.includeStorageNet"
+                    class="w-3.5 h-3.5 rounded bg-slate-600 border-slate-500 text-brand-500 focus:ring-brand-500 focus:ring-offset-0">
+                  <span class="text-slate-400">存储网络</span>
+                </label>
+                <span class="text-slate-200" v-if="input.includeStorageNet">{{ fmt(networkTopo.storageNetPower) }} kW</span>
+                <span class="text-slate-500" v-else>未启用</span>
+              </div>
+
+              <div class="flex items-center justify-between">
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" v-model="input.includeBusinessNet"
+                    class="w-3.5 h-3.5 rounded bg-slate-600 border-slate-500 text-brand-500 focus:ring-brand-500 focus:ring-offset-0">
+                  <span class="text-slate-400">业务网络</span>
+                </label>
+                <span class="text-slate-200" v-if="input.includeBusinessNet">{{ fmt(networkTopo.businessNetPower) }} kW</span>
+                <span class="text-slate-500" v-else>未启用</span>
+              </div>
+
+              <hr class="border-slate-600/50">
+              <div class="flex justify-between font-medium">
+                <span class="text-slate-300">网络设备总功耗</span>
+                <span class="text-brand-300">{{ fmt(networkTopo.totalNetPower) }} kW</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Cost Parameters (moved above Cooling) -->
+        <section class="bg-slate-800 rounded-xl p-5 border border-slate-700">
+          <h2 class="text-sm font-semibold text-brand-400 uppercase tracking-wider mb-4">成本参数</h2>
+
+          <label class="block text-xs text-slate-400 mb-1">部署地区</label>
+          <select v-model="input.region" @change="setRegion(input.region)"
+            class="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-200 mb-3 focus:border-brand-500 focus:outline-none">
+            <option v-for="r in regions" :key="r.id" :value="r.id">{{ r.label }}{{ r.price !== null ? '（' + r.price + ' 元/kWh）' : '' }}</option>
+          </select>
+
+          <div class="space-y-3">
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="text-slate-400">电价</span>
+                <span class="text-slate-300">{{ input.electricityPrice }} 元/kWh</span>
+              </div>
+              <input type="range" v-model.number="input.electricityPrice" min="0.2" max="1.5" step="0.01"
+                class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-brand-500">
+              <div class="flex justify-between text-xs text-slate-600 mt-0.5">
+                <span>西部 0.3</span><span>二线 0.6</span><span>一线 1.0</span>
+              </div>
+            </div>
+
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="text-slate-400">平均负载率</span>
+                <span class="text-slate-300">{{ (input.avgLoadRatio * 100).toFixed(0) }}%</span>
+              </div>
+              <input type="range" v-model.number="input.avgLoadRatio" min="0.2" max="1.0" step="0.01"
+                class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-brand-500">
+              <div class="flex justify-between text-xs text-slate-600 mt-0.5">
+                <span>推理 40%</span><span>混合 70%</span><span>训练 95%</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Cooling & Power -->
+        <section class="bg-slate-800 rounded-xl p-5 border border-slate-700">
+          <h2 class="text-sm font-semibold text-brand-400 uppercase tracking-wider mb-4">制冷与供电</h2>
+
+          <label class="block text-xs text-slate-400 mb-1">制冷方式</label>
+          <div class="grid grid-cols-3 gap-2 mb-4">
+            <button v-for="c in coolingTypes" :key="c.id"
+              @click="setCooling(c.id)"
+              :class="[
+                'py-2 px-2 rounded-lg text-xs font-medium border transition-all',
+                input.coolingType === c.id
+                  ? 'bg-brand-600/20 border-brand-500 text-brand-300'
+                  : 'bg-slate-700/50 border-slate-600 text-slate-400 hover:border-slate-500'
+              ]">
+              {{ c.label }}
+            </button>
+          </div>
+
+          <label class="block text-xs text-slate-400 mb-1">供电方式</label>
+          <div class="grid grid-cols-3 gap-2 mb-4">
+            <button v-for="u in upsTypes" :key="u.id"
+              @click="setUps(u.id)"
+              :class="[
+                'py-2 px-2 rounded-lg text-xs font-medium border transition-all',
+                input.upsType === u.id
+                  ? 'bg-brand-600/20 border-brand-500 text-brand-300'
+                  : 'bg-slate-700/50 border-slate-600 text-slate-400 hover:border-slate-500'
+              ]">
+              {{ u.label }}
+            </button>
+          </div>
+
+          <label class="block text-xs text-slate-400 mb-1">冗余等级</label>
+          <div class="grid grid-cols-2 gap-2">
+            <button v-for="r in ['N+1','2N']" :key="r"
+              @click="input.redundancy = r"
+              :class="[
+                'py-2 px-2 rounded-lg text-xs font-medium border transition-all',
+                input.redundancy === r
+                  ? 'bg-brand-600/20 border-brand-500 text-brand-300'
+                  : 'bg-slate-700/50 border-slate-600 text-slate-400 hover:border-slate-500'
+              ]">
+              {{ r }}
+            </button>
+          </div>
+        </section>
+
+        <!-- Advanced Parameters (collapsible) -->
+        <section class="bg-slate-800 rounded-xl border border-slate-700">
+          <button @click="showAdvanced = !showAdvanced"
+            class="w-full p-5 flex items-center justify-between text-sm font-semibold text-slate-400 hover:text-slate-200 transition-colors">
+            <span class="text-brand-400 uppercase tracking-wider text-xs">高级参数</span>
+            <svg :class="['w-4 h-4 transition-transform', showAdvanced ? 'rotate-180' : '']" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+          <div v-show="showAdvanced" class="px-5 pb-5 space-y-3">
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs text-slate-500 mb-1">制冷 COP</label>
+                <input type="number" v-model.number="input.coolingCop" step="0.5" min="1"
+                  class="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-1.5 text-sm focus:border-brand-500 focus:outline-none">
+              </div>
+              <div>
+                <label class="block text-xs text-slate-500 mb-1">UPS 效率</label>
+                <input type="number" v-model.number="input.upsEfficiency" step="0.01" min="0.85" max="0.99"
+                  class="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-1.5 text-sm focus:border-brand-500 focus:outline-none">
+              </div>
+              <div>
+                <label class="block text-xs text-slate-500 mb-1">变压器效率</label>
+                <input type="number" v-model.number="input.transformerEfficiency" step="0.01" min="0.9" max="0.99"
+                  class="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-1.5 text-sm focus:border-brand-500 focus:outline-none">
+              </div>
+              <div>
+                <label class="block text-xs text-slate-500 mb-1">PDU 损耗率</label>
+                <input type="number" v-model.number="input.pduLossRate" step="0.005" min="0" max="0.1"
+                  class="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-1.5 text-sm focus:border-brand-500 focus:outline-none">
+              </div>
+              <div>
+                <label class="block text-xs text-slate-500 mb-1">其他损耗率</label>
+                <input type="number" v-model.number="input.otherLossRate" step="0.005" min="0" max="0.1"
+                  class="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-1.5 text-sm focus:border-brand-500 focus:outline-none">
+              </div>
+              <div>
+                <label class="block text-xs text-slate-500 mb-1">功率因数</label>
+                <input type="number" v-model.number="input.powerFactor" step="0.01" min="0.8" max="1.0"
+                  class="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-1.5 text-sm focus:border-brand-500 focus:outline-none">
+              </div>
+            </div>
+            <hr class="border-slate-700">
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs text-slate-500 mb-1">电池后备 (分钟)</label>
+                <input type="number" v-model.number="input.batteryBackupMin" step="5" min="5" max="120"
+                  class="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-1.5 text-sm focus:border-brand-500 focus:outline-none">
+              </div>
+              <div>
+                <label class="block text-xs text-slate-500 mb-1">柴发后备 (小时)</label>
+                <input type="number" v-model.number="input.generatorBackupHours" step="1" min="1" max="168"
+                  class="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-1.5 text-sm focus:border-brand-500 focus:outline-none">
+              </div>
+              <div>
+                <label class="block text-xs text-slate-500 mb-1">碳排放因子</label>
+                <input type="number" v-model.number="input.carbonFactor" step="0.01" min="0" max="1.0"
+                  class="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-1.5 text-sm focus:border-brand-500 focus:outline-none">
+              </div>
+              <div>
+                <label class="block text-xs text-slate-500 mb-1">WUE (L/kWh)</label>
+                <input type="number" v-model.number="input.wue" step="0.1" min="0" max="3.0"
+                  class="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-1.5 text-sm focus:border-brand-500 focus:outline-none">
+              </div>
+              <div>
+                <label class="block text-xs text-slate-500 mb-1">水价 (元/吨)</label>
+                <input type="number" v-model.number="input.waterCost" step="0.5" min="0"
+                  class="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-1.5 text-sm focus:border-brand-500 focus:outline-none">
+              </div>
+              <div>
+                <label class="block text-xs text-slate-500 mb-1">单柜台数</label>
+                <input type="number" v-model.number="input.machinesPerRack" step="1" min="1" max="8"
+                  class="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-1.5 text-sm focus:border-brand-500 focus:outline-none">
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- ==================== Right Panel: Results ==================== -->
+      <div class="lg:col-span-8 xl:col-span-9 space-y-6">
+
+        <!-- KPI Cards Row -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-3">
+          <div class="stat-card bg-slate-800 rounded-xl p-4 border border-slate-700">
+            <div class="text-xs text-slate-400 mb-1">IT 总功耗</div>
+            <div class="text-xl font-bold text-white">{{ fmt(result.itPower) }}</div>
+            <div class="text-xs text-slate-500">kW</div>
+          </div>
+          <div class="stat-card bg-slate-800 rounded-xl p-4 border border-slate-700">
+            <div class="text-xs text-slate-400 mb-1">数据中心总用电</div>
+            <div class="text-xl font-bold text-brand-400">{{ result.totalPower >= 1000 ? fmt(result.totalPower / 1000) + ' MW' : fmt(result.totalPower) + ' kW' }}</div>
+            <div class="text-xs text-slate-500">含制冷+损耗</div>
+          </div>
+          <div class="stat-card bg-slate-800 rounded-xl p-4 border border-slate-700">
+            <div class="text-xs text-slate-400 mb-1">PUE</div>
+            <div class="text-xl font-bold" :class="result.pue <= 1.2 ? 'text-green-400' : result.pue <= 1.4 ? 'text-yellow-400' : 'text-red-400'">{{ result.pue.toFixed(3) }}</div>
+            <div class="text-xs text-slate-500">{{ result.pue <= 1.2 ? '优秀' : result.pue <= 1.4 ? '良好' : '待优化' }}</div>
+          </div>
+          <div class="stat-card bg-slate-800 rounded-xl p-4 border border-slate-700">
+            <div class="text-xs text-slate-400 mb-1">机柜数</div>
+            <div class="text-xl font-bold text-white">{{ rackCount }}</div>
+            <div class="text-xs text-slate-500">{{ input.machinesPerRack }} 台/柜</div>
+          </div>
+          <div class="stat-card bg-slate-800 rounded-xl p-4 border border-slate-700">
+            <div class="text-xs text-slate-400 mb-1">年电费</div>
+            <div class="text-xl font-bold text-amber-400">{{ fmt(result.annualCost) }}</div>
+            <div class="text-xs text-slate-500">万元/年</div>
+          </div>
+          <div class="stat-card bg-slate-800 rounded-xl p-4 border border-slate-700">
+            <div class="text-xs text-slate-400 mb-1">单卡时电费</div>
+            <div class="text-xl font-bold text-white">{{ result.costPerGpuHour.toFixed(2) }}</div>
+            <div class="text-xs text-slate-500">元/GPU·h</div>
+          </div>
+        </div>
+
+        <!-- Charts Row 1 -->
+        <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          <!-- Power Breakdown Pie -->
+          <div class="bg-slate-800 rounded-xl p-5 border border-slate-700">
+            <h3 class="text-sm font-semibold text-slate-300 mb-4">功耗分解</h3>
+            <div class="relative" style="height: 280px;">
+              <canvas ref="pieChart"></canvas>
+            </div>
+          </div>
+          <!-- GPU Model Comparison Bar -->
+          <div class="bg-slate-800 rounded-xl p-5 border border-slate-700">
+            <h3 class="text-sm font-semibold text-slate-300 mb-4">不同 GPU 型号年电费对比 (同等 {{ input.gpuCount }} 卡)</h3>
+            <div class="relative" style="height: 280px;">
+              <canvas ref="barChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts Row 2: Region Comparison -->
+        <div class="bg-slate-800 rounded-xl p-5 border border-slate-700">
+          <h3 class="text-sm font-semibold text-slate-300 mb-4">
+            各地区年电费对比（{{ currentGpu.id }} × {{ input.gpuCount }} 卡）
+          </h3>
+          <div class="relative" style="height: 320px;">
+            <canvas ref="regionChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Detailed Results -->
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+
+          <!-- Power Details -->
+          <div class="bg-slate-800 rounded-xl p-5 border border-slate-700">
+            <h3 class="text-sm font-semibold text-brand-400 uppercase tracking-wider mb-4">电力详情</h3>
+            <dl class="space-y-2 text-sm">
+              <div class="flex justify-between">
+                <dt class="text-slate-400">服务器功耗</dt>
+                <dd class="text-slate-200">{{ fmt(result.serverPower) }} kW</dd>
+              </div>
+              <div class="flex justify-between">
+                <dt class="text-slate-400">网络设备功耗</dt>
+                <dd class="text-slate-200">{{ fmt(result.netPower) }} kW</dd>
+              </div>
+              <div class="flex justify-between text-slate-300 font-medium">
+                <dt>IT 合计</dt>
+                <dd>{{ fmt(result.itPower) }} kW</dd>
+              </div>
+              <hr class="border-slate-700">
+              <div class="flex justify-between">
+                <dt class="text-slate-400">制冷功耗</dt>
+                <dd class="text-slate-200">{{ fmt(result.coolingPower) }} kW</dd>
+              </div>
+              <div class="flex justify-between">
+                <dt class="text-slate-400">UPS 损耗</dt>
+                <dd class="text-slate-200">{{ fmt(result.upsLoss) }} kW</dd>
+              </div>
+              <div class="flex justify-between">
+                <dt class="text-slate-400">变压器损耗</dt>
+                <dd class="text-slate-200">{{ fmt(result.transformerLoss) }} kW</dd>
+              </div>
+              <div class="flex justify-between">
+                <dt class="text-slate-400">PDU 损耗</dt>
+                <dd class="text-slate-200">{{ fmt(result.pduLoss) }} kW</dd>
+              </div>
+              <div class="flex justify-between">
+                <dt class="text-slate-400">其他损耗</dt>
+                <dd class="text-slate-200">{{ fmt(result.otherLoss) }} kW</dd>
+              </div>
+              <hr class="border-slate-700">
+              <div class="flex justify-between font-semibold">
+                <dt class="text-slate-300">总用电</dt>
+                <dd class="text-brand-400">{{ fmt(result.totalPower) }} kW</dd>
+              </div>
+              <div class="flex justify-between font-semibold">
+                <dt class="text-slate-300">PUE</dt>
+                <dd class="text-brand-400">{{ result.pue.toFixed(3) }}</dd>
+              </div>
+            </dl>
+          </div>
+
+          <!-- Infrastructure -->
+          <div class="bg-slate-800 rounded-xl p-5 border border-slate-700">
+            <h3 class="text-sm font-semibold text-brand-400 uppercase tracking-wider mb-4">基础设施</h3>
+            <dl class="space-y-2 text-sm">
+              <div class="flex justify-between">
+                <dt class="text-slate-400">服务器台数</dt>
+                <dd class="text-slate-200">{{ machineCount }} 台</dd>
+              </div>
+              <div class="flex justify-between">
+                <dt class="text-slate-400">机柜数</dt>
+                <dd class="text-slate-200">{{ rackCount }} 个</dd>
+              </div>
+              <div class="flex justify-between">
+                <dt class="text-slate-400">单柜 IT 功耗</dt>
+                <dd class="text-slate-200">{{ fmt(result.rackPower) }} kW</dd>
+              </div>
+              <div class="flex justify-between">
+                <dt class="text-slate-400">变压器容量</dt>
+                <dd class="text-slate-200">{{ fmt(result.transformerCapacity) }} kVA</dd>
+              </div>
+              <div class="flex justify-between">
+                <dt class="text-slate-400">柴发容量</dt>
+                <dd class="text-slate-200">{{ fmt(result.generatorCapacity) }} kVA</dd>
+              </div>
+              <div class="flex justify-between">
+                <dt class="text-slate-400">柴发台数 (含备用)</dt>
+                <dd class="text-slate-200">{{ result.generatorCount }} 台</dd>
+              </div>
+              <div class="flex justify-between">
+                <dt class="text-slate-400">储油量</dt>
+                <dd class="text-slate-200">{{ fmt(result.fuelReserve / 1000) }} 吨</dd>
+              </div>
+              <div class="flex justify-between">
+                <dt class="text-slate-400">UPS 电池容量</dt>
+                <dd class="text-slate-200">{{ fmt(result.batteryCapacity) }} kWh</dd>
+              </div>
+              <hr class="border-slate-700">
+              <div class="flex justify-between">
+                <dt class="text-slate-400">机房面积估算</dt>
+                <dd class="text-slate-200">{{ fmt(result.floorArea) }} m²</dd>
+              </div>
+              <div class="flex justify-between">
+                <dt class="text-slate-400">楼板承重要求</dt>
+                <dd class="text-slate-200">&ge; {{ result.floorLoad }} kN/m²</dd>
+              </div>
+            </dl>
+          </div>
+
+          <!-- Annual Cost & Environment -->
+          <div class="bg-slate-800 rounded-xl p-5 border border-slate-700">
+            <h3 class="text-sm font-semibold text-brand-400 uppercase tracking-wider mb-4">年度成本与环境</h3>
+            <dl class="space-y-2 text-sm">
+              <div class="flex justify-between">
+                <dt class="text-slate-400">年用电量</dt>
+                <dd class="text-slate-200">{{ fmt(result.annualEnergy) }} MWh</dd>
+              </div>
+              <div class="flex justify-between">
+                <dt class="text-slate-400">年电费</dt>
+                <dd class="text-amber-400 font-semibold">{{ fmt(result.annualCost) }} 万元</dd>
+              </div>
+              <div class="flex justify-between">
+                <dt class="text-slate-400">单卡时电费</dt>
+                <dd class="text-slate-200">{{ result.costPerGpuHour.toFixed(2) }} 元/GPU·h</dd>
+              </div>
+              <hr class="border-slate-700">
+              <div class="flex justify-between">
+                <dt class="text-slate-400">年用水量</dt>
+                <dd class="text-slate-200">{{ fmt(result.annualWater) }} 吨</dd>
+              </div>
+              <div class="flex justify-between">
+                <dt class="text-slate-400">年水费</dt>
+                <dd class="text-slate-200">{{ fmt(result.annualWaterCost) }} 万元</dd>
+              </div>
+              <hr class="border-slate-700">
+              <div class="flex justify-between">
+                <dt class="text-slate-400">年碳排放</dt>
+                <dd class="text-slate-200">{{ fmt(result.annualCarbon) }} tCO₂</dd>
+              </div>
+              <div class="flex justify-between">
+                <dt class="text-slate-400">CUE</dt>
+                <dd class="text-slate-200">{{ result.cue.toFixed(3) }} kgCO₂/kWh</dd>
+              </div>
+              <hr class="border-slate-700">
+              <div class="flex justify-between">
+                <dt class="text-slate-400">总显存</dt>
+                <dd class="text-slate-200">{{ fmt(result.totalMemoryTB) }} TB</dd>
+              </div>
+              <div class="flex justify-between">
+                <dt class="text-slate-400">FP8 Dense 总算力</dt>
+                <dd class="text-slate-200">{{ fmt(result.totalFp8) }} PFLOPS</dd>
+              </div>
+            </dl>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="mt-8 pb-6 text-center text-xs text-slate-600">
+    GPU 集群 IDC 电力计算器 &middot; 数据来源：NVIDIA HGX 官方规格 &middot; 仅供规划参考
+  </footer>
+
+</div>
+
+<script>
+const { createApp, ref, reactive, computed, watch, onMounted, nextTick } = Vue;
+
+createApp({
+  setup() {
+    // ==================== GPU Spec Database ====================
+    const gpuModels = [
+      {
+        id: 'H100', arch: 'Hopper', tdp: 700, systemPower: 10.5, systemWeight: 124,
+        memoryGB: 80, memoryType: 'HBM3', bandwidthTBs: 3.35,
+        fp4Dense: 0, fp4Sparse: 0,
+        fp8Dense: 1979, fp8Sparse: 3958,
+        fp16Dense: 989, fp16Sparse: 1979,
+        gpuPerMachine: 8, defaultMachinesPerRack: 2
+      },
+      {
+        id: 'H200', arch: 'Hopper', tdp: 700, systemPower: 11.0, systemWeight: 124,
+        memoryGB: 141, memoryType: 'HBM3e', bandwidthTBs: 4.8,
+        fp4Dense: 0, fp4Sparse: 0,
+        fp8Dense: 1979, fp8Sparse: 3958,
+        fp16Dense: 989, fp16Sparse: 1979,
+        gpuPerMachine: 8, defaultMachinesPerRack: 2
+      },
+      {
+        id: 'B200', arch: 'Blackwell', tdp: 1000, systemPower: 14.3, systemWeight: 120,
+        memoryGB: 180, memoryType: 'HBM3e', bandwidthTBs: 8,
+        fp4Dense: 9000, fp4Sparse: 18000,
+        fp8Dense: 4500, fp8Sparse: 9000,
+        fp16Dense: 2250, fp16Sparse: 4500,
+        gpuPerMachine: 8, defaultMachinesPerRack: 2
+      },
+      {
+        id: 'B300', arch: 'Blackwell Ultra', tdp: 1400, systemPower: 14.5, systemWeight: 138,
+        memoryGB: 262, memoryType: 'HBM3e', bandwidthTBs: 8,
+        fp4Dense: 13500, fp4Sparse: 18000,
+        fp8Dense: 4500, fp8Sparse: 9000,
+        fp16Dense: 2250, fp16Sparse: 4500,
+        gpuPerMachine: 8, defaultMachinesPerRack: 2
+      }
+    ];
+
+    // ==================== Network Switch Database ====================
+    const computeSwitchModels = [
+      { id: 'Q3400',  label: 'Q3400 (XDR 800G)',       ports: 144, downlink: 72, bisection: 72, tdp: 7000 },
+      { id: 'QM9700', label: 'QM9700 (NDR 400G)',      ports: 64,  downlink: 32, bisection: 32, tdp: 1720 },
+      { id: 'QM8700', label: 'QM8700 (HDR 200G)',      ports: 40,  downlink: 20, bisection: 20, tdp: 900  },
+      { id: 'S6990',  label: 'RG-S6990 (RoCE 400G)',   ports: 128, downlink: 64, bisection: 64, tdp: 3000 },
+      { id: 'S6980',  label: 'RG-S6980 (RoCE 400G)',   ports: 64,  downlink: 32, bisection: 32, tdp: 2400 },
+    ];
+
+    // Storage network: typically uses NDR/HDR switches, smaller scale
+    const storageSwitch = { ports: 64, downlink: 32, bisection: 32, tdp: 1720, nicsPerServer: 2 };
+    // Business network: Leaf (SN3420 ~250W) + Spine (SN3700 ~400W)
+    const businessSwitch = { leafTdp: 250, spineTdp: 400, portsPerLeaf: 48, portsPerSpine: 32 };
+
+    // ==================== Region Database ====================
+    const regions = [
+      { id: 'custom',   label: '自定义',             price: null, water: null, cooling: null },
+      { id: 'shanghai', label: '上海',               price: 0.93, water: 6.0,  cooling: 'liquid' },
+      { id: 'beijing',  label: '北京',               price: 0.65, water: 8.0,  cooling: 'liquid' },
+      { id: 'guangdong',label: '广东（广深）',         price: 0.62, water: 5.5,  cooling: 'liquid' },
+      { id: 'jiangsu',  label: '江苏（南通/昆山）',    price: 0.60, water: 5.0,  cooling: 'liquid' },
+      { id: 'langfang', label: '河北（廊坊）',         price: 0.55, water: 5.5,  cooling: 'liquid' },
+      { id: 'zjk',      label: '河北（张家口）',       price: 0.45, water: 6.0,  cooling: 'air' },
+      { id: 'shaoguan', label: '广东（韶关）',         price: 0.50, water: 4.5,  cooling: 'liquid' },
+      { id: 'sichuan',  label: '四川（成都）',         price: 0.45, water: 4.5,  cooling: 'air' },
+      { id: 'guizhou',  label: '贵州（贵安）',         price: 0.42, water: 4.5,  cooling: 'air' },
+      { id: 'neimeng',  label: '内蒙古（呼和浩特）',    price: 0.35, water: 5.5,  cooling: 'air' },
+      { id: 'ningxia',  label: '宁夏（中卫）',         price: 0.36, water: 5.0,  cooling: 'air' },
+      { id: 'gansu',    label: '甘肃（庆阳）',         price: 0.35, water: 5.0,  cooling: 'air' },
+      { id: 'xinjiang',  label: '新疆（乌鲁木齐）',    price: 0.33, water: 4.5,  cooling: 'air' },
+    ];
+
+    const coolingTypes = [
+      { id: 'air', label: '风冷', cop: 3.5, wue: 1.8 },
+      { id: 'liquid', label: '液冷', cop: 20, wue: 0.1 },
+      { id: 'immersion', label: '浸没', cop: 35, wue: 0.05 }
+    ];
+
+    const upsTypes = [
+      { id: 'ups_ac', label: 'UPS (AC)', efficiency: 0.94 },
+      { id: 'hvdc_240', label: 'HVDC 240V', efficiency: 0.96 },
+      { id: 'hvdc_336', label: 'HVDC 336V', efficiency: 0.96 }
+    ];
+
+    // ==================== Theme ====================
+    const darkMode = ref(localStorage.getItem('gpu-calc-theme') === 'dark');
+    function applyTheme() {
+      document.documentElement.classList.toggle('dark', darkMode.value);
+    }
+    function toggleDark() {
+      darkMode.value = !darkMode.value;
+      localStorage.setItem('gpu-calc-theme', darkMode.value ? 'dark' : 'light');
+      applyTheme();
+      updateChartTheme();
+    }
+    applyTheme(); // apply on load
+
+    // ==================== Reactive Inputs ====================
+    const input = reactive({
+      gpuModel: 'B300',
+      gpuCount: 1000,
+      region: 'shanghai',
+      coolingType: 'liquid',
+      upsType: 'ups_ac',
+      redundancy: '2N',
+      electricityPrice: 0.93,
+      avgLoadRatio: 0.85,
+      // advanced
+      coolingCop: 20,
+      upsEfficiency: 0.94,
+      transformerEfficiency: 0.98,
+      pduLossRate: 0.01,
+      otherLossRate: 0.01,
+      powerFactor: 0.97,
+      batteryBackupMin: 15,
+      generatorBackupHours: 24,
+      carbonFactor: 0.57,
+      wue: 0.1,
+      waterCost: 6.0,
+      machinesPerRack: 2,
+      // network
+      computeSwitch: 'Q3400',
+      includeStorageNet: true,
+      includeBusinessNet: true
+    });
+
+    const showAdvanced = ref(false);
+    const showGpuSpecs = ref(false);
+    const leftTab = ref('gpu');
+    const inputByMachine = ref(false);
+    const machineInput = ref(125);
+
+    function toggleInputMode() {
+      if (!inputByMachine.value) {
+        // switching to machine mode: sync current machine count
+        machineInput.value = machineCount.value;
+      }
+      inputByMachine.value = !inputByMachine.value;
+    }
+
+    function onCountSlider(e) {
+      const v = Number(e.target.value);
+      if (inputByMachine.value) {
+        machineInput.value = v;
+        input.gpuCount = v * currentGpu.value.gpuPerMachine;
+      } else {
+        input.gpuCount = v;
+      }
+    }
+
+    function onCountInput(e) {
+      const v = Number(e.target.value);
+      if (!v || v < 1) return;
+      if (inputByMachine.value) {
+        machineInput.value = v;
+        input.gpuCount = v * currentGpu.value.gpuPerMachine;
+      } else {
+        input.gpuCount = v;
+      }
+    }
+
+    // ==================== Derived ====================
+    const currentGpu = computed(() =>
+      gpuModels.find(g => g.id === input.gpuModel) || gpuModels[0]
+    );
+
+    const machineCount = computed(() =>
+      Math.ceil(input.gpuCount / currentGpu.value.gpuPerMachine)
+    );
+
+    const rackCount = computed(() =>
+      Math.ceil(machineCount.value / input.machinesPerRack)
+    );
+
+    // ==================== Network Topology ====================
+    const currentSwitch = computed(() =>
+      computeSwitchModels.find(s => s.id === input.computeSwitch) || computeSwitchModels[1]
+    );
+
+    const networkTopo = computed(() => {
+      const sw = currentSwitch.value;
+      const servers = machineCount.value;
+      const gpuCards = currentGpu.value.gpuPerMachine; // 8
+
+      // --- Compute Network (weaver-c Leaf-Spine) ---
+      const suNodes = gpuCards * sw.downlink;
+      const suCount = Math.ceil(servers * gpuCards / suNodes);
+      let leafCount = gpuCards * suCount;
+
+      // Spine: ceil(leafs * bisection / ports), snap to bisection factor
+      let rawSpines = Math.ceil(leafCount * sw.bisection / sw.ports);
+      // Find smallest factor of bisection >= rawSpines
+      const factors = [];
+      for (let i = 1; i <= sw.bisection; i++) {
+        if (sw.bisection % i === 0) factors.push(i);
+      }
+      let spineCount = factors.find(f => f >= rawSpines) || sw.bisection;
+
+      const computeNetPower = (leafCount + spineCount) * sw.tdp / 1000; // kW
+
+      // --- Storage Network (estimate: NDR switches, 2 nics/server) ---
+      let storageNetPower = 0;
+      if (input.includeStorageNet) {
+        const stNics = servers * storageSwitch.nicsPerServer;
+        const stSuNodes = storageSwitch.nicsPerServer * storageSwitch.downlink;
+        const stSuCount = Math.ceil(stNics / stSuNodes);
+        const stLeafs = storageSwitch.nicsPerServer * stSuCount;
+        let stRawSpines = Math.ceil(stLeafs * storageSwitch.bisection / storageSwitch.ports);
+        const stFactors = [];
+        for (let i = 1; i <= storageSwitch.bisection; i++) {
+          if (storageSwitch.bisection % i === 0) stFactors.push(i);
+        }
+        let stSpines = stFactors.find(f => f >= stRawSpines) || storageSwitch.bisection;
+        storageNetPower = (stLeafs + stSpines) * storageSwitch.tdp / 1000;
+      }
+
+      // --- Business Network (estimate: 25G Leaf-Spine, 2 nics/server MLAG) ---
+      let businessNetPower = 0;
+      if (input.includeBusinessNet) {
+        const bLeafPairs = Math.ceil(servers / businessSwitch.portsPerLeaf);
+        const bLeafs = bLeafPairs * 2; // MLAG pairs
+        const bSpines = Math.max(2, Math.ceil(bLeafs * 4 / businessSwitch.portsPerSpine)); // 4 uplinks per leaf
+        businessNetPower = (bLeafs * businessSwitch.leafTdp + bSpines * businessSwitch.spineTdp) / 1000;
+      }
+
+      const totalNetPower = computeNetPower + storageNetPower + businessNetPower;
+
+      return { leafCount, spineCount, computeNetPower, storageNetPower, businessNetPower, totalNetPower };
+    });
+
+    // ==================== Total Compute ====================
+    const totalCompute = computed(() => {
+      const gpu = currentGpu.value;
+      const n = input.gpuCount;
+      return {
+        fp16Dense:   n * gpu.fp16Dense / 1000,    // PFLOPS
+        fp16Sparse:  n * gpu.fp16Sparse / 1000,
+        fp8Dense:    n * gpu.fp8Dense / 1000,
+        fp8Sparse:   n * gpu.fp8Sparse / 1000,
+        fp4Dense:    n * gpu.fp4Dense / 1000,
+        fp4Sparse:   n * gpu.fp4Sparse / 1000
+      };
+    });
+
+    // ==================== Core Calculation ====================
+    const result = computed(() => {
+      const gpu = currentGpu.value;
+      const machines = machineCount.value;
+
+      // Step 1: IT Power (servers + network)
+      const serverPower = machines * gpu.systemPower;
+      const netPower = networkTopo.value.totalNetPower;
+      const itPower = serverPower + netPower;
+
+      // Step 2: Cooling
+      const coolingPower = itPower / input.coolingCop;
+
+      // Step 3: Power distribution losses
+      const upsLoss = itPower * (1 / input.upsEfficiency - 1);
+      const transformerLoss = itPower * (1 / input.transformerEfficiency - 1);
+      const pduLoss = itPower * input.pduLossRate;
+      const powerLoss = upsLoss + transformerLoss + pduLoss;
+
+      // Step 4: Other
+      const otherLoss = itPower * input.otherLossRate;
+
+      // Step 5: Total
+      const totalPower = itPower + coolingPower + powerLoss + otherLoss;
+      const pue = totalPower / itPower;
+
+      // Step 6: Annual
+      const annualEnergy = totalPower * 8760 * input.avgLoadRatio / 1000; // MWh
+      const annualCost = annualEnergy * 1000 * input.electricityPrice / 10000; // 万元
+      const costPerGpuHour = (totalPower * input.electricityPrice * input.avgLoadRatio) / input.gpuCount;
+
+      // Infrastructure
+      const rackPower = itPower / rackCount.value;
+      const redundancyFactor = input.redundancy === '2N' ? 2 : 1.25;
+      const transformerCapacity = totalPower / input.powerFactor * redundancyFactor;
+      const generatorCapacity = totalPower / input.powerFactor * redundancyFactor;
+      const singleGenSize = 2000; // 2000 kVA per generator
+      const generatorCount = Math.ceil(generatorCapacity / singleGenSize) + 1;
+      const fuelReserve = totalPower * input.generatorBackupHours * 250 / 840; // liters
+      const batteryCapacity = itPower * (input.batteryBackupMin / 60) / input.upsEfficiency / 0.9;
+
+      // Space
+      const floorArea = Math.ceil(rackCount.value * 4.5 / 0.6);
+      const floorLoad = input.coolingType === 'air' ? 12 : 15;
+
+      // Water & Carbon
+      const annualEnergyKwh = annualEnergy * 1000;
+      const itAnnualKwh = itPower * 8760 * input.avgLoadRatio;
+      const annualWater = itAnnualKwh * input.wue / 1000; // tons
+      const annualWaterCost = annualWater * input.waterCost / 10000; // 万元
+      const annualCarbon = annualEnergyKwh * input.carbonFactor / 1000; // tCO2
+      const cue = pue * input.carbonFactor;
+
+      // Compute totals
+      const totalMemoryTB = (input.gpuCount * gpu.memoryGB / 1000);
+      const totalFp8 = (input.gpuCount * gpu.fp8Dense / 1000); // PFLOPS
+
+      return {
+        serverPower, netPower, itPower,
+        coolingPower, upsLoss, transformerLoss, pduLoss, otherLoss,
+        powerLoss, totalPower, pue,
+        annualEnergy, annualCost, costPerGpuHour,
+        rackPower, transformerCapacity, generatorCapacity, generatorCount,
+        fuelReserve, batteryCapacity,
+        floorArea, floorLoad,
+        annualWater, annualWaterCost, annualCarbon, cue,
+        totalMemoryTB, totalFp8
+      };
+    });
+
+    // ==================== Formatting ====================
+    const fmt = (v) => {
+      if (v === undefined || v === null || isNaN(v)) return '—';
+      if (Math.abs(v) >= 1000) return v.toLocaleString('zh-CN', { maximumFractionDigits: 0 });
+      if (Math.abs(v) >= 10) return v.toLocaleString('zh-CN', { maximumFractionDigits: 1 });
+      return v.toLocaleString('zh-CN', { maximumFractionDigits: 2 });
+    };
+
+    // 输入单位 PFLOPS，自动缩放
+    const fmtPflops = (v) => {
+      if (!v || v === 0) return '0';
+      if (v >= 1000) return (v / 1000).toFixed(1) + ' EFLOPS';
+      if (v >= 1) return v.toFixed(1) + ' PFLOPS';
+      return (v * 1000).toFixed(0) + ' TFLOPS';
+    };
+
+    // 输入单位 TFLOPS，自动缩放
+    const fmtFlops = (v) => {
+      if (!v || v === 0) return '0';
+      if (v >= 1000000) return (v / 1000000).toFixed(1) + ' EFLOPS';
+      if (v >= 1000) return (v / 1000).toFixed(1) + ' PFLOPS';
+      return v.toLocaleString() + ' TFLOPS';
+    };
+
+    // ==================== Preset Helpers ====================
+    function setCooling(id) {
+      input.coolingType = id;
+      const c = coolingTypes.find(x => x.id === id);
+      if (c) {
+        input.coolingCop = c.cop;
+        input.wue = c.wue;
+      }
+    }
+
+    function setUps(id) {
+      input.upsType = id;
+      const u = upsTypes.find(x => x.id === id);
+      if (u) input.upsEfficiency = u.efficiency;
+    }
+
+    function setRegion(id) {
+      input.region = id;
+      const r = regions.find(x => x.id === id);
+      if (r && r.price !== null) {
+        input.electricityPrice = r.price;
+        input.waterCost = r.water;
+        if (r.cooling) setCooling(r.cooling);
+      }
+    }
+
+    // ==================== Charts ====================
+    const pieChart = ref(null);
+    const barChart = ref(null);
+    const regionChart = ref(null);
+    let pieInstance = null;
+    let barInstance = null;
+    let regionInstance = null;
+
+    function chartColors() {
+      const isDark = darkMode.value;
+      return {
+        legendText: isDark ? '#94a3b8' : '#64748b',
+        gridLine: isDark ? '#334155' : '#e2e8f0',
+        tickText: isDark ? '#94a3b8' : '#64748b',
+      };
+    }
+
+    function updateChartTheme() {
+      if (!pieInstance || !barInstance) return;
+      const c = chartColors();
+      pieInstance.options.plugins.legend.labels.color = c.legendText;
+      pieInstance.update();
+      barInstance.options.scales.y.grid.color = c.gridLine;
+      barInstance.options.scales.y.ticks.color = c.tickText;
+      barInstance.options.scales.x.ticks.color = c.tickText;
+      barInstance.update();
+      if (regionInstance) {
+        regionInstance.options.scales.y.grid.color = c.gridLine;
+        regionInstance.options.scales.y.ticks.color = c.tickText;
+        regionInstance.options.scales.x.ticks.color = c.tickText;
+        regionInstance.update();
+      }
+    }
+
+    function updateCharts() {
+      // Pie Chart
+      const r = result.value;
+      if (pieInstance) {
+        pieInstance.data.datasets[0].data = [
+          r.serverPower, r.netPower, r.coolingPower, r.upsLoss, r.transformerLoss, r.pduLoss, r.otherLoss
+        ];
+        pieInstance.update();
+      }
+
+      // Bar Chart: compare all GPU models at current settings
+      if (barInstance) {
+        barInstance.data.datasets[0].data = getBarData();
+        barInstance.update();
+      }
+
+      // Region Chart: compare all regions
+      if (regionInstance) {
+        const rd = getRegionData();
+        regionInstance.data.datasets[0].data = rd.costs;
+        regionInstance.data.datasets[0].backgroundColor = rd.colors;
+        regionInstance.update();
+      }
+    }
+
+    function getBarData() {
+      const netPwr = networkTopo.value.totalNetPower;
+      return gpuModels.map(gpu => {
+        const machines = Math.ceil(input.gpuCount / gpu.gpuPerMachine);
+        const it = machines * gpu.systemPower + netPwr;
+        const cool = it / input.coolingCop;
+        const ups = it * (1 / input.upsEfficiency - 1);
+        const trans = it * (1 / input.transformerEfficiency - 1);
+        const pdu = it * input.pduLossRate;
+        const other = it * input.otherLossRate;
+        const total = it + cool + ups + trans + pdu + other;
+        return total * 8760 * input.avgLoadRatio * input.electricityPrice / 10000; // 万元
+      });
+    }
+
+    function getRegionData() {
+      const gpu = currentGpu.value;
+      const machines = Math.ceil(input.gpuCount / gpu.gpuPerMachine);
+      const netPwr = networkTopo.value.totalNetPower;
+      const serverPwr = machines * gpu.systemPower;
+      const itPower = serverPwr + netPwr;
+      const regionList = regions.filter(r => r.price !== null); // exclude "自定义"
+      const costs = regionList.map(r => {
+        const cool = itPower / input.coolingCop;
+        const ups = itPower * (1 / input.upsEfficiency - 1);
+        const trans = itPower * (1 / input.transformerEfficiency - 1);
+        const pdu = itPower * input.pduLossRate;
+        const other = itPower * input.otherLossRate;
+        const total = itPower + cool + ups + trans + pdu + other;
+        return total * 8760 * input.avgLoadRatio * r.price / 10000; // 万元
+      });
+      const colors = regionList.map(r => r.id === input.region ? '#f59e0b' : '#3b82f6');
+      return { costs, colors };
+    }
+
+    function initCharts() {
+      if (typeof Chart === 'undefined' || !pieChart.value || !barChart.value || !regionChart.value) {
+        setTimeout(initCharts, 200);
+        return;
+      }
+      const r = result.value;
+      const c = chartColors();
+      // Pie — 直接用真实数据初始化
+      const pieCtx = pieChart.value.getContext('2d');
+      pieInstance = new Chart(pieCtx, {
+        type: 'doughnut',
+        data: {
+          labels: ['服务器', '网络设备', '制冷', 'UPS 损耗', '变压器损耗', 'PDU 损耗', '其他'],
+          datasets: [{
+            data: [r.serverPower, r.netPower, r.coolingPower, r.upsLoss, r.transformerLoss, r.pduLoss, r.otherLoss],
+            backgroundColor: [
+              '#3b82f6', '#22d3ee', '#06b6d4', '#f59e0b', '#ef4444', '#8b5cf6', '#6b7280'
+            ],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'right',
+              labels: { color: c.legendText, font: { size: 11 }, padding: 12 }
+            },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => {
+                  const v = ctx.parsed;
+                  const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
+                  return ` ${ctx.label}: ${v.toFixed(1)} kW (${(v/total*100).toFixed(1)}%)`;
+                }
+              }
+            }
+          }
+        }
+      });
+
+      // Bar — 直接用真实数据初始化
+      const barCtx = barChart.value.getContext('2d');
+      barInstance = new Chart(barCtx, {
+        type: 'bar',
+        data: {
+          labels: gpuModels.map(g => g.id),
+          datasets: [{
+            label: '年电费 (万元)',
+            data: getBarData(),
+            backgroundColor: ['#3b82f6', '#06b6d4', '#10b981', '#f59e0b'],
+            borderRadius: 6,
+            borderSkipped: false
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: { color: c.gridLine },
+              ticks: { color: c.tickText, callback: v => v.toLocaleString() + ' 万' }
+            },
+            x: {
+              grid: { display: false },
+              ticks: { color: c.tickText }
+            }
+          },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => ` ${ctx.parsed.y.toFixed(0)} 万元/年`
+              }
+            }
+          }
+        }
+      });
+
+      // Region — 地区对比柱状图
+      const regionList = regions.filter(r => r.price !== null);
+      const rd = getRegionData();
+      const regionCtx = regionChart.value.getContext('2d');
+      regionInstance = new Chart(regionCtx, {
+        type: 'bar',
+        data: {
+          labels: regionList.map(r => r.label),
+          datasets: [{
+            label: '年电费 (万元)',
+            data: rd.costs,
+            backgroundColor: rd.colors,
+            borderRadius: 6,
+            borderSkipped: false
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: { color: c.gridLine },
+              ticks: { color: c.tickText, callback: v => v.toLocaleString() + ' 万' }
+            },
+            x: {
+              grid: { display: false },
+              ticks: { color: c.tickText, maxRotation: 45, minRotation: 25, font: { size: 11 } }
+            }
+          },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: (ctx) => {
+                  const rg = regionList[ctx.dataIndex];
+                  return [
+                    ` 年电费: ${ctx.parsed.y.toLocaleString(undefined, {maximumFractionDigits: 0})} 万元`,
+                    ` 电价: ${rg.price} 元/kWh`,
+                    ` 水价: ${rg.water} 元/吨`
+                  ];
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    // ==================== Watchers ====================
+    // Auto-update presets when GPU model changes
+    watch(() => input.gpuModel, () => {
+      input.machinesPerRack = currentGpu.value.defaultMachinesPerRack;
+    });
+
+    // When user manually changes price/water, switch region to "自定义"
+    watch(() => input.electricityPrice, (val) => {
+      if (input.region !== 'custom') {
+        const r = regions.find(x => x.id === input.region);
+        if (r && r.price !== val) input.region = 'custom';
+      }
+    });
+
+    // Debounced chart update
+    let chartTimer = null;
+    watch(result, () => {
+      clearTimeout(chartTimer);
+      chartTimer = setTimeout(updateCharts, 50);
+    });
+
+    onMounted(() => {
+      nextTick(initCharts);
+    });
+
+    return {
+      darkMode, toggleDark,
+      gpuModels, regions, coolingTypes, upsTypes, computeSwitchModels,
+      input, showAdvanced, showGpuSpecs, leftTab, inputByMachine, machineInput,
+      toggleInputMode, onCountSlider, onCountInput,
+      currentGpu, currentSwitch, machineCount, rackCount, totalCompute, networkTopo,
+      result, fmt, fmtPflops, fmtFlops,
+      setCooling, setUps, setRegion,
+      pieChart, barChart, regionChart
+    };
+  }
+}).mount('#app');
+</script>
+</body>
+</html>
