@@ -2665,7 +2665,7 @@
       "price_book_organizer": "XDR Transceivers",
       "product_name": "MMS4A00-XM",
       "product_code": "980-9IAH1-00XM00",
-      "product_description": "NVIDIA twin port transceiver, 1600Gbps,OSFP, 2xMPO, 1310nm SMF, EML, up to 500m, IHS"
+      "product_description": "NVIDIA twin port transceiver, 1600Gbps, OSFP 2xDR4, 2xMPO APC, 1310nm SMF, up to 500m, IHS"
     },
     {
       "id": "381",
@@ -2763,14 +2763,14 @@
       "price_book_organizer": "XDR transceivers",
       "product_name": "MMS4A50-XM-RHS",
       "product_code": "980-9IAS1-00XM00",
-      "product_description": "NVIDIA twin port transceiver, 1600Gbps,OSFP, 2xLC-LC, 1310nm SMF, 2xFR4, up to 2km, RHS"
+      "product_description": "NVIDIA twin port transceiver, 1600Gbps, OSFP, 2xLC-LC, 1310nm SMF, 2xFR4, up to 2km, RHS"
     },
     {
       "id": "395",
       "price_book_organizer": "XDR Transceivers",
       "product_name": "MMS4A20-XM800",
       "product_code": "980-9IAT0-00XM00",
-      "product_description": "NVIDIA single port transceiver, 800Gbps,OSFP DR4, MPO,APC 1310nm SMF, up to 500m, RHS"
+      "product_description": "NVIDIA single port transceiver, 800Gbps, OSFP DR4, MPO, APC 1310nm SMF, up to 500m, RHS"
     },
     {
       "id": "396",
@@ -3093,18 +3093,61 @@
       "product_name": "SN5610",
       "product_code": "920-9N42F-00RI-3C1",
       "product_description": "NVIDIA Spectrum-4 based 800GbE 2U Open Ethernet switch with Cumulus Linux Authentication, 64 OSFP ports and 2 SFP28 ports, 4 AC PSUs, Secure-boot, standard depth, Connector-to-Power Airflow, Tool-less Rail Kit"
+    },
+    {
+      "id": "442",
+      "price_book_organizer": "XDR Transceivers",
+      "product_name": "MMS4C10-XM-RHS",
+      "product_code": "980-9IAU0-00XM00",
+      "product_description": "NVIDIA twin port transceiver, 2xDR4, 1600Gbps, OSFP, 2xMPO(APC), 1310nm SMF, up to 500m, RHS, FRO, Gen2, XDR Only"
+    },
+    {
+      "id": "443",
+      "price_book_organizer": "XDR Transceivers",
+      "product_name": "MMS4C10-XM",
+      "product_code": "980-9IAU0-00XM01",
+      "product_description": "NVIDIA twin port transceiver, 2xDR4, 1600Gbps, OSFP, 2xMPO(APC), 1310nm SMF, up to 500m, IHS, FRO, Gen2, XDR Only"
+    },
+    {
+      "id": "444",
+      "price_book_organizer": "XDR Transceivers",
+      "product_name": "MMS4C11-XM-RHS",
+      "product_code": "980-9IAU1-00XM00",
+      "product_description": "NVIDIA twin port transceiver, 2xDR4, 1600Gbps, OSFP, 2xMPO(APC), 1310nm SMF, up to 500m, RHS, FRO, Gen2, Ethernet Only"
+    },
+    {
+      "id": "445",
+      "price_book_organizer": "XDR Transceivers",
+      "product_name": "MMS4C11-XM",
+      "product_code": "980-9IAU1-00XM01",
+      "product_description": "NVIDIA twin port transceiver, 2xDR4, 1600Gbps, OSFP, 2xMPO(APC), 1310nm SMF, up to 500m, IHS, FRO, Gen2, Ethernet Only"
+    },
+    {
+      "id": "446",
+      "price_book_organizer": "XDR Transceivers",
+      "product_name": "MMS4C10-XM800 (预测OPN，非官方)",
+      "product_code": "980-9IAY0-00XM00",
+      "product_description": "NVIDIA single port transceiver, DR4, 800Gbps, OSFP, MPO(APC), 1310nm SMF, up to 500m, RHS, FRO, Gen2, XDR Only"
+    },
+    {
+      "id": "447",
+      "price_book_organizer": "XDR Transceivers",
+      "product_name": "MMS4C11-XM800",
+      "product_code": "980-9IAY1-00XM00",
+      "product_description": "NVIDIA single port transceiver, DR4, 800Gbps, OSFP, MPO(APC), 1310nm SMF, up to 500m, RHS, FRO, Gen2, Ethernet Only"
     }
   ],
   "metadata": {
-    "total_products": 442,
-    "generated_time": "2025-12-17 23:35:10",
-    "source_file": "Q226 + UFM Enterprise",
+    "total_products": 448,
+    "generated_time": "2026-04-13 00:00:00",
+    "source_file": "Q226 + UFM Enterprise + Transceiver OPN Update",
     "import_info": {
-      "existing_count": 429,
-      "new_ufm_count": 12,
-      "added_count": 12,
+      "existing_count": 442,
+      "new_transceiver_count": 6,
+      "updated_count": 3,
+      "added_count": 6,
       "skipped_count": 0,
-      "final_count": 441
+      "final_count": 448
     }
   }
 }
