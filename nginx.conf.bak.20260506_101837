@@ -1,0 +1,49 @@
+server {
+    listen 80;
+    listen [::]:80;
+    server_name nvlink.vip;
+    return 301 https://$server_name$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    server_name nvlink.vip;
+    
+    ssl_certificate /etc/nginx/certs/cert.pem;
+    ssl_certificate_key /etc/nginx/certs/key.pem;
+    
+    access_log /var/log/nginx/access.log combined;
+    error_log /var/log/nginx/error.log;
+    
+    # 统计报表 - 需要认证
+    location = /report.html {
+        auth_basic "GoAccess Report";
+        auth_basic_user_file /etc/nginx/htpasswd;
+        root /usr/share/nginx/html;
+    }
+    
+    # 原始网站根目录
+    location / {
+        root /usr/share/nginx/html;
+        index index.html index.htm;
+    }
+    
+    # 反代 subconverter
+    location /sub/ {
+        proxy_pass http://172.17.0.1:25500/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+     # Clos Topology 可视化
+     location /clos/ {
+         proxy_pass http://172.17.0.1:8080/;
+         proxy_set_header Host $host;
+         proxy_set_header X-Real-IP $remote_addr;
+         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+         proxy_set_header X-Forwarded-Proto $scheme;
+     }
+}
